@@ -1,0 +1,154 @@
+<ion-header class="ion-no-border premium-header">
+  <div class="header-curve-bg"></div>
+  <ion-toolbar class="transparent-toolbar">
+    <div class="header-content">
+      <div class="user-greeting">
+        <span class="welcome">Good morning,</span>
+        <h1 class="user-name">Foodie! 👋</h1>
+      </div>
+      
+      <div class="location-picker">
+        <ion-icon name="location-sharp" class="loc-icon"></ion-icon>
+        <span class="address">Indiranagar, Bangalore</span>
+        <ion-icon name="chevron-down-outline" class="chevron"></ion-icon>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="premium-content">
+  <!-- Luxury Wallet Card -->
+  <div class="wallet-card-container">
+    <div class="wallet-card">
+      <div class="card-bg-mesh"></div>
+      <div class="card-content">
+        <div class="top-row">
+          <span class="card-label">MEALMATE CREDITS</span>
+          <img src="assets/logo/chef_hat.png" alt="Logo" class="mini-logo">
+        </div>
+        <div class="balance-row">
+          <span class="currency">₹</span>
+          <span class="amount">{{walletBalance}}</span>
+        </div>
+        <div class="bottom-row">
+          <div class="stat">
+            <span class="s-lab">Available</span>
+            <span class="s-val">{{credits}} pts</span>
+          </div>
+          <div class="chip">Active</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="content-wrapper">
+    
+    <!-- AI Concierge Section -->
+    <section class="ai-concierge-section">
+      <div class="section-header">
+        <div class="title-group">
+          <h2>AI Picks <ion-icon name="sparkles" class="sparkle"></ion-icon></h2>
+          <p>Curated for your health profile</p>
+        </div>
+      </div>
+
+      <div class="ai-hero-card" (click)="addToCart(meals[0])">
+        <div class="hero-image">
+          <img [src]="meals[0].image" alt="AI Pick">
+        </div>
+        <div class="hero-overlay">
+          <div class="match-badge">98% Match</div>
+          <div class="info">
+            <h3>{{meals[0].name}}</h3>
+            <p>Perfect for your high-protein diet</p>
+            <div class="tags">
+              <span>Low Cal</span>
+              <span>Rich in Fiber</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="categories-section">
+      <div class="scroll-container">
+        <div 
+          *ngFor="let cat of categories" 
+          class="category-pill"
+          [class.active]="selectedCategory === cat"
+          (click)="selectedCategory = cat"
+        >
+          {{cat}}
+        </div>
+      </div>
+    </section>
+
+    <!-- Meal Grid -->
+    <section class="meals-grid-section">
+      <div class="grid">
+        <div class="meal-item-card" *ngFor="let meal of getFilteredMeals()">
+          <div class="card-thumb">
+            <img [src]="meal.image" [alt]="meal.name">
+            <div class="type-indicator" [class.non-veg]="meal.type === 'Non-Veg'"></div>
+          </div>
+          <div class="card-body">
+            <h4 class="meal-name">{{meal.name}}</h4>
+            <div class="price-row">
+              <span class="price">₹{{meal.price}}</span>
+              <ion-button fill="clear" class="add-icon-btn" (click)="addToCart(meal)">
+                <ion-icon name="add-circle"></ion-icon>
+              </ion-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Custom Meal / Personal Chef Banner -->
+    <div class="personal-chef-banner" (click)="createCustomMeal()">
+      <div class="banner-content">
+        <div class="text-side">
+          <div class="badge">CONCIERGE</div>
+          <h3>Personal Chef</h3>
+          <p>Can't find what you like? Request a custom dish from our top agents.</p>
+          <ion-button fill="clear" class="request-btn">
+            Request Now <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+          </ion-button>
+        </div>
+        <div class="icon-side">
+          <ion-icon name="restaurant" class="chef-icon"></ion-icon>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subscription Card -->
+    <div class="sub-promo-card">
+      <div class="promo-text">
+        <h3>Stay Healthy Everyday</h3>
+        <p>Subscribe to weekly tiffin rotation</p>
+        <button class="promo-btn" (click)="openSubscriptionModal()">View Plans</button>
+      </div>
+      <div class="promo-img">
+        <img src="assets/onboarding/paneer_tikka.png" alt="Promo">
+      </div>
+    </div>
+
+  </div>
+
+</ion-content>
+
+<!-- Floating Premium Cart -->
+<div class="floating-cart-pill" *ngIf="cartCount > 0" (click)="goToCart()">
+  <div class="pill-content">
+    <div class="items-count">
+      <span class="num">{{cartCount}}</span>
+      <span class="txt">Items</span>
+    </div>
+    <div class="divider"></div>
+    <div class="view-cart">
+      <span>View Cart</span>
+      <ion-icon name="arrow-forward"></ion-icon>
+    </div>
+  </div>
+</div>

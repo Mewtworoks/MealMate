@@ -1,0 +1,91 @@
+<ion-header class="ion-no-border concierge-header">
+  <ion-toolbar class="transparent-toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" class="back-pill">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Personal Chef Request</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="concierge-content">
+  <div class="header-accent-bg"></div>
+
+  <div class="content-wrapper animate-up">
+    
+    <!-- Visual Hero -->
+    <div class="hero-section">
+      <div class="hero-illustration">
+        <img src="assets/onboarding/dal_makhani.png" alt="Chef Illustration" class="floating">
+      </div>
+      <div class="hero-text">
+        <h2>What's on your mind?</h2>
+        <p>Our home-cooks are ready to prepare a personalized dish just for you.</p>
+      </div>
+    </div>
+
+    <!-- Dish Details Form -->
+    <section class="form-container">
+      
+      <div class="custom-input-group">
+        <span class="input-label">Dish Name</span>
+        <div class="input-box">
+          <input type="text" placeholder="e.g. Grandma's special Rajma" [(ngModel)]="mealName">
+        </div>
+      </div>
+
+      <div class="custom-input-group">
+        <span class="input-label">Special Instructions</span>
+        <div class="input-box textarea-box">
+          <textarea rows="4" placeholder="e.g. Less spicy, extra butter, no garlic" [(ngModel)]="details"></textarea>
+        </div>
+      </div>
+
+      <div class="selection-row">
+        <div class="pill-toggle" [class.active]="mealType === 'Veg'" (click)="mealType = 'Veg'">
+          <div class="indicator veg"></div> Veg
+        </div>
+        <div class="pill-toggle" [class.active]="mealType === 'Non-Veg'" (click)="mealType = 'Non-Veg'">
+          <div class="indicator non-veg"></div> Non-Veg
+        </div>
+      </div>
+    </section>
+
+    <!-- Agent Selection -->
+    <section class="agent-selection">
+      <h3 class="s-title">Choose Your Chef</h3>
+      <div class="agent-scroll">
+        <div 
+          *ngFor="let agent of agents" 
+          class="agent-card" 
+          [class.selected]="selectedAgentId === agent.id"
+          (click)="selectedAgentId = agent.id"
+        >
+          <div class="avatar">{{agent.name.charAt(0)}}</div>
+          <div class="a-info">
+            <span class="a-name">{{agent.name}}</span>
+            <span class="a-rating">{{agent.rating}} ⭐</span>
+          </div>
+          <div class="check" *ngIf="selectedAgentId === agent.id">
+            <ion-icon name="checkmark-circle"></ion-icon>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Price Section -->
+    <div class="summary-section">
+      <div class="price-pill">
+        <span class="lab">Estimate Price</span>
+        <span class="val">₹150 - ₹250</span>
+      </div>
+      <p class="disclaimer">Final price will be confirmed by the agent.</p>
+    </div>
+
+    <ion-button expand="block" shape="round" class="request-btn-large" (click)="submitOrder()">
+      Send Concierge Request
+    </ion-button>
+
+  </div>
+</ion-content>

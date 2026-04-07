@@ -1,5 +1,7 @@
 {
   "name": "field-sales-tracker",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }

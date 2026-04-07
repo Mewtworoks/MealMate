@@ -1,0 +1,75 @@
+<ion-content class="sub-modal-content">
+  <div class="modal-header">
+    <div class="handle"></div>
+    <div class="header-top">
+      <h2>MealMate Subscription</h2>
+      <ion-button fill="clear" (click)="dismiss()" class="close-btn">
+        <ion-icon name="close-circle"></ion-icon>
+      </ion-button>
+    </div>
+    <p>Subscribe to fixed daily tiffins. Free delivery, extra discounts, and skip anytime.</p>
+  </div>
+
+  <div class="scrollable-body">
+    
+    <!-- Step 1: Select Duration -->
+    <div class="section">
+      <h3>1. Select Plan Duration</h3>
+      <div class="duration-cards">
+        <div class="d-card" [class.selected]="months === 1" (click)="months = 1">
+          <span class="m">1</span>
+          <span class="l">Month</span>
+        </div>
+        <div class="d-card" [class.selected]="months === 3" (click)="months = 3">
+          <div class="tag">Save 10%</div>
+          <span class="m">3</span>
+          <span class="l">Months</span>
+        </div>
+        <div class="d-card" [class.selected]="months === 6" (click)="months = 6">
+          <div class="tag">Save 20%</div>
+          <span class="m">6</span>
+          <span class="l">Months</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Select Rotation Meals -->
+    <div class="section">
+      <div class="section-title-row">
+        <h3>2. Choose Meals to Rotate</h3>
+        <span class="counter">{{selectedMeals.length}}/3</span>
+      </div>
+      <p class="sub-text">Select up to 3 meals. We will rotate them daily so you don't get bored!</p>
+      
+      <div class="meals-grid">
+        <div class="meal-card" *ngFor="let meal of meals" 
+             [class.selected]="isSelected(meal)"
+             (click)="toggleMealSelection(meal)">
+          <div class="check-circle">
+            <ion-icon name="checkmark"></ion-icon>
+          </div>
+          <img [src]="meal.image" [alt]="meal.name">
+          <span class="name">{{meal.name}}</span>
+          <span class="base-p">Avg. ₹{{basePricePerMeal}}/day</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<ion-footer class="ion-no-border sub-footer">
+  <ion-toolbar>
+    <div class="footer-wrap">
+       <div class="price-info">
+          <span class="label">Total for {{months}} Month{{months > 1 ? 's' : ''}}</span>
+          <div class="amt-row">
+            <span class="amt">₹{{getTotalPrice}}</span>
+            <span class="strike" *ngIf="months > 1">₹{{basePricePerMeal * 30 * months}}</span>
+          </div>
+       </div>
+       <ion-button (click)="subscribe()" class="action-btn" [disabled]="selectedMeals.length === 0">
+         Subscribe Now
+       </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

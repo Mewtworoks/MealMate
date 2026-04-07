@@ -1,0 +1,162 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="orders-toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" class="back-btn">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="page-title">My Orders</ion-title>
+  </ion-toolbar>
+
+  <!-- Tab Switcher -->
+  <div class="tab-bar">
+    <button class="tab" [class.active]="activeTab === 'active'" (click)="activeTab = 'active'">
+      Active
+      <span class="count" *ngIf="activeOrders.length > 0">{{activeOrders.length}}</span>
+    </button>
+    <button class="tab" [class.active]="activeTab === 'past'" (click)="activeTab = 'past'">
+      Past
+    </button>
+    <button class="tab" [class.active]="activeTab === 'subscriptions'" (click)="activeTab = 'subscriptions'">
+      Plans
+      <span class="count" *ngIf="subscriptionOrders.length > 0">{{subscriptionOrders.length}}</span>
+    </button>
+  </div>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="orders-content">
+
+  <!-- Active Orders -->
+  <div *ngIf="activeTab === 'active'" class="orders-list">
+
+    <div *ngIf="activeOrders.length === 0" class="empty-state">
+      <div class="empty-icon"><ion-icon name="receipt-outline"></ion-icon></div>
+      <h3>No active orders</h3>
+      <p>Your current orders will appear here.</p>
+      <ion-button shape="round" class="shop-btn" (click)="goToShop()">
+        <ion-icon name="restaurant-outline" slot="start"></ion-icon> Order Now
+      </ion-button>
+    </div>
+
+    <div class="order-card" *ngFor="let order of activeOrders; let i = index"
+         [class.trackable]="order.status === 'OutForDelivery'"
+         (click)="onOrderClick(order)"
+         [style.animation-delay]="i * 0.06 + 's'">
+
+      <!-- Live indicator for OutForDelivery -->
+      <div class="live-strip" *ngIf="order.status === 'OutForDelivery'">
+        <span class="live-dot"></span>
+        <span>LIVE · Tap to track</span>
+      </div>
+
+      <div class="card-body">
+        <div class="left-col">
+          <div class="status-icon-circle" [ngClass]="order.status.toLowerCase()">
+            <ion-icon [name]="getStatusIcon(order.status)"></ion-icon>
+          </div>
+        </div>
+
+        <div class="center-col">
+          <span class="order-id">{{order.id}}</span>
+          <span class="order-status">{{getStatusLabel(order.status)}}</span>
+          <span class="order-time">{{order.date | date:'MMM d · h:mm a'}}</span>
+        </div>
+
+        <div class="right-col">
+          <span class="order-total">₹{{order.total}}</span>
+          <ion-icon name="chevron-forward-outline" class="arrow" *ngIf="order.status === 'OutForDelivery'"></ion-icon>
+        </div>
+      </div>
+
+      <!-- Mini progress for preparing/delivery -->
+      <div class="mini-progress" *ngIf="order.status === 'Preparing' || order.status === 'OutForDelivery'">
+        <div class="bar">
+          <div class="fill" [style.width]="order.status === 'Preparing' ? '45%' : '75%'"></div>
+        </div>
+        <span class="eta" *ngIf="order.deliveryTime">{{order.deliveryTime}}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Past Orders -->
+  <div *ngIf="activeTab === 'past'" class="orders-list">
+
+    <div *ngIf="pastOrders.length === 0" class="empty-state">
+      <div class="empty-icon"><ion-icon name="time-outline"></ion-icon></div>
+      <h3>No past orders</h3>
+      <p>Your order history will appear here.</p>
+    </div>
+
+    <div class="order-card past" *ngFor="let order of pastOrders; let i = index"
+         [style.animation-delay]="i * 0.06 + 's'">
+      <div class="card-body">
+        <div class="left-col">
+          <div class="status-icon-circle" [ngClass]="order.status.toLowerCase()">
+            <ion-icon [name]="getStatusIcon(order.status)"></ion-icon>
+          </div>
+        </div>
+
+        <div class="center-col">
+          <span class="order-id">{{order.id}}</span>
+          <span class="order-status">{{getStatusLabel(order.status)}}</span>
+          <span class="order-time">{{order.date | date:'MMM d · h:mm a'}}</span>
+        </div>
+
+        <div class="right-col">
+          <span class="order-total">₹{{order.total}}</span>
+          <span class="reorder-tag" *ngIf="order.status === 'Delivered'">Reorder</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subscription Orders -->
+  <div *ngIf="activeTab === 'subscriptions'" class="orders-list">
+    
+    <div *ngIf="subscriptionOrders.length === 0" class="empty-state">
+      <div class="empty-icon"><ion-icon name="calendar-outline"></ion-icon></div>
+      <h3>No active subscriptions</h3>
+      <p>Subscribe to Monthly Plans to get your daily tiffin automatically delivered.</p>
+    </div>
+
+    <div class="sub-card" *ngFor="let order of subscriptionOrders; let i = index"
+         [style.animation-delay]="i * 0.06 + 's'">
+       
+       <!-- Header -->
+       <div class="sub-header">
+         <div class="title-group">
+           <ion-icon name="sparkles"></ion-icon>
+           <span class="sub-name">{{order.subscriptionId}} Plan</span>
+         </div>
+         <span class="status-badge active">Active</span>
+       </div>
+
+       <!-- Meals Grid -->
+       <div class="meals-preview-grid">
+         <div class="meal-col" *ngFor="let item of order.items">
+           <img [src]="item.meal.image" [alt]="item.meal.name">
+           <span class="meal-name">{{item.meal.name.split(' ')[0]}}<br>{{item.meal.name.split(' ')[1] || ''}}</span>
+         </div>
+       </div>
+
+       <!-- Details -->
+       <div class="sub-details">
+         <p class="desc">Rotating these {{order.items.length}} meals daily. Your next meal arrives tomorrow at 1:00 PM.</p>
+         <div class="divider"></div>
+         <div class="stats-row">
+           <div class="stat">
+             <span class="lab">Paid</span>
+             <span class="val">₹{{order.total}}</span>
+           </div>
+           <div class="stat right">
+             <span class="lab">Started</span>
+             <span class="val">{{order.date | date:'MMM d, yyyy'}}</span>
+           </div>
+         </div>
+       </div>
+       
+       <button class="manage-btn">Manage Plan</button>
+    </div>
+  </div>
+
+</ion-content>

@@ -1,0 +1,156 @@
+<ion-content [fullscreen]="true" class="dashboard-content">
+  <!-- Header -->
+  <div class="header-container">
+    <div class="header-left">
+      <ion-avatar class="user-avatar">
+        <img alt="Supervisor Avatar" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+      </ion-avatar>
+      <div class="header-titles">
+        <h1>Supervisor Dashboard</h1>
+      </div>
+    </div>
+    <ion-badge color="success" class="role-badge">ADMIN ROLE</ion-badge>
+  </div>
+
+  <!-- Metric Summary Cards -->
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="icon-box blue">
+        <ion-icon name="people-outline"></ion-icon>
+      </div>
+      <p class="metric-label">Total Agents</p>
+      <h2 class="metric-value">{{ summaryMetrics.totalAgents }}</h2>
+    </div>
+
+    <div class="metric-card">
+      <div class="icon-box green">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+      </div>
+      <p class="metric-label">Orders Closed</p>
+      <h2 class="metric-value">{{ summaryMetrics.ordersClosed }}</h2>
+    </div>
+
+    <div class="metric-card">
+      <div class="icon-box purple">
+        <ion-icon name="location-outline"></ion-icon>
+      </div>
+      <p class="metric-label">Total Distance</p>
+      <h2 class="metric-value">{{ summaryMetrics.totalDistance }}</h2>
+    </div>
+
+    <div class="metric-card">
+      <div class="icon-box orange">
+        <ion-icon name="card-outline"></ion-icon>
+      </div>
+      <p class="metric-label">Credit Used</p>
+      <h2 class="metric-value">{{ summaryMetrics.creditUsed }}</h2>
+    </div>
+  </div>
+
+  <!-- AI Insights -->
+  <div class="section-container">
+    <div class="section-header">
+      <h3>AI Insights</h3>
+      <ion-icon name="sparkles" class="sparkle-icon"></ion-icon>
+    </div>
+    
+    <div class="insights-container">
+      <div *ngIf="isLoadingInsights" class="loader-container">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Generating insights...</p>
+      </div>
+
+      <div *ngIf="!isLoadingInsights">
+        <div class="insight-card-wrapper" *ngFor="let insight of insights">
+          <div class="insight-card">
+            <div class="insight-header">
+              <span class="dot"></span>
+              <span class="ai-label">GEMINI AI</span>
+            </div>
+            <p class="insight-text">{{ insight }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GPS Travel Chart -->
+  <div class="section-container chart-section">
+    <h3>Agent GPS Travel (km)</h3>
+    <div class="chart-container">
+      <div class="chart-row" *ngFor="let agent of sortedAgentsForChart; let i = index">
+        <div class="chart-labels">
+          <span class="agent-name">{{ agent.name }}</span>
+          <span class="agent-dist">{{ agent.distanceKm }} km</span>
+        </div>
+        <div class="bar-bg">
+          <div class="bar-fill" [style.width]="getBarWidth(agent.distanceKm)" [style.background-color]="getBarColor(i)"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Team Orders (Live Activity) -->
+  <div class="section-container">
+    <div class="section-header">
+      <h3>Recent Team Orders</h3>
+      <ion-icon name="cart-outline" class="cart-icon"></ion-icon>
+    </div>
+    <div class="orders-activity">
+      <div class="order-item-mini" *ngFor="let order of recentOrders">
+        <div class="order-left">
+          <div class="order-icon">
+            <ion-icon name="receipt-outline"></ion-icon>
+          </div>
+          <div class="order-content">
+            <p class="order-id">{{ order.id }}</p>
+            <p class="order-meta">${{ order.total | number:'1.2-2' }} • {{ order.items.length }} Items</p>
+          </div>
+        </div>
+        <ion-badge [color]="getOrderStatusColor(order.status)">{{ order.status }}</ion-badge>
+      </div>
+      <div *ngIf="recentOrders.length === 0" class="empty-state">
+        <p>No orders placed by the team yet.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Agent Performance List -->
+  <div class="section-container">
+    <h3>Agent Performance</h3>
+    <div class="performance-list">
+      <div class="performance-item" *ngFor="let agent of agents">
+        <div class="item-left">
+          <ion-avatar class="agent-avatar">
+            <div class="initial-avatar">{{ agent.name.charAt(0) }}</div>
+          </ion-avatar>
+          <div class="item-info">
+            <h4>{{ agent.name }}</h4>
+            <p>{{ agent.distanceKm }} km • {{ agent.ordersClosed }} Orders</p>
+          </div>
+        </div>
+        <ion-badge [color]="getStatusColor(agent.status)" class="status-badge">{{ agent.status }}</ion-badge>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation Placeholder -->
+  <div class="bottom-nav">
+    <div class="nav-item active">
+      <ion-icon name="grid"></ion-icon>
+      <span>Overview</span>
+    </div>
+    <div class="nav-item">
+      <ion-icon name="sparkles-outline"></ion-icon>
+      <span>Insights</span>
+    </div>
+    <div class="nav-item" (click)="goToGps()">
+      <ion-icon name="location-outline"></ion-icon>
+      <span>Travel</span>
+    </div>
+    <div class="nav-item">
+      <ion-icon name="people-outline"></ion-icon>
+      <span>Staff</span>
+    </div>
+  </div>
+</ion-content>

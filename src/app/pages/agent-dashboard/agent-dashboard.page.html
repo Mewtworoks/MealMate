@@ -1,0 +1,168 @@
+<ion-header class="ion-no-border premium-header">
+  <div class="header-curve-bg"></div>
+  <ion-toolbar class="transparent-toolbar">
+    <div class="header-content">
+      <div class="user-greeting">
+        <span class="welcome">Agent Dashboard</span>
+        <h1 class="user-name">Welcome back! 🧑‍🍳</h1>
+      </div>
+      <div class="header-actions">
+        <ion-button fill="clear" color="light">
+          <ion-icon name="notifications-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+  </ion-toolbar>
+
+  <!-- Agent Stats -->
+  <div class="agent-stats-container">
+    <div class="stat-box">
+      <span class="val">{{pendingOrders.length}}</span>
+      <span class="lab">New</span>
+    </div>
+    <div class="stat-box">
+      <span class="val">{{activeOrders.length}}</span>
+      <span class="lab">Active</span>
+    </div>
+    <div class="stat-box">
+      <span class="val">₹{{earnings}}</span>
+      <span class="lab">Earnings</span>
+    </div>
+  </div>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="premium-content">
+  <div class="content-wrapper">
+    <!-- Premium Segment -->
+    <div class="segment-wrapper">
+      <ion-segment [(ngModel)]="activeSegment" scrollable="true" class="premium-segment">
+        <ion-segment-button value="requests">
+          <ion-label>Requests</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="active">
+          <ion-label>Active</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="menu">
+          <ion-label>Menu</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="history">
+          <ion-label>History</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+
+    <!-- Segment Views -->
+    <div [ngSwitch]="activeSegment" class="segment-container">
+      
+      <!-- Requests -->
+      <div *ngSwitchCase="'requests'" class="animate-fade">
+        <div class="empty-state" *ngIf="pendingOrders.length === 0">
+          <div class="empty-icon"><ion-icon name="fast-food-outline"></ion-icon></div>
+          <h3>No New Requests</h3>
+          <p>You'll see incoming meal requests here.</p>
+        </div>
+
+        <div class="premium-card request-card" *ngFor="let order of pendingOrders">
+          <div class="card-head">
+            <div class="order-id">
+              <ion-icon name="receipt-outline"></ion-icon> {{order.id}}
+            </div>
+            <div class="time">{{order.date | date:'shortTime'}}</div>
+          </div>
+          <div class="order-details">
+            <h3 class="type">{{order.subscriptionId ? 'Subscription Plan' : 'Single Order'}}</h3>
+            <p class="customer">Customer {{order.agentId ? 'A' : 'New'}} - {{order.items.length}} items</p>
+            <div class="price-pill">₹{{order.total}}</div>
+          </div>
+          <div class="card-actions two-btn">
+            <button class="action-btn danger" (click)="rejectOrder(order.id)">Reject</button>
+            <button class="action-btn success" (click)="acceptOrder(order.id)">Accept Order</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Orders -->
+      <div *ngSwitchCase="'active'" class="animate-fade">
+        <div class="empty-state" *ngIf="activeOrders.length === 0">
+          <div class="empty-icon"><ion-icon name="bicycle-outline"></ion-icon></div>
+          <h3>No Active Deliveries</h3>
+          <p>Accept an order to get started processing.</p>
+        </div>
+
+        <div class="premium-card active-card" *ngFor="let order of activeOrders">
+          <div class="card-head">
+            <div class="order-id"><ion-icon name="receipt-outline"></ion-icon> {{order.id}}</div>
+            <span class="status-pill" [ngClass]="order.status.toLowerCase()">{{order.status}}</span>
+          </div>
+          <div class="order-details">
+            <h3 class="type">{{order.subscriptionId ? 'Subscription' : 'Meal Delivery'}}</h3>
+            <p class="stats">Items: {{order.items.length}} &middot; Total: ₹{{order.total}}</p>
+          </div>
+          
+          <!-- Progressive action button based on status -->
+          <div class="card-actions">
+            <button *ngIf="order.status === 'Accepted'" class="action-btn primary" (click)="updateOrderStatus(order.id, 'Preparing')">
+              <ion-icon name="flame"></ion-icon> Start Preparing
+            </button>
+            <button *ngIf="order.status === 'Preparing'" class="action-btn secondary" (click)="updateOrderStatus(order.id, 'OutForDelivery')">
+              <ion-icon name="bicycle"></ion-icon> Out for Delivery
+            </button>
+            <button *ngIf="order.status === 'OutForDelivery'" class="action-btn success" (click)="updateOrderStatus(order.id, 'Delivered')">
+              <ion-icon name="checkmark-circle"></ion-icon> Mark Delivered
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Menu Management -->
+      <div *ngSwitchCase="'menu'" class="animate-fade">
+        <div class="empty-state" *ngIf="agentMeals.length === 0">
+          <div class="empty-icon"><ion-icon name="restaurant-outline"></ion-icon></div>
+          <h3>Your Menu is Empty</h3>
+          <p>Add some meals for customers to order.</p>
+        </div>
+
+        <div class="meals-grid">
+          <div class="meal-card" *ngFor="let meal of agentMeals">
+            <div class="img-wrapper">
+              <img [src]="meal.image" [alt]="meal.name">
+              <div class="category-tag">{{meal.category}}</div>
+            </div>
+            <div class="meal-info">
+              <h3 class="name">{{meal.name}}</h3>
+              <p class="desc">{{meal.description}}</p>
+              <div class="bottom-row">
+                <span class="price">₹{{meal.price}}</span>
+                <div class="toggle-wrap" (click)="toggleMealAvailability(meal)">
+                  <span class="toggle-lab" [class.active]="meal.isAvailable !== false">{{meal.isAvailable !== false ? 'Available' : 'Paused'}}</span>
+                  <ion-toggle [checked]="meal.isAvailable !== false" mode="ios"></ion-toggle>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- History -->
+      <div *ngSwitchCase="'history'" class="animate-fade">
+        <div class="empty-state" *ngIf="completedOrders.length === 0">
+          <div class="empty-icon"><ion-icon name="time-outline"></ion-icon></div>
+          <h3>No Past Orders</h3>
+          <p>Your history will appear here once you deliver.</p>
+        </div>
+
+        <div class="history-item" *ngFor="let order of completedOrders">
+          <div class="h-left">
+            <span class="id">#{{order.id}}</span>
+            <span class="date">{{order.date | date:'MMM d, y h:mm a'}}</span>
+          </div>
+          <div class="h-right">
+            <span class="total">₹{{order.total}}</span>
+            <span class="status"><ion-icon name="checkmark-done"></ion-icon> Delivered</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</ion-content>

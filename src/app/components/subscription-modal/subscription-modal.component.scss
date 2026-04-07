@@ -1,0 +1,142 @@
+.sub-modal-content {
+  --background: #f8f6f4;
+}
+
+.modal-header {
+  padding: 16px 20px;
+  background: white;
+  border-radius: 0 0 24px 24px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+
+  .handle {
+    width: 40px; height: 5px;
+    background: #E5E7EB;
+    border-radius: 5px;
+    margin: 0 auto 16px auto;
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h2 { font-size: 1.3rem; font-weight: 900; color: #483129; margin: 0; }
+    .close-btn { --color: #9CA3AF; margin: 0; --padding-end: 0; font-size: 1.5rem; }
+  }
+
+  p { font-size: 0.85rem; color: #8E7C76; margin: 8px 0 0 0; line-height: 1.4; }
+}
+
+.scrollable-body {
+  padding: 20px;
+}
+
+.section {
+  margin-bottom: 30px;
+
+  h3 { font-size: 1.1rem; font-weight: 800; color: #483129; margin: 0 0 16px 0; }
+  
+  .section-title-row {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;
+    h3 { margin: 0; }
+    .counter { background: #FFEDE5; color: #FF7235; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 800; }
+  }
+  .sub-text { font-size: 0.8rem; color: #8E7C76; margin: 0 0 16px 0; line-height: 1.4;}
+}
+
+/* Duration Cards */
+.duration-cards {
+  display: flex;
+  gap: 12px;
+
+  .d-card {
+    flex: 1;
+    background: white;
+    border: 2px solid transparent;
+    border-radius: 16px;
+    padding: 16px 10px;
+    display: flex; flex-direction: column; align-items: center;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: all 0.2s ease;
+
+    .tag {
+      position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+      background: #FFB800; color: white; font-size: 0.6rem; font-weight: 800; padding: 2px 8px; border-radius: 8px; filter: drop-shadow(0 2px 4px rgba(255, 184, 0, 0.4)); white-space: nowrap;
+    }
+
+    .m { font-size: 1.8rem; font-weight: 900; color: #483129; line-height: 1; }
+    .l { font-size: 0.75rem; color: #8E7C76; font-weight: 600; margin-top: 4px; }
+
+    &.selected {
+      border-color: #FF7235; background: #FFf8f5; text-align: center;
+      .m { color: #FF7235; }
+      box-shadow: 0 8px 20px rgba(255, 114, 53, 0.15);
+    }
+  }
+}
+
+/* Meals Grid */
+.meals-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+
+  .meal-card {
+    background: white;
+    border-radius: 18px;
+    padding: 12px;
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    border: 2px solid transparent;
+    position: relative;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    transition: all 0.2s ease;
+
+    .check-circle {
+      position: absolute; top: 12px; right: 12px;
+      width: 24px; height: 24px; border-radius: 50%; border: 2px solid #E5E7EB; background: white;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s ease;
+      ion-icon { opacity: 0; color: white; font-size: 1rem; }
+    }
+
+    img { width: 80px; height: 80px; object-fit: contain; margin-bottom: 12px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); transition: transform 0.3s ease; }
+    
+    .name { font-size: 0.85rem; font-weight: 700; color: #483129; line-height: 1.2; margin-bottom: 4px; }
+    .base-p { font-size: 0.7rem; color: #8E7C76; }
+
+    &:active { transform: scale(0.96); }
+
+    &.selected {
+      border-color: #FF7235; background: #FFf8f5;
+      img { transform: scale(1.1); filter: drop-shadow(0 8px 12px rgba(255, 114, 53, 0.2)); }
+      .check-circle { background: #FF7235; border-color: #FF7235; ion-icon { opacity: 1; } }
+    }
+  }
+}
+
+/* Footer */
+.sub-footer {
+  background: white;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+
+  .footer-wrap {
+    display: flex; justify-content: space-between; align-items: center; padding: 16px 20px;
+    
+    .price-info {
+      display: flex; flex-direction: column;
+      .label { font-size: 0.75rem; color: #8E7C76; font-weight: 600; }
+      .amt-row {
+        display: flex; align-items: baseline; gap: 8px; margin-top: 2px;
+        .amt { font-size: 1.4rem; font-weight: 900; color: #483129; }
+        .strike { font-size: 0.8rem; color: #9CA3AF; text-decoration: line-through; }
+      }
+    }
+
+    .action-btn {
+      --background: #FF7235; --border-radius: 16px; font-weight: 800; height: 50px; padding: 0 24px;
+      --box-shadow: 0 8px 20px rgba(255, 114, 53, 0.3);
+      &::part(native) { color: white; }
+    }
+  }
+}

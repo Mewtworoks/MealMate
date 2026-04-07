@@ -1,0 +1,369 @@
+.tracking-content {
+  --background: #f8f6f4;
+}
+
+.tracking-toolbar {
+  --background: white;
+  --border-width: 0;
+  .page-title { font-size: 1.1rem; font-weight: 800; color: #483129; }
+  .back-btn { --color: #483129; }
+}
+
+.live-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #FFEDE5;
+  padding: 4px 12px;
+  border-radius: 10px;
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: #FF7235;
+  letter-spacing: 1px;
+  margin-right: 8px;
+
+  .dot {
+    width: 6px; height: 6px;
+    background: #FF7235;
+    border-radius: 50%;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+}
+
+/* Map Area */
+.map-area {
+  height: 45vh;
+  background: #EEF0F3;
+  position: relative;
+  overflow: hidden;
+}
+
+.map-grid {
+  width: 100%; height: 100%;
+  position: relative;
+
+  .street {
+    position: absolute;
+    background: rgba(255,255,255,0.7);
+    border-radius: 2px;
+
+    &.h1 { top: 25%; left: 0; right: 0; height: 3px; }
+    &.h2 { top: 50%; left: 0; right: 0; height: 3px; }
+    &.h3 { top: 75%; left: 0; right: 0; height: 3px; }
+    &.v1 { left: 25%; top: 0; bottom: 0; width: 3px; }
+    &.v2 { left: 50%; top: 0; bottom: 0; width: 3px; }
+    &.v3 { left: 75%; top: 0; bottom: 0; width: 3px; }
+  }
+
+  .route-path {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 5;
+  }
+}
+
+/* Agent Marker */
+.agent-marker {
+  position: absolute;
+  z-index: 10;
+  transform: translate(-50%, -50%);
+  transition: left 1.5s ease-in-out, top 1.5s ease-in-out;
+
+  .marker-pulse {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px; height: 50px;
+    background: rgba(255, 114, 53, 0.15);
+    border-radius: 50%;
+    animation: markerPulse 2s ease-in-out infinite;
+  }
+
+  .marker-icon {
+    width: 42px; height: 42px;
+    background: #FF7235;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 15px rgba(255, 114, 53, 0.4);
+    position: relative;
+    z-index: 2;
+
+    ion-icon { color: white; font-size: 1.3rem; }
+  }
+
+  &.arrived .marker-icon {
+    background: #4caf50;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+    animation: bounce 0.6s ease;
+  }
+}
+
+/* Your Location */
+.you-marker {
+  position: absolute;
+  left: 50%; top: 48%;
+  transform: translate(-50%, -50%);
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .you-pulse {
+    position: absolute;
+    width: 60px; height: 60px;
+    background: rgba(33, 150, 243, 0.1);
+    border-radius: 50%;
+    animation: markerPulse 2.5s ease-in-out infinite;
+  }
+
+  .you-dot {
+    width: 36px; height: 36px;
+    background: #2196F3;
+    border-radius: 50%;
+    border: 3px solid white;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 3px 10px rgba(33, 150, 243, 0.3);
+    position: relative; z-index: 2;
+
+    ion-icon { color: white; font-size: 1rem; }
+  }
+
+  .you-label {
+    margin-top: 6px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #2196F3;
+    background: white;
+    padding: 2px 8px;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    position: relative; z-index: 2;
+  }
+}
+
+/* Bottom Sheet */
+.bottom-sheet {
+  position: relative;
+  z-index: 20;
+  background: white;
+  border-radius: 28px 28px 0 0;
+  margin-top: -24px;
+  padding: 16px 20px 32px 20px;
+  min-height: 30vh;
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.06);
+
+  .sheet-handle {
+    width: 36px; height: 4px;
+    background: #E5E7EB;
+    border-radius: 4px;
+    margin: 0 auto 20px auto;
+  }
+}
+
+/* Transit View */
+.transit-view {
+  .eta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+
+    .eta-info {
+      display: flex;
+      flex-direction: column;
+      .eta-label { font-size: 0.75rem; color: #8E7C76; font-weight: 600; }
+      .eta-time { font-size: 1.8rem; font-weight: 900; color: #483129; margin-top: 2px; }
+    }
+
+    .distance-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #f8f6f4;
+      padding: 8px 16px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #483129;
+
+      ion-icon { color: #FF7235; font-size: 1rem; }
+    }
+  }
+
+  .progress-track {
+    margin-bottom: 24px;
+    position: relative;
+
+    .progress-fill {
+      height: 4px;
+      background: linear-gradient(90deg, #FF7235, #FF9A5C);
+      border-radius: 4px;
+      transition: width 1.5s ease;
+      position: relative;
+      z-index: 2;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: #F3F4F6;
+      border-radius: 4px;
+    }
+
+    .progress-steps {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+
+      .step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+
+        .step-dot {
+          width: 10px; height: 10px;
+          background: #E5E7EB;
+          border-radius: 50%;
+          transition: all 0.3s ease;
+        }
+
+        span { font-size: 0.65rem; color: #8E7C76; font-weight: 600; }
+
+        &.done {
+          .step-dot { background: #FF7235; box-shadow: 0 0 0 3px rgba(255, 114, 53, 0.15); }
+          span { color: #FF7235; }
+        }
+      }
+    }
+  }
+
+  .partner-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f6f4;
+    padding: 14px 16px;
+    border-radius: 18px;
+    margin-bottom: 14px;
+
+    .partner-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .avatar {
+        width: 42px; height: 42px;
+        background: #FFEBD4;
+        border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 800;
+        color: #FF7235;
+        font-size: 1.1rem;
+      }
+
+      .partner-info {
+        display: flex;
+        flex-direction: column;
+        .name { font-size: 0.9rem; font-weight: 700; color: #483129; }
+        .rating {
+          display: flex; align-items: center; gap: 3px;
+          font-size: 0.75rem; color: #8E7C76; font-weight: 600; margin-top: 2px;
+          ion-icon { color: #FFB800; font-size: 0.8rem; }
+        }
+      }
+    }
+
+    .call-btn {
+      width: 42px; height: 42px;
+      background: #E8F5E9;
+      border: none;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      ion-icon { color: #4caf50; font-size: 1.2rem; }
+    }
+  }
+
+  .order-id-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    .label { font-size: 0.8rem; color: #8E7C76; font-weight: 600; }
+    .val { font-size: 0.8rem; color: #483129; font-weight: 800; }
+  }
+}
+
+/* Arrived View */
+.arrived-view {
+  text-align: center;
+
+  .arrived-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #E8F5E9;
+    padding: 16px 20px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+    text-align: left;
+
+    .arrived-icon { font-size: 2rem; color: #4caf50; }
+    h3 { font-size: 1rem; font-weight: 800; color: #483129; margin: 0; }
+    p { font-size: 0.8rem; color: #8E7C76; margin: 4px 0 0 0; }
+  }
+
+  .pickup-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: #FF7235;
+    color: white;
+    border: none;
+    padding: 18px;
+    border-radius: 20px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    box-shadow: 0 10px 30px rgba(255, 114, 53, 0.3);
+    animation: bounce 0.6s ease;
+
+    ion-icon { font-size: 1.3rem; }
+
+    &:active { transform: scale(0.96); }
+  }
+}
+
+/* Delivered View */
+.delivered-view {
+  text-align: center;
+  padding: 20px 0;
+
+  .check-circle {
+    ion-icon { font-size: 4rem; color: #4caf50; }
+    margin-bottom: 16px;
+  }
+  h2 { font-size: 1.3rem; font-weight: 800; color: #483129; margin: 0; }
+  p { font-size: 0.9rem; color: #8E7C76; margin-top: 8px; }
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes markerPulse {
+  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.6; }
+  50% { transform: translate(-50%, -50%) scale(1.4); opacity: 0; }
+  100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.6; }
+}
+
+@keyframes bounce {
+  0% { transform: scale(0.8); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}

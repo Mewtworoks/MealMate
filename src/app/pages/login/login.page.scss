@@ -1,0 +1,334 @@
+.mealmate-content {
+  --background: #ffffff;
+  --primary-orange: #FF7235;
+  --dark-text: #483129;
+  --medium-text: #8E7C76;
+}
+
+.top-spacer {
+  height: 60px;
+}
+
+/* Carousel Section */
+.carousel-bg-section {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60%;
+  transition: background 0.5s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+}
+
+.carousel-viewport {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.carousel-card-stack {
+  position: relative;
+  width: 280px;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 40px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.main {
+    z-index: 10;
+    transform: translateX(0) scale(1);
+    background: white !important; /* The card itself is usually white in these designs */
+  }
+
+  &.peek {
+    z-index: 5;
+    transform: translateX(40px) scale(0.9);
+    opacity: 0.6;
+  }
+}
+
+.dish-illustration {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  img {
+    max-width: 90%;
+    max-height: 220px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+  }
+}
+
+.dish-info {
+  text-align: center;
+  margin-top: 20px;
+  
+  .dish-name {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--dark-text);
+    margin: 0;
+  }
+  
+  .dish-sub {
+    font-size: 1rem;
+    color: var(--medium-text);
+    margin: 8px 0 0 0;
+  }
+}
+
+.pagination-dots {
+  display: flex;
+  gap: 8px;
+  margin-top: 30px;
+  
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #E5E7EB;
+    transition: all 0.3s ease;
+    
+    &.active {
+      background: var(--primary-orange);
+      width: 24px;
+      border-radius: 12px;
+    }
+  }
+}
+
+/* Bottom Sheet Section */
+.bottom-sheet-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 40px 40px 0 0;
+  padding: 10px 24px 40px 24px;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.08);
+  z-index: 100;
+  min-height: 45%;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.4s ease;
+
+  &.otp-view {
+    min-height: 50%;
+  }
+}
+
+.sheet-handle {
+  width: 40px;
+  height: 4px;
+  background: #E5E7EB;
+  border-radius: 2px;
+  margin: 0 auto 30px auto;
+}
+
+.brand-section {
+  text-align: center;
+  margin-bottom: 30px;
+  
+  .logo-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+    }
+    
+    .brand-text {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--primary-orange);
+      letter-spacing: -0.5px;
+    }
+  }
+  
+  .brand-slogan {
+    font-size: 1.1rem;
+    color: var(--dark-text);
+    font-weight: 500;
+    margin: 0;
+    line-height: 1.4;
+  }
+}
+
+/* Custom Outlined Input */
+.custom-input-group {
+  position: relative;
+  margin-bottom: 30px;
+  
+  .input-label {
+    position: absolute;
+    top: -10px;
+    left: 45px;
+    background: white;
+    padding: 0 8px;
+    font-size: 0.85rem;
+    color: var(--medium-text);
+    z-index: 10;
+    font-weight: 600;
+  }
+  
+  .input-box {
+    display: flex;
+    align-items: center;
+    border: 1.5px solid var(--primary-orange);
+    border-radius: 30px;
+    height: 64px;
+    padding: 0 24px;
+    
+    .country-code {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--dark-text);
+    }
+    
+    .separator {
+      width: 1.5px;
+      height: 24px;
+      background: #E5E7EB;
+      margin: 0 16px;
+    }
+    
+    .phone-input {
+      border: none;
+      outline: none;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--dark-text);
+      flex: 1;
+      background: transparent;
+      
+      &::placeholder {
+        color: #D1D5DB;
+        font-weight: 400;
+      }
+    }
+  }
+}
+
+.continue-btn {
+  --background: var(--primary-orange);
+  --border-radius: 30px;
+  --box-shadow: 0 8px 25px rgba(255, 114, 53, 0.4);
+  height: 64px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.footer-links {
+  text-align: center;
+  margin-top: 24px;
+  
+  .link-text {
+    font-size: 0.95rem;
+    color: var(--medium-text);
+    margin-bottom: 8px;
+    
+    .highlight {
+      color: var(--primary-orange);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    &.agent-link {
+        font-size: 0.9rem;
+        margin-top: 16px;
+        opacity: 0.8;
+    }
+  }
+}
+
+/* OTP View Specifics */
+.back-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--primary-orange);
+  font-weight: 700;
+  margin-bottom: 24px;
+  cursor: pointer;
+}
+
+.otp-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--dark-text);
+  margin: 0;
+}
+
+.otp-subtitle {
+  color: var(--medium-text);
+  margin: 8px 0 24px 0;
+}
+
+.otp-input-wrapper {
+  margin-bottom: 30px;
+  
+  .otp-input {
+    width: 100%;
+    height: 64px;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 20px;
+    text-align: center;
+    font-size: 1.8rem;
+    letter-spacing: 12px;
+    font-weight: 800;
+    color: var(--dark-text);
+    outline: none;
+    
+    &:focus {
+      border-color: var(--primary-orange);
+    }
+  }
+}
+
+/* Animations */
+.animate-fade {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.animate-up {
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

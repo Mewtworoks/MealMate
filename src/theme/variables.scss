@@ -1,2 +1,41 @@
-// For information on how to create your own theme, please refer to:
-// https://ionicframework.com/docs/theming/
+:root {
+  /** Font family **/
+  --ion-font-family: 'Nunito Sans', sans-serif;
+
+  /** primary (Sage Green from image) **/
+  --ion-color-primary: #98b58d;
+  --ion-color-primary-rgb: 152, 181, 141;
+  --ion-color-primary-contrast: #000000;
+  --ion-color-primary-contrast-rgb: 0, 0, 0;
+  --ion-color-primary-shade: #869f7c;
+  --ion-color-primary-tint: #a2bc98;
+
+  /** secondary (Medium Dark) **/
+  --ion-color-secondary: #2c2c2c;
+  --ion-color-secondary-rgb: 44, 44, 44;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #272727;
+  --ion-color-secondary-tint: #414141;
+
+  /** background (Deep Dark) **/
+  --ion-background-color: #0c0c0c;
+  --ion-background-color-rgb: 12, 12, 12;
+  --ion-text-color: #ffffff;
+  --ion-text-color-rgb: 255, 255, 255;
+
+  /** Custom variables for the glossy UI **/
+  --premium-accent: #98b58d;
+  --premium-input-bg: #1a1a1a;
+  --premium-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+  --premium-glow: 0 0 15px rgba(152, 181, 141, 0.3);
+}
+
+.ion-color-premium {
+  --ion-color-base: var(--ion-color-primary);
+  --ion-color-base-rgb: var(--ion-color-primary-rgb);
+  --ion-color-contrast: var(--ion-color-primary-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-primary-contrast-rgb);
+  --ion-color-shade: var(--ion-color-primary-shade);
+  --ion-color-tint: var(--ion-color-primary-tint);
+}

@@ -1,0 +1,142 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="tracking-toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" class="back-btn">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="page-title">Live Tracking</ion-title>
+    <ion-buttons slot="end">
+      <div class="live-badge" *ngIf="!delivered">
+        <span class="dot"></span> LIVE
+      </div>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="tracking-content">
+
+  <!-- Map Area -->
+  <div class="map-area">
+    <div class="map-grid">
+      <!-- Simulated street lines -->
+      <div class="street h1"></div>
+      <div class="street h2"></div>
+      <div class="street h3"></div>
+      <div class="street v1"></div>
+      <div class="street v2"></div>
+      <div class="street v3"></div>
+
+      <!-- Dotted path from agent to you -->
+      <svg class="route-path" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <line [attr.x1]="agentX" [attr.y1]="agentY" x2="50" y2="48"
+              stroke="#FF7235" stroke-width="0.8" stroke-dasharray="2,2" />
+      </svg>
+
+      <!-- Delivery Agent -->
+      <div class="agent-marker" [style.left.%]="agentX" [style.top.%]="agentY"
+           [class.arrived]="arrived">
+        <div class="marker-pulse" *ngIf="!arrived"></div>
+        <div class="marker-icon">
+          <ion-icon name="bicycle"></ion-icon>
+        </div>
+      </div>
+
+      <!-- Your Location -->
+      <div class="you-marker">
+        <div class="you-pulse"></div>
+        <div class="you-dot">
+          <ion-icon name="home"></ion-icon>
+        </div>
+        <span class="you-label">You</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Sheet -->
+  <div class="bottom-sheet" [class.arrived-state]="arrived" [class.delivered-state]="delivered">
+
+    <!-- Status Header -->
+    <div class="sheet-handle"></div>
+
+    <!-- Delivered State -->
+    <div *ngIf="delivered" class="delivered-view">
+      <div class="check-circle">
+        <ion-icon name="checkmark-circle"></ion-icon>
+      </div>
+      <h2>Order Picked Up!</h2>
+      <p>Enjoy your meal 🍽️</p>
+    </div>
+
+    <!-- Arrived State -->
+    <div *ngIf="arrived && !delivered" class="arrived-view">
+      <div class="arrived-header">
+        <ion-icon name="location" class="arrived-icon"></ion-icon>
+        <div>
+          <h3>Your order has arrived!</h3>
+          <p>{{partner.name}} is waiting at your door</p>
+        </div>
+      </div>
+      <button class="pickup-btn" (click)="pickupOrder()">
+        <ion-icon name="hand-left-outline"></ion-icon>
+        Pickup Order
+      </button>
+    </div>
+
+    <!-- In Transit State -->
+    <div *ngIf="!arrived && !delivered" class="transit-view">
+      
+      <div class="eta-row">
+        <div class="eta-info">
+          <span class="eta-label">Arriving in</span>
+          <span class="eta-time">{{eta}} min</span>
+        </div>
+        <div class="distance-pill">
+          <ion-icon name="navigate-outline"></ion-icon>
+          {{distanceRemaining}}
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-track">
+        <div class="progress-fill" [style.width.%]="deliveryProgress * 100"></div>
+        <div class="progress-steps">
+          <div class="step" [class.done]="deliveryProgress >= 0.1">
+            <div class="step-dot"></div>
+            <span>Picked up</span>
+          </div>
+          <div class="step" [class.done]="deliveryProgress >= 0.5">
+            <div class="step-dot"></div>
+            <span>On the way</span>
+          </div>
+          <div class="step" [class.done]="deliveryProgress >= 0.95">
+            <div class="step-dot"></div>
+            <span>Arrived</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Partner Card -->
+      <div class="partner-card">
+        <div class="partner-left">
+          <div class="avatar">{{partner.name.charAt(0)}}</div>
+          <div class="partner-info">
+            <span class="name">{{partner.name}}</span>
+            <span class="rating"><ion-icon name="star"></ion-icon> {{partner.rating}}</span>
+          </div>
+        </div>
+        <button class="call-btn">
+          <ion-icon name="call"></ion-icon>
+        </button>
+      </div>
+
+      <!-- Order ID -->
+      <div class="order-id-row" *ngIf="orderId">
+        <span class="label">Order</span>
+        <span class="val">{{orderId}}</span>
+      </div>
+    </div>
+
+  </div>
+
+</ion-content>

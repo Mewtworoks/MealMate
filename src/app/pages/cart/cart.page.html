@@ -1,0 +1,193 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="cart-toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" class="back-btn">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="cart-title">My Cart</ion-title>
+    <ion-buttons slot="end">
+      <ion-button class="items-badge">
+        <ion-icon name="bag-handle-outline"></ion-icon>
+        <span class="badge-count">{{items.length}}</span>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="cart-content">
+  
+  <!-- Empty Cart State -->
+  <div *ngIf="items.length === 0" class="empty-state animate-fade">
+    <div class="empty-icon-box">
+      <ion-icon name="cart-outline"></ion-icon>
+    </div>
+    <h2>Your cart is empty</h2>
+    <p>Looks like you haven't added any meals yet. Browse our menu to find something delicious!</p>
+    <ion-button expand="block" shape="round" class="browse-btn" (click)="goBack()">
+      <ion-icon name="restaurant-outline" slot="start"></ion-icon>
+      Browse Meals
+    </ion-button>
+  </div>
+
+  <!-- Cart Items List -->
+  <div *ngIf="items.length > 0" class="content-wrapper">
+    
+    <div class="section-label">YOUR ITEMS</div>
+    
+    <div class="item-list">
+      <div class="item-card" *ngFor="let item of items; let i = index" [style.animation-delay]="i * 0.08 + 's'">
+        <div class="thumb">
+          <img [src]="item.meal.image" [alt]="item.meal.name">
+        </div>
+        <div class="details">
+          <h3>{{item.meal.name}}</h3>
+          <span class="category-tag">{{item.meal.category}}</span>
+          <div class="price-qty-row">
+            <span class="price">₹{{item.meal.price * item.quantity}}</span>
+            <div class="qty-controls">
+              <button class="qty-btn" (click)="decreaseQty(item)">
+                <ion-icon [name]="item.quantity === 1 ? 'trash-outline' : 'remove'"></ion-icon>
+              </button>
+              <span class="qty-num">{{item.quantity}}</span>
+              <button class="qty-btn plus" (click)="increaseQty(item)">
+                <ion-icon name="add"></ion-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Type Section -->
+    <div class="payment-type-section">
+      <div class="section-label">CHOOSE PAYMENT TYPE</div>
+      <div class="payment-options">
+        
+        <div class="pay-option" [class.selected]="paymentType === 'wallet'" (click)="paymentType = 'wallet'">
+          <div class="option-left">
+            <div class="option-icon wallet-icon">
+              <ion-icon name="wallet-outline"></ion-icon>
+            </div>
+            <div class="option-info">
+              <span class="option-title">Pay Now via Wallet</span>
+              <span class="option-desc">₹{{walletBalance}} available</span>
+            </div>
+          </div>
+          <div class="radio-circle" [class.checked]="paymentType === 'wallet'">
+            <div class="radio-dot"></div>
+          </div>
+        </div>
+
+        <div class="pay-option" [class.selected]="paymentType === 'cod'" (click)="paymentType = 'cod'">
+          <div class="option-left">
+            <div class="option-icon cod-icon">
+              <ion-icon name="cash-outline"></ion-icon>
+            </div>
+            <div class="option-info">
+              <span class="option-title">Cash on Delivery</span>
+              <span class="option-desc">Pay when your meal arrives</span>
+            </div>
+          </div>
+          <div class="radio-circle" [class.checked]="paymentType === 'cod'">
+            <div class="radio-dot"></div>
+          </div>
+        </div>
+
+        <div class="pay-option monthly-option" [class.selected]="paymentType === 'monthly'" (click)="paymentType = 'monthly'">
+          <div class="monthly-badge">SAVE 20%</div>
+          <div class="option-left">
+            <div class="option-icon monthly-icon">
+              <ion-icon name="calendar-outline"></ion-icon>
+            </div>
+            <div class="option-info">
+              <span class="option-title">Monthly Subscription</span>
+              <span class="option-desc">₹{{getMonthlyPrice()}}/mo · Auto-billed monthly</span>
+            </div>
+          </div>
+          <div class="radio-circle" [class.checked]="paymentType === 'monthly'">
+            <div class="radio-dot"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Monthly Subscription Details (shown when selected) -->
+    <div class="subscription-details" *ngIf="paymentType === 'monthly'">
+      <div class="sub-card">
+        <div class="sub-header">
+          <ion-icon name="sparkles"></ion-icon>
+          <span>MealMate Monthly Plan</span>
+        </div>
+        <div class="sub-perks">
+          <div class="perk"><ion-icon name="checkmark-circle"></ion-icon> Same meals daily at fixed time</div>
+          <div class="perk"><ion-icon name="checkmark-circle"></ion-icon> Free delivery on all orders</div>
+          <div class="perk"><ion-icon name="checkmark-circle"></ion-icon> 20% off on every meal</div>
+          <div class="perk"><ion-icon name="checkmark-circle"></ion-icon> Skip or pause anytime</div>
+        </div>
+        <div class="sub-price-row">
+          <div class="original">₹{{subTotal * 30}} /mo</div>
+          <div class="discounted">₹{{getMonthlyPrice()}} /mo</div>
+        </div>
+        <button class="customize-btn" (click)="openSubscriptionModal()">Customize Plan</button>
+      </div>
+    </div>
+
+    <!-- Bill Details -->
+    <div class="bill-section">
+      <div class="section-label">BILL DETAILS</div>
+      <div class="bill-card">
+        <div class="bill-row">
+          <span>Item Total</span>
+          <span>₹{{subTotal}}</span>
+        </div>
+        <div class="bill-row">
+          <span>Delivery Fee</span>
+          <span *ngIf="paymentType !== 'monthly'">₹{{deliveryFee}}</span>
+          <span *ngIf="paymentType === 'monthly'" class="free-tag">FREE</span>
+        </div>
+        <div class="bill-row promo" *ngIf="discount > 0">
+          <span>MealMate Credits</span>
+          <span class="save">-₹{{discount}}</span>
+        </div>
+        <div class="bill-row promo" *ngIf="paymentType === 'monthly'">
+          <span>Subscription Discount (20%)</span>
+          <span class="save">-₹{{getSubscriptionDiscount()}}</span>
+        </div>
+        <div class="bill-divider"></div>
+        <div class="bill-row total">
+          <span>To Pay</span>
+          <span>₹{{getFinalTotal()}}</span>
+        </div>
+        <div class="bill-row" *ngIf="paymentType === 'monthly'">
+          <span class="monthly-note">Billed monthly · Cancel anytime</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wallet Insufficient Warning -->
+    <div class="wallet-warn" *ngIf="paymentType === 'wallet' && getFinalTotal() > walletBalance">
+      <ion-icon name="alert-circle"></ion-icon>
+      <span>Insufficient wallet balance. Please top up or choose another payment method.</span>
+    </div>
+
+    <!-- Spacer for footer -->
+    <div style="height: 100px;"></div>
+
+  </div>
+
+</ion-content>
+
+<ion-footer class="ion-no-border" *ngIf="items.length > 0">
+  <div class="checkout-footer">
+    <div class="price-summary">
+      <span class="final-price">₹{{getFinalTotal()}}</span>
+      <span class="pay-type-label">{{getPaymentLabel()}}</span>
+    </div>
+    <button class="place-order-btn" (click)="placeOrder()" [disabled]="paymentType === 'wallet' && getFinalTotal() > walletBalance">
+      Place Order
+      <ion-icon name="arrow-forward-outline"></ion-icon>
+    </button>
+  </div>
+</ion-footer>
