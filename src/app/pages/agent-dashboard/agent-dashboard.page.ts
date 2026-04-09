@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ModalController, AlertController } from '@ionic/angular';
 import { OrderService, Order } from '../../services/order.service';
 import { MealService, Meal } from '../../services/meal.service';
 import { Router } from '@angular/router';
@@ -20,11 +20,31 @@ export class AgentDashboardPage implements OnInit {
   agentMeals: Meal[] = [];
   activeSegment = 'requests';
   earnings = 0;
+  isMenuModalOpen = false;
+  isAddMealModalOpen = false;
+  isProfileModalOpen = false;
+
+  mealForm = {
+    name: '',
+    description: '',
+    price: 0,
+    category: 'Lunch' as any,
+    image: 'assets/onboarding/dal_makhani.png',
+    type: 'Veg' as any
+  };
+
+  availableImages = [
+    'assets/onboarding/dal_makhani.png',
+    'assets/onboarding/paneer_tikka.png',
+    'assets/onboarding/veg_pulao.png'
+  ];
 
   constructor(
     private orderService: OrderService,
     private mealService: MealService,
-    private router: Router
+    private router: Router,
+    private modalCtrl: ModalController,
+    private alertCtrl: AlertController
   ) { }
 
   ngOnInit() {
@@ -34,8 +54,41 @@ export class AgentDashboardPage implements OnInit {
       this.calculateEarnings();
     });
 
-    // We assume the logged-in agent is the first agent from MealService, ID 'A1'
-    this.agentMeals = this.mealService.getMeals().filter(m => m.agentId === 'A1');
+    this.mealService.meals$.subscribe(allMeals => {
+      this.agentMeals = allMeals.filter(m => m.agentId === 'a1'); 
+    });
+  }
+
+  saveNewMeal() {
+    if (this.mealForm.name && this.mealForm.price) {
+      const newMeal: Meal = {
+        id: 'm' + Date.now(),
+        ...this.mealForm,
+        agentId: 'a1',
+        spiceLevel: 'Medium',
+        calories: 350,
+        isAvailable: true
+      };
+      this.mealService.addMeal(newMeal);
+      this.isAddMealModalOpen = false;
+      this.resetMealForm();
+    }
+  }
+
+  resetMealForm() {
+    this.mealForm = {
+      name: '',
+      description: '',
+      price: 0,
+      category: 'Lunch',
+      image: 'assets/onboarding/dal_makhani.png',
+      type: 'Veg'
+    };
+  }
+
+  logout() {
+    this.isProfileModalOpen = false;
+    this.router.navigate(['/login']);
   }
 
   filterOrders() {
