@@ -1,0 +1,218 @@
+<ion-header class="ion-no-border premium-header">
+  <div class="header-curve-bg"></div>
+  <ion-toolbar class="transparent-toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Your Profile</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear">
+        <ion-icon name="share-social-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <div class="profile-hero">
+    <div class="avatar-container">
+      <div class="avatar-ring"></div>
+      <div class="avatar-inner">{{userProfile.avatar}}</div>
+      <div class="edit-badge"><ion-icon name="camera"></ion-icon></div>
+    </div>
+    <h1 class="user-name">{{userProfile.name}}</h1>
+    <p class="user-email">{{userProfile.email}}</p>
+    <div class="role-badge" [class.agent]="userRole === 'agent'">{{userRole | uppercase}}</div>
+  </div>
+</ion-header>
+
+<ion-content class="premium-content">
+  <div class="content-wrapper">
+    <!-- Role Specific Stats -->
+    <div class="stats-card">
+      <ng-container *ngIf="userRole === 'customer'">
+        <div class="stat-item">
+          <span class="val">{{userProfile.credits}}</span>
+          <span class="lab">Credits</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="val">{{userProfile.orders}}</span>
+          <span class="lab">Orders</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="val">Silver</span>
+          <span class="lab">Level</span>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="userRole === 'agent'">
+        <div class="stat-item">
+          <span class="val">{{userProfile.rating}}</span>
+          <span class="lab">Rating</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="val">{{userProfile.ordersCompleted}}</span>
+          <span class="lab">Total Jobs</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="val">{{userProfile.earnings}}</span>
+          <span class="lab">Earnings</span>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Actions List -->
+    <div class="actions-group">
+      <h3 class="group-title">Account Settings</h3>
+      <div class="action-card">
+        <div class="action-row" (click)="openEditProfile()">
+          <div class="icon-box"><ion-icon name="person-outline"></ion-icon></div>
+          <div class="text">
+            <h4>Edit Personal Information</h4>
+            <p>Update your name, email and phone</p>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="chev"></ion-icon>
+        </div>
+        <div class="action-row" (click)="isNotifModalOpen = true">
+          <div class="icon-box"><ion-icon name="notifications-outline"></ion-icon></div>
+          <div class="text">
+            <h4>Notifications</h4>
+            <p>Preferences and alerts</p>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="chev"></ion-icon>
+        </div>
+        <div class="action-row" (click)="showSecurity()">
+          <div class="icon-box"><ion-icon name="shield-checkmark-outline"></ion-icon></div>
+          <div class="text">
+            <h4>Security & Privacy</h4>
+            <p>Password and data storage</p>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="chev"></ion-icon>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions-group">
+      <h3 class="group-title">Support & More</h3>
+      <div class="action-card">
+        <div class="action-row" (click)="isHelpModalOpen = true">
+          <div class="icon-box blue"><ion-icon name="help-circle-outline"></ion-icon></div>
+          <div class="text">
+            <h4>Help Center</h4>
+            <p>FAQs and contact support</p>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="chev"></ion-icon>
+        </div>
+        <div class="action-row" (click)="showAbout()">
+          <div class="icon-box orange"><ion-icon name="information-circle-outline"></ion-icon></div>
+          <div class="text">
+            <h4>About MealMate</h4>
+            <p>Version 2.4.0</p>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="chev"></ion-icon>
+        </div>
+      </div>
+    </div>
+
+    <!-- Logout -->
+    <button class="logout-btn" (click)="logout()">
+      <ion-icon name="log-out-outline" class="logout-icon"></ion-icon>
+      Log Out of App
+    </button>
+  </div>
+
+  <!-- Edit Profile Modal -->
+  <ion-modal [isOpen]="isEditModalOpen" (didDismiss)="isEditModalOpen = false" [initialBreakpoint]="0.75" [breakpoints]="[0, 0.75, 1]" class="premium-modal edit-modal">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar>
+          <ion-title>Edit Information</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="isEditModalOpen = false">Cancel</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <div class="form-group">
+          <label>Full Name</label>
+          <div class="input-wrap">
+            <ion-icon name="person-outline"></ion-icon>
+            <input type="text" [(ngModel)]="editData.name" placeholder="Full Name">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <div class="input-wrap">
+            <ion-icon name="mail-outline"></ion-icon>
+            <input type="email" [(ngModel)]="editData.email" placeholder="Email Address">
+          </div>
+        </div>
+        <button class="save-btn" (click)="saveProfile()">Save Changes</button>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Notifications Modal -->
+  <ion-modal [isOpen]="isNotifModalOpen" (didDismiss)="isNotifModalOpen = false" [initialBreakpoint]="0.5" [breakpoints]="[0, 0.5]" class="premium-modal">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar>
+          <ion-title>Notifications</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <div class="notif-toggle">
+          <div class="text">
+            <h4>Order Updates</h4>
+            <p>Stay informed about your order status</p>
+          </div>
+          <ion-toggle color="success" mode="ios" [(ngModel)]="notifications.orders"></ion-toggle>
+        </div>
+        <div class="notif-toggle">
+          <div class="text">
+            <h4>Marketing Promotions</h4>
+            <p>Receive offers and discounts</p>
+          </div>
+          <ion-toggle color="success" mode="ios" [(ngModel)]="notifications.promos"></ion-toggle>
+        </div>
+        <div class="notif-toggle">
+          <div class="text">
+            <h4>App Updates</h4>
+            <p>News about new features</p>
+          </div>
+          <ion-toggle color="success" mode="ios" [(ngModel)]="notifications.updates"></ion-toggle>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Help Center Modal -->
+  <ion-modal [isOpen]="isHelpModalOpen" (didDismiss)="isHelpModalOpen = false" [initialBreakpoint]="0.5" [breakpoints]="[0, 0.5]" class="premium-modal">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar>
+          <ion-title>Help & Support</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <div class="help-item">
+          <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+          <span>Live Chat with Support</span>
+        </div>
+        <div class="help-item">
+          <ion-icon name="mail-outline"></ion-icon>
+          <span>Email us at support@mealmate.com</span>
+        </div>
+        <div class="help-item">
+          <ion-icon name="call-outline"></ion-icon>
+          <span>Call 1800-MEAL-MATE</span>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+</ion-content>
