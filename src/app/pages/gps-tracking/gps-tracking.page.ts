@@ -1,7 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NavController, ToastController } from '@ionic/angular';
 import { OrderService } from '../../services/order.service';
+import { TrackingService, Location } from '../../services/tracking.service';
+import * as L from 'leaflet';
 
 @Component({
   selector: 'app-gps-tracking',
@@ -9,7 +11,7 @@ import { OrderService } from '../../services/order.service';
   styleUrls: ['./gps-tracking.page.scss'],
   standalone: false
 })
-export class GpsTrackingPage implements OnInit, OnDestroy {
+export class GpsTrackingPage implements OnInit, OnDestroy, AfterViewInit {
   orderId = '';
   deliveryProgress = 0.2;
   eta = 15;
@@ -23,17 +25,17 @@ export class GpsTrackingPage implements OnInit, OnDestroy {
     phone: '+91 98765 43210'
   };
 
-  // Simulated route points (percentage positions on the map visual)
-  agentX = 15;
-  agentY = 70;
-
-  private timer: any;
+  private map: L.Map | undefined;
+  private agentMarker: L.Marker | undefined;
+  private customerMarker: L.Marker | undefined;
+  private routeLine: L.Polyline | undefined;
 
   constructor(
     private route: ActivatedRoute,
     private navCtrl: NavController,
     private toastCtrl: ToastController,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private trackingService: TrackingService
   ) { }
 
   ngOnInit() {
@@ -42,37 +44,109 @@ export class GpsTrackingPage implements OnInit, OnDestroy {
         this.orderId = params['orderId'];
       }
     });
-    this.startSimulation();
+  }
+
+  ngAfterViewInit() {
+    this.initMap();
   }
 
   ngOnDestroy() {
-    if (this.timer) clearInterval(this.timer);
+    if (this.map) {
+      this.map.remove();
+    }
   }
 
-  startSimulation() {
-    this.timer = setInterval(() => {
-      if (this.arrived || this.delivered) return;
+  initMap() {
+    // Start with customer location
+    const customerPos = this.trackingService.customerLocation;
+    
+    this.map = L.map('map', {
+      zoomControl: false,
+      attributionControl: false
+    }).setView([customerPos.lat, customerPos.lng], 15);
 
-      if (this.deliveryProgress < 0.95) {
-        this.deliveryProgress += 0.15;
-        this.eta = Math.max(1, this.eta - 3);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      className: 'map-tiles' // We can style this in CSS for dark mode
+    }).addTo(this.map);
 
-        const dist = parseFloat(this.distanceRemaining.split(' ')[0]);
-        this.distanceRemaining = Math.max(0.1, dist - 0.4).toFixed(1) + ' km';
+    // Custom Icons
+    const agentIcon = L.divIcon({
+      className: 'custom-agent-icon',
+      html: `<div class="marker-pin"><i class="bike-icon">🏍️</i></div>`,
+      iconSize: [40, 40],
+      iconAnchor: [20, 40]
+    });
 
-        // Move agent closer to destination (bottom-right → center)
-        this.agentX = Math.min(48, this.agentX + 7);
-        this.agentY = Math.max(48, this.agentY - 5);
-      } else {
-        // Agent has arrived
-        this.arrived = true;
-        this.eta = 0;
-        this.distanceRemaining = 'Arrived';
-        this.agentX = 50;
-        this.agentY = 48;
-        clearInterval(this.timer);
-      }
-    }, 5000); // Every 5 seconds
+    const customerIcon = L.divIcon({
+      className: 'custom-customer-icon',
+      html: `<div class="customer-pin">🏠</div>`,
+      iconSize: [30, 30],
+      iconAnchor: [15, 30]
+    });
+
+    // Add Customer Marker
+    this.customerMarker = L.marker([customerPos.lat, customerPos.lng], { icon: customerIcon })
+      .addTo(this.map)
+      .bindPopup('Your Location')
+      .openPopup();
+
+    // Subscribe to Agent location
+    this.trackingService.agentLocation$.subscribe(loc => {
+      this.updateAgentPosition(loc);
+    });
+  }
+
+  updateAgentPosition(loc: Location) {
+    if (!this.map) return;
+
+    if (!this.agentMarker) {
+      const agentIcon = L.divIcon({
+        className: 'custom-agent-icon',
+        html: `<div class="marker-pulse"></div><div class="marker-inner">🏍️</div>`,
+        iconSize: [44, 44],
+        iconAnchor: [22, 22]
+      });
+      this.agentMarker = L.marker([loc.lat, loc.lng], { icon: agentIcon }).addTo(this.map);
+    } else {
+      this.agentMarker.setLatLng([loc.lat, loc.lng]);
+    }
+
+    // Update Route Line
+    const customerPos = this.trackingService.customerLocation;
+    const points: L.LatLngExpression[] = [
+      [loc.lat, loc.lng],
+      [customerPos.lat, customerPos.lng]
+    ];
+
+    if (this.routeLine) {
+      this.routeLine.setLatLngs(points);
+    } else {
+      this.routeLine = L.polyline(points, {
+        color: '#FF7235',
+        weight: 3,
+        dashArray: '5, 10',
+        opacity: 0.6
+      }).addTo(this.map);
+    }
+
+    // Update Distance and ETA
+    const dist = this.trackingService.getDistance(
+      loc.lat, loc.lng,
+      customerPos.lat, customerPos.lng
+    );
+
+    this.distanceRemaining = dist.toFixed(1) + ' km';
+    this.eta = Math.ceil(dist * 5); // Rough estimate: 5 min per km
+    this.deliveryProgress = Math.min(0.95, 1 - (dist / 2)); // Assuming 2km total trip
+
+    if (dist < 0.05) { // Within 50 meters
+      this.arrived = true;
+      this.eta = 0;
+      this.distanceRemaining = 'Arrived';
+    }
+
+    // Softly fit bounds if marker moves out of view
+    // this.map.panTo([loc.lat, loc.lng]);
   }
 
   async pickupOrder() {
@@ -99,3 +173,4 @@ export class GpsTrackingPage implements OnInit, OnDestroy {
     this.navCtrl.back();
   }
 }
+

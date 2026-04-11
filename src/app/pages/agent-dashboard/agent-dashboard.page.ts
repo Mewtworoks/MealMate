@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule, ModalController, AlertController } from '@ionic/angular';
 import { OrderService, Order } from '../../services/order.service';
 import { MealService, Meal } from '../../services/meal.service';
+import { TrackingService } from '../../services/tracking.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -42,6 +43,7 @@ export class AgentDashboardPage implements OnInit {
   constructor(
     private orderService: OrderService,
     private mealService: MealService,
+    private trackingService: TrackingService,
     private router: Router,
     private modalCtrl: ModalController,
     private alertCtrl: AlertController
@@ -88,6 +90,7 @@ export class AgentDashboardPage implements OnInit {
 
   logout() {
     this.isProfileModalOpen = false;
+    this.trackingService.stopAgentTracking();
     this.router.navigate(['/login']);
   }
 
@@ -105,7 +108,14 @@ export class AgentDashboardPage implements OnInit {
     const order = this.orders.find(o => o.id === orderId);
     if (order) {
       order.status = newStatus;
-      // In a real app, we'd call a service method to update DB
+      
+      // Real-time GPS Tracking Trigger
+      if (newStatus === 'OutForDelivery') {
+        this.trackingService.startAgentTracking();
+      } else if (newStatus === 'Delivered') {
+        this.trackingService.stopAgentTracking();
+      }
+
       this.filterOrders();
     }
   }
@@ -113,6 +123,7 @@ export class AgentDashboardPage implements OnInit {
   acceptOrder(orderId: string) {
     this.updateOrderStatus(orderId, 'Accepted');
   }
+
 
   rejectOrder(orderId: string) {
     this.updateOrderStatus(orderId, 'Rejected');

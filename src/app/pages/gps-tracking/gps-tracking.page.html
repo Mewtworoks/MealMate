@@ -18,40 +18,15 @@
 
   <!-- Map Area -->
   <div class="map-area">
-    <div class="map-grid">
-      <!-- Simulated street lines -->
-      <div class="street h1"></div>
-      <div class="street h2"></div>
-      <div class="street h3"></div>
-      <div class="street v1"></div>
-      <div class="street v2"></div>
-      <div class="street v3"></div>
-
-      <!-- Dotted path from agent to you -->
-      <svg class="route-path" viewBox="0 0 100 100" preserveAspectRatio="none">
-        <line [attr.x1]="agentX" [attr.y1]="agentY" x2="50" y2="48"
-              stroke="#FF7235" stroke-width="0.8" stroke-dasharray="2,2" />
-      </svg>
-
-      <!-- Delivery Agent -->
-      <div class="agent-marker" [style.left.%]="agentX" [style.top.%]="agentY"
-           [class.arrived]="arrived">
-        <div class="marker-pulse" *ngIf="!arrived"></div>
-        <div class="marker-icon">
-          <ion-icon name="bicycle"></ion-icon>
-        </div>
-      </div>
-
-      <!-- Your Location -->
-      <div class="you-marker">
-        <div class="you-pulse"></div>
-        <div class="you-dot">
-          <ion-icon name="home"></ion-icon>
-        </div>
-        <span class="you-label">You</span>
-      </div>
+    <div id="map"></div>
+    
+    <!-- Floating Info Over Map -->
+    <div class="map-overlay-badge" *ngIf="!arrived">
+      <ion-icon name="bicycle-outline"></ion-icon>
+      <span>Agent is moving</span>
     </div>
   </div>
+
 
   <!-- Bottom Sheet -->
   <div class="bottom-sheet" [class.arrived-state]="arrived" [class.delivered-state]="delivered">
