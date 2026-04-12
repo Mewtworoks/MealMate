@@ -15,7 +15,7 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 60%;
+  height: 52%;
   transition: background 0.5s ease;
   display: flex;
   flex-direction: column;
@@ -57,7 +57,8 @@
   &.main {
     z-index: 10;
     transform: translateX(0) scale(1);
-    background: white !important; /* The card itself is usually white in these designs */
+    background: white !important;
+    /* The card itself is usually white in these designs */
   }
 
   &.peek {
@@ -73,26 +74,26 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   img {
     max-width: 90%;
     max-height: 220px;
     object-fit: contain;
-    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+    filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.1));
   }
 }
 
 .dish-info {
   text-align: center;
   margin-top: 20px;
-  
+
   .dish-name {
     font-size: 1.5rem;
     font-weight: 800;
     color: var(--dark-text);
     margin: 0;
   }
-  
+
   .dish-sub {
     font-size: 1rem;
     color: var(--medium-text);
@@ -104,14 +105,14 @@
   display: flex;
   gap: 8px;
   margin-top: 30px;
-  
+
   .dot {
     width: 10px;
     height: 10px;
     border-radius: 50%;
     background: #E5E7EB;
     transition: all 0.3s ease;
-    
+
     &.active {
       background: var(--primary-orange);
       width: 24px;
@@ -152,19 +153,19 @@
 .brand-section {
   text-align: center;
   margin-bottom: 30px;
-  
+
   .logo-wrapper {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
     margin-bottom: 12px;
-    
+
     .brand-icon {
       width: 40px;
       height: 40px;
     }
-    
+
     .brand-text {
       font-size: 2rem;
       font-weight: 800;
@@ -172,7 +173,7 @@
       letter-spacing: -0.5px;
     }
   }
-  
+
   .brand-slogan {
     font-size: 1.1rem;
     color: var(--dark-text);
@@ -186,7 +187,7 @@
 .custom-input-group {
   position: relative;
   margin-bottom: 30px;
-  
+
   .input-label {
     position: absolute;
     top: -10px;
@@ -198,7 +199,7 @@
     z-index: 10;
     font-weight: 600;
   }
-  
+
   .input-box {
     display: flex;
     align-items: center;
@@ -206,20 +207,20 @@
     border-radius: 30px;
     height: 64px;
     padding: 0 24px;
-    
+
     .country-code {
       font-size: 1.2rem;
       font-weight: 700;
       color: var(--dark-text);
     }
-    
+
     .separator {
       width: 1.5px;
       height: 24px;
       background: #E5E7EB;
       margin: 0 16px;
     }
-    
+
     .phone-input {
       border: none;
       outline: none;
@@ -228,7 +229,7 @@
       color: var(--dark-text);
       flex: 1;
       background: transparent;
-      
+
       &::placeholder {
         color: #D1D5DB;
         font-weight: 400;
@@ -250,12 +251,12 @@
 .footer-links {
   text-align: center;
   margin-top: 24px;
-  
+
   .link-text {
     font-size: 0.95rem;
     color: var(--medium-text);
     margin-bottom: 8px;
-    
+
     .highlight {
       color: var(--primary-orange);
       font-weight: 700;
@@ -263,9 +264,9 @@
     }
 
     &.agent-link {
-        font-size: 0.9rem;
-        margin-top: 16px;
-        opacity: 0.8;
+      font-size: 0.9rem;
+      margin-top: 16px;
+      opacity: 0.8;
     }
   }
 }
@@ -295,7 +296,7 @@
 
 .otp-input-wrapper {
   margin-bottom: 30px;
-  
+
   .otp-input {
     width: 100%;
     height: 64px;
@@ -307,7 +308,7 @@
     font-weight: 800;
     color: var(--dark-text);
     outline: none;
-    
+
     &:focus {
       border-color: var(--primary-orange);
     }
@@ -324,11 +325,25 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

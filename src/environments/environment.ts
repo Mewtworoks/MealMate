@@ -4,6 +4,7 @@
 
 export const environment = {
   production: false,
+  apiUrl: 'https://mealmate-api-1024312686784.asia-south2.run.app/api',
   geminiApiKey: 'AIzaSyAHL4cecJOMCbcsb51YzA7jvzdeGGcL2ko'
 };
 
