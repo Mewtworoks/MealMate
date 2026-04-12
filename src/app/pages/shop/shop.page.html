@@ -6,11 +6,16 @@
         <span class="welcome">Good morning,</span>
         <h1 class="user-name">Foodie! 👋</h1>
       </div>
-      
-      <div class="location-picker">
-        <ion-icon name="location-sharp" class="loc-icon"></ion-icon>
-        <span class="address">Indiranagar, Bangalore</span>
-        <ion-icon name="chevron-down-outline" class="chevron"></ion-icon>
+
+      <div class="header-actions">
+        <ion-button fill="clear" [routerLink]="['/profile']" [queryParams]="{role: 'customer'}">
+          <ion-icon name="person-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+        <div class="location-picker">
+          <ion-icon name="location-sharp" class="loc-icon"></ion-icon>
+          <span class="address">Indiranagar, Bangalore</span>
+          <ion-icon name="chevron-down-outline" class="chevron"></ion-icon>
+        </div>
       </div>
     </div>
   </ion-toolbar>
@@ -40,9 +45,9 @@
       </div>
     </div>
   </div>
-  
+
   <div class="content-wrapper">
-    
+
     <!-- AI Concierge Section -->
     <section class="ai-concierge-section">
       <div class="section-header">
@@ -52,14 +57,14 @@
         </div>
       </div>
 
-      <div class="ai-hero-card" (click)="addToCart(meals[0])">
+      <div class="ai-hero-card" *ngIf="meals && meals.length > 0" (click)="addToCart(meals[0])">
         <div class="hero-image">
-          <img [src]="meals[0].image" alt="AI Pick">
+          <img [src]="meals[0]?.image" alt="AI Pick">
         </div>
         <div class="hero-overlay">
           <div class="match-badge">98% Match</div>
           <div class="info">
-            <h3>{{meals[0].name}}</h3>
+            <h3>{{meals[0]?.name}}</h3>
             <p>Perfect for your high-protein diet</p>
             <div class="tags">
               <span>Low Cal</span>
@@ -73,12 +78,8 @@
     <!-- Categories -->
     <section class="categories-section">
       <div class="scroll-container">
-        <div 
-          *ngFor="let cat of categories" 
-          class="category-pill"
-          [class.active]="selectedCategory === cat"
-          (click)="selectedCategory = cat"
-        >
+        <div *ngFor="let cat of categories" class="category-pill" [class.active]="selectedCategory === cat"
+          (click)="selectedCategory = cat">
           {{cat}}
         </div>
       </div>
@@ -130,7 +131,7 @@
         <button class="promo-btn" (click)="openSubscriptionModal()">View Plans</button>
       </div>
       <div class="promo-img">
-        <img src="assets/onboarding/paneer_tikka.png" alt="Promo">
+        <img src="assets/onboarding/dal_chawal.png" alt="Promo">
       </div>
     </div>
 

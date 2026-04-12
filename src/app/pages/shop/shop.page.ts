@@ -17,7 +17,7 @@ import { SubscriptionModalComponent } from '../../components/subscription-modal/
 export class ShopPage implements OnInit {
   meals: Meal[] = [];
   agents: Agent[] = [];
-  categories = ['Breakfast', 'Lunch', 'Dinner', 'Snacks'];
+  categories = ['Lunch', 'Thali', 'Fast Food', 'Drinks', 'Breakfast', 'Dinner'];
   selectedCategory = 'Lunch';
 
   walletBalance = 0;
@@ -33,7 +33,7 @@ export class ShopPage implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.meals = this.mealService.getMeals();
+    this.mealService.meals$.subscribe(m => this.meals = m);
     this.agents = this.mealService.getAgents();
 
     this.wallet.balance$.subscribe(b => this.walletBalance = b);
@@ -42,6 +42,10 @@ export class ShopPage implements OnInit {
     this.cartService.cart$.subscribe(items => {
       this.cartCount = items.reduce((sum, i) => sum + i.quantity, 0);
     });
+  }
+
+  async ionViewWillEnter() {
+    await this.mealService.refreshMeals();
   }
 
   getFilteredMeals(): Meal[] {

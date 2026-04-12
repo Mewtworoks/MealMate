@@ -1,11 +1,58 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
-export class Auth {
+export class AuthService {
   private _userRole: 'customer' | 'agent' | null = null;
   private _isAuthenticated = false;
+  private _userId: string | null = null;
+
+  constructor(private http: HttpClient) {}
+
+  async requestOtp(phone: string): Promise<any> {
+    return await firstValueFrom(
+      this.http.post(`${environment.apiUrl}/auth/request-otp`, { phone })
+    );
+  }
+
+  async verifyOtp(phone: string, code: string, role: 'customer' | 'agent'): Promise<any> {
+    const payload = { 
+      phone, 
+      code,
+      role: role.charAt(0).toUpperCase() + role.slice(1) 
+    };
+    
+    const res: any = await firstValueFrom(
+      this.http.post(`${environment.apiUrl}/auth/verify-otp`, payload)
+    );
+    
+    console.log('[DEBUG] OTP Verify Response:', res);
+    
+    // Extracting from nested structure: { success: true, user: { Id: "..." } }
+    const userData = res.user;
+    const userId = userData ? (userData.id || userData.Id) : null;
+    
+    if (res.success && userId) {
+      this._userId = userId;
+      this._userRole = role;
+      this._isAuthenticated = true;
+      
+      localStorage.setItem('mealmate_user_id', userId);
+      localStorage.setItem('mealmate_role', role);
+      
+      return res.user; // Return the inner user object for the component
+    }
+    
+    return res;
+  }
+
+  get userId(): string | null {
+    return this._userId || localStorage.getItem('mealmate_user_id');
+  }
 
   setSession(role: 'customer' | 'agent') {
     this._userRole = role;
@@ -24,6 +71,8 @@ export class Auth {
   logout() {
     this._userRole = null;
     this._isAuthenticated = false;
+    this._userId = null;
     localStorage.removeItem('mealmate_role');
+    localStorage.removeItem('mealmate_user_id');
   }
 }
