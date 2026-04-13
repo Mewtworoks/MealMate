@@ -32,7 +32,7 @@
   </div>
 
   <!-- Bottom Sheet Overlay -->
-  <div class="bottom-sheet-container" [class.otp-view]="viewMode === 'otp'">
+  <div class="bottom-sheet-container">
     <div class="sheet-handle"></div>
 
     <div class="sheet-content">
@@ -46,49 +46,29 @@
       </div>
 
       <!-- Main Login Flow -->
-      <div *ngIf="viewMode === 'onboarding' || viewMode === 'login' || viewMode === 'signup'" class="animate-up">
+      <div class="animate-up">
 
-        <!-- Mobile Input Container -->
-        <div class="custom-input-group">
-          <span class="input-label">Enter mobile number</span>
-          <div class="input-box">
-            <span class="country-code">+91</span>
-            <div class="separator"></div>
-            <input type="tel" placeholder="10-digit mobile number" [(ngModel)]="phone" class="phone-input"
-              maxlength="10">
+        <h3 class="login-title">Welcome to MealMate</h3>
+        <p class="login-subtitle">Choose your role and sign in to continue</p>
+
+        <div class="role-selector">
+          <div class="role-chip" [class.active]="role === 'customer'" (click)="role = 'customer'">
+            <ion-icon name="person-outline"></ion-icon>
+            <span>Customer</span>
+          </div>
+          <div class="role-chip" [class.active]="role === 'agent'" (click)="role = 'agent'">
+            <ion-icon name="bicycle-outline"></ion-icon>
+            <span>Delivery Agent</span>
           </div>
         </div>
 
-        <ion-button expand="block" shape="round" class="continue-btn" (click)="login()">
-          Continue
-        </ion-button>
+        <div class="google-login-wrapper">
+          <div id="google-btn"></div>
+        </div>
 
         <div class="footer-links">
-          <p class="link-text">Don't have an account? <span class="highlight" (click)="showSignup()">Sign Up</span></p>
-          <p class="link-text agent-link" (click)="toggleRole()">
-            <span *ngIf="role === 'customer'">Are you a Delivery Agent? <span class="highlight">Login Here</span></span>
-            <span *ngIf="role === 'agent'">Login as <span class="highlight">Customer</span></span>
-          </p>
+          <p class="link-text">By continuing, you agree to our <span class="highlight">Terms & Services</span></p>
         </div>
-      </div>
-
-      <!-- OTP Verification View (Slides into the same sheet) -->
-      <div *ngIf="viewMode === 'otp'" class="animate-up">
-        <div class="back-link" (click)="viewMode = 'login'">
-          <ion-icon name="arrow-back-outline"></ion-icon> Change Number
-        </div>
-
-        <h3 class="otp-title">Verify OTP</h3>
-        <p class="otp-subtitle">Enter the 6-digit code sent to +91 {{phone}}</p>
-
-        <div class="otp-input-wrapper">
-          <input type="text" inputmode="numeric" placeholder="Enter OTP" [(ngModel)]="otp" class="otp-input"
-            maxlength="6">
-        </div>
-
-        <ion-button expand="block" shape="round" class="continue-btn" (click)="verifyOTP()">
-          Verify & Continue
-        </ion-button>
       </div>
 
     </div>

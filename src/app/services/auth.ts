@@ -13,40 +13,30 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  async requestOtp(phone: string): Promise<any> {
-    return await firstValueFrom(
-      this.http.post(`${environment.apiUrl}/auth/request-otp`, { phone })
-    );
-  }
-
-  async verifyOtp(phone: string, code: string, role: 'customer' | 'agent'): Promise<any> {
-    const payload = { 
-      phone, 
-      code,
-      role: role.charAt(0).toUpperCase() + role.slice(1) 
+  async loginWithGoogle(idToken: string, role: 'customer' | 'agent'): Promise<any> {
+    const payload = {
+      idToken,
+      role: role.charAt(0).toUpperCase() + role.slice(1)
     };
-    
+
     const res: any = await firstValueFrom(
-      this.http.post(`${environment.apiUrl}/auth/verify-otp`, payload)
+      this.http.post(`${environment.apiUrl}/auth/google-login`, payload)
     );
-    
-    console.log('[DEBUG] OTP Verify Response:', res);
-    
-    // Extracting from nested structure: { success: true, user: { Id: "..." } }
+
     const userData = res.user;
     const userId = userData ? (userData.id || userData.Id) : null;
-    
+
     if (res.success && userId) {
       this._userId = userId;
       this._userRole = role;
       this._isAuthenticated = true;
-      
+
       localStorage.setItem('mealmate_user_id', userId);
       localStorage.setItem('mealmate_role', role);
-      
-      return res.user; // Return the inner user object for the component
+
+      return res.user;
     }
-    
+
     return res;
   }
 
