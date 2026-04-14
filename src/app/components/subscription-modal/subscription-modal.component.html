@@ -67,8 +67,9 @@
             <span class="strike" *ngIf="months > 1">₹{{basePricePerMeal * 30 * months}}</span>
           </div>
        </div>
-       <ion-button (click)="subscribe()" class="action-btn" [disabled]="selectedMeals.length === 0">
-         Subscribe Now
+       <ion-button (click)="subscribe()" class="action-btn" [disabled]="selectedMeals.length === 0 || isPlacingOrder">
+         <span *ngIf="!isPlacingOrder">Subscribe Now</span>
+         <ion-spinner *ngIf="isPlacingOrder" name="crescent" color="light"></ion-spinner>
        </ion-button>
     </div>
   </ion-toolbar>
