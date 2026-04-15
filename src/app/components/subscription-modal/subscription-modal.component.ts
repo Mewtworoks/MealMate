@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { OrderService } from '../../services/order.service';
 import { AuthService } from '../../services/auth';
 import { WalletService } from '../../services/wallet.service';
+import { SubscriptionService } from '../../services/subscription.service';
 
 @Component({
   selector: 'app-subscription-modal',
@@ -27,7 +28,8 @@ export class SubscriptionModalComponent implements OnInit {
     private router: Router,
     private orderService: OrderService,
     private auth: AuthService,
-    private wallet: WalletService
+    private wallet: WalletService,
+    private subscriptionService: SubscriptionService
   ) {}
 
   ngOnInit() {
@@ -99,30 +101,22 @@ export class SubscriptionModalComponent implements OnInit {
     this.isPlacingOrder = true;
 
     try {
-      // Calculate quantity per meal so total is roughly correct for the backend order API.
-      // (Total Meals = 30 days * months). We divide it equally among selected meals.
-      const totalMealsNeeded = 30 * this.months;
-      const quantityPerItem = Math.floor(totalMealsNeeded / this.selectedMeals.length);
-
-      const orderPayload = {
+      // Create true rotation subscription instead of bulk order
+      const rotationMeals = this.selectedMeals.map(m => ({ mealId: m.id, name: m.name, price: m.price }));
+      
+      await this.subscriptionService.createSubscription({
         customerId: userId,
-        agentId: this.selectedMeals[0]?.agentId || 'default-agent',
-        deliveryAddress: `${this.months} Month Subscription Plan`,
-        paymentMethod: 'Wallet',
-        redeemPoints: false, // Don't use points for sub purchases directly right now
-        items: this.selectedMeals.map(m => ({
-          mealId: m.id,
-          quantity: quantityPerItem
-        }))
-      };
+        months: this.months,
+        rotationMeals: rotationMeals,
+        startDate: new Date(),
+        totalPaid: finalTotal
+      });
 
-      const res = await this.orderService.placeOrder(orderPayload);
-      await this.wallet.loadWallet(userId); // refresh wallet state from backend
+      // Deduct balance manually (Simulation for Frontend only until fully integrated on Backend)
+      // We assume upfront payment for the system right now based on prompt details.
+      this.wallet.deductBalance(finalTotal);
 
       let message = 'Subscription Activated! 🎉';
-      const earned = res?.PointsEarned ?? res?.pointsEarned ?? 0;
-      if (earned > 0) message += ` +${earned} points!`;
-
       await this.showToast(message);
       this.modalCtrl.dismiss({ subscribed: true });
       this.router.navigate(['/my-orders']);

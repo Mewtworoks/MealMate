@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, firstValueFrom } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface Meal {
   id: string;
@@ -8,10 +10,10 @@ export interface Meal {
   price: number;
   image: string;
   agentId: string;
-  category: 'Breakfast' | 'Lunch' | 'Dinner' | 'Snacks';
+  category: string;
   type: 'Veg' | 'Non-Veg';
-  spiceLevel: 'Mild' | 'Medium' | 'Hot';
-  calories: number;
+  spiceLevel?: 'Mild' | 'Medium' | 'Hot';
+  calories?: number;
   isAvailable?: boolean;
 }
 
@@ -27,39 +29,59 @@ export interface Agent {
   providedIn: 'root'
 })
 export class MealService {
-  private meals: Meal[] = [
-    { 
-      id: 'm1', name: 'Dal Makhani Bowl', description: 'Creamy black lentils with 2 butter rotis & salad', 
-      price: 120, image: 'assets/onboarding/dal_makhani.png', agentId: 'a1', category: 'Lunch', 
-      type: 'Veg', spiceLevel: 'Medium', calories: 450 
-    },
-    { 
-      id: 'm2', name: 'Paneer Tikka Box', description: 'Classic paneer tikka with lachha paratha & mint chutney', 
-      price: 130, image: 'assets/onboarding/paneer_tikka.png', agentId: 'a2', category: 'Lunch', 
-      type: 'Veg', spiceLevel: 'Medium', calories: 500 
-    },
-    { 
-      id: 'm3', name: 'Veg Pulao Special', description: 'Fragrant basmati pulao with vegetables & raita', 
-      price: 110, image: 'assets/onboarding/veg_pulao.png', agentId: 'a1', category: 'Dinner', 
-      type: 'Veg', spiceLevel: 'Mild', calories: 400 
-    },
-    { 
-      id: 'm4', name: 'Lite MealBox', description: 'Assorted light Indian meal for energy', 
-      price: 100, image: 'assets/onboarding/veg_pulao.png', agentId: 'a3', category: 'Breakfast', 
-      type: 'Veg', spiceLevel: 'Medium', calories: 380 
-    }
-  ];
-
   private agents: Agent[] = [
     { id: 'a1', name: 'Usha\'s Kitchen', rating: 4.8, distance: '1.2 km', speciality: 'North Indian' },
     { id: 'a2', name: 'Maa Ki Rasoi', rating: 4.9, distance: '0.8 km', speciality: 'Tiffin Specialist' },
     { id: 'a3', name: 'Annapurna', rating: 4.6, distance: '2.5 km', speciality: 'Sattvic Food' }
   ];
 
-  constructor() { }
+  private mealsSubject = new BehaviorSubject<Meal[]>([]);
+  meals$ = this.mealsSubject.asObservable();
 
-  getMeals(): Meal[] {
-    return this.meals;
+  constructor(private http: HttpClient) {
+    this.refreshMeals();
+  }
+
+  async refreshMeals(category?: string) {
+    let url = `${environment.apiUrl}/meals`;
+    if (category) url += `?category=${category}`;
+    
+    try {
+      const backendMeals: any[] = await firstValueFrom(this.http.get<any[]>(url));
+      const mappedMeals: Meal[] = backendMeals.map(m => ({
+        id: m.id || m.Id,
+        name: m.name || m.Name,
+        description: m.description || m.Description || '',
+        price: m.price || m.Price,
+        image: m.imageUrl || m.ImageUrl || 'assets/onboarding/dal_makhani.png',
+        agentId: m.agentId || m.AgentId,
+        category: m.category || m.Category,
+        type: (m.isVeg || m.IsVeg) ? 'Veg' : 'Non-Veg',
+        isAvailable: m.isAvailable !== undefined ? m.isAvailable : m.IsAvailable
+      }));
+      this.mealsSubject.next(mappedMeals);
+      return mappedMeals;
+    } catch (e) {
+      console.error('Error fetching meals', e);
+      return [];
+    }
+  }
+
+  async addMeal(mealData: any) {
+    const payload = {
+      name: mealData.name,
+      description: mealData.description,
+      price: mealData.price,
+      category: mealData.category,
+      imageUrl: mealData.image,
+      isVeg: mealData.type === 'Veg',
+      agentId: mealData.agentId,
+      isAvailable: true
+    };
+    
+    const res = await firstValueFrom(this.http.post(`${environment.apiUrl}/meals`, payload));
+    this.refreshMeals();
+    return res;
   }
 
   getAgents(): Agent[] {
@@ -70,12 +92,31 @@ export class MealService {
     return this.agents.find(a => a.id === id);
   }
 
-  getMealsByAgent(agentId: string): Meal[] {
-    return this.meals.filter(m => m.agentId === agentId);
+  getMeals(): Meal[] {
+    return this.mealsSubject.value;
   }
 
-  // AI-inspired meal suggestion placeholder
+  async getMealsByAgent(agentId: string) {
+    try {
+      const backendMeals: any[] = await firstValueFrom(this.http.get<any[]>(`${environment.apiUrl}/meals/agent/${agentId}`));
+      return backendMeals.map(m => ({
+        id: m.id || m.Id,
+        name: m.name || m.Name,
+        description: m.description || m.Description || '',
+        price: m.price || m.Price,
+        image: m.imageUrl || m.ImageUrl || 'assets/onboarding/dal_makhani.png',
+        agentId: m.agentId || m.AgentId,
+        category: m.category || m.Category,
+        type: (m.isVeg || m.IsVeg) ? 'Veg' : 'Non-Veg',
+        isAvailable: m.isAvailable !== undefined ? m.isAvailable : m.IsAvailable
+      }));
+    } catch (e) {
+      return [];
+    }
+  }
+
   getAIPicks(): Meal[] {
-    return [this.meals[0], this.meals[3]];
+    const current = this.mealsSubject.value;
+    return current.slice(0, 2);
   }
 }

@@ -3,17 +3,22 @@
   <ion-toolbar class="transparent-toolbar">
     <div class="header-content">
       <div class="user-greeting">
-        <span class="welcome">Good morning,</span>
-        <h1 class="user-name">Foodie! 👋</h1>
+        <span class="welcome">{{greeting}},</span>
+        <h1 class="user-name">{{userName}}! 👋</h1>
       </div>
 
       <div class="header-actions">
-        <ion-button fill="clear" [routerLink]="['/profile']" [queryParams]="{role: 'customer'}">
-          <ion-icon name="person-outline" slot="icon-only"></ion-icon>
-        </ion-button>
+        <div class="top-btns">
+          <ion-button fill="clear" [routerLink]="['/my-orders']">
+            <ion-icon name="receipt-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" [routerLink]="['/profile']" [queryParams]="{role: 'customer'}">
+            <ion-icon name="person-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
         <div class="location-picker">
           <ion-icon name="location-sharp" class="loc-icon"></ion-icon>
-          <span class="address">Indiranagar, Bangalore</span>
+          <span class="address">{{userLocation}}</span>
           <ion-icon name="chevron-down-outline" class="chevron"></ion-icon>
         </div>
       </div>
@@ -23,12 +28,12 @@
 
 <ion-content [fullscreen]="true" class="premium-content">
   <!-- Luxury Wallet Card -->
-  <div class="wallet-card-container">
+  <div class="wallet-card-container" routerLink="/wallet">
     <div class="wallet-card">
       <div class="card-bg-mesh"></div>
       <div class="card-content">
         <div class="top-row">
-          <span class="card-label">MEALMATE CREDITS</span>
+          <span class="card-label">MEALMATE WALLET</span>
           <img src="assets/logo/chef_hat.png" alt="Logo" class="mini-logo">
         </div>
         <div class="balance-row">
@@ -37,7 +42,11 @@
         </div>
         <div class="bottom-row">
           <div class="stat">
-            <span class="s-lab">Available</span>
+            <span class="s-lab">Credit</span>
+            <span class="s-val">₹{{wallet.availableCredit}}</span>
+          </div>
+          <div class="stat">
+            <span class="s-lab">Points</span>
             <span class="s-val">{{credits}} pts</span>
           </div>
           <div class="chip">Active</div>
