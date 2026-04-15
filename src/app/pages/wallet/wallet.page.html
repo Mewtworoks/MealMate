@@ -1,0 +1,206 @@
+<ion-header class="ion-no-border premium-header">
+  <div class="header-curve-bg"></div>
+  <ion-toolbar class="transparent-toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" class="back-btn">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="page-title">My Wallet</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="wallet-content">
+  <div class="content-wrapper" *ngIf="!isLoading">
+
+    <!-- ─── Main Balance Card ─── -->
+    <div class="balance-card">
+      <div class="card-pattern"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-label">
+            <ion-icon name="wallet"></ion-icon>
+            <span>MealMate Wallet</span>
+          </div>
+          <div class="tier-badge">
+            <ion-icon [name]="getLoyaltyTierIcon()"></ion-icon>
+            {{getLoyaltyTier()}}
+          </div>
+        </div>
+        <div class="balance-amount">
+          <span class="currency">₹</span>
+          <span class="amount">{{walletBalance | number:'1.0-0'}}</span>
+        </div>
+        <div class="balance-label">Available Balance</div>
+
+        <div class="card-stats">
+          <div class="card-stat">
+            <span class="stat-value">₹{{availableCredit | number:'1.0-0'}}</span>
+            <span class="stat-label">Credit Available</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="card-stat">
+            <span class="stat-value">{{loyaltyPoints | number}}</span>
+            <span class="stat-label">Loyalty Points</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="card-stat">
+            <span class="stat-value">₹{{loyaltyPoints}}</span>
+            <span class="stat-label">Points Value</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── Quick Top-Up ─── -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-label">TOP UP WALLET</div>
+      </div>
+      <div class="topup-card">
+        <div class="topup-grid">
+          <button 
+            *ngFor="let amt of topUpAmounts" 
+            class="topup-chip"
+            [class.selected]="selectedTopUp === amt"
+            (click)="selectTopUp(amt)">
+            ₹{{amt}}
+          </button>
+        </div>
+        <button 
+          class="topup-btn" 
+          [disabled]="selectedTopUp === 0 || isTopUp"
+          (click)="processTopUp()">
+          <span *ngIf="!isTopUp">
+            <ion-icon name="flash"></ion-icon>
+            Add ₹{{selectedTopUp || '...'}} to Wallet
+          </span>
+          <ion-spinner *ngIf="isTopUp" name="crescent" color="light"></ion-spinner>
+        </button>
+      </div>
+    </div>
+
+    <!-- ─── Credit Limit Section ─── -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-label">CREDIT LIMIT</div>
+        <span class="section-tag">₹{{creditLimit}} total</span>
+      </div>
+      <div class="credit-card">
+        <div class="credit-visual">
+          <div class="credit-bar-track">
+            <div class="credit-bar-fill" [style.width.%]="getCreditUsagePercent()"></div>
+          </div>
+          <div class="credit-labels">
+            <span>₹{{creditUsed | number:'1.0-0'}} used</span>
+            <span>₹{{availableCredit | number:'1.0-0'}} left</span>
+          </div>
+        </div>
+
+        <div class="credit-info-block" *ngIf="creditUsed > 0">
+          <div class="credit-info-row">
+            <ion-icon name="alert-circle" color="warning"></ion-icon>
+            <div class="credit-info-text">
+              <span class="info-title">You owe ₹{{creditUsed | number:'1.0-0'}}</span>
+              <span class="info-desc">Settle your credit to restore your full ₹{{creditLimit}} limit</span>
+            </div>
+          </div>
+          <button 
+            class="settle-btn" 
+            (click)="settleCredit()" 
+            [disabled]="isSettling">
+            <span *ngIf="!isSettling">
+              <ion-icon name="checkmark-circle"></ion-icon>
+              Pay ₹{{creditUsed | number:'1.0-0'}} Now
+            </span>
+            <ion-spinner *ngIf="isSettling" name="crescent" color="light"></ion-spinner>
+          </button>
+        </div>
+
+        <div class="credit-clear" *ngIf="creditUsed === 0">
+          <ion-icon name="shield-checkmark" class="clear-icon"></ion-icon>
+          <span>All clear! No outstanding credit.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── Loyalty Points Section ─── -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-label">LOYALTY REWARDS</div>
+        <span class="section-tag">{{getLoyaltyTier()}} Tier</span>
+      </div>
+      <div class="loyalty-card">
+        <div class="loyalty-top">
+          <div class="points-circle">
+            <div class="circle-ring">
+              <svg viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="6"/>
+                <circle cx="50" cy="50" r="42" fill="none" stroke="#FF7235" stroke-width="6"
+                  [style.stroke-dasharray]="264"
+                  [style.stroke-dashoffset]="264 - (264 * getTierProgress() / 100)"
+                  stroke-linecap="round"
+                  transform="rotate(-90 50 50)"/>
+              </svg>
+            </div>
+            <div class="circle-content">
+              <ion-icon [name]="getLoyaltyTierIcon()"></ion-icon>
+              <span class="pts-num">{{loyaltyPoints}}</span>
+              <span class="pts-label">pts</span>
+            </div>
+          </div>
+
+          <div class="loyalty-details">
+            <div class="loyalty-stat-row">
+              <span class="stat-key">Current Tier</span>
+              <span class="stat-val tier-val">{{getLoyaltyTier()}}</span>
+            </div>
+            <div class="loyalty-stat-row">
+              <span class="stat-key">Points Value</span>
+              <span class="stat-val">₹{{loyaltyPoints}}</span>
+            </div>
+            <div class="loyalty-stat-row" *ngIf="getNextTierPoints() > 0">
+              <span class="stat-key">Next: {{getNextTierName()}}</span>
+              <span class="stat-val">{{getNextTierPoints()}} pts away</span>
+            </div>
+            <div class="loyalty-stat-row" *ngIf="getNextTierPoints() === 0">
+              <span class="stat-key">Status</span>
+              <span class="stat-val max-tier">MAX TIER 🏆</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="how-it-works">
+          <div class="section-label" style="margin-top: 16px">HOW IT WORKS</div>
+          <div class="rule-row">
+            <div class="rule-icon earn">
+              <ion-icon name="arrow-up-circle"></ion-icon>
+            </div>
+            <div class="rule-text">
+              <strong>Earn:</strong> 1 point for every ₹10 spent
+            </div>
+          </div>
+          <div class="rule-row">
+            <div class="rule-icon redeem">
+              <ion-icon name="arrow-down-circle"></ion-icon>
+            </div>
+            <div class="rule-text">
+              <strong>Redeem:</strong> Up to 10% of cart value, 1pt = ₹1
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spacer -->
+    <div style="height: 40px;"></div>
+
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <ion-spinner name="crescent" color="medium"></ion-spinner>
+    <span>Loading your wallet...</span>
+  </div>
+
+</ion-content>

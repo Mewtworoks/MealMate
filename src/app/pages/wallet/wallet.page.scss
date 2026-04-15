@@ -1,0 +1,540 @@
+/* Wallet Page - Premium MealMate Styling */
+
+.wallet-content {
+  --background: #fdfcfb;
+}
+
+/* Header & Curve */
+.premium-header {
+  position: relative;
+  height: 90px;
+  background: transparent;
+  overflow: visible;
+
+  .header-curve-bg {
+    position: absolute;
+    top: -50px;
+    left: -10%;
+    width: 120%;
+    height: 140px;
+    background: linear-gradient(135deg, #FF7235 0%, #FF8F5E 100%);
+    border-radius: 0 0 50% 50%;
+    z-index: 1;
+  }
+
+  .transparent-toolbar {
+    --background: transparent;
+    --border-width: 0;
+    --padding-top: 10px;
+    --padding-bottom: 8px;
+    position: relative;
+    z-index: 10;
+  }
+}
+
+.page-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: white;
+}
+
+.back-btn {
+  --color: white;
+  font-size: 1.2rem;
+}
+
+.content-wrapper {
+  padding: 20px 16px;
+}
+
+/* ─── Main Balance Card ─── */
+.balance-card {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 24px;
+  box-shadow: 0 12px 40px rgba(15, 52, 96, 0.35);
+  animation: fadeInUp 0.5s ease-out;
+
+  .card-pattern {
+    position: absolute;
+    top: 0; right: 0;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(255,114,53,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(30%, -30%);
+  }
+
+  .card-body {
+    position: relative;
+    z-index: 1;
+    padding: 24px;
+  }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .card-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255,255,255,0.7);
+    font-size: 0.85rem;
+    font-weight: 600;
+
+    ion-icon { color: #FF7235; font-size: 1.1rem; }
+  }
+
+  .tier-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #fbbf24;
+    letter-spacing: 0.5px;
+
+    ion-icon { font-size: 0.85rem; }
+  }
+
+  .balance-amount {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+
+    .currency {
+      font-size: 1.4rem;
+      color: rgba(255,255,255,0.5);
+      font-weight: 600;
+    }
+    .amount {
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: white;
+      letter-spacing: -1px;
+    }
+  }
+
+  .balance-label {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.4);
+    font-weight: 600;
+    margin-top: 2px;
+    margin-bottom: 20px;
+  }
+
+  .card-stats {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .card-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .stat-value {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: white;
+    }
+    .stat-label {
+      font-size: 0.6rem;
+      color: rgba(255,255,255,0.4);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 3px;
+    }
+  }
+
+  .stat-divider {
+    width: 1px;
+    height: 30px;
+    background: rgba(255,255,255,0.08);
+  }
+}
+
+/* ─── Section Styles ─── */
+.section {
+  margin-bottom: 24px;
+  animation: fadeInUp 0.5s ease-out both;
+
+  &:nth-child(2) { animation-delay: 0.1s; }
+  &:nth-child(3) { animation-delay: 0.2s; }
+  &:nth-child(4) { animation-delay: 0.3s; }
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #8E7C76;
+  letter-spacing: 1.5px;
+}
+
+.section-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #FF7235;
+  background: #FFFAF7;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+/* ─── Top-Up Card ─── */
+.topup-card {
+  background: white;
+  border-radius: 20px;
+  padding: 18px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+
+  .topup-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .topup-chip {
+    flex: 1;
+    min-width: calc(33.33% - 10px);
+    padding: 12px 8px;
+    border-radius: 14px;
+    border: 2px solid #EDE8E5;
+    background: #f8f6f4;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #483129;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+
+    &.selected {
+      border-color: #FF7235;
+      background: #FFFAF7;
+      color: #FF7235;
+      box-shadow: 0 4px 12px rgba(255, 114, 53, 0.15);
+    }
+
+    &:active { transform: scale(0.95); }
+  }
+
+  .topup-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 16px;
+    border: none;
+    background: #FF7235;
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 8px 20px rgba(255, 114, 53, 0.25);
+    transition: all 0.2s ease;
+
+    &:active { transform: scale(0.97); }
+    &:disabled { opacity: 0.5; box-shadow: none; }
+
+    ion-icon { font-size: 1rem; }
+    ion-spinner { width: 20px; height: 20px; }
+  }
+}
+
+/* ─── Credit Card ─── */
+.credit-card {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+
+  .credit-visual {
+    margin-bottom: 16px;
+  }
+
+  .credit-bar-track {
+    height: 10px;
+    background: #f0ece9;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  .credit-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #fbbf24, #f59e0b);
+    border-radius: 5px;
+    transition: width 0.6s ease;
+    min-width: 0;
+  }
+
+  .credit-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #8E7C76;
+  }
+
+  .credit-info-block {
+    padding: 16px;
+    background: #FFFBEB;
+    border-radius: 16px;
+    border: 1px solid #FDE68A;
+
+    .credit-info-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+
+      ion-icon {
+        font-size: 1.4rem;
+        margin-top: 2px;
+        flex-shrink: 0;
+      }
+    }
+
+    .credit-info-text {
+      display: flex;
+      flex-direction: column;
+
+      .info-title {
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: #92400e;
+      }
+      .info-desc {
+        font-size: 0.78rem;
+        color: #a16207;
+        margin-top: 3px;
+        line-height: 1.3;
+      }
+    }
+
+    .settle-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 14px;
+      border: none;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: white;
+      font-size: 0.9rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 6px 16px rgba(245, 158, 11, 0.3);
+      transition: all 0.2s ease;
+
+      &:active { transform: scale(0.97); }
+      &:disabled { opacity: 0.6; }
+
+      ion-icon { font-size: 1rem; }
+      ion-spinner { width: 18px; height: 18px; }
+    }
+  }
+
+  .credit-clear {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px;
+    background: #F0FFF4;
+    border-radius: 14px;
+
+    .clear-icon {
+      font-size: 1.3rem;
+      color: #4ade80;
+    }
+
+    span {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #16a34a;
+    }
+  }
+}
+
+/* ─── Loyalty Card ─── */
+.loyalty-card {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+
+  .loyalty-top {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .points-circle {
+    width: 110px; height: 110px;
+    position: relative;
+    flex-shrink: 0;
+
+    .circle-ring {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+
+      svg {
+        width: 100%;
+        height: 100%;
+        circle {
+          transition: stroke-dashoffset 0.8s ease;
+        }
+      }
+    }
+
+    .circle-content {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      ion-icon {
+        font-size: 1.1rem;
+        color: #fbbf24;
+        margin-bottom: 2px;
+      }
+
+      .pts-num {
+        font-size: 1.3rem;
+        font-weight: 900;
+        color: #483129;
+        line-height: 1;
+      }
+      .pts-label {
+        font-size: 0.6rem;
+        font-weight: 700;
+        color: #8E7C76;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+    }
+  }
+
+  .loyalty-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .loyalty-stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .stat-key {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #8E7C76;
+    }
+    .stat-val {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #483129;
+
+      &.tier-val { color: #FF7235; }
+      &.max-tier {
+        color: #fbbf24;
+        font-size: 0.75rem;
+      }
+    }
+  }
+
+  .how-it-works {
+    margin-top: 8px;
+    padding-top: 16px;
+    border-top: 1px solid #f0ece9;
+  }
+
+  .rule-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+
+    .rule-icon {
+      width: 36px; height: 36px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      ion-icon { font-size: 1.2rem; }
+
+      &.earn {
+        background: #E8F5E9;
+        ion-icon { color: #4caf50; }
+      }
+      &.redeem {
+        background: #FFF3E0;
+        ion-icon { color: #FF7235; }
+      }
+    }
+
+    .rule-text {
+      font-size: 0.82rem;
+      color: #8E7C76;
+      font-weight: 500;
+      line-height: 1.3;
+
+      strong {
+        color: #483129;
+        font-weight: 700;
+      }
+    }
+  }
+}
+
+/* ─── Loading State ─── */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 50%;
+  gap: 16px;
+
+  span {
+    font-size: 0.85rem;
+    color: #8E7C76;
+    font-weight: 600;
+  }
+}
+
+/* ─── Animations ─── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
