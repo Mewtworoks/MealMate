@@ -3,6 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { NavController, ToastController } from '@ionic/angular';
 import { OrderService } from '../../services/order.service';
 import { TrackingService, Location } from '../../services/tracking.service';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/database';
 import * as L from 'leaflet';
 
 @Component({
@@ -18,6 +20,7 @@ export class GpsTrackingPage implements OnInit, OnDestroy, AfterViewInit {
   distanceRemaining = '2.4 km';
   arrived = false;
   delivered = false;
+  totalTripDistance = 2; // default value
 
   partner = {
     name: 'Santosh Kumar',
@@ -26,7 +29,7 @@ export class GpsTrackingPage implements OnInit, OnDestroy, AfterViewInit {
   };
 
   private map: L.Map | undefined;
-  private agentMarker: L.Marker | undefined;
+private agentMarker: L.Marker | undefined;
   private customerMarker: L.Marker | undefined;
   private routeLine: L.Polyline | undefined;
 
@@ -49,6 +52,15 @@ export class GpsTrackingPage implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit() {
     this.initMap();
   }
+  
+  ionViewDidEnter() {
+    // Crucial for Leaflet in Ionic/Angular to fix tile loading issues
+    setTimeout(() => {
+      if (this.map) {
+        this.map.invalidateSize();
+      }
+    }, 500);
+  }
 
   ngOnDestroy() {
     if (this.map) {
@@ -60,14 +72,26 @@ export class GpsTrackingPage implements OnInit, OnDestroy, AfterViewInit {
     // Start with customer location
     const customerPos = this.trackingService.customerLocation;
     
-    this.map = L.map('map', {
-      zoomControl: false,
-      attributionControl: false
-    }).setView([customerPos.lat, customerPos.lng], 15);
+    // Add a slight delay to ensure container sizing is finalized
+    setTimeout(() => {
+      this.map = L.map('map', {
+        zoomControl: false,
+        attributionControl: false
+      }).setView([customerPos.lat, customerPos.lng], 15);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      className: 'map-tiles' // We can style this in CSS for dark mode
-    }).addTo(this.map);
+      const layer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+      });
+      
+      if (this.map) {
+        layer.addTo(this.map);
+      }
+
+      // Final size correction
+      setTimeout(() => {
+        if (this.map) this.map.invalidateSize();
+      }, 300);
+    }, 100);
 
     // Custom Icons
     const agentIcon = L.divIcon({
@@ -85,15 +109,23 @@ export class GpsTrackingPage implements OnInit, OnDestroy, AfterViewInit {
     });
 
     // Add Customer Marker
-    this.customerMarker = L.marker([customerPos.lat, customerPos.lng], { icon: customerIcon })
-      .addTo(this.map)
-      .bindPopup('Your Location')
-      .openPopup();
+    if (this.map) {
+      this.customerMarker = L.marker([customerPos.lat, customerPos.lng], { icon: customerIcon })
+        .addTo(this.map)
+        .bindPopup('Your Location')
+        .openPopup();
+    }
 
-    // Subscribe to Agent location
-    this.trackingService.agentLocation$.subscribe(loc => {
-      this.updateAgentPosition(loc);
-    });
+    if (this.orderId) {
+      firebase.database()
+        .ref(`tracking/${this.orderId}`)
+        .on('value', (snapshot: any) => {
+          const loc = snapshot.val();
+          if (loc) {
+            this.updateAgentPosition({ lat: loc.lat, lng: loc.lng, timestamp: loc.timestamp || Date.now() });
+          }
+        });
+    }
   }
 
   updateAgentPosition(loc: Location) {
@@ -106,7 +138,7 @@ export class GpsTrackingPage implements OnInit, OnDestroy, AfterViewInit {
         iconSize: [44, 44],
         iconAnchor: [22, 22]
       });
-      this.agentMarker = L.marker([loc.lat, loc.lng], { icon: agentIcon }).addTo(this.map);
+      this.agentMarker = L.marker([loc.lat, loc.lng], { icon: agentIcon }).addTo(this.map!);
     } else {
       this.agentMarker.setLatLng([loc.lat, loc.lng]);
     }
@@ -126,7 +158,7 @@ export class GpsTrackingPage implements OnInit, OnDestroy, AfterViewInit {
         weight: 3,
         dashArray: '5, 10',
         opacity: 0.6
-      }).addTo(this.map);
+      }).addTo(this.map!);
     }
 
     // Update Distance and ETA
@@ -135,9 +167,13 @@ export class GpsTrackingPage implements OnInit, OnDestroy, AfterViewInit {
       customerPos.lat, customerPos.lng
     );
 
+    if (!this.routeLine) {
+       this.totalTripDistance = dist;
+    }
+
     this.distanceRemaining = dist.toFixed(1) + ' km';
     this.eta = Math.ceil(dist * 5); // Rough estimate: 5 min per km
-    this.deliveryProgress = Math.min(0.95, 1 - (dist / 2)); // Assuming 2km total trip
+    this.deliveryProgress = Math.min(0.95, 1 - (dist / this.totalTripDistance));
 
     if (dist < 0.05) { // Within 50 meters
       this.arrived = true;
@@ -154,6 +190,8 @@ export class GpsTrackingPage implements OnInit, OnDestroy, AfterViewInit {
 
     if (this.orderId) {
       this.orderService.updateOrderStatus(this.orderId, 'Delivered');
+      firebase.database().ref(`tracking/${this.orderId}`).off();
+      firebase.database().ref(`tracking/${this.orderId}`).remove();
     }
 
     const toast = await this.toastCtrl.create({

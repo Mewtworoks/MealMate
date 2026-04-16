@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/database';
 
 export interface LocationPoint {
   latitude: number;
@@ -17,11 +19,12 @@ export interface LocationPoint {
 export class GpsService {
   private locationBuffer: LocationPoint[] = [];
   private heartbeatBuffer: LocationPoint[] = [];
-  private lastLocation: LocationPoint | null = null;
+  public lastLocation: LocationPoint | null = null;
   private lastSentLocation: LocationPoint | null = null;
   
   public locationUpdates$ = new Subject<LocationPoint>();
   public isOnline: boolean = true;
+  public activeOrderId: string = '';
   
   constructor() {
     this.checkNetworkStatus();
@@ -30,7 +33,10 @@ export class GpsService {
   private checkNetworkStatus() {
     // Basic mock network check
     this.isOnline = navigator.onLine;
-    window.addEventListener('online', () => this.isOnline = true);
+    window.addEventListener('online', () => {
+      this.isOnline = true;
+      this.syncOfflineSQLiteToFirebase();
+    });
     window.addEventListener('offline', () => this.isOnline = false);
   }
 
@@ -141,12 +147,28 @@ export class GpsService {
 
   private handleLocationSync(point: LocationPoint) {
     if (this.isOnline) {
-      // Sync SQLite data (simulated) then send current
-      console.log('SYNC: Online. Sending point to server...');
+      if (this.activeOrderId) {
+        firebase.database()
+          .ref(`tracking/${this.activeOrderId}`)
+          .set({
+            lat: point.latitude,
+            lng: point.longitude,
+            timestamp: point.timestamp,
+            mode: point.mode,
+            status: point.status
+          });
+      }
     } else {
       // Save to SQLite locations table (simulated)
       console.log(`SYNC: Offline. Saving point ${point.timestamp} to SQLite (Qboid.db)...`);
     }
+  }
+
+  private syncOfflineSQLiteToFirebase() {
+    // Read all rows from SQLite locations table
+    // POST each to Firebase in sequence
+    // Delete from SQLite after successful sync
+    console.log('Syncing offline data to Firebase...');
   }
 
   private handleHeartbeat(point: LocationPoint) {
