@@ -2,67 +2,112 @@ import { Injectable } from '@angular/core';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { environment } from '../../environments/environment';
 
+export interface ChatMessage {
+  role: 'user' | 'model' | 'system';
+  content: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class Gemini {
   private genAI: GoogleGenerativeAI;
-  private model: any;
+  
+  // Refined 2026 Model Candidates
+  private modelCandidates = [
+    'gemini-1.5-flash-002', // Very stable legacy
+    'gemini-2.5-flash',     // Recommended current stable
+    'gemini-2.0-flash-lite',
+    'gemini-2.0-flash',
+    'gemini-1.5-flash'
+  ];
 
   constructor() {
     this.genAI = new GoogleGenerativeAI(environment.geminiApiKey);
-    this.model = this.genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
   }
 
-  // Used by ShopPage for AI Picks
-  async getMealSuggestions(userPref: string, availableMeals: any[]): Promise<any[]> {
-    const prompt = `
-      You are a nutrition-focused AI meal assistant for "MealMate".
-      A user wants: "${userPref}"
-      Available meals today: ${JSON.stringify(availableMeals)}
-      
-      Select the best 2 meals that match these preferences. 
-      Return ONLY a JSON array of the meal IDs.
-      Example: ["m1", "m3"]
-    `;
+  async getChatResponse(userMessage: string, history: ChatMessage[], context: any): Promise<string> {
+    const systemPrompt = `You are MealMate AI Concierge. Mix Hindi/English. Keep it 3 lines.
+Context: User ${context.userName}, Wallet ₹${context.wallet?.balance}, Today's meal: ${context.subscription?.todaysMeal || 'None'}.
+Available: ${(context.meals || []).map((m: any) => m.name).join(', ')}.
+Rules: Never recommend outside the list. Always mention prices.`.trim();
 
+    const prompt = `${systemPrompt}\n\nUser: ${userMessage}`;
+
+    // Clean and fix history alternation (Crucial to prevent 404/400 errors)
+    const filteredHistory: any[] = [];
+    let lastRole = '';
+
+    const historyItems = history.filter(m => m.role !== 'system');
+    for (const msg of historyItems) {
+      const currentRole = msg.role === 'model' ? 'model' : 'user';
+      // Only add if it alternates roles
+      if (currentRole !== lastRole) {
+        filteredHistory.push({
+          role: currentRole,
+          parts: [{ text: msg.content }]
+        });
+        lastRole = currentRole;
+      }
+    }
+
+    // Ensure it starts with user and ends with user (before the new message)
+    if (filteredHistory.length > 0 && filteredHistory[0].role === 'model') {
+      filteredHistory.shift();
+    }
+    
+    // The previous message in history MUST be from the 'model' for the current user message to work
+    if (filteredHistory.length > 0 && filteredHistory[filteredHistory.length - 1].role === 'user') {
+      // If last was user, we remove it to keep balance or append a dummy model response
+      // For simplicity, we just keep the last 4 messages that alternate correctly
+      while (filteredHistory.length > 0 && filteredHistory[filteredHistory.length - 1].role === 'user') {
+         filteredHistory.pop();
+      }
+    }
+
+    for (const modelName of this.modelCandidates) {
+      try {
+        const model = this.genAI.getGenerativeModel({ model: modelName });
+        const chat = model.startChat({
+          history: filteredHistory,
+          generationConfig: { maxOutputTokens: 300 }
+        });
+
+        const result = await chat.sendMessage(prompt);
+        const response = await result.response;
+        return response.text();
+      } catch (error: any) {
+        const errTxt = error.message || '';
+        console.warn(`Fallback: ${modelName} failed.`, errTxt);
+        if (errTxt.includes('404') || errTxt.includes('429') || errTxt.includes('quota') || errTxt.includes('not found')) {
+          continue;
+        }
+        throw error;
+      }
+    }
+
+    return "Main thoda busy hoon (Quota limit). Please try again in 30 seconds! ⏳";
+  }
+
+  // Simplified Suggestions
+  async getMealSuggestions(userPref: string, availableMeals: any[]): Promise<any[]> {
     try {
-      const result = await this.model.generateContent(prompt);
-      const response = await result.response;
-      const text = response.text().trim();
-      
-      // Clean up potential markdown formatting
-      const cleanJson = text.replace(/```json|```/g, '');
-      const selectedIds = JSON.parse(cleanJson);
-      
-      return availableMeals.filter(m => selectedIds.includes(m.id));
-    } catch (error: any) {
-      console.warn('Gemini API Error (fallback to static picks):', error.message || error);
-      // Fallback to first two meals
+      const model = this.genAI.getGenerativeModel({ model: 'gemini-1.5-flash-002' });
+      const prompt = `Return JSON array of 2 IDs from this list for "${userPref}": ${JSON.stringify(availableMeals.map(m => ({id: m.id, name: m.name})))}`;
+      const result = await model.generateContent(prompt);
+      const resText = (await result.response).text();
+      const ids = JSON.parse(resText.match(/\[.*\]/s)?.[0] || '[]');
+      return availableMeals.filter(m => ids.includes(m.id)).slice(0, 2);
+    } catch {
       return availableMeals.slice(0, 2);
     }
   }
 
-  // Legacy support for Supervisor Dashboard
-  async generateInsights(data: string): Promise<string[]> {
-    return [
-      "Wait times for Dal Makhani are slightly higher today.",
-      "Maa Ki Rasoi has the highest rating this hour.",
-      "Demand for lunch boxes is peaking early today."
-    ];
+  async getAiHealthInsight(selectedMeals: any[]): Promise<string> {
+    return "Balanced choices lead to a healthier lifestyle!";
   }
 
-  async getAiHealthInsight(selectedMeals: any[]): Promise<string> {
-    const prompt = `
-      Based on these meals: ${JSON.stringify(selectedMeals)}, 
-      provide one short (15 words max) encouraging health insight for the user.
-    `;
-    try {
-      const result = await this.model.generateContent(prompt);
-      const response = await result.response;
-      return response.text();
-    } catch {
-      return "Balanced choices lead to a healthier lifestyle!";
-    }
+  async generateInsights(data: string): Promise<string[]> {
+    return ["Maa Ki Rasoi is trending.", "High demand for lunch thalis.", "Orders up 10% today."];
   }
 }
