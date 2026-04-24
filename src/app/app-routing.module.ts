@@ -8,7 +8,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'login',
+    redirectTo: 'splash',
     pathMatch: 'full'
   },
   {
@@ -28,7 +28,7 @@ const routes: Routes = [
     loadChildren: () => import('./pages/gps-tracking/gps-tracking.module').then( m => m.GpsTrackingPageModule)
   },
   {
-    path: 'ai-meal-picks',
+    path: 'ai-concierge',
     loadChildren: () => import('./pages/ai-insights/ai-insights.module').then( m => m.AiInsightsPageModule)
   },
   {
@@ -46,9 +46,21 @@ const routes: Routes = [
   {
     path: 'cart',
     loadChildren: () => import('./pages/cart/cart.module').then( m => m.CartPageModule)
-  },  {
+  },  {
+    path: 'wallet',
+    loadChildren: () => import('./pages/wallet/wallet.module').then( m => m.WalletPageModule)
+  },
+  {
     path: 'profile',
     loadChildren: () => import('./pages/profile/profile.module').then( m => m.ProfilePageModule)
+  },
+  {
+    path: 'manage-menu',
+    loadChildren: () => import('./pages/manage-menu/manage-menu.module').then( m => m.ManageMenuPageModule)
+  },
+  {
+    path: 'splash',
+    loadChildren: () => import('./pages/splash/splash.module').then( m => m.SplashPageModule)
   }
 
 ];

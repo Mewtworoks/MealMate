@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -7,5 +8,15 @@ import { Component } from '@angular/core';
   standalone: false,
 })
 export class AppComponent {
-  constructor() {}
+  
+  // Routes where the bottom tab bar should be visible
+  tabRoutes = ['/customer-home', '/my-orders', '/wallet', '/ai-concierge', '/profile'];
+
+  constructor(public router: Router) {}
+
+  showTabs(): boolean {
+    const currentUrl = this.router.url.split('?')[0]; // Ignore query params
+    return this.tabRoutes.some(route => currentUrl.includes(route));
+  }
 }
+

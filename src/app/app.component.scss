@@ -1,0 +1,70 @@
+/* Global Tabs Styling */
+.premium-tabs-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.04);
+  background: white;
+
+  .premium-tab-bar {
+    --background: #FFFFFF;
+    --border: none;
+    height: 70px;
+    padding-bottom: env(safe-area-inset-bottom);
+    display: flex;
+    justify-content: space-around;
+    padding-top: 5px;
+  }
+
+  ion-tab-button {
+    --background: transparent;
+    --color: #A1A1AA;
+    --color-selected: #FF7235;
+
+    .icon-solid {
+      display: none;
+    }
+
+    .icon-outline {
+      display: block;
+    }
+
+    &.tab-selected {
+      --color: #FF7235;
+
+      .icon-solid {
+        display: block;
+        color: #FF7235;
+      }
+
+      .icon-outline {
+        display: none;
+      }
+
+      .tab-label {
+        font-weight: 800;
+        color: #FF7235;
+      }
+    }
+
+    ion-icon {
+      font-size: 1.5rem;
+      margin-bottom: 4px;
+      transition: color 0.2s ease, transform 0.2s ease;
+    }
+
+    .tab-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      transition: color 0.2s ease, font-weight 0.2s ease;
+    }
+
+    &:active {
+      ion-icon {
+        transform: scale(0.9);
+      }
+    }
+  }
+}

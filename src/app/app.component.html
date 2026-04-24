@@ -1,3 +1,37 @@
 <ion-app>
   <ion-router-outlet></ion-router-outlet>
+  
+  <div class="premium-tabs-container" *ngIf="showTabs()">
+    <ion-tab-bar slot="bottom" class="premium-tab-bar">
+      <ion-tab-button routerLink="/customer-home" routerLinkActive="tab-selected" [routerLinkActiveOptions]="{exact: true}">
+        <ion-icon class="icon-outline" name="home-outline"></ion-icon>
+        <ion-icon class="icon-solid" name="home"></ion-icon>
+        <span class="tab-label">Home</span>
+      </ion-tab-button>
+
+      <ion-tab-button routerLink="/my-orders" routerLinkActive="tab-selected" [routerLinkActiveOptions]="{exact: true}">
+        <ion-icon class="icon-outline" name="document-text-outline"></ion-icon>
+        <ion-icon class="icon-solid" name="document-text"></ion-icon>
+        <span class="tab-label">Orders</span>
+      </ion-tab-button>
+
+      <ion-tab-button routerLink="/wallet" routerLinkActive="tab-selected" [routerLinkActiveOptions]="{exact: true}">
+        <ion-icon class="icon-outline" name="wallet-outline"></ion-icon>
+        <ion-icon class="icon-solid" name="wallet"></ion-icon>
+        <span class="tab-label">Wallet</span>
+      </ion-tab-button>
+
+      <ion-tab-button routerLink="/ai-concierge" routerLinkActive="tab-selected" [routerLinkActiveOptions]="{exact: true}">
+        <ion-icon class="icon-outline" name="fitness-outline"></ion-icon>
+        <ion-icon class="icon-solid" name="fitness"></ion-icon>
+        <span class="tab-label">Health</span>
+      </ion-tab-button>
+
+      <ion-tab-button routerLink="/profile" [queryParams]="{role: 'customer'}" routerLinkActive="tab-selected" [routerLinkActiveOptions]="{exact: false}">
+        <ion-icon class="icon-outline" name="person-outline"></ion-icon>
+        <ion-icon class="icon-solid" name="person"></ion-icon>
+        <span class="tab-label">Profile</span>
+      </ion-tab-button>
+    </ion-tab-bar>
+  </div>
 </ion-app>
