@@ -1,0 +1,90 @@
+.splash-content {
+  --background: #F97316;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.splash-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  text-align: center;
+}
+
+.logo-circle {
+  width: 120px;
+  height: 120px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  animation: scaleIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  .tiffin-icon {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+.brand-section {
+  animation: fadeIn 1s ease-out 0.4s both;
+
+  .brand-name {
+    color: white;
+    font-family: 'Lora', serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.5px;
+  }
+
+  .tagline {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 300;
+    font-size: 1rem;
+    margin-top: 8px;
+    letter-spacing: 0.5px;
+  }
+}
+
+.loader-container {
+  position: absolute;
+  bottom: 60px;
+  display: flex;
+  gap: 8px;
+  animation: fadeIn 1s ease-out 1s both;
+
+  .loading-dot {
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out both;
+
+    &:nth-child(1) { animation-delay: -0.32s; }
+    &:nth-child(2) { animation-delay: -0.16s; }
+  }
+}
+
+/* Animations */
+@keyframes scaleIn {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
+  40% { transform: scale(1); opacity: 1; }
+}
