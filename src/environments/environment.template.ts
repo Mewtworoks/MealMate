@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   apiUrl: 'https://mealmate-backend-1024312686784.asia-south2.run.app/api',
-  geminiApiKey: 'AIzaSyBZ1-MH2yYVsfSWgsjgBqK63_XDcAYoFwE',
+  geminiApiKey: 'YOUR_GEMINI_API_KEY',
   firebase: {
     apiKey: "YOUR_API_KEY",
     authDomain: "YOUR_AUTH_DOMAIN",
