@@ -1,17 +1,21 @@
-<ion-content class="sub-modal-content">
-  <div class="modal-header">
-    <div class="handle"></div>
-    <div class="header-top">
-      <h2>MealMate Subscription</h2>
-      <button class="close-btn" (click)="dismiss()">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
+<ion-header class="ion-no-border sub-page-header">
+  <div class="header-curve-bg"></div>
+  <ion-toolbar class="transparent-toolbar" style="--padding-top: 5px;">
+    <div class="header-content">
+      <ion-button (click)="goBack()" class="back-btn-pill">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+      <div class="title-group">
+        <h1 class="page-title">MealMate Subscription</h1>
+        <p class="subtitle">Subscribe to fixed daily tiffins. Free delivery, extra discounts, and skip anytime.</p>
+      </div>
     </div>
-    <p>Subscribe to fixed daily tiffins. Free delivery, extra discounts, and skip anytime.</p>
-  </div>
+  </ion-toolbar>
+</ion-header>
 
+<ion-content [fullscreen]="true" class="subscribe-content">
   <div class="scrollable-body">
-    
+
     <!-- Step 1: Select Duration -->
     <div class="step-section">
       <div class="step-header">
@@ -70,14 +74,13 @@
           <p>Select up to 3 meals. We will rotate them daily so you don't get bored!</p>
         </div>
       </div>
-      
+
       <div class="meals-grid">
-        <div class="meal-card" *ngFor="let meal of meals" 
-             [class.selected]="isSelected(meal)"
-             (click)="toggleMealSelection(meal)">
+        <div class="meal-card" *ngFor="let meal of meals" [class.selected]="isSelected(meal)"
+          (click)="toggleMealSelection(meal)">
           <div class="img-box">
-             <div class="circle-check"></div>
-             <img [src]="meal.image" [alt]="meal.name">
+            <div class="circle-check"></div>
+            <img [src]="meal.image" [alt]="meal.name">
           </div>
           <span class="name">{{meal.name.length > 15 ? (meal.name | slice:0:15) + '...' : meal.name}}</span>
           <span class="base-p">Avg. ₹{{basePricePerMeal}}/day</span>
@@ -87,20 +90,20 @@
 
     <!-- Features Row -->
     <div class="features-row">
-       <div class="feature-item">
-         <div class="icon-wrap"><ion-icon name="bicycle-outline"></ion-icon></div>
-         <span>Free<br>Delivery</span>
-       </div>
-       <div class="divider"></div>
-       <div class="feature-item">
-         <div class="icon-wrap"><ion-icon name="pricetag-outline"></ion-icon></div>
-         <span>Extra<br>Discounts</span>
-       </div>
-       <div class="divider"></div>
-       <div class="feature-item">
-         <div class="icon-wrap"><ion-icon name="calendar-outline"></ion-icon></div>
-         <span>Skip<br>Anytime</span>
-       </div>
+      <div class="feature-item">
+        <div class="icon-wrap"><ion-icon name="bicycle-outline"></ion-icon></div>
+        <span>Free<br>Delivery</span>
+      </div>
+      <div class="divider"></div>
+      <div class="feature-item">
+        <div class="icon-wrap"><ion-icon name="pricetag-outline"></ion-icon></div>
+        <span>Extra<br>Discounts</span>
+      </div>
+      <div class="divider"></div>
+      <div class="feature-item">
+        <div class="icon-wrap"><ion-icon name="calendar-outline"></ion-icon></div>
+        <span>Skip<br>Anytime</span>
+      </div>
     </div>
 
   </div>
@@ -108,13 +111,14 @@
 
 <ion-footer class="ion-no-border sub-footer">
   <div class="footer-wrap">
-     <div class="price-info">
-        <span class="label">Total for {{months}} Month{{months > 1 ? 's' : ''}}</span>
-        <span class="amt">₹{{getTotalPrice}}</span>
-     </div>
-     <button class="action-btn" (click)="subscribe()" [disabled]="selectedMeals.length === 0 || isPlacingOrder">
-       <span *ngIf="!isPlacingOrder" class="btn-text">SUBSCRIBE NOW <ion-icon name="arrow-forward-outline"></ion-icon></span>
-       <ion-spinner *ngIf="isPlacingOrder" name="crescent" color="light"></ion-spinner>
-     </button>
+    <div class="price-info">
+      <span class="label">Total for {{months}} Month{{months > 1 ? 's' : ''}}</span>
+      <span class="amt">₹{{getTotalPrice}}</span>
+    </div>
+    <button class="action-btn" (click)="subscribe()" [disabled]="selectedMeals.length === 0 || isPlacingOrder">
+      <span *ngIf="!isPlacingOrder" class="btn-text">SUBSCRIBE NOW <ion-icon
+          name="arrow-forward-outline"></ion-icon></span>
+      <ion-spinner *ngIf="isPlacingOrder" name="crescent" color="light"></ion-spinner>
+    </button>
   </div>
 </ion-footer>

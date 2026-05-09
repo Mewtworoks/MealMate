@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { IonicModule } from '@ionic/angular';
 import { MealService, Meal, Agent } from '../../services/meal.service';
 import { CartService } from '../../services/cart.service';
 import { WalletService } from '../../services/wallet.service';
 import { AuthService } from '../../services/auth';
 import { Router } from '@angular/router';
-import { SubscriptionModalComponent } from '../../components/subscription-modal/subscription-modal.component';
+
+import { Gemini } from '../../services/gemini';
 
 @Component({
   selector: 'app-shop',
@@ -17,9 +18,22 @@ import { SubscriptionModalComponent } from '../../components/subscription-modal/
 })
 export class ShopPage implements OnInit {
   meals: Meal[] = [];
+  aiPicks: Meal[] = [];
   agents: Agent[] = [];
-  categories = ['Lunch', 'Thali', 'Fast Food', 'Drinks', 'Breakfast', 'Dinner'];
+  categories = ['Lunch', 'Thali', 'Fast Food', 'Snacks', 'Drinks'];
   selectedCategory = 'Lunch';
+  isLoading = true;
+
+  getCategoryIcon(category: string): string {
+    const icons: { [key: string]: string } = {
+      'Lunch': 'restaurant-outline',
+      'Thali': 'color-palette-outline',
+      'Fast Food': 'fast-food-outline',
+      'Snacks': 'pizza-outline',
+      'Drinks': 'cafe-outline'
+    };
+    return icons[category] || 'restaurant-outline';
+  }
 
   walletBalance = 0;
   credits = 0;
@@ -35,7 +49,7 @@ export class ShopPage implements OnInit {
     public wallet: WalletService,
     private auth: AuthService,
     private router: Router,
-    private modalCtrl: ModalController
+    private gemini: Gemini
   ) { }
 
   ngOnInit() {
@@ -67,6 +81,7 @@ export class ShopPage implements OnInit {
             const town = data.address.suburb || data.address.neighbourhood || data.address.town || data.address.city;
             const state = data.address.state || data.address.country;
             this.userLocation = town ? `${town}, ${state}` : 'Current Location';
+            localStorage.setItem('userLocation', this.userLocation);
           } catch (e) {
             this.userLocation = 'Location Unknown';
           }
@@ -88,11 +103,26 @@ export class ShopPage implements OnInit {
   }
 
   async ionViewWillEnter() {
+    this.isLoading = true;
     await this.mealService.refreshMeals();
     const userId = this.auth.userId;
     if (userId) {
-      this.wallet.loadWallet(userId);
+      await this.wallet.loadWallet(userId);
     }
+    await this.loadAiPicks();
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 1000); // Small delay to show off the skeleton
+  }
+
+  async loadAiPicks() {
+    if (this.meals.length > 0) {
+      this.aiPicks = await this.gemini.getMealSuggestions('Give me the best 2 balanced meals for today', this.meals);
+    }
+  }
+
+  navigateToAi() {
+    this.router.navigate(['/ai-concierge']);
   }
 
   getFilteredMeals(): Meal[] {
@@ -114,12 +144,6 @@ export class ShopPage implements OnInit {
   }
 
   async openSubscriptionModal() {
-    const modal = await this.modalCtrl.create({
-      component: SubscriptionModalComponent,
-      breakpoints: [0, 1],
-      initialBreakpoint: 1,
-      cssClass: 'premium-modal'
-    });
-    return await modal.present();
+    this.router.navigate(['/subscribe']);
   }
 }

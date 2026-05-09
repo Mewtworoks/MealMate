@@ -1,13 +1,14 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar class="cart-toolbar">
+<ion-header class="ion-no-border premium-header">
+  <div class="header-curve-bg"></div>
+  <ion-toolbar class="transparent-toolbar">
     <ion-buttons slot="start">
-      <ion-button (click)="goBack()" class="back-btn">
+      <ion-button (click)="goBack()" class="back-btn-pill">
         <ion-icon name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title class="cart-title">My Cart</ion-title>
+    <ion-title class="page-title-text">My Cart</ion-title>
     <ion-buttons slot="end">
-      <ion-button class="items-badge">
+      <ion-button class="items-badge" style="color: #FF7235;">
         <ion-icon name="bag-handle-outline"></ion-icon>
         <span class="badge-count">{{items.length}}</span>
       </ion-button>
@@ -16,7 +17,7 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="cart-content">
-  
+
   <!-- Empty Cart State -->
   <div *ngIf="items.length === 0" class="empty-state animate-fade">
     <div class="empty-icon-box">
@@ -32,9 +33,9 @@
 
   <!-- Cart Items List -->
   <div *ngIf="items.length > 0" class="content-wrapper">
-    
+
     <div class="section-label">YOUR ITEMS</div>
-    
+
     <div class="item-list">
       <div class="item-card" *ngFor="let item of items; let i = index" [style.animation-delay]="i * 0.08 + 's'">
         <div class="thumb">
@@ -59,19 +60,73 @@
       </div>
     </div>
 
+    <!-- Wallet Info Card -->
+    <div class="wallet-info-card" *ngIf="paymentType === 'wallet'">
+      <div class="wallet-info-row">
+        <div class="wallet-stat">
+          <ion-icon name="wallet-outline"></ion-icon>
+          <div class="stat-detail">
+            <span class="stat-value">₹{{walletBalance}}</span>
+            <span class="stat-label">Balance</span>
+          </div>
+        </div>
+        <div class="wallet-stat-divider"></div>
+        <div class="wallet-stat">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          <div class="stat-detail">
+            <span class="stat-value">₹{{wallet.availableCredit}}</span>
+            <span class="stat-label">Credit Left</span>
+          </div>
+        </div>
+        <div class="wallet-stat-divider"></div>
+        <div class="wallet-stat">
+          <ion-icon name="star-outline"></ion-icon>
+          <div class="stat-detail">
+            <span class="stat-value">{{credits}}</span>
+            <span class="stat-label">Points</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Redeem Points Section -->
+    <div class="redeem-section" *ngIf="credits > 0 && paymentType === 'wallet'">
+      <div class="redeem-card" [class.active]="redeemPoints" (click)="toggleRedeemPoints()">
+        <div class="redeem-left">
+          <div class="redeem-icon">
+            <ion-icon name="gift-outline"></ion-icon>
+          </div>
+          <div class="redeem-info">
+            <span class="redeem-title">Redeem Loyalty Points</span>
+            <span class="redeem-desc">
+              Use up to {{getMaxRedeemable()}} pts · Save ₹{{getMaxRedeemable()}}
+            </span>
+          </div>
+        </div>
+        <div class="toggle-circle" [class.toggled]="redeemPoints">
+          <div class="toggle-knob"></div>
+        </div>
+      </div>
+      <div class="redeem-savings" *ngIf="redeemPoints">
+        <ion-icon name="checkmark-circle"></ion-icon>
+        <span>{{pointsSavings}} points applied · You save ₹{{pointsSavings}}</span>
+      </div>
+    </div>
+
     <!-- Payment Type Section -->
     <div class="payment-type-section">
       <div class="section-label">CHOOSE PAYMENT TYPE</div>
       <div class="payment-options">
-        
-        <div class="pay-option" [class.selected]="paymentType === 'wallet'" (click)="paymentType = 'wallet'">
+
+        <div class="pay-option" [class.selected]="paymentType === 'wallet'"
+          (click)="paymentType = 'wallet'; calculateBill()">
           <div class="option-left">
             <div class="option-icon wallet-icon">
               <ion-icon name="wallet-outline"></ion-icon>
             </div>
             <div class="option-info">
-              <span class="option-title">Pay Now via Wallet</span>
-              <span class="option-desc">₹{{walletBalance}} available</span>
+              <span class="option-title">Pay via Wallet</span>
+              <span class="option-desc">₹{{walletBalance}} balance + ₹{{wallet.availableCredit}} credit</span>
             </div>
           </div>
           <div class="radio-circle" [class.checked]="paymentType === 'wallet'">
@@ -79,7 +134,8 @@
           </div>
         </div>
 
-        <div class="pay-option" [class.selected]="paymentType === 'cod'" (click)="paymentType = 'cod'">
+        <div class="pay-option" [class.selected]="paymentType === 'cod'"
+          (click)="paymentType = 'cod'; redeemPoints = false; calculateBill()">
           <div class="option-left">
             <div class="option-icon cod-icon">
               <ion-icon name="cash-outline"></ion-icon>
@@ -94,43 +150,6 @@
           </div>
         </div>
 
-        <div class="pay-option monthly-option" [class.selected]="paymentType === 'monthly'" (click)="paymentType = 'monthly'">
-          <div class="monthly-badge">SAVE 20%</div>
-          <div class="option-left">
-            <div class="option-icon monthly-icon">
-              <ion-icon name="calendar-outline"></ion-icon>
-            </div>
-            <div class="option-info">
-              <span class="option-title">Monthly Subscription</span>
-              <span class="option-desc">₹{{getMonthlyPrice()}}/mo · Auto-billed monthly</span>
-            </div>
-          </div>
-          <div class="radio-circle" [class.checked]="paymentType === 'monthly'">
-            <div class="radio-dot"></div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- Monthly Subscription Details (shown when selected) -->
-    <div class="subscription-details" *ngIf="paymentType === 'monthly'">
-      <div class="sub-card">
-        <div class="sub-header">
-          <ion-icon name="sparkles"></ion-icon>
-          <span>MealMate Monthly Plan</span>
-        </div>
-        <div class="sub-perks">
-          <div class="perk"><ion-icon name="checkmark-circle"></ion-icon> Same meals daily at fixed time</div>
-          <div class="perk"><ion-icon name="checkmark-circle"></ion-icon> Free delivery on all orders</div>
-          <div class="perk"><ion-icon name="checkmark-circle"></ion-icon> 20% off on every meal</div>
-          <div class="perk"><ion-icon name="checkmark-circle"></ion-icon> Skip or pause anytime</div>
-        </div>
-        <div class="sub-price-row">
-          <div class="original">₹{{subTotal * 30}} /mo</div>
-          <div class="discounted">₹{{getMonthlyPrice()}} /mo</div>
-        </div>
-        <button class="customize-btn" (click)="openSubscriptionModal()">Customize Plan</button>
       </div>
     </div>
 
@@ -144,32 +163,56 @@
         </div>
         <div class="bill-row">
           <span>Delivery Fee</span>
-          <span *ngIf="paymentType !== 'monthly'">₹{{deliveryFee}}</span>
-          <span *ngIf="paymentType === 'monthly'" class="free-tag">FREE</span>
+          <span>₹{{deliveryFee}}</span>
         </div>
-        <div class="bill-row promo" *ngIf="discount > 0">
-          <span>MealMate Credits</span>
-          <span class="save">-₹{{discount}}</span>
+        <div class="bill-row promo" *ngIf="redeemPoints && pointsSavings > 0">
+          <span>
+            <ion-icon name="star" class="inline-icon"></ion-icon>
+            Points Redeemed
+          </span>
+          <span class="save">-₹{{pointsSavings}}</span>
         </div>
-        <div class="bill-row promo" *ngIf="paymentType === 'monthly'">
-          <span>Subscription Discount (20%)</span>
-          <span class="save">-₹{{getSubscriptionDiscount()}}</span>
-        </div>
+
         <div class="bill-divider"></div>
+
         <div class="bill-row total">
           <span>To Pay</span>
           <span>₹{{getFinalTotal()}}</span>
         </div>
-        <div class="bill-row" *ngIf="paymentType === 'monthly'">
-          <span class="monthly-note">Billed monthly · Cancel anytime</span>
+
+        <!-- Credit usage breakdown when wallet payment -->
+        <div *ngIf="paymentType === 'wallet' && needsCredit()" class="credit-breakdown">
+          <div class="credit-row">
+            <span>From Wallet</span>
+            <span>₹{{walletBalance}}</span>
+          </div>
+          <div class="credit-row highlight">
+            <ion-icon name="shield-checkmark"></ion-icon>
+            <span>From Credit Limit</span>
+            <span>₹{{getCreditNeeded()}}</span>
+          </div>
+        </div>
+
+        <!-- Points earned preview -->
+        <div class="points-earned-preview">
+          <ion-icon name="sparkles"></ion-icon>
+          <span>You'll earn <strong>{{(subTotal / 10) | number:'1.0-0'}} points</strong> on this order</span>
         </div>
       </div>
     </div>
 
     <!-- Wallet Insufficient Warning -->
-    <div class="wallet-warn" *ngIf="paymentType === 'wallet' && getFinalTotal() > walletBalance">
+    <div class="wallet-warn" *ngIf="paymentType === 'wallet' && !canPlaceOrder() && items.length > 0">
       <ion-icon name="alert-circle"></ion-icon>
-      <span>Insufficient wallet balance. Please top up or choose another payment method.</span>
+      <span>Insufficient funds. You need ₹{{getDeficitAmount() | number:'1.0-0'}} more. Top up your wallet or switch to
+        COD.</span>
+    </div>
+
+    <!-- Credit Usage Info -->
+    <div class="credit-info" *ngIf="paymentType === 'wallet' && needsCredit()">
+      <ion-icon name="information-circle"></ion-icon>
+      <span>₹{{getCreditNeeded() | number:'1.0-0'}} will be borrowed from your credit limit (₹{{creditLimit}} total).
+        Settle at month-end.</span>
     </div>
 
     <!-- Spacer for footer -->
@@ -185,9 +228,11 @@
       <span class="final-price">₹{{getFinalTotal()}}</span>
       <span class="pay-type-label">{{getPaymentLabel()}}</span>
     </div>
-    <button class="place-order-btn" (click)="placeOrder()" [disabled]="paymentType === 'wallet' && getFinalTotal() > walletBalance">
-      Place Order
-      <ion-icon name="arrow-forward-outline"></ion-icon>
+    <button class="place-order-btn" (click)="placeOrder()" [disabled]="!canPlaceOrder()"
+      [class.loading]="isPlacingOrder">
+      <span *ngIf="!isPlacingOrder">Place Order</span>
+      <ion-spinner *ngIf="isPlacingOrder" name="crescent" color="light"></ion-spinner>
+      <ion-icon *ngIf="!isPlacingOrder" name="arrow-forward-outline"></ion-icon>
     </button>
   </div>
 </ion-footer>

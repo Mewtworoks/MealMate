@@ -24,6 +24,11 @@ export class AiInsightsPage implements OnInit {
   isTyping: boolean = false;
   suggestions: string[] = [];
 
+  /** Show only 2 suggestion cards to match the compact layout */
+  get displayedSuggestions(): string[] {
+    return this.suggestions.slice(0, 2);
+  }
+
   // Context data
   private orderHistory: Order[] = [];
   private activeSubscription: Subscription | null = null;
@@ -276,5 +281,14 @@ export class AiInsightsPage implements OnInit {
 
   goBack() {
     this.navCtrl.back();
+  }
+
+  formatTime(): string {
+    const now = new Date();
+    let hours = now.getHours();
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12;
+    return `${hours}:${minutes} ${ampm}`;
   }
 }

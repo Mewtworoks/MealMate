@@ -63,7 +63,14 @@
         </div>
 
         <div class="google-login-wrapper">
-          <div id="google-btn"></div>
+          <!-- Standard Web Button Wrapper (Hidden on mobile) -->
+          <div id="google-btn" [style.display]="isMobileDev ? 'none' : 'block'"></div>
+          
+          <!-- Native Mobile Button (Styled like the reference image) -->
+          <button *ngIf="isMobileDev" class="premium-google-btn" (click)="signInWithNativeGoogle()">
+            <img src="assets/logo/chef_hat.png" alt="Google" class="g-icon"> <!-- Changed to existing hat logo momentarily for path test -->
+            <span>Sign in with Google</span>
+          </button>
         </div>
 
         <div class="footer-links">

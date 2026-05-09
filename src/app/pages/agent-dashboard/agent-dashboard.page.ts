@@ -5,7 +5,11 @@ import { IonicModule, ModalController, AlertController } from '@ionic/angular';
 import { OrderService, Order } from '../../services/order.service';
 import { MealService, Meal } from '../../services/meal.service';
 import { TrackingService } from '../../services/tracking.service';
+import { GpsService } from '../../services/gps.service';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/database';
 
 @Component({
   selector: 'app-agent-dashboard',
@@ -18,79 +22,40 @@ export class AgentDashboardPage implements OnInit {
   pendingOrders: Order[] = [];
   activeOrders: Order[] = [];
   completedOrders: Order[] = [];
-  agentMeals: Meal[] = [];
   activeSegment = 'requests';
   earnings = 0;
-  isMenuModalOpen = false;
-  isAddMealModalOpen = false;
   isProfileModalOpen = false;
-
-  mealForm = {
-    name: '',
-    description: '',
-    price: 0,
-    category: 'Lunch' as any,
-    image: 'assets/onboarding/dal_makhani.png',
-    type: 'Veg' as any
-  };
-
-  availableImages = [
-    'assets/onboarding/dal_makhani.png',
-    'assets/onboarding/paneer_tikka.png',
-    'assets/onboarding/veg_pulao.png'
-  ];
 
   constructor(
     private orderService: OrderService,
     private mealService: MealService,
     private trackingService: TrackingService,
+    private gpsService: GpsService,
+    private auth: AuthService,
     private router: Router,
     private modalCtrl: ModalController,
     private alertCtrl: AlertController
   ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
+    const agentId = this.auth.userId;
+    if (agentId) {
+      await this.orderService.refreshAgentOrders(agentId);
+    }
+
     this.orderService.orders$.subscribe(allOrders => {
       this.orders = allOrders;
       this.filterOrders();
       this.calculateEarnings();
     });
-
-    this.mealService.meals$.subscribe(allMeals => {
-      this.agentMeals = allMeals.filter(m => m.agentId === 'a1'); 
-    });
-  }
-
-  saveNewMeal() {
-    if (this.mealForm.name && this.mealForm.price) {
-      const newMeal: Meal = {
-        id: 'm' + Date.now(),
-        ...this.mealForm,
-        agentId: 'a1',
-        spiceLevel: 'Medium',
-        calories: 350,
-        isAvailable: true
-      };
-      this.mealService.addMeal(newMeal);
-      this.isAddMealModalOpen = false;
-      this.resetMealForm();
-    }
-  }
-
-  resetMealForm() {
-    this.mealForm = {
-      name: '',
-      description: '',
-      price: 0,
-      category: 'Lunch',
-      image: 'assets/onboarding/dal_makhani.png',
-      type: 'Veg'
-    };
   }
 
   logout() {
     this.isProfileModalOpen = false;
+    this.auth.logout();
     this.trackingService.stopAgentTracking();
+    const lastLoc = this.gpsService.lastLocation || { latitude: 0, longitude: 0 };
+    this.gpsService.stopTracking(lastLoc.latitude, lastLoc.longitude);
     this.router.navigate(['/login']);
   }
 
@@ -104,19 +69,24 @@ export class AgentDashboardPage implements OnInit {
     this.earnings = this.completedOrders.reduce((sum, o) => sum + o.total, 0);
   }
 
-  updateOrderStatus(orderId: string, newStatus: any) {
-    const order = this.orders.find(o => o.id === orderId);
-    if (order) {
-      order.status = newStatus;
-      
-      // Real-time GPS Tracking Trigger
-      if (newStatus === 'OutForDelivery') {
-        this.trackingService.startAgentTracking();
-      } else if (newStatus === 'Delivered') {
-        this.trackingService.stopAgentTracking();
-      }
+  async updateOrderStatus(orderId: string, newStatus: any) {
+    const agentId = this.auth.userId;
+    await this.orderService.updateOrderStatus(orderId, newStatus);
 
-      this.filterOrders();
+    // Trigger tracking if needed
+    if (newStatus === 'OutForDelivery') {
+      this.trackingService.startAgentTracking(); // keep old one for UI compat if needed
+      this.gpsService.activeOrderId = orderId;
+      this.gpsService.startTracking(agentId || '');
+    } else if (newStatus === 'Delivered') {
+      this.trackingService.stopAgentTracking();
+      const lastLoc = this.gpsService.lastLocation || { latitude: 0, longitude: 0 };
+      this.gpsService.stopTracking(lastLoc.latitude, lastLoc.longitude);
+      firebase.database().ref(`tracking/${orderId}`).remove();
+    }
+
+    if (agentId) {
+      await this.orderService.refreshAgentOrders(agentId);
     }
   }
 
@@ -124,21 +94,12 @@ export class AgentDashboardPage implements OnInit {
     this.updateOrderStatus(orderId, 'Accepted');
   }
 
-
   rejectOrder(orderId: string) {
     this.updateOrderStatus(orderId, 'Rejected');
   }
 
-  toggleMealAvailability(meal: Meal) {
-    if (meal.isAvailable === undefined) {
-      meal.isAvailable = false; // Toggle to false if it was initially implicitly true
-    } else {
-      meal.isAvailable = !meal.isAvailable;
-    }
-  }
-
   getStatusColor(status: string): string {
-    switch(status) {
+    switch (status) {
       case 'Pending': return 'warning';
       case 'Accepted': return 'success';
       case 'Preparing': return 'primary';

@@ -1,0 +1,148 @@
+<ion-header class="ion-no-border premium-header">
+  <div class="header-curve-bg"></div>
+  <ion-toolbar class="transparent-toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" class="back-btn-pill">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="page-title-text">Manage Menu</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="isAddMealModalOpen = true" style="color: #FF7235; font-size: 1.5rem; margin-right: 14px;">
+        <ion-icon name="add-circle"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="premium-content">
+  <div class="content-wrapper">
+
+    <div class="empty-state" *ngIf="agentMeals.length === 0">
+      <div class="empty-icon-box">
+        <ion-icon name="restaurant-outline"></ion-icon>
+      </div>
+      <h2>Your Menu is Empty</h2>
+      <p>Customers can't order until you add some delicious meals!</p>
+      <ion-button class="browse-btn" expand="block" (click)="isAddMealModalOpen = true">
+        Add First Meal
+      </ion-button>
+    </div>
+
+    <div class="meals-grid-section" *ngIf="agentMeals.length > 0">
+      <div class="grid">
+        <div class="meal-item-card" *ngFor="let meal of agentMeals">
+          <div class="card-thumb">
+            <img [src]="meal.image" [alt]="meal.name">
+            <div class="type-indicator" [class.non-veg]="meal.type === 'Non-Veg'"></div>
+          </div>
+          <div class="card-body">
+            <div class="category-tag">{{meal.category}}</div>
+            <h3 class="meal-name">{{meal.name}}</h3>
+            <p class="meal-desc">{{meal.description | slice:0:40}}...</p>
+            <div class="price-row">
+              <span class="price">₹{{meal.price}}</span>
+              <div class="toggle-wrap" (click)="toggleMealAvailability(meal)">
+                <span class="toggle-lab" [class.active]="meal.isAvailable !== false">{{meal.isAvailable !== false ?
+                  'Live' : 'Paused'}}</span>
+                <ion-toggle [checked]="meal.isAvailable !== false" mode="ios"></ion-toggle>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add New Meal Modal (Light Premium Theme) -->
+  <ion-modal [isOpen]="isAddMealModalOpen" (didDismiss)="isAddMealModalOpen = false" class="premium-modal light-modal"
+    [initialBreakpoint]="1" [breakpoints]="[0, 1]">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar class="modal-toolbar">
+          <ion-title>Create New Meal</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="isAddMealModalOpen = false" class="close-btn">Cancel</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding light-modal-content">
+        <div class="form-container">
+
+          <div class="form-section">
+            <label class="form-label">Select Meal Photo</label>
+            <div class="photo-upload-box" (click)="triggerImageUpload()">
+              <input type="file" #fileInput (change)="onImageSelected($event)" accept="image/*" style="display: none;">
+
+              <div class="preview-wrap" *ngIf="mealForm.image">
+                <img [src]="mealForm.image" alt="Meal Preview">
+                <div class="edit-overlay"><ion-icon name="create-outline"></ion-icon></div>
+              </div>
+
+              <div class="empty-upload" *ngIf="!mealForm.image">
+                <div class="icon-circle"><ion-icon name="camera"></ion-icon></div>
+                <span>Tap to choose photo</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="input-card">
+            <div class="form-group">
+              <label>Meal Name</label>
+              <input type="text" [(ngModel)]="mealForm.name" placeholder="e.g. Butter Chicken Combo">
+            </div>
+          </div>
+
+          <div class="input-row">
+            <div class="input-card half">
+              <div class="form-group">
+                <label>Price (₹)</label>
+                <input type="number" [(ngModel)]="mealForm.price" placeholder="150">
+              </div>
+            </div>
+            <div class="input-card half">
+              <div class="form-group">
+                <label>Category</label>
+                <select class="custom-select" [(ngModel)]="mealForm.category">
+                  <option value="Lunch">Lunch</option>
+                  <option value="Dinner">Dinner</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="input-card type-card">
+            <label class="type-label">Dietary Preference</label>
+            <div class="type-picker">
+              <button class="type-btn veg" [class.active]="mealForm.type === 'Veg'" (click)="mealForm.type = 'Veg'">
+                <div class="veg-icon"></div> Vegetarian
+              </button>
+              <button class="type-btn nonveg" [class.active]="mealForm.type === 'Non-Veg'"
+                (click)="mealForm.type = 'Non-Veg'">
+                <div class="nonveg-icon"></div> Non-Veg
+              </button>
+            </div>
+          </div>
+
+          <div class="input-card">
+            <div class="form-group">
+              <label>Description</label>
+              <textarea [(ngModel)]="mealForm.description"
+                placeholder="Describe the flavors, spices, and ingredients..."></textarea>
+            </div>
+          </div>
+        </div>
+      </ion-content>
+
+      <ion-footer class="ion-no-border light-modal-footer">
+        <div class="footer-wrap">
+          <button class="action-btn" (click)="saveNewMeal()" [disabled]="!mealForm.name || !mealForm.price">
+            Publish Meal <ion-icon name="rocket"></ion-icon>
+          </button>
+        </div>
+      </ion-footer>
+    </ng-template>
+  </ion-modal>
+
+</ion-content>

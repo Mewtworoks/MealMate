@@ -1,16 +1,21 @@
-<ion-content [fullscreen]="true" class="dashboard-content">
-  <!-- Header -->
-  <div class="header-container">
-    <div class="header-left">
-      <ion-avatar class="user-avatar">
-        <img alt="Supervisor Avatar" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
-      </ion-avatar>
-      <div class="header-titles">
-        <h1>Supervisor Dashboard</h1>
+<ion-header class="ion-no-border premium-header">
+  <div class="header-curve-bg"></div>
+  <ion-toolbar class="transparent-toolbar" style="padding-top: 10px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 20px;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <ion-avatar style="width: 44px; height: 44px; border: 2px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+          <img alt="Supervisor Avatar" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+        </ion-avatar>
+        <span class="page-title-text" style="font-size: 1.1rem; margin: 0; display: block;">Supervisor Dashboard</span>
       </div>
+      <ion-badge style="padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; --background: #90F09E; color: #066624;">ADMIN ROLE</ion-badge>
     </div>
-    <ion-badge color="success" class="role-badge">ADMIN ROLE</ion-badge>
-  </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="dashboard-content">
+  <!-- Metrics added to padding to match the previous structure -->
+  <div style="margin-top: 24px;"></div>
 
   <!-- Metric Summary Cards -->
   <div class="metrics-grid">

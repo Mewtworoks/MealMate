@@ -1,44 +1,92 @@
-.sub-modal-content {
+.subscribe-content {
   --background: #FFFFFF;
 }
 
-.modal-header {
-  padding: 16px 20px 24px;
-  background: white;
+/* Header & Curve */
+.sub-page-header {
+  position: relative;
+  height: 130px;
+  background: #FFFFFF;
+  overflow: visible;
 
-  .handle {
-    width: 40px; height: 5px;
-    background: #E5E7EB;
-    border-radius: 5px;
-    margin: 0 auto 16px auto;
-  }
+  .header-curve-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60%;
+    background: linear-gradient(135deg, #FFFFFF 0%, #FFE5D0 100%);
+    z-index: 1;
+    overflow: hidden;
 
-  .header-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    h2 { font-size: 1.3rem; font-weight: 900; color: #483129; margin: 0; }
-    .close-btn { 
-      background: #F4F4F5; 
-      border: none; 
-      border-radius: 50%; 
-      width: 32px; 
-      height: 32px; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      color: #8E7C76; 
-      font-size: 1.2rem; 
-      cursor: pointer;
+    &::after {
+      content: '';
+      position: absolute;
+      top: -30px;
+      right: -30px;
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(255, 114, 53, 0.2) 0%, transparent 60%);
+      border-radius: 50%;
     }
   }
 
-  p { font-size: 0.85rem; color: #8E7C76; margin: 12px 0 0 0; line-height: 1.5; font-weight: 500;}
+  .transparent-toolbar {
+    --background: transparent;
+    --border-width: 0;
+    --padding-top: 10px;
+    position: relative;
+    z-index: 10;
+    padding: 0 16px;
+  }
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 8px 0;
+
+    .back-btn-pill {
+      --background: rgba(255, 255, 255, 0.8);
+      --border-radius: 14px;
+      --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      --color: #FF7235;
+      margin: 0;
+      height: 48px;
+      width: 48px;
+      flex-shrink: 0;
+      --padding-start: 0;
+      --padding-end: 0;
+    }
+
+    .title-group {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      .page-title {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: #483129;
+        margin: 0 0 4px 0;
+        letter-spacing: -0.3px;
+      }
+
+      .subtitle {
+        font-size: 0.82rem; 
+        color: #8E7C76; 
+        margin: 0; 
+        line-height: 1.3; 
+        font-weight: 500;
+      }
+    }
+  }
 }
 
 .scrollable-body {
-  padding: 0 20px 20px;
+  padding: 20px;
+  position: relative;
+  z-index: 20;
 }
 
 .step-section {

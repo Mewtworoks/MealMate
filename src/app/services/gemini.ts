@@ -12,13 +12,13 @@ export interface ChatMessage {
 })
 export class Gemini {
   private genAI: GoogleGenerativeAI;
-  
-  // Refined 2026 Model Candidates
+
+  // Multi-model strategy to prevent quota issues (Error 429)
   private modelCandidates = [
-    'gemini-1.5-flash-002', // Very stable legacy
-    'gemini-2.5-flash',     // Recommended current stable
-    'gemini-2.0-flash-lite',
-    'gemini-2.0-flash',
+    'gemini-2.5-flash',
+    'gemini-1.5-flash-latest',
+    'gemini-1.5-flash-8b',
+    'gemini-1.5-flash-002',
     'gemini-1.5-flash'
   ];
 
@@ -55,13 +55,13 @@ Rules: Never recommend outside the list. Always mention prices.`.trim();
     if (filteredHistory.length > 0 && filteredHistory[0].role === 'model') {
       filteredHistory.shift();
     }
-    
+
     // The previous message in history MUST be from the 'model' for the current user message to work
     if (filteredHistory.length > 0 && filteredHistory[filteredHistory.length - 1].role === 'user') {
       // If last was user, we remove it to keep balance or append a dummy model response
       // For simplicity, we just keep the last 4 messages that alternate correctly
       while (filteredHistory.length > 0 && filteredHistory[filteredHistory.length - 1].role === 'user') {
-         filteredHistory.pop();
+        filteredHistory.pop();
       }
     }
 
@@ -70,7 +70,7 @@ Rules: Never recommend outside the list. Always mention prices.`.trim();
         const model = this.genAI.getGenerativeModel({ model: modelName });
         const chat = model.startChat({
           history: filteredHistory,
-          generationConfig: { maxOutputTokens: 300 }
+          generationConfig: { maxOutputTokens: 1000 }
         });
 
         const result = await chat.sendMessage(prompt);
@@ -93,7 +93,7 @@ Rules: Never recommend outside the list. Always mention prices.`.trim();
   async getMealSuggestions(userPref: string, availableMeals: any[]): Promise<any[]> {
     try {
       const model = this.genAI.getGenerativeModel({ model: 'gemini-1.5-flash-002' });
-      const prompt = `Return JSON array of 2 IDs from this list for "${userPref}": ${JSON.stringify(availableMeals.map(m => ({id: m.id, name: m.name})))}`;
+      const prompt = `Return JSON array of 2 IDs from this list for "${userPref}": ${JSON.stringify(availableMeals.map(m => ({ id: m.id, name: m.name })))}`;
       const result = await model.generateContent(prompt);
       const resText = (await result.response).text();
       const ids = JSON.parse(resText.match(/\[.*\]/s)?.[0] || '[]');

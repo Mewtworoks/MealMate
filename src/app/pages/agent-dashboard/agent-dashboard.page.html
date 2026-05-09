@@ -1,22 +1,19 @@
 <ion-header class="ion-no-border premium-header">
   <div class="header-curve-bg"></div>
   <ion-toolbar class="transparent-toolbar">
-    <div class="header-content">
-      <div class="user-greeting">
-        <span class="welcome">Agent Dashboard</span>
-        <h1 class="user-name">Welcome back! 🧑‍🍳</h1>
-      </div>
-      <div class="header-actions">
-        <ion-button fill="clear" (click)="isMenuModalOpen = true">
-          <ion-icon name="restaurant-outline" slot="icon-only"></ion-icon>
-        </ion-button>
-        <ion-button fill="clear" [routerLink]="['/profile']" [queryParams]="{role: 'agent'}">
-          <ion-icon name="person-outline" slot="icon-only"></ion-icon>
-        </ion-button>
-      </div>
-    </div>
+    <ion-title class="page-title-text" style="padding-left: 20px;">Agent Dashboard</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" [routerLink]="['/manage-menu']" style="color: #FF7235;">
+        <ion-icon name="restaurant-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" [routerLink]="['/profile']" [queryParams]="{role: 'agent'}" style="color: #FF7235;">
+        <ion-icon name="person-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
+</ion-header>
 
+<ion-content [fullscreen]="true" class="premium-content">
   <div class="agent-stats-container">
     <div class="stat-box">
       <span class="val">{{pendingOrders.length}}</span>
@@ -31,9 +28,7 @@
       <span class="lab">Earnings</span>
     </div>
   </div>
-</ion-header>
 
-<ion-content [fullscreen]="true" class="premium-content">
   <div class="content-wrapper">
     <div class="segment-wrapper">
       <ion-segment [(ngModel)]="activeSegment" scrollable="true" class="premium-segment">
@@ -132,106 +127,5 @@
 
     </div>
   </div>
-
-  <!-- Menu Management Modal -->
-  <ion-modal [isOpen]="isMenuModalOpen" (didDismiss)="isMenuModalOpen = false" [initialBreakpoint]="0.75"
-    [breakpoints]="[0, 0.5, 0.75, 0.95]" class="premium-modal">
-    <ng-template>
-      <ion-header class="ion-no-border">
-        <ion-toolbar>
-          <ion-title>Manage Your Menu</ion-title>
-          <ion-buttons slot="end">
-            <ion-button (click)="isMenuModalOpen = false">Close</ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
-      <ion-content class="ion-padding modal-content">
-        <div class="menu-header">
-          <button class="add-meal-btn" (click)="isAddMealModalOpen = true">
-            <ion-icon name="add-circle-outline"></ion-icon>
-            Add New Meal
-          </button>
-        </div>
-
-        <div class="empty-state" *ngIf="agentMeals.length === 0">
-          <div class="empty-icon"><ion-icon name="restaurant-outline"></ion-icon></div>
-          <h3>Your Menu is Empty</h3>
-          <p>Add some meals for customers to order.</p>
-        </div>
-
-        <div class="meals-grid">
-          <div class="meal-card" *ngFor="let meal of agentMeals">
-            <div class="img-wrapper">
-              <img [src]="meal.image" [alt]="meal.name">
-              <div class="category-tag">{{meal.category}}</div>
-            </div>
-            <div class="meal-info">
-              <h3 class="name">{{meal.name}}</h3>
-              <p class="desc">{{meal.description}}</p>
-              <div class="bottom-row">
-                <span class="price">₹{{meal.price}}</span>
-                <div class="toggle-wrap" (click)="toggleMealAvailability(meal)">
-                  <span class="toggle-lab" [class.active]="meal.isAvailable !== false">{{meal.isAvailable !== false ?
-                    'Available' : 'Paused'}}</span>
-                  <ion-toggle [checked]="meal.isAvailable !== false" mode="ios"></ion-toggle>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </ion-content>
-    </ng-template>
-  </ion-modal>
-
-  <!-- Add New Meal Modal -->
-  <ion-modal [isOpen]="isAddMealModalOpen" (didDismiss)="isAddMealModalOpen = false" class="premium-modal edit-modal">
-    <ng-template>
-      <ion-header class="ion-no-border">
-        <ion-toolbar>
-          <ion-title>New Meal Details</ion-title>
-          <ion-buttons slot="end">
-            <ion-button (click)="isAddMealModalOpen = false">Cancel</ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
-      <ion-content class="ion-padding">
-        <div class="form-scroll">
-          <label class="form-label">Pick a Photo</label>
-          <div class="photo-picker">
-            <div class="photo-choice" *ngFor="let img of availableImages" [class.selected]="mealForm.image === img"
-              (click)="mealForm.image = img">
-              <img [src]="img">
-              <div class="check" *ngIf="mealForm.image === img"><ion-icon name="checkmark-circle"></ion-icon></div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Meal Name</label>
-            <input type="text" [(ngModel)]="mealForm.name" placeholder="e.g. Masala Dosa">
-          </div>
-
-          <div class="form-group">
-            <label>Price (₹)</label>
-            <input type="number" [(ngModel)]="mealForm.price" placeholder="100">
-          </div>
-
-          <div class="form-group">
-            <label>Type</label>
-            <div class="type-picker">
-              <button [class.active]="mealForm.type === 'Veg'" (click)="mealForm.type = 'Veg'">Veg</button>
-              <button [class.active]="mealForm.type === 'Non-Veg'" (click)="mealForm.type = 'Non-Veg'">Non-Veg</button>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Description</label>
-            <textarea [(ngModel)]="mealForm.description" placeholder="Describe your delicious meal..."></textarea>
-          </div>
-
-          <button class="save-btn" (click)="saveNewMeal()">Create Meal</button>
-        </div>
-      </ion-content>
-    </ng-template>
-  </ion-modal>
 
 </ion-content>

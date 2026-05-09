@@ -42,7 +42,7 @@
         </div>
         <div class="stat-divider"></div>
         <div class="stat-item">
-          <span class="val">Silver</span>
+          <span class="val">{{ (userProfile.loyaltyLevel || 'Silver').split(' ')[0] }}</span>
           <span class="lab">Level</span>
         </div>
       </ng-container>
@@ -126,7 +126,8 @@
   </div>
 
   <!-- Edit Profile Modal -->
-  <ion-modal [isOpen]="isEditModalOpen" (didDismiss)="isEditModalOpen = false" [initialBreakpoint]="0.75" [breakpoints]="[0, 0.75, 1]" class="premium-modal edit-modal">
+  <ion-modal [isOpen]="isEditModalOpen" (didDismiss)="isEditModalOpen = false" [initialBreakpoint]="0.75"
+    [breakpoints]="[0, 0.75, 1]" class="premium-modal edit-modal">
     <ng-template>
       <ion-header class="ion-no-border">
         <ion-toolbar>
@@ -157,7 +158,8 @@
   </ion-modal>
 
   <!-- Notifications Modal -->
-  <ion-modal [isOpen]="isNotifModalOpen" (didDismiss)="isNotifModalOpen = false" [initialBreakpoint]="0.5" [breakpoints]="[0, 0.5]" class="premium-modal">
+  <ion-modal [isOpen]="isNotifModalOpen" (didDismiss)="isNotifModalOpen = false" [initialBreakpoint]="0.5"
+    [breakpoints]="[0, 0.5]" class="premium-modal">
     <ng-template>
       <ion-header class="ion-no-border">
         <ion-toolbar>
@@ -191,7 +193,8 @@
   </ion-modal>
 
   <!-- Help Center Modal -->
-  <ion-modal [isOpen]="isHelpModalOpen" (didDismiss)="isHelpModalOpen = false" [initialBreakpoint]="0.5" [breakpoints]="[0, 0.5]" class="premium-modal">
+  <ion-modal [isOpen]="isHelpModalOpen" (didDismiss)="isHelpModalOpen = false" [initialBreakpoint]="0.5"
+    [breakpoints]="[0, 0.5]" class="premium-modal">
     <ng-template>
       <ion-header class="ion-no-border">
         <ion-toolbar>

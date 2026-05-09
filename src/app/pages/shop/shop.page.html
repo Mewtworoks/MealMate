@@ -4,18 +4,10 @@
     <div class="header-content">
       <div class="user-greeting">
         <span class="welcome">{{greeting}},</span>
-        <h1 class="user-name">{{userName}}! 👋</h1>
+        <h1 class="user-name">{{userName}}!</h1>
       </div>
 
       <div class="header-actions">
-        <div class="top-btns">
-          <ion-button fill="clear" [routerLink]="['/my-orders']">
-            <ion-icon name="receipt-outline" slot="icon-only"></ion-icon>
-          </ion-button>
-          <ion-button fill="clear" [routerLink]="['/profile']" [queryParams]="{role: 'customer'}">
-            <ion-icon name="person-outline" slot="icon-only"></ion-icon>
-          </ion-button>
-        </div>
         <div class="location-picker">
           <ion-icon name="location-sharp" class="loc-icon"></ion-icon>
           <span class="address">{{userLocation}}</span>
@@ -26,15 +18,74 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="premium-content">
-  <!-- Luxury Wallet Card -->
-  <div class="wallet-card-container" routerLink="/wallet">
+<ion-content [fullscreen]="true" class="premium-content">`
+  <div class="content-wrapper" *ngIf="isLoading" style="padding-top: 10px;">
+    <!-- Wallet Skeleton -->
+    <div class="wallet-card-container">
+      <div class="wallet-card" style="background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); border: none;">
+        <ion-skeleton-text animated
+          style="width: 100%; height: 100%; border-radius: 28px; opacity: 0.5;"></ion-skeleton-text>
+      </div>
+    </div>
+
+    <!-- AI Picks Skeleton -->
+    <section class="ai-concierge-section">
+      <div class="section-header">
+        <ion-skeleton-text animated style="width: 40%; height: 24px; border-radius: 4px;"></ion-skeleton-text>
+      </div>
+      <div class="ai-hero-card" style="background: #f8f9fa; border: 1px solid #eee; box-shadow: none;">
+        <div class="hero-image-left" style="background: #eee;">
+          <ion-skeleton-text animated style="width: 100%; height: 100%; border-radius: 100%;"></ion-skeleton-text>
+        </div>
+        <div class="hero-content-right" style="padding: 15px;">
+          <ion-skeleton-text animated style="width: 60%; height: 20px; margin-bottom: 10px;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 80%; height: 14px; margin-bottom: 15px;"></ion-skeleton-text>
+          <div style="display: flex; gap: 8px;">
+            <ion-skeleton-text animated style="width: 50px; height: 20px; border-radius: 10px;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 50px; height: 20px; border-radius: 10px;"></ion-skeleton-text>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categories Skeleton -->
+    <section class="categories-section">
+      <div class="scroll-container" style="gap: 12px; display: flex; padding: 0 5px;">
+        <div *ngFor="let i of [1,2,3,4]"
+          style="width: 100px; height: 44px; background: #f8f9fa; border-radius: 22px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0 10px;">
+          <ion-skeleton-text animated
+            style="width: 24px; height: 24px; border-radius: 12px; margin-right: 8px;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 40px; height: 14px;"></ion-skeleton-text>
+        </div>
+      </div>
+    </section>
+
+    <!-- Meal Grid Skeleton -->
+    <section class="meals-grid-section">
+      <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div class="meal-item-card" *ngFor="let i of [1,2,3,4]"
+          style="background: white; border: 1px solid #f0f0f0; border-radius: 24px;">
+          <div style="height: 140px; background: #f8f9fa; border-radius: 24px; margin: 8px;">
+            <ion-skeleton-text animated style="width: 100%; height: 100%; border-radius: 24px;"></ion-skeleton-text>
+          </div>
+          <div style="padding: 0 15px 15px 15px;">
+            <ion-skeleton-text animated style="width: 80%; height: 16px; margin-bottom: 8px;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 40%; height: 16px;"></ion-skeleton-text>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="wallet-card-container" routerLink="/wallet" *ngIf="!isLoading">
     <div class="wallet-card">
       <div class="card-bg-mesh"></div>
       <div class="card-content">
         <div class="top-row">
           <span class="card-label">MEALMATE WALLET</span>
-          <img src="assets/logo/chef_hat.png" alt="Logo" class="mini-logo">
+          <div class="mini-logo">
+            <img src="assets/logo/chef_hat.png" alt="Logo">
+          </div>
         </div>
         <div class="balance-row">
           <span class="currency">₹</span>
@@ -44,18 +95,17 @@
           <div class="stat">
             <span class="s-lab">Credit</span>
             <span class="s-val">₹{{wallet.availableCredit}}</span>
-          </div>
-          <div class="stat">
+            <span class="dot">•</span>
             <span class="s-lab">Points</span>
             <span class="s-val">{{credits}} pts</span>
           </div>
-          <div class="chip">Active</div>
+          <div class="chip">ACTIVE</div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="content-wrapper">
+  <div class="content-wrapper" *ngIf="!isLoading">
 
     <!-- AI Concierge Section -->
     <section class="ai-concierge-section">
@@ -64,23 +114,38 @@
           <h2>AI Picks <ion-icon name="sparkles" class="sparkle"></ion-icon></h2>
           <p>Curated for your health profile</p>
         </div>
+        <ion-button fill="clear" size="small" (click)="navigateToAi()" class="ask-ai-btn">
+          TALK TO AI <ion-icon name="chevron-forward" slot="end"></ion-icon>
+        </ion-button>
       </div>
 
-      <div class="ai-hero-card" *ngIf="meals && meals.length > 0" (click)="addToCart(meals[0])">
-        <div class="hero-image">
-          <img [src]="meals[0]?.image" alt="AI Pick">
+      <div class="ai-hero-card" *ngIf="aiPicks && aiPicks.length > 0" (click)="addToCart(aiPicks[0])">
+        <div class="hero-image-left">
+          <img [src]="aiPicks[0]?.image || 'assets/onboarding/dal_chawal.png'" alt="AI Pick">
         </div>
-        <div class="hero-overlay">
+        <div class="hero-content-right">
           <div class="match-badge">98% Match</div>
           <div class="info">
-            <h3>{{meals[0]?.name}}</h3>
+            <h3>{{aiPicks[0]?.name || 'Dal Makhani'}}</h3>
             <p>Perfect for your high-protein diet</p>
             <div class="tags">
               <span>Low Cal</span>
               <span>Rich in Fiber</span>
             </div>
           </div>
+          <div class="action-bottom-right">
+            <ion-button fill="clear" class="arrow-btn">
+              <ion-icon name="arrow-forward-outline"></ion-icon>
+            </ion-button>
+          </div>
         </div>
+      </div>
+
+      <div class="pagination-dots">
+        <span class="dot active"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
       </div>
     </section>
 
@@ -89,7 +154,8 @@
       <div class="scroll-container">
         <div *ngFor="let cat of categories" class="category-pill" [class.active]="selectedCategory === cat"
           (click)="selectedCategory = cat">
-          {{cat}}
+          <ion-icon [name]="getCategoryIcon(cat)" class="cat-icon"></ion-icon>
+          <span>{{cat}}</span>
         </div>
       </div>
     </section>
@@ -107,7 +173,7 @@
             <div class="price-row">
               <span class="price">₹{{meal.price}}</span>
               <ion-button fill="clear" class="add-icon-btn" (click)="addToCart(meal)">
-                <ion-icon name="add-circle"></ion-icon>
+                <ion-icon name="add-outline"></ion-icon>
               </ion-button>
             </div>
           </div>
@@ -115,29 +181,41 @@
       </div>
     </section>
 
+    <!-- View All Menu -->
+    <div class="view-all-container">
+      <ion-button expand="block" fill="clear" class="view-all-btn">
+        <ion-icon name="grid-outline" slot="start"></ion-icon>
+        View All Menu
+      </ion-button>
+    </div>
+
     <!-- Custom Meal / Personal Chef Banner -->
     <div class="personal-chef-banner" (click)="createCustomMeal()">
-      <div class="banner-content">
+      <div class="banner-inner">
         <div class="text-side">
           <div class="badge">CONCIERGE</div>
           <h3>Personal Chef</h3>
           <p>Can't find what you like? Request a custom dish from our top agents.</p>
-          <ion-button fill="clear" class="request-btn">
-            Request Now <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
-          </ion-button>
         </div>
         <div class="icon-side">
           <ion-icon name="restaurant" class="chef-icon"></ion-icon>
         </div>
+      </div>
+      <div class="banner-action">
+        <ion-button fill="clear" class="request-btn">
+          REQUEST NOW <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+        </ion-button>
       </div>
     </div>
 
     <!-- Subscription Card -->
     <div class="sub-promo-card">
       <div class="promo-text">
+        <div class="badge">HEALTH PLANS</div>
         <h3>Stay Healthy Everyday</h3>
-        <p>Subscribe to weekly tiffin rotation</p>
-        <button class="promo-btn" (click)="openSubscriptionModal()">View Plans</button>
+        <p>Subscribe to weekly tiffin rotation plans curated by nutritionists.</p>
+        <button class="promo-btn" (click)="openSubscriptionModal()">VIEW PLANS <ion-icon
+            name="arrow-forward-outline"></ion-icon></button>
       </div>
       <div class="promo-img">
         <img src="assets/onboarding/dal_chawal.png" alt="Promo">

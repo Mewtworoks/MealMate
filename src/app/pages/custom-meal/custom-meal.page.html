@@ -1,21 +1,23 @@
-<ion-header class="ion-no-border concierge-header">
-  <ion-toolbar class="transparent-toolbar">
-    <ion-buttons slot="start">
-      <ion-button (click)="goBack()" class="back-pill">
+<ion-header class="ion-no-border sub-page-header">
+  <div class="header-curve-bg"></div>
+  <ion-toolbar class="transparent-toolbar" style="--padding-top: 5px;">
+    <div class="header-content">
+      <ion-button (click)="goBack()" class="back-btn-pill">
         <ion-icon name="arrow-back-outline"></ion-icon>
       </ion-button>
-    </ion-buttons>
-    <ion-title>Personal Chef Request</ion-title>
+      <div class="title-group">
+        <h1 class="page-title">Personal Chef</h1>
+        <p class="subtitle">Tell us your preferences</p>
+      </div>
+    </div>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="concierge-content">
-  <div class="header-accent-bg"></div>
-
+<ion-content class="concierge-content">
   <div class="content-wrapper animate-up">
-    
+
     <!-- Visual Hero -->
-    <div class="hero-section">
+    <div class="hero-card">
       <div class="hero-illustration">
         <img src="assets/onboarding/dal_makhani.png" alt="Chef Illustration" class="floating">
       </div>
@@ -27,28 +29,35 @@
 
     <!-- Dish Details Form -->
     <section class="form-container">
-      
       <div class="custom-input-group">
-        <span class="input-label">Dish Name</span>
+        <div class="label-row">
+          <span class="input-label">Dish Name</span>
+          <button class="ai-help-btn" (click)="consultAi()">
+            <ion-icon name="sparkles"></ion-icon> ASK AI
+          </button>
+        </div>
         <div class="input-box">
-          <input type="text" placeholder="e.g. Grandma's special Rajma" [(ngModel)]="mealName">
+          <input type="text" placeholder="e.g. Grandma's special Rajma" [(ngModel)]="mealName" (ngModelChange)="getPriceEstimate()">
         </div>
       </div>
 
       <div class="custom-input-group">
-        <span class="input-label">Special Instructions</span>
+        <div class="label-row">
+          <span class="input-label">Add your preferences (optional)</span>
+        </div>
         <div class="input-box textarea-box">
-          <textarea rows="4" placeholder="e.g. Less spicy, extra butter, no garlic" [(ngModel)]="details"></textarea>
+          <textarea rows="3" placeholder="e.g. Less spicy, extra butter, no garlic" [(ngModel)]="details" (ngModelChange)="getPriceEstimate()"></textarea>
+          <div class="char-counter">{{details.length || 0}}/200</div>
         </div>
       </div>
 
       <div class="selection-row">
-        <div class="pill-toggle" [class.active]="mealType === 'Veg'" (click)="mealType = 'Veg'">
-          <div class="indicator veg"></div> Veg
-        </div>
-        <div class="pill-toggle" [class.active]="mealType === 'Non-Veg'" (click)="mealType = 'Non-Veg'">
-          <div class="indicator non-veg"></div> Non-Veg
-        </div>
+        <button class="pill-toggle veg-pill" [class.selected]="mealType === 'Veg'" (click)="mealType = 'Veg'">
+          <div class="dot veg-dot"></div> Veg
+        </button>
+        <button class="pill-toggle non-veg-pill" [class.selected]="mealType === 'Non-Veg'" (click)="mealType = 'Non-Veg'">
+          <div class="dot non-veg-dot"></div> Non-Veg
+        </button>
       </div>
     </section>
 
@@ -56,36 +65,56 @@
     <section class="agent-selection">
       <h3 class="s-title">Choose Your Chef</h3>
       <div class="agent-scroll">
-        <div 
-          *ngFor="let agent of agents" 
-          class="agent-card" 
-          [class.selected]="selectedAgentId === agent.id"
-          (click)="selectedAgentId = agent.id"
-        >
-          <div class="avatar">{{agent.name.charAt(0)}}</div>
-          <div class="a-info">
-            <span class="a-name">{{agent.name}}</span>
-            <span class="a-rating">{{agent.rating}} ⭐</span>
-          </div>
-          <div class="check" *ngIf="selectedAgentId === agent.id">
+        <div *ngFor="let agent of agents; let i = index" class="agent-card" [class.selected]="selectedAgentId === agent.id" (click)="selectedAgentId = agent.id">
+          
+          <div class="check-circle" *ngIf="selectedAgentId === agent.id">
             <ion-icon name="checkmark-circle"></ion-icon>
           </div>
+
+          <div class="avatar">{{agent.name.charAt(0)}}</div>
+          
+          <div class="a-info">
+            <span class="a-name">{{agent.name}}</span>
+            <span class="a-meta"><ion-icon name="star" class="star-icon"></ion-icon> {{agent.rating}} <span class="divider">|</span> {{ [120, 95, 80][i] || 50 }}+ orders</span>
+          </div>
+
+          <div class="card-badge" [ngClass]="['top-rated', 'hygienic', 'homestyle'][i % 3]">
+            <ion-icon [name]="['ribbon', 'shield-checkmark', 'heart'][i % 3]"></ion-icon>
+            {{ ['Top Rated', 'Hygienic', 'Homestyle'][i % 3] }}
+          </div>
+
         </div>
       </div>
     </section>
 
-    <!-- Price Section -->
-    <div class="summary-section">
-      <div class="price-pill">
-        <span class="lab">Estimate Price</span>
-        <span class="val">₹150 - ₹250</span>
+    <!-- Estimate Price Dark Card -->
+    <div class="estimate-card">
+      <span class="est-label">ESTIMATE PRICE</span>
+      <div class="est-amount" *ngIf="!isEstimating">₹{{estimateMin}} - ₹{{estimateMax}}</div>
+      <div class="est-amount-loading" *ngIf="isEstimating">
+        <ion-spinner name="crescent" color="warning"></ion-spinner>
       </div>
-      <p class="disclaimer">Final price will be confirmed by the agent.</p>
+      <div class="dashed-line"></div>
+      <div class="est-footer">
+        <ion-icon name="bag-handle-outline"></ion-icon>
+        <span>Price may vary based on ingredients and portion.</span>
+      </div>
     </div>
-
-    <ion-button expand="block" shape="round" class="request-btn-large" (click)="submitOrder()">
-      Send Concierge Request
-    </ion-button>
 
   </div>
 </ion-content>
+
+<!-- Bottom Action Bar -->
+<ion-footer class="ion-no-border bottom-action-bar">
+  <div class="action-wrap">
+    <div class="info-block">
+      <div class="icon-circle">
+        <ion-icon name="shield-checkmark-outline"></ion-icon>
+      </div>
+      <span class="info-text">Final price will be<br>confirmed by the agent.</span>
+    </div>
+    <button class="continue-btn" (click)="submitOrder()" [disabled]="!mealName || !selectedAgentId">
+      CONTINUE <ion-icon name="arrow-forward-outline"></ion-icon>
+    </button>
+  </div>
+</ion-footer>

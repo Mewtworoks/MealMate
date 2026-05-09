@@ -8,7 +8,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'splash',
+    redirectTo: 'login',
     pathMatch: 'full'
   },
   {
@@ -59,9 +59,14 @@ const routes: Routes = [
     loadChildren: () => import('./pages/manage-menu/manage-menu.module').then( m => m.ManageMenuPageModule)
   },
   {
-    path: 'splash',
-    loadChildren: () => import('./pages/splash/splash.module').then( m => m.SplashPageModule)
-  }
+    path: 'subscribe',
+    loadChildren: () => import('./pages/subscribe/subscribe.module').then( m => m.SubscribePageModule)
+  },
+  {
+    path: 'add-meal',
+    loadChildren: () => import('./pages/add-meal/add-meal.module').then( m => m.AddMealPageModule)
+  },
+
 
 ];
 

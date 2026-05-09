@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastController, AlertController } from '@ionic/angular';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-profile',
@@ -37,7 +38,8 @@ export class ProfilePage implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private toastCtrl: ToastController,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private auth: AuthService
   ) { }
 
   ngOnInit() {
@@ -48,10 +50,13 @@ export class ProfilePage implements OnInit {
   }
 
   setupProfile() {
+    const authName = this.auth.userName;
+    const authEmail = this.auth.userEmail;
+
     if (this.userRole === 'agent') {
       this.userProfile = {
-        name: "Usha's Kitchen",
-        email: 'usha.chef@mealmate.com',
+        name: authName || "Usha's Kitchen",
+        email: authEmail || 'usha.chef@mealmate.com',
         avatar: '👩‍🍳',
         rating: 4.8,
         earnings: '₹12,450',
@@ -59,8 +64,8 @@ export class ProfilePage implements OnInit {
       };
     } else {
       this.userProfile = {
-        name: 'Alex Johnson',
-        email: 'alex.j@mealmate.com',
+        name: authName || 'Alex Johnson',
+        email: authEmail || 'alex.j@mealmate.com',
         avatar: '🙋‍♂️',
         credits: 450,
         orders: 12,
@@ -112,7 +117,8 @@ export class ProfilePage implements OnInit {
   }
 
   logout() {
-    this.router.navigate(['/login']);
+    this.auth.logout();
+    this.router.navigateByUrl('/login', { replaceUrl: true });
   }
 
   goBack() {

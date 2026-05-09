@@ -1,24 +1,14 @@
-<ion-header class="premium-header ion-no-border">
-  <div class="header-bg"></div>
+<ion-header class="ion-no-border premium-header">
+  <div class="header-curve-bg"></div>
   <ion-toolbar class="transparent-toolbar">
     <ion-buttons slot="start">
-      <ion-button (click)="goBack()">
-        <ion-icon name="chevron-back" class="nav-back-icon"></ion-icon>
+      <ion-button (click)="goBack()" class="back-btn-pill">
+        <ion-icon name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-    
-    <div class="header-content">
-      <div class="header-avatar">
-        <ion-icon name="sparkles"></ion-icon>
-      </div>
-      <div class="header-text">
-        <h1>AI Concierge</h1>
-        <p>Your smart dining assistant</p>
-      </div>
-    </div>
-
+    <ion-title class="page-title-text">AI Concierge</ion-title>
     <ion-buttons slot="end">
-      <ion-icon name="sparkles" class="top-sparkle"></ion-icon>
+      <ion-icon name="sparkles" style="color: #F5B74C; font-size: 1.5rem; margin-right: 14px;"></ion-icon>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -37,7 +27,7 @@
           <p [innerHTML]="msg.content"></p>
         </div>
         <div class="msg-meta">
-          <span class="time">{{ '7:30 PM' }}</span>
+          <span class="time">{{ formatTime() }}</span>
           <ion-icon name="checkmark-done" *ngIf="msg.role === 'user'" class="read-icon"></ion-icon>
         </div>
       </div>
@@ -65,10 +55,11 @@
   <div class="suggestions-wrapper" *ngIf="suggestions && suggestions.length > 0">
     <h3 class="suggestions-title">Try these</h3>
     <div class="suggestions-row">
-      <div *ngFor="let s of suggestions" class="sugg-card" (click)="sendMessage(s)">
+      <div *ngFor="let s of displayedSuggestions" class="sugg-card" (click)="sendMessage(s)">
         <div class="sugg-left">
-          <!-- Food icon for 'options', lightning for 'high-protein' or otherwise -->
-          <ion-icon [name]="s.includes('options') ? 'basket' : 'flash'" class="sugg-icon"></ion-icon>
+          <div class="sugg-icon-wrap" [ngClass]="s.toLowerCase().includes('protein') || s.toLowerCase().includes('flash') ? 'icon-bolt' : 'icon-food'">
+            <ion-icon [name]="s.toLowerCase().includes('protein') || s.toLowerCase().includes('flash') ? 'flash' : (s.toLowerCase().includes('options') ? 'basket' : 'restaurant')"></ion-icon>
+          </div>
           <span class="sugg-text">{{s}}</span>
         </div>
         <ion-icon name="chevron-forward" class="sugg-chevron"></ion-icon>

@@ -18,11 +18,11 @@ export class WalletPage implements OnInit, OnDestroy {
   availableCredit = 0;
   isLoading = true;
   isSettling = false;
-  isTopUp = false;
-
-  // Top-up presets
-  topUpAmounts = [100, 250, 500, 1000, 2000];
+  greeting = 'Good morning';
+  userName = 'Foodie';
+  userLocation = 'Fetching location...';
   selectedTopUp = 0;
+  isTopUp = false;
 
   private subs: Subscription[] = [];
 
@@ -45,11 +45,46 @@ export class WalletPage implements OnInit, OnDestroy {
       this.wallet.credits$.subscribe(c => this.loyaltyPoints = c)
     );
 
+    this.updateGreeting();
+    this.userName = this.auth.userName || 'Foodie';
+    this.fetchLocation();
+
     const userId = this.auth.userId;
     if (userId) {
       await this.wallet.loadWallet(userId);
     }
     this.isLoading = false;
+  }
+
+  fetchLocation() {
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          try {
+            const { latitude, longitude } = position.coords;
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+            const data = await res.json();
+            const town = data.address.suburb || data.address.neighbourhood || data.address.town || data.address.city;
+            const state = data.address.state || data.address.country;
+            this.userLocation = town ? `${town}, ${state}` : 'Current Location';
+          } catch (e) {
+            this.userLocation = 'Location Unknown';
+          }
+        },
+        () => {
+          this.userLocation = 'Location Disabled';
+        }
+      );
+    } else {
+      this.userLocation = 'Location Unavailable';
+    }
+  }
+
+  updateGreeting() {
+    const hour = new Date().getHours();
+    if (hour < 12) this.greeting = 'Good morning';
+    else if (hour < 17) this.greeting = 'Good afternoon';
+    else this.greeting = 'Good evening';
   }
 
   ngOnDestroy() {

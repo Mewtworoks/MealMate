@@ -73,7 +73,7 @@ export class SubscriptionService {
       totalDays: totalDays,
       currentDay: 1,
       totalPaid: data.totalPaid,
-      dailyDeduction: data.totalPaid / totalDays 
+      dailyDeduction: data.totalPaid / totalDays
     };
 
     const subs = [...this._subscriptions.value, sub];
@@ -84,7 +84,7 @@ export class SubscriptionService {
   getTodaysMeal(subscription: Subscription): RotationMeal {
     const start = new Date(subscription.startDate);
     const today = new Date();
-    
+
     // Normalize to midnight to get purely the day difference
     start.setHours(0, 0, 0, 0);
     const todayNormalized = new Date();
@@ -96,7 +96,7 @@ export class SubscriptionService {
 
     // If day is somehow negative (started in future), fallback to 0
     if (dayNumber < 0) dayNumber = 0;
-    
+
     const index = dayNumber % subscription.rotationMeals.length;
     return subscription.rotationMeals[index];
   }
@@ -116,7 +116,7 @@ export class SubscriptionService {
       // deduct from balance (Simulate sync since it's local only for this flow unless backend created)
       // Usually would be: await this.wallet.deductBalance(amount);
     } else {
-       // logic provided by prompt 
+      // logic provided by prompt 
     }
 
     // Auto order piece
@@ -149,34 +149,34 @@ export class SubscriptionService {
   getSchedule(subscription: Subscription): any[] {
     const schedule = [];
     const todayDate = new Date();
-    todayDate.setHours(0,0,0,0);
+    todayDate.setHours(0, 0, 0, 0);
 
     const startDate = new Date(subscription.startDate);
-    startDate.setHours(0,0,0,0);
+    startDate.setHours(0, 0, 0, 0);
 
     const daysElapsed = Math.floor((todayDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-    
+
     for (let i = 0; i < subscription.totalDays; i++) {
-        const mealIndex = i % subscription.rotationMeals.length;
-        const meal = subscription.rotationMeals[mealIndex];
-        
-        let status = '⏳ Upcoming';
-        let statusClass = 'upcoming';
+      const mealIndex = i % subscription.rotationMeals.length;
+      const meal = subscription.rotationMeals[mealIndex];
 
-        if (i < daysElapsed) {
-            status = '✅ Delivered';
-            statusClass = 'delivered';
-        } else if (i === daysElapsed) {
-            status = '🔄 Today';
-            statusClass = 'today';
-        }
+      let status = '⏳ Upcoming';
+      let statusClass = 'upcoming';
 
-        schedule.push({
-            day: i + 1,
-            mealName: meal.name,
-            status: status,
-            statusClass: statusClass
-        });
+      if (i < daysElapsed) {
+        status = '✅ Delivered';
+        statusClass = 'delivered';
+      } else if (i === daysElapsed) {
+        status = '🔄 Today';
+        statusClass = 'today';
+      }
+
+      schedule.push({
+        day: i + 1,
+        mealName: meal.name,
+        status: status,
+        statusClass: statusClass
+      });
     }
     return schedule;
   }

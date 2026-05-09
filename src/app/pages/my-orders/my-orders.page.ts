@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { OrderService, Order } from '../../services/order.service';
 import { Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
+import { AuthService } from '../../services/auth';
+import { SubscriptionService, Subscription, RotationMeal } from '../../services/subscription.service';
 
 @Component({
   selector: 'app-my-orders',
@@ -11,20 +13,37 @@ import { NavController } from '@ionic/angular';
 })
 export class MyOrdersPage implements OnInit {
   orders: Order[] = [];
+  subscriptions: Subscription[] = [];
   activeTab: 'active' | 'past' | 'subscriptions' = 'active';
+
+  // UI state for schedule view
+  viewingScheduleFor: string | null = null;
+  scheduleView: any[] = [];
 
   constructor(
     private orderService: OrderService,
+    private auth: AuthService,
     private router: Router,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private subscriptionService: SubscriptionService
   ) { }
 
   ngOnInit() {
+    const userId = this.auth.userId;
+    if (userId) {
+      this.orderService.refreshUserOrders(userId);
+    }
+
+    this.subscriptionService.subscriptions$.subscribe(subs => {
+      if (userId) {
+        this.subscriptions = subs.filter(s => s.customerId === userId);
+      }
+    });
+
     this.orderService.orders$.subscribe(orders => {
       this.orders = orders;
-      // If we just subscribed, auto-switch to subscriptions tab
-      if (this.subscriptionOrders.length > 0 && this.activeOrders.length === 0) {
-         this.activeTab = 'subscriptions';
+      if (this.subscriptions.length > 0 && this.activeOrders.length === 0) {
+        this.activeTab = 'subscriptions';
       }
     });
   }
@@ -37,9 +56,59 @@ export class MyOrdersPage implements OnInit {
     return this.orders.filter(o => !o.subscriptionId && ['Delivered', 'Rejected'].includes(o.status));
   }
 
-  get subscriptionOrders(): Order[] {
-    return this.orders.filter(o => o.subscriptionId);
+  // --- Subscription Logic ---
+
+  getTodaysMeal(sub: Subscription): RotationMeal {
+    return this.subscriptionService.getTodaysMeal(sub);
   }
+
+  getNextMeal(sub: Subscription): RotationMeal {
+    const start = new Date(sub.startDate);
+    start.setHours(0, 0, 0, 0);
+
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+
+    let dayNumber = Math.floor((tomorrow.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+    if (dayNumber < 0) dayNumber = 0;
+
+    return sub.rotationMeals[dayNumber % sub.rotationMeals.length];
+  }
+
+  getDaysElapsed(sub: Subscription): number {
+    const start = new Date(sub.startDate);
+    start.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let elapsed = Math.floor((today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+    if (elapsed < 1) elapsed = 1;
+    return elapsed;
+  }
+
+  getDaysRemaining(sub: Subscription): number {
+    return sub.totalDays - this.getDaysElapsed(sub);
+  }
+
+  togglePause(sub: Subscription) {
+    if (sub.status === 'Active') {
+      this.subscriptionService.pauseSubscription(sub.id);
+    } else if (sub.status === 'Paused') {
+      this.subscriptionService.resumeSubscription(sub.id);
+    }
+  }
+
+  viewSchedule(sub: Subscription) {
+    if (this.viewingScheduleFor === sub.id) {
+      this.viewingScheduleFor = null;
+    } else {
+      this.viewingScheduleFor = sub.id;
+      this.scheduleView = this.subscriptionService.getSchedule(sub);
+    }
+  }
+
+  // -------------------------
 
   getStatusIcon(status: string): string {
     switch (status) {

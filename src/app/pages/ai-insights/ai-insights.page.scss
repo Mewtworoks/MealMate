@@ -1,131 +1,64 @@
 /* ══════════════════════════════════════════════════════════════════════
-   AI Concierge — Pixel-Perfect Redesign (Decoupled from Global Tokens)
+   AI Concierge — Premium Chat UI (Matching Reference Screenshot)
    ══════════════════════════════════════════════════════════════════════ */
 
-/* HEADER */
-.premium-header {
-  position: relative;
-  height: 105px;
-  background: white;
+@import '../../../global.scss';
 
-  .header-bg {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: radial-gradient(circle at top right, #FFEBD1 0%, #FFF5EF 50%, #FFFFFF 100%);
-    box-shadow: 0 1px 15px rgba(0,0,0,0.02);
-    z-index: 0;
-  }
+/* Replaced header with consistent global styles */
 
-  .transparent-toolbar {
-    --background: transparent;
-    --border-width: 0;
-    --padding-top: 15px;
-    z-index: 10;
-  }
-
-  .nav-back-icon {
-    color: #1A1A1A;
-    font-size: 1.6rem;
-    font-weight: 800;
-  }
-
-  .header-content {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-
-    .header-avatar {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #FF9060 0%, #FF6E35 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 12px rgba(255, 110, 53, 0.25);
-
-      ion-icon { color: white; font-size: 1.4rem; }
-    }
-
-    .header-text {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      
-      h1 {
-        margin: 0;
-        font-size: 1.25rem;
-        font-weight: 800;
-        color: #2D3436;
-        letter-spacing: -0.2px;
-      }
-      p {
-        margin: 2px 0 0 0;
-        font-size: 0.75rem;
-        color: #8E7C76;
-        font-weight: 500;
-      }
-    }
-  }
-
-  .top-sparkle {
-    color: #FFD25F;
-    font-size: 1.8rem;
-    margin-right: 15px;
-    opacity: 0.9;
-  }
-}
-
-/* CHAT CONTENT */
+/* ── CHAT CONTENT ───────────────────────────────────────────────────── */
 .chat-content {
   --background: #FFFFFF;
 }
 
 .messages-container {
-  padding: 24px 20px;
+  padding: 22px 18px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
 }
 
+/* ── MESSAGE ROW ────────────────────────────────────────────────────── */
 .msg-row {
   display: flex;
-  gap: 12px;
-  align-items: flex-start;
+  gap: 10px;
+  align-items: flex-end;
   width: 100%;
-  animation: slideUp 0.3s ease-out;
+  animation: slideUp 0.35s ease-out;
 
   .ai-avatar {
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #FF9060 0%, #FF6E35 100%);
+    background: linear-gradient(135deg, #FF9A60 0%, $mm-primary 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    align-self: center;
     flex-shrink: 0;
-    box-shadow: 0 4px 10px rgba(255, 110, 53, 0.15);
+    box-shadow: 0 3px 10px rgba($mm-primary, 0.18);
+    margin-bottom: 22px;
 
-    ion-icon { color: white; font-size: 1.2rem; }
+    ion-icon { color: white; font-size: 1.1rem; }
   }
 
   .msg-content {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    max-width: 82%;
+    gap: 5px;
+    max-width: 80%;
   }
 
   .bubble {
     padding: 14px 18px;
-    font-size: 0.95rem;
-    line-height: 1.5;
+    font-size: $mm-font-md;
+    line-height: 1.55;
     font-weight: 500;
-    color: #333333;
+    color: #333;
     background: #FAFAFA;
-    border-radius: 16px 16px 16px 4px;
-    box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+    border-radius: 20px 20px 20px 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.03);
     p { margin: 0; }
   }
 
@@ -133,12 +66,20 @@
     display: flex;
     align-items: center;
     gap: 4px;
+    padding-left: 4px;
 
-    .time { font-size: 0.65rem; color: #BDBDBD; font-weight: 600; }
-    .read-icon { font-size: 0.8rem; color: #BDBDBD; }
+    .time {
+      font-size: 0.65rem;
+      color: #B8B8B8;
+      font-weight: 600;
+    }
+    .read-icon {
+      font-size: 0.8rem;
+      color: #B8B8B8;
+    }
   }
 
-  /* User Message Styles */
+  /* ── User Message Overrides ─────────────────────────────────────── */
   &.user {
     flex-direction: row-reverse;
     align-self: flex-end;
@@ -146,33 +87,36 @@
     .msg-content { align-items: flex-end; }
 
     .bubble {
-      background: linear-gradient(135deg, #FF8E5C 0%, #FF6E35 100%);
+      background: linear-gradient(135deg, #FF8E5E 0%, #FF6225 100%);
       color: white;
-      border-radius: 16px 16px 4px 16px;
-      box-shadow: 0 4px 15px rgba(255, 110, 53, 0.2);
+      border-radius: 20px 20px 6px 20px;
+      box-shadow: 0 6px 16px rgba(255, 98, 37, 0.28);
+      border: none;
     }
 
     .msg-meta {
       justify-content: flex-end;
-      padding-right: 2px;
+      padding-right: 4px;
+      padding-left: 0;
     }
   }
 }
 
-/* FOOTER & SUGGESTIONS */
+/* ── FOOTER & SUGGESTIONS ───────────────────────────────────────────── */
 .premium-footer {
   background: white;
-  border-top: 1px solid rgba(0,0,0,0.04);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .suggestions-wrapper {
-  padding: 16px 20px 0 20px;
+  padding: 18px 20px 0 20px;
 
   .suggestions-title {
-    margin: 0 0 12px 0;
-    font-size: 0.85rem;
+    margin: 0 0 14px 0;
+    font-size: $mm-font-sm;
     font-weight: 800;
-    color: #2D3436;
+    color: $mm-text-dark;
+    letter-spacing: -0.2px;
   }
 
   .suggestions-row {
@@ -186,13 +130,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #FFFaf5;
-    padding: 12px 14px;
-    border-radius: 12px;
-    transition: transform 0.2s;
+    background: $mm-primary-bg;
+    padding: 14px 14px;
+    border-radius: $mm-radius-sm;
+    border: 1px solid rgba($mm-primary, 0.06);
+    transition: transform 0.2s ease, background 0.2s ease;
 
     &:active {
-      transform: scale(0.97);
+      transform: scale(0.96);
       background: #FFF0E0;
     }
 
@@ -201,53 +146,82 @@
       align-items: center;
       gap: 10px;
 
-      .sugg-icon { color: #FF6E35; font-size: 1.4rem; }
+      .sugg-icon-wrap {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        ion-icon { font-size: 1.2rem; }
+
+        &.icon-food {
+          background: #FFEAD6;
+          ion-icon { color: #E67A30; }
+        }
+        &.icon-bolt {
+          background: #FFF3D6;
+          ion-icon { color: #D4950A; }
+        }
+      }
+
       .sugg-text {
-        font-size: 0.75rem;
+        font-size: $mm-font-xs;
         font-weight: 600;
         color: #3D3D3D;
-        line-height: 1.3;
-        max-width: 90px;
+        line-height: 1.35;
+        max-width: 88px;
       }
     }
 
-    .sugg-chevron { color: #A0A0A0; font-size: 0.95rem; }
+    .sugg-chevron {
+      color: #C0C0C0;
+      font-size: 0.9rem;
+    }
   }
 }
 
-/* INPUT BAR */
+/* ── INPUT BAR ──────────────────────────────────────────────────────── */
 .input-wrapper {
-  padding: 16px 20px 30px 20px;
+  padding: 16px 20px 90px 20px;
 
   .input-box {
     display: flex;
     align-items: center;
     background: white;
     border-radius: 30px;
-    padding: 6px;
-    box-shadow: 0 6px 25px rgba(0,0,0,0.05);
-    border: 1px solid rgba(0,0,0,0.03);
+    padding: 5px 6px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.04);
 
     .plus-circle {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 36px;
-      height: 36px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
-      background: #FFF4ED;
+      background: $mm-primary-surface;
       margin-left: 2px;
+      flex-shrink: 0;
 
-      ion-icon { color: #FF6E35; font-size: 1.4rem; font-weight: bold; }
+      ion-icon {
+        color: $mm-primary;
+        font-size: 1.35rem;
+        font-weight: bold;
+      }
     }
 
     .chat-input {
       flex: 1;
       --padding-start: 12px;
-      font-size: 0.95rem;
+      --padding-end: 4px;
+      font-size: $mm-font-md;
       font-weight: 500;
       color: #333;
-      --placeholder-color: #BDBDBD;
+      --placeholder-color: #C0C0C0;
       --placeholder-opacity: 1;
     }
 
@@ -258,18 +232,28 @@
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      background: #FF6E35;
+      background: $mm-primary;
       margin-right: 2px;
-      box-shadow: 0 2px 10px rgba(255, 110, 53, 0.3);
+      flex-shrink: 0;
+      box-shadow: 0 3px 12px rgba($mm-primary, 0.32);
+      transition: transform 0.15s ease;
 
-      ion-icon { color: white; font-size: 1.2rem; margin-left: -2px; }
+      &:active {
+        transform: scale(0.92);
+      }
+
+      ion-icon {
+        color: white;
+        font-size: 1.15rem;
+        margin-left: -2px;
+      }
     }
   }
 }
 
-/* ANIMATIONS */
+/* ── ANIMATIONS ─────────────────────────────────────────────────────── */
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -277,12 +261,14 @@
   display: flex !important;
   align-items: center;
   gap: 5px;
-  padding: 16px 20px !important;
+  padding: 16px 22px !important;
   width: fit-content;
+  background: #F5F5F5 !important;
 
   .dot {
-    width: 6px; height: 6px;
-    background: #BDBDBD;
+    width: 7px;
+    height: 7px;
+    background: #C0C0C0;
     border-radius: 50%;
     animation: bounce 1.4s infinite ease-in-out;
     &:nth-child(1) { animation-delay: -0.32s; }

@@ -33,6 +33,21 @@ export class AuthService {
 
       localStorage.setItem('mealmate_user_id', userId);
       localStorage.setItem('mealmate_role', role);
+      
+      const parsedName = userData?.fullName || userData?.FullName || userData?.name;
+      if (parsedName) {
+        localStorage.setItem('mealmate_username', parsedName);
+      } else {
+        // Fallback for demo
+        localStorage.setItem('mealmate_username', 'Foodie');
+      }
+
+      const parsedEmail = userData?.email || userData?.Email;
+      if (parsedEmail) {
+        localStorage.setItem('mealmate_useremail', parsedEmail);
+      } else {
+        localStorage.setItem('mealmate_useremail', 'hello@mealmate.com');
+      }
 
       return res.user;
     }
@@ -42,6 +57,18 @@ export class AuthService {
 
   get userId(): string | null {
     return this._userId || localStorage.getItem('mealmate_user_id');
+  }
+
+  get userName(): string | null {
+    const name = localStorage.getItem('mealmate_username');
+    if (!name || name === 'null' || name === 'undefined') return null;
+    return name;
+  }
+
+  get userEmail(): string | null {
+    const email = localStorage.getItem('mealmate_useremail');
+    if (!email || email === 'null' || email === 'undefined') return null;
+    return email;
   }
 
   setSession(role: 'customer' | 'agent') {
@@ -64,5 +91,16 @@ export class AuthService {
     this._userId = null;
     localStorage.removeItem('mealmate_role');
     localStorage.removeItem('mealmate_user_id');
+    localStorage.removeItem('mealmate_username');
+    localStorage.removeItem('mealmate_useremail');
+
+    // Force Native Google Logout to clear session and show account picker next time
+    const win = (window as any);
+    if (win.plugins && win.plugins.googleplus) {
+      win.plugins.googleplus.logout(
+        (msg: any) => console.log('Native Google Logout Success'),
+        (err: any) => console.error('Native Google Logout Error:', err)
+      );
+    }
   }
 }

@@ -1,0 +1,446 @@
+.premium-content {
+  --background: #fdfcfb;
+}
+
+/* Removed old header CSS */
+
+.content-wrapper {
+  padding: 10px 16px 40px;
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 40px;
+  text-align: center;
+
+  .empty-icon-box {
+    width: 100px;
+    height: 100px;
+    background: #FFF5EE;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+
+    ion-icon {
+      font-size: 3rem;
+      color: #FFB088;
+    }
+  }
+
+  h2 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #483129;
+    margin-bottom: 8px;
+  }
+
+  p {
+    color: #8E7C76;
+    margin-bottom: 24px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    max-width: 260px;
+  }
+
+  .browse-btn {
+    --background: #FF7235;
+    --border-radius: 14px;
+    --box-shadow: 0 8px 20px rgba(255, 114, 53, 0.25);
+    max-width: 200px;
+    font-weight: 700;
+  }
+}
+
+/* Meals Grid */
+.meals-grid-section {
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .meal-item-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+
+    .card-thumb {
+      position: relative;
+      height: 110px;
+      background: #f9fafb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+
+      img {
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+      }
+
+      .type-indicator {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 12px;
+        height: 12px;
+        border-radius: 4px;
+        background: #4ade80;
+        border: 2px solid white;
+
+        &.non-veg {
+          background: #f87171;
+        }
+      }
+    }
+
+    .card-body {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+
+      .category-tag {
+        font-size: 0.65rem;
+        color: #FF7235;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+
+      .meal-name {
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: #483129;
+        margin: 0 0 4px 0;
+        line-height: 1.2;
+      }
+
+      .meal-desc {
+        font-size: 0.75rem;
+        color: #8E7C76;
+        margin: 0;
+        margin-bottom: auto;
+      }
+
+      .price-row {
+        margin-top: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .price {
+          font-size: 0.95rem;
+          font-weight: 800;
+          color: #483129;
+        }
+
+        .toggle-wrap {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+
+          .toggle-lab {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #8E7C76;
+
+            &.active {
+              color: #4ade80;
+            }
+          }
+
+          ion-toggle {
+            --background: #E5E7EB;
+            --handle-background: white;
+            --background-checked: #4ade80;
+            width: 36px;
+            height: 22px;
+            padding: 0;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* Light Premium Modal */
+.light-modal {
+  --border-radius: 28px 28px 0 0;
+
+  .modal-toolbar {
+    --background: white;
+    --border-width: 0;
+    padding-top: 10px;
+
+    ion-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #483129;
+    }
+
+    .close-btn {
+      --color: #8E7C76;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+  }
+}
+
+.light-modal-content {
+  --background: #f8f6f4;
+
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-bottom: 20px;
+  }
+
+  .form-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #483129;
+    margin-bottom: 12px;
+    display: block;
+    padding-left: 4px;
+  }
+
+  .photo-upload-box {
+    width: 100%;
+    height: 120px;
+    border: 2px dashed #E5E7EB;
+    border-radius: 20px;
+    background: #fdfcfb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.2s ease;
+    cursor: pointer;
+
+    &:active {
+      transform: scale(0.98);
+      background: #f3f4f6;
+    }
+
+    .empty-upload {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+
+      .icon-circle {
+        width: 44px;
+        height: 44px;
+        background: #FFF5EE;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        ion-icon {
+          color: #FF7235;
+          font-size: 1.4rem;
+        }
+      }
+
+      span {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #8E7C76;
+      }
+    }
+
+    .preview-wrap {
+      width: 100%;
+      height: 100%;
+      position: relative;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 10px;
+        background: transparent;
+      }
+
+      .edit-overlay {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        ion-icon {
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }
+
+  .input-card {
+    background: white;
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+
+    &.half {
+      flex: 1;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+
+      label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: #8E7C76;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+      }
+
+      input,
+      textarea,
+      .custom-select {
+        border: none;
+        background: transparent;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #483129;
+        outline: none;
+        width: 100%;
+
+        &::placeholder {
+          color: #D1D5DB;
+          font-weight: 500;
+        }
+      }
+
+      textarea {
+        resize: none;
+        height: 60px;
+        font-size: 0.9rem;
+        line-height: 1.4;
+      }
+    }
+  }
+
+  .input-row {
+    display: flex;
+    gap: 12px;
+  }
+
+  .type-card {
+    .type-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #8E7C76;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .type-picker {
+      display: flex;
+      gap: 10px;
+
+      .type-btn {
+        flex: 1;
+        padding: 12px;
+        border-radius: 14px;
+        border: 2px solid #F3F4F6;
+        background: white;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #8E7C76;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s;
+
+        .veg-icon,
+        .nonveg-icon {
+          width: 14px;
+          height: 14px;
+          border-radius: 4px;
+          border: 2px solid;
+        }
+
+        .veg-icon {
+          border-color: #4ade80;
+          background: rgba(74, 222, 128, 0.2);
+        }
+
+        .nonveg-icon {
+          border-color: #f87171;
+          background: rgba(248, 113, 113, 0.2);
+        }
+
+        &.active.veg {
+          border-color: #4ade80;
+          background: #F0FFF4;
+          color: #16a34a;
+        }
+
+        &.active.nonveg {
+          border-color: #f87171;
+          background: #FEF2F2;
+          color: #dc2626;
+        }
+      }
+    }
+  }
+}
+
+.light-modal-footer {
+  background: white;
+  padding: 16px 20px 24px;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.03);
+
+  .action-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 16px;
+    border: none;
+    background: #FF7235;
+    color: white;
+    font-size: 1rem;
+    font-weight: 800;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 8px 20px rgba(255, 114, 53, 0.25);
+
+    &:disabled {
+      opacity: 0.5;
+      box-shadow: none;
+    }
+
+    ion-icon {
+      font-size: 1.2rem;
+    }
+  }
+}
