@@ -1,0 +1,708 @@
+/* ==========================================================================
+   Agent Earnings Page — Premium MealMate Styles
+   ========================================================================== */
+
+.earnings-content {
+  --background: #FCFAF8;
+
+  .earnings-wrapper {
+    padding: 16px 16px 140px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+
+/* ===== Greeting Section ===== */
+.greeting-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  .greeting-left {
+    .greeting-line {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #4B5563;
+      margin: 0;
+
+      .chef-highlight {
+        color: #FF7235;
+        font-weight: 800;
+      }
+    }
+
+    .greeting-sub {
+      font-size: 0.75rem;
+      color: #9CA3AF;
+      margin: 4px 0 0 0;
+      font-weight: 500;
+    }
+  }
+
+  .greeting-coins-decor {
+    position: relative;
+    width: 56px;
+    height: 40px;
+
+    .coin {
+      position: absolute;
+      font-size: 1.3rem;
+      animation: coinFloat 2.5s ease-in-out infinite;
+
+      &.c1 { top: 0; right: 0; animation-delay: 0s; }
+      &.c2 { top: 10px; right: 22px; animation-delay: 0.4s; font-size: 1rem; }
+      &.c3 { top: 18px; right: 6px; animation-delay: 0.8s; font-size: 0.9rem; }
+    }
+  }
+}
+
+@keyframes coinFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* ===== Hero Earnings Card ===== */
+.hero-earnings-card {
+  position: relative;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #FF7235 0%, #FF9A5C 40%, #FF7235 100%);
+  padding: 24px;
+  color: white;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(255, 114, 53, 0.3);
+
+  .hero-card-bg-mesh {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 90% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
+      radial-gradient(circle at 10% 80%, rgba(255,255,255,0.06) 0%, transparent 40%);
+    pointer-events: none;
+  }
+
+  .hero-card-content {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    z-index: 2;
+  }
+
+  .hero-left {
+    flex: 1;
+
+    .hero-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      opacity: 0.85;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .hero-amount {
+      font-size: 2.8rem;
+      font-weight: 900;
+      margin: 4px 0 8px 0;
+      line-height: 1;
+      letter-spacing: -1px;
+    }
+
+    .hero-trend {
+      font-size: 0.7rem;
+      opacity: 0.9;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 600;
+
+      ion-icon {
+        font-size: 0.85rem;
+      }
+    }
+  }
+
+  .hero-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+
+    .hero-orders-block,
+    .hero-avg-block {
+      text-align: right;
+    }
+
+    .hero-orders-label,
+    .hero-avg-label {
+      font-size: 0.65rem;
+      opacity: 0.8;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .hero-orders-val {
+      font-size: 2rem;
+      font-weight: 900;
+      margin: 0;
+      line-height: 1.1;
+    }
+
+    .hero-avg-val {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin: 0;
+      line-height: 1.1;
+    }
+  }
+
+  .hero-coin-decor {
+    position: absolute;
+    right: 16px;
+    bottom: -8px;
+    opacity: 0.4;
+    z-index: 1;
+  }
+}
+
+/* ===== Quick Stats Row ===== */
+.quick-stats-row {
+  display: flex;
+  gap: 10px;
+}
+
+.qs-card {
+  flex: 1;
+  background: white;
+  border-radius: 16px;
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.02);
+  border: 1px solid #F3F4F6;
+  text-align: center;
+
+  .qs-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    color: white;
+
+    &.orange-bg { background: #FF7235; }
+    &.blue-bg { background: #3B82F6; }
+    &.gold-bg { background: #F59E0B; }
+  }
+
+  .qs-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .qs-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: #9CA3AF;
+    text-transform: uppercase;
+  }
+
+  .qs-value {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #1F2937;
+    margin: 0;
+    line-height: 1.1;
+  }
+
+  .qs-sub {
+    font-size: 0.65rem;
+    font-weight: 700;
+
+    &.orange-text { color: #FF7235; }
+    &.blue-text { color: #3B82F6; }
+    &.gold-text { color: #F59E0B; }
+  }
+}
+
+/* ===== Shared Section Styles ===== */
+.section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+
+  .section-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #1F2937;
+    margin: 0;
+  }
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #FF7235;
+  font-size: 0.75rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+
+  ion-icon {
+    font-size: 0.85rem;
+  }
+}
+
+/* ===== Weekly Bar Chart ===== */
+.chart-section {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.02);
+  border: 1px solid #F3F4F6;
+}
+
+.bar-chart-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 180px;
+  padding-top: 30px;
+  gap: 6px;
+}
+
+.chart-bar-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+  gap: 6px;
+
+  .bar-value-label {
+    font-size: 0.55rem;
+    font-weight: 700;
+    color: #9CA3AF;
+    white-space: nowrap;
+  }
+
+  .chart-bar {
+    width: 100%;
+    max-width: 36px;
+    border-radius: 8px 8px 4px 4px;
+    background: #FFD4BC;
+    transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 8px;
+
+    &.today {
+      background: #FF7235;
+      box-shadow: 0 4px 12px rgba(255, 114, 53, 0.3);
+    }
+  }
+
+  .bar-day-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #9CA3AF;
+    margin-top: 4px;
+
+    &.today {
+      color: #FF7235;
+      font-weight: 800;
+    }
+  }
+}
+
+/* ===== Advance Deduction Section ===== */
+.advance-section {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.02);
+  border: 1px solid #F3F4F6;
+}
+
+.advance-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+
+  .adv-stat-item {
+    background: #FAFAFA;
+    border-radius: 12px;
+    padding: 10px 8px;
+    text-align: center;
+
+    .adv-stat-label {
+      font-size: 0.55rem;
+      font-weight: 700;
+      color: #9CA3AF;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .adv-stat-val {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #1F2937;
+      margin: 0;
+
+      &.accent {
+        color: #FF7235;
+        font-size: 1.1rem;
+      }
+    }
+
+    &.highlight {
+      background: #FFF5EE;
+      border: 1px solid #FFE0CC;
+    }
+  }
+}
+
+.advance-progress-bar-container {
+  height: 6px;
+  background: #F3F4F6;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 8px;
+
+  .advance-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #FF7235, #FF9A5C);
+    border-radius: 3px;
+    transition: width 0.6s ease;
+  }
+}
+
+.advance-footer-text {
+  font-size: 0.7rem;
+  color: #9CA3AF;
+  margin: 0;
+  font-weight: 600;
+}
+
+/* ===== Pending Payout Section ===== */
+.payout-section {
+  .section-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #1F2937;
+    margin: 0 0 14px 0;
+  }
+}
+
+.payout-card {
+  background: white;
+  border-radius: 20px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.02);
+  border: 1px solid #F3F4F6;
+  margin-bottom: 12px;
+
+  .payout-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .payout-icon-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #ECFDF5;
+    color: #10B981;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+  }
+
+  .payout-info {
+    .payout-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #9CA3AF;
+      text-transform: uppercase;
+      display: block;
+    }
+
+    .payout-amount {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #1F2937;
+      margin: 2px 0;
+      line-height: 1;
+    }
+
+    .payout-sub {
+      font-size: 0.65rem;
+      color: #6B7280;
+      font-weight: 600;
+    }
+  }
+
+  .payout-right {
+    .withdraw-btn {
+      background: #10B981;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 110px;
+
+      &:active {
+        transform: scale(0.96);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .withdraw-spinner {
+        --color: white;
+        width: 18px;
+        height: 18px;
+      }
+    }
+  }
+}
+
+.payout-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  color: #6B7280;
+  font-weight: 600;
+  margin-bottom: 6px;
+
+  .meta-icon {
+    font-size: 1rem;
+
+    &.green { color: #10B981; }
+    &.muted { color: #9CA3AF; }
+  }
+}
+
+/* ===== Recent Orders Section ===== */
+.recent-orders-section {
+  .section-header-row {
+    margin-bottom: 12px;
+  }
+}
+
+.recent-order-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  border: 1px solid #F3F4F6;
+  transition: all 0.2s;
+
+  &:active {
+    background: #FAFAFA;
+  }
+
+  .ro-image-container {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #F3F4F6;
+    flex-shrink: 0;
+    border: 2px solid #FFF5EE;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .ro-details {
+    flex: 1;
+    min-width: 0;
+
+    .ro-meal-name {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #1F2937;
+      margin: 0 0 2px 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ro-meta {
+      font-size: 0.7rem;
+      color: #9CA3AF;
+      font-weight: 600;
+      margin: 0;
+    }
+  }
+
+  .ro-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    flex-shrink: 0;
+
+    .ro-earnings {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #10B981;
+    }
+
+    .ro-time {
+      font-size: 0.65rem;
+      color: #9CA3AF;
+      font-weight: 600;
+    }
+  }
+
+  .ro-chevron {
+    font-size: 1rem;
+    color: #D1D5DB;
+    flex-shrink: 0;
+  }
+}
+
+.empty-state-mini {
+  text-align: center;
+  padding: 30px 20px;
+  background: white;
+  border-radius: 16px;
+  border: 1.5px dashed #E5E7EB;
+
+  ion-icon {
+    font-size: 2.5rem;
+    color: #FFB088;
+    margin-bottom: 8px;
+  }
+
+  p {
+    font-size: 0.8rem;
+    color: #8E7C76;
+    margin: 0;
+  }
+}
+
+/* ===== Monthly Summary Section ===== */
+.monthly-section {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.02);
+  border: 1px solid #F3F4F6;
+}
+
+.monthly-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+
+  .monthly-stat-item {
+    background: #FAFAFA;
+    border-radius: 14px;
+    padding: 14px;
+    text-align: center;
+
+    .ms-label {
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: #9CA3AF;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .ms-value {
+      font-size: 1.2rem;
+      font-weight: 900;
+      margin: 0;
+
+      &.orange-text { color: #FF7235; }
+      &.red-text { color: #EF4444; }
+      &.green-text { color: #10B981; }
+      &.dark-text { color: #1F2937; }
+    }
+  }
+}
+
+/* ===== Period Filter Button ===== */
+.period-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: #10B981;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.2);
+  transition: all 0.2s;
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  ion-icon {
+    font-size: 0.9rem;
+  }
+}
+
+/* ===== Animation ===== */
+.earnings-wrapper > * {
+  animation: earningsFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@for $i from 1 through 10 {
+  .earnings-wrapper > *:nth-child(#{$i}) {
+    animation-delay: #{$i * 0.05}s;
+  }
+}
+
+@keyframes earningsFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

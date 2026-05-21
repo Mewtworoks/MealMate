@@ -2,7 +2,8 @@
   <ion-router-outlet></ion-router-outlet>
   
   <div class="premium-tabs-container" *ngIf="showTabs()">
-    <ion-tab-bar slot="bottom" class="premium-tab-bar">
+    <!-- Customer Tab Bar -->
+    <ion-tab-bar slot="bottom" class="premium-tab-bar" *ngIf="getRole() !== 'agent'">
       <ion-tab-button routerLink="/customer-home" routerLinkActive="tab-selected" [routerLinkActiveOptions]="{exact: true}">
         <ion-icon class="icon-outline" name="home-outline"></ion-icon>
         <ion-icon class="icon-solid" name="home"></ion-icon>
@@ -10,24 +11,59 @@
       </ion-tab-button>
 
       <ion-tab-button routerLink="/my-orders" routerLinkActive="tab-selected" [routerLinkActiveOptions]="{exact: true}">
-        <ion-icon class="icon-outline" name="document-text-outline"></ion-icon>
-        <ion-icon class="icon-solid" name="document-text"></ion-icon>
+        <ion-icon class="icon-outline" name="bag-outline"></ion-icon>
+        <ion-icon class="icon-solid" name="bag"></ion-icon>
         <span class="tab-label">Orders</span>
       </ion-tab-button>
 
-      <ion-tab-button routerLink="/wallet" routerLinkActive="tab-selected" [routerLinkActiveOptions]="{exact: true}">
-        <ion-icon class="icon-outline" name="wallet-outline"></ion-icon>
-        <ion-icon class="icon-solid" name="wallet"></ion-icon>
-        <span class="tab-label">Wallet</span>
+      <!-- Center AI Button (Chef Hat Logo) -->
+      <ion-tab-button routerLink="/ai-concierge" class="center-ai-tab" routerLinkActive="tab-selected" [routerLinkActiveOptions]="{exact: true}">
+        <div class="center-logo-btn">
+          <img src="assets/logo/chef_hat.png" alt="AI" class="center-logo-img">
+        </div>
       </ion-tab-button>
 
-      <ion-tab-button routerLink="/ai-concierge" routerLinkActive="tab-selected" [routerLinkActiveOptions]="{exact: true}">
+      <ion-tab-button routerLink="/wallet" routerLinkActive="tab-selected" [routerLinkActiveOptions]="{exact: true}">
         <ion-icon class="icon-outline" name="fitness-outline"></ion-icon>
         <ion-icon class="icon-solid" name="fitness"></ion-icon>
         <span class="tab-label">Health</span>
       </ion-tab-button>
 
       <ion-tab-button routerLink="/profile" [queryParams]="{role: 'customer'}" routerLinkActive="tab-selected" [routerLinkActiveOptions]="{exact: false}">
+        <ion-icon class="icon-outline" name="person-outline"></ion-icon>
+        <ion-icon class="icon-solid" name="person"></ion-icon>
+        <span class="tab-label">Profile</span>
+      </ion-tab-button>
+    </ion-tab-bar>
+
+    <!-- Agent Tab Bar -->
+    <ion-tab-bar slot="bottom" class="premium-tab-bar agent-tab-bar" *ngIf="getRole() === 'agent'">
+      <ion-tab-button routerLink="/agent-home" routerLinkActive="tab-selected" [routerLinkActiveOptions]="{exact: true}">
+        <ion-icon class="icon-outline" name="bicycle-outline"></ion-icon>
+        <ion-icon class="icon-solid" name="bicycle"></ion-icon>
+        <span class="tab-label">Delivery</span>
+      </ion-tab-button>
+
+      <ion-tab-button routerLink="/manage-menu" routerLinkActive="tab-selected" [routerLinkActiveOptions]="{exact: true}">
+        <ion-icon class="icon-outline" name="clipboard-outline"></ion-icon>
+        <ion-icon class="icon-solid" name="clipboard"></ion-icon>
+        <span class="tab-label">Menu</span>
+      </ion-tab-button>
+
+      <!-- Center AI Button (Chef Hat Logo) -->
+      <ion-tab-button routerLink="/agent-home" class="center-ai-tab" routerLinkActive="tab-selected" [routerLinkActiveOptions]="{exact: true}">
+        <div class="center-logo-btn">
+          <img src="assets/logo/chef_hat.png" alt="Agent" class="center-logo-img">
+        </div>
+      </ion-tab-button>
+
+      <ion-tab-button routerLink="/agent-earnings" routerLinkActive="tab-selected" [routerLinkActiveOptions]="{exact: true}">
+        <ion-icon class="icon-outline" name="wallet-outline"></ion-icon>
+        <ion-icon class="icon-solid" name="wallet"></ion-icon>
+        <span class="tab-label">Earnings</span>
+      </ion-tab-button>
+
+      <ion-tab-button routerLink="/profile" [queryParams]="{role: 'agent'}" routerLinkActive="tab-selected" [routerLinkActiveOptions]="{exact: false}">
         <ion-icon class="icon-outline" name="person-outline"></ion-icon>
         <ion-icon class="icon-solid" name="person"></ion-icon>
         <span class="tab-label">Profile</span>

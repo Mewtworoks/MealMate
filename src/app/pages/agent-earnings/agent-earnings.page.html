@@ -1,0 +1,232 @@
+<ion-header class="ion-no-border sub-page-header">
+  <div class="header-curve-bg"></div>
+  <ion-toolbar class="transparent-toolbar">
+    <div class="header-content">
+      <ion-button fill="clear" class="back-btn-pill" (click)="goBack()">
+        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+      </ion-button>
+      <div class="title-group">
+        <h2 class="page-title">Earnings</h2>
+      </div>
+      <div class="header-actions">
+        <button class="period-filter-btn">
+          <span>{{ selectedPeriod }}</span>
+          <ion-icon name="chevron-down-outline"></ion-icon>
+        </button>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="earnings-content">
+  <div class="earnings-wrapper">
+
+    <!-- Greeting -->
+    <div class="greeting-section">
+      <div class="greeting-left">
+        <p class="greeting-line">{{ greeting }}, <span class="chef-highlight">{{ chefName }} 🧑‍🍳</span></p>
+        <p class="greeting-sub">Here's your earnings summary</p>
+      </div>
+      <div class="greeting-coins-decor">
+        <div class="coin c1">💰</div>
+        <div class="coin c2">🪙</div>
+        <div class="coin c3">💰</div>
+      </div>
+    </div>
+
+    <!-- ===== HERO EARNINGS CARD ===== -->
+    <div class="hero-earnings-card">
+      <div class="hero-card-bg-mesh"></div>
+      <div class="hero-card-content">
+        <div class="hero-left">
+          <span class="hero-label">Total Earned</span>
+          <h1 class="hero-amount">₹{{ totalEarned | number:'1.0-0' }}</h1>
+          <p class="hero-trend"><ion-icon name="arrow-up-outline"></ion-icon> ₹{{ earningsVsLastWeek }} more than last week</p>
+        </div>
+        <div class="hero-right">
+          <div class="hero-orders-block">
+            <span class="hero-orders-label">Orders Completed</span>
+            <h2 class="hero-orders-val">{{ ordersCompleted }}</h2>
+          </div>
+          <div class="hero-avg-block">
+            <span class="hero-avg-label">Average per order</span>
+            <h3 class="hero-avg-val">₹{{ avgPerOrder }}</h3>
+          </div>
+        </div>
+      </div>
+      <!-- Decorative coin SVG -->
+      <div class="hero-coin-decor">
+        <svg viewBox="0 0 60 60" width="60" height="60">
+          <circle cx="30" cy="30" r="28" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.25)" stroke-width="2"/>
+          <text x="30" y="38" text-anchor="middle" font-size="24" fill="rgba(255,255,255,0.5)">₹</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- ===== QUICK STATS ROW ===== -->
+    <div class="quick-stats-row">
+      <div class="qs-card">
+        <div class="qs-icon orange-bg"><ion-icon name="today-outline"></ion-icon></div>
+        <div class="qs-info">
+          <span class="qs-label">Today's Earnings</span>
+          <h3 class="qs-value">₹{{ todaysEarnings | number:'1.0-0' }}</h3>
+          <span class="qs-sub orange-text">{{ todaysOrders }} Orders</span>
+        </div>
+      </div>
+      <div class="qs-card">
+        <div class="qs-icon blue-bg"><ion-icon name="calendar-outline"></ion-icon></div>
+        <div class="qs-info">
+          <span class="qs-label">This Week</span>
+          <h3 class="qs-value">₹{{ weekEarnings | number:'1.0-0' }}</h3>
+          <span class="qs-sub blue-text">{{ weekOrders }} Orders</span>
+        </div>
+      </div>
+      <div class="qs-card">
+        <div class="qs-icon gold-bg"><ion-icon name="star-outline"></ion-icon></div>
+        <div class="qs-info">
+          <span class="qs-label">This Month</span>
+          <h3 class="qs-value">₹{{ monthEarnings | number:'1.0-0' }}</h3>
+          <span class="qs-sub gold-text">{{ monthOrders }} Orders</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== WEEKLY CHART ===== -->
+    <section class="chart-section">
+      <div class="section-header-row">
+        <h3 class="section-title">Earnings This Week</h3>
+        <button class="link-btn">View full report <ion-icon name="chevron-forward-outline"></ion-icon></button>
+      </div>
+
+      <div class="bar-chart-container">
+        <div class="chart-bar-group" *ngFor="let d of weeklyData">
+          <span class="bar-value-label">₹{{ d.amount | number:'1.0-0' }}</span>
+          <div class="chart-bar" [class.today]="d.isToday" [style.height.%]="getBarHeight(d.amount)"></div>
+          <span class="bar-day-label" [class.today]="d.isToday">{{ d.day }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ADVANCE DEDUCTION ===== -->
+    <section class="advance-section">
+      <div class="section-header-row">
+        <h3 class="section-title">Advance Deduction</h3>
+        <button class="link-btn">Details</button>
+      </div>
+
+      <div class="advance-stats-row">
+        <div class="adv-stat-item">
+          <span class="adv-stat-label">Advance Taken</span>
+          <h4 class="adv-stat-val">₹{{ advanceTaken | number:'1.0-0' }}</h4>
+        </div>
+        <div class="adv-stat-item">
+          <span class="adv-stat-label">Daily Deduction</span>
+          <h4 class="adv-stat-val">₹{{ dailyDeduction }}/day</h4>
+        </div>
+        <div class="adv-stat-item">
+          <span class="adv-stat-label">Deduction Left</span>
+          <h4 class="adv-stat-val">{{ deductionDaysLeft }} Days</h4>
+        </div>
+        <div class="adv-stat-item highlight">
+          <span class="adv-stat-label">Remaining</span>
+          <h4 class="adv-stat-val accent">₹{{ advanceRemaining | number:'1.0-0' }}</h4>
+        </div>
+      </div>
+
+      <div class="advance-progress-bar-container">
+        <div class="advance-progress-fill" [style.width.%]="(totalAdvanceDeducted / advanceTaken) * 100"></div>
+      </div>
+      <p class="advance-footer-text">₹{{ totalAdvanceDeducted | number:'1.0-0' }} deducted out of ₹{{ advanceTaken | number:'1.0-0' }}</p>
+    </section>
+
+    <!-- ===== PENDING PAYOUT ===== -->
+    <section class="payout-section">
+      <h3 class="section-title">Pending Payout</h3>
+
+      <div class="payout-card">
+        <div class="payout-left">
+          <div class="payout-icon-circle">
+            <ion-icon name="wallet-outline"></ion-icon>
+          </div>
+          <div class="payout-info">
+            <span class="payout-label">Available to withdraw</span>
+            <h2 class="payout-amount">₹{{ pendingPayout | number:'1.0-0' }}</h2>
+            <span class="payout-sub">After advance deduction</span>
+          </div>
+        </div>
+        <div class="payout-right">
+          <button class="withdraw-btn" (click)="withdrawPayout()" [disabled]="isWithdrawing || pendingPayout <= 0">
+            <span *ngIf="!isWithdrawing">Withdraw Now</span>
+            <ion-spinner *ngIf="isWithdrawing" name="crescent" class="withdraw-spinner"></ion-spinner>
+          </button>
+        </div>
+      </div>
+
+      <div class="payout-meta-row">
+        <ion-icon name="checkmark-circle" class="meta-icon green"></ion-icon>
+        <span>Withdraw to bank / UPI</span>
+      </div>
+      <div class="payout-meta-row">
+        <ion-icon name="information-circle-outline" class="meta-icon muted"></ion-icon>
+        <span>Payouts are processed every Monday</span>
+      </div>
+    </section>
+
+    <!-- ===== RECENT ORDERS ===== -->
+    <section class="recent-orders-section">
+      <div class="section-header-row">
+        <h3 class="section-title">Recent Orders</h3>
+        <button class="link-btn" routerLink="/agent-home">View all</button>
+      </div>
+
+      <div class="recent-order-item" *ngFor="let order of recentOrders">
+        <div class="ro-image-container">
+          <img [src]="order.mealImage" [alt]="order.mealName">
+        </div>
+        <div class="ro-details">
+          <h4 class="ro-meal-name">{{ order.mealName }}</h4>
+          <p class="ro-meta">{{ order.customerName }} • {{ order.distance }}</p>
+        </div>
+        <div class="ro-right">
+          <span class="ro-earnings">+₹{{ order.earnings }}</span>
+          <span class="ro-time">{{ order.time }}</span>
+        </div>
+        <ion-icon name="chevron-forward-outline" class="ro-chevron"></ion-icon>
+      </div>
+
+      <!-- Empty state -->
+      <div class="empty-state-mini" *ngIf="recentOrders.length === 0">
+        <ion-icon name="receipt-outline"></ion-icon>
+        <p>No orders yet. Start delivering to see earnings!</p>
+      </div>
+    </section>
+
+    <!-- ===== MONTHLY SUMMARY ===== -->
+    <section class="monthly-section">
+      <div class="section-header-row">
+        <h3 class="section-title">Monthly Summary</h3>
+        <button class="link-btn">{{ selectedMonth }} <ion-icon name="chevron-down-outline"></ion-icon></button>
+      </div>
+
+      <div class="monthly-grid">
+        <div class="monthly-stat-item">
+          <span class="ms-label">Total Earned</span>
+          <h4 class="ms-value orange-text">₹{{ monthlyTotalEarned | number:'1.0-0' }}</h4>
+        </div>
+        <div class="monthly-stat-item">
+          <span class="ms-label">Total Deductions</span>
+          <h4 class="ms-value red-text">₹{{ monthlyDeductions | number:'1.0-0' }}</h4>
+        </div>
+        <div class="monthly-stat-item">
+          <span class="ms-label">Net Payout</span>
+          <h4 class="ms-value green-text">₹{{ monthlyNetPayout | number:'1.0-0' }}</h4>
+        </div>
+        <div class="monthly-stat-item">
+          <span class="ms-label">Orders Completed</span>
+          <h4 class="ms-value dark-text">{{ monthlyOrdersCompleted }}</h4>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</ion-content>

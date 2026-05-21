@@ -66,6 +66,10 @@ const routes: Routes = [
     path: 'add-meal',
     loadChildren: () => import('./pages/add-meal/add-meal.module').then( m => m.AddMealPageModule)
   },
+  {
+    path: 'agent-earnings',
+    loadChildren: () => import('./pages/agent-earnings/agent-earnings.module').then( m => m.AgentEarningsPageModule)
+  },
 
 
 ];
