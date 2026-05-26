@@ -22,6 +22,8 @@ export interface Subscription {
   currentDay: number;
   totalPaid: number;
   dailyDeduction: number;
+  planName?: string;
+  planTagline?: string;
 }
 
 @Injectable({

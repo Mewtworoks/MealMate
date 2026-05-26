@@ -1,124 +1,371 @@
-<ion-header class="ion-no-border sub-page-header">
-  <div class="header-curve-bg"></div>
-  <ion-toolbar class="transparent-toolbar" style="--padding-top: 5px;">
-    <div class="header-content">
-      <ion-button (click)="goBack()" class="back-btn-pill">
-        <ion-icon name="arrow-back-outline"></ion-icon>
-      </ion-button>
-      <div class="title-group">
-        <h1 class="page-title">MealMate Subscription</h1>
-        <p class="subtitle">Subscribe to fixed daily tiffins. Free delivery, extra discounts, and skip anytime.</p>
+<!-- ============================================================
+     MEAL PLAN PAGE — Two-state: Selection ↔ Active Dashboard
+     ============================================================ -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     STATE 1: NO ACTIVE PLAN
+     ═══════════════════════════════════════════════════════════ -->
+<ng-container *ngIf="!activeSub">
+
+  <ion-header class="ion-no-border sub-page-header">
+    <div class="header-curve-bg"></div>
+    <ion-toolbar class="transparent-toolbar" style="--padding-top: 5px;">
+      <div class="header-content">
+        <ion-button (click)="goBack()" class="back-btn-pill">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </ion-button>
+        <div class="title-group">
+          <h1 class="page-title">Meal Plan</h1>
+        </div>
       </div>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content [fullscreen]="true" class="subscribe-content">
+    <div class="scrollable-body">
+
+      <!-- ── Hero ── -->
+      <div class="hero-section">
+        <div class="hero-img-wrap">
+          <img src="assets/onboarding/empty_plan.png" alt="Tiffin box">
+        </div>
+        <h2 class="hero-title">No Active Plan</h2>
+        <p class="hero-sub">Subscribe to daily home-cooked meals<br>and eat healthy every day!</p>
+      </div>
+
+      <!-- ── Why Subscribe ── -->
+      <div class="why-section">
+        <h3 class="sec-label">Why subscribe?</h3>
+        <div class="why-row">
+          <div class="why-item" *ngFor="let w of whyItems">
+            <div class="why-icon"><ion-icon [name]="w.icon"></ion-icon></div>
+            <span>{{w.line1}}<br>{{w.line2}}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Choose Your Plan ── -->
+      <h3 class="sec-label" style="margin-bottom:12px;">Choose Your Plan</h3>
+
+      <!-- Premium Horizontal Plan Grid -->
+      <div class="plan-duration-grid">
+        <div class="duration-card" *ngFor="let plan of plans; let i = index" [class.selected]="selectedPlanIndex === i"
+          (click)="selectPlan(i)">
+          <div class="dc-badge" *ngIf="plan.savePct">-{{plan.savePct}}%</div>
+          <span class="dc-name">{{plan.name.replace(' Plan', '')}}</span>
+          <span class="dc-days">{{plan.days}} Days</span>
+          <div class="dc-divider"></div>
+          <div class="dc-price-block">
+            <span class="dc-price">₹{{plan.price | number:'1.0-0'}}</span>
+            <span class="dc-per-day">₹{{plan.perDay}}/day</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unified Rotation Preview Card -->
+      <div class="rotation-preview-card">
+        <div class="rpc-header">
+          <div class="rpc-title-group">
+            <h4>Rotation Menu Preview</h4>
+            <p>Select meals below to fill your rotation</p>
+          </div>
+          <div class="rpc-badge-pill">
+            {{selectedMeals.length}}/3 Meals
+          </div>
+        </div>
+
+        <div class="pc-rotation" *ngIf="selectedMeals.length > 0">
+          <div class="rot-meal" *ngFor="let rm of selectedMeals; let j = index">
+            <div class="rot-img-wrap">
+              <img [src]="rm.image" [alt]="rm.name">
+              <span class="rot-day-badge">Day {{j+1}}</span>
+            </div>
+            <span class="rot-name">{{rm.name}}</span>
+          </div>
+        </div>
+
+        <div class="pc-rotation-empty" *ngIf="selectedMeals.length === 0">
+          <ion-icon name="restaurant-outline" class="empty-icon"></ion-icon>
+          <span>Tap meals below to build your subscription rotation</span>
+        </div>
+      </div>
+
+      <!-- ── Choose Your Meals ── -->
+      <div class="meals-section">
+        <div class="meals-header">
+          <h3 class="sec-label">Choose Your Meals</h3>
+          <span class="meal-counter" [class.full]="selectedMeals.length === 3">{{selectedMeals.length}}/3</span>
+        </div>
+        <p class="meals-hint">Select up to 3 meals. We'll rotate them daily so you don't get bored!</p>
+
+        <div class="meals-grid">
+          <div class="meal-card" *ngFor="let meal of meals" [class.selected]="isSelected(meal)"
+            (click)="toggleMealSelection(meal)">
+            <div class="mc-img">
+              <div class="mc-check">
+                <ion-icon name="checkmark" *ngIf="isSelected(meal)"></ion-icon>
+              </div>
+              <img [src]="meal.image" [alt]="meal.name">
+            </div>
+            <span class="mc-name">{{meal.name.length > 14 ? (meal.name | slice:0:14) + '...' : meal.name}}</span>
+            <span class="mc-price">₹{{meal.price || basePricePerMeal}}/day</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── What's included ── -->
+      <div class="included-section">
+        <h3 class="sec-label">What's included?</h3>
+        <div class="included-body">
+          <div class="included-list">
+            <div class="included-item" *ngFor="let feat of includedFeatures">
+              <ion-icon name="checkmark-circle" class="inc-check"></ion-icon>
+              <span>{{feat}}</span>
+            </div>
+          </div>
+          <div class="included-img">
+            <img src="assets/onboarding/salad_bowl_checked.png" alt="Healthy food">
+          </div>
+        </div>
+      </div>
+
     </div>
-  </ion-toolbar>
-</ion-header>
+  </ion-content>
 
-<ion-content [fullscreen]="true" class="subscribe-content">
-  <div class="scrollable-body">
-
-    <!-- Step 1: Select Duration -->
-    <div class="step-section">
-      <div class="step-header">
-        <div class="step-number">1</div>
-        <div class="step-title-group">
-          <h3>Select Plan Duration</h3>
-          <p>Choose a plan that works for you</p>
-        </div>
-      </div>
-
-      <div class="duration-cards">
-        <div class="d-card" [class.selected]="months === 1" (click)="months = 1">
-          <div class="tag best-value">Best Value</div>
-          <span class="m">1</span>
-          <span class="l">Month</span>
-          <div class="check-badge" *ngIf="months === 1">
-            <ion-icon name="checkmark"></ion-icon>
-          </div>
-        </div>
-        <div class="d-card" [class.selected]="months === 3" (click)="months = 3">
-          <div class="tag save">Save 10%</div>
-          <span class="m">3</span>
-          <span class="l">Months</span>
-          <div class="price-info" *ngIf="months !== 3">
-            <span class="curr">₹{{ basePricePerMeal * 30 * 3 * 0.9 | number:'1.0-0' }}</span>
-            <span class="strike">₹{{ basePricePerMeal * 30 * 3 | number:'1.0-0' }}</span>
-          </div>
-          <div class="check-badge" *ngIf="months === 3">
-            <ion-icon name="checkmark"></ion-icon>
-          </div>
-        </div>
-        <div class="d-card" [class.selected]="months === 6" (click)="months = 6">
-          <div class="tag save">Save 20%</div>
-          <span class="m">6</span>
-          <span class="l">Months</span>
-          <div class="price-info" *ngIf="months !== 6">
-            <span class="curr">₹{{ basePricePerMeal * 30 * 6 * 0.8 | number:'1.0-0' }}</span>
-            <span class="strike">₹{{ basePricePerMeal * 30 * 6 | number:'1.0-0' }}</span>
-          </div>
-          <div class="check-badge" *ngIf="months === 6">
-            <ion-icon name="checkmark"></ion-icon>
-          </div>
-        </div>
-      </div>
+  <!-- ── Sticky Footer CTA ── -->
+  <ion-footer class="ion-no-border sub-footer">
+    <div class="footer-info" *ngIf="selectedMeals.length > 0">
+      <span class="fi-meals">{{selectedMeals.length}} meal{{selectedMeals.length > 1 ? 's' : ''}} selected</span>
+      <span class="fi-price">₹{{plans[selectedPlanIndex].price | number:'1.0-0'}} ·
+        {{plans[selectedPlanIndex].name}}</span>
     </div>
-
-    <!-- Step 2: Select Rotation Meals -->
-    <div class="step-section">
-      <div class="step-header">
-        <div class="step-number">2</div>
-        <div class="step-title-group">
-          <div class="title-with-counter">
-            <h3>Choose Meals to Rotate</h3>
-            <span class="counter">{{selectedMeals.length}}/3</span>
-          </div>
-          <p>Select up to 3 meals. We will rotate them daily so you don't get bored!</p>
-        </div>
-      </div>
-
-      <div class="meals-grid">
-        <div class="meal-card" *ngFor="let meal of meals" [class.selected]="isSelected(meal)"
-          (click)="toggleMealSelection(meal)">
-          <div class="img-box">
-            <div class="circle-check"></div>
-            <img [src]="meal.image" [alt]="meal.name">
-          </div>
-          <span class="name">{{meal.name.length > 15 ? (meal.name | slice:0:15) + '...' : meal.name}}</span>
-          <span class="base-p">Avg. ₹{{basePricePerMeal}}/day</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Features Row -->
-    <div class="features-row">
-      <div class="feature-item">
-        <div class="icon-wrap"><ion-icon name="bicycle-outline"></ion-icon></div>
-        <span>Free<br>Delivery</span>
-      </div>
-      <div class="divider"></div>
-      <div class="feature-item">
-        <div class="icon-wrap"><ion-icon name="pricetag-outline"></ion-icon></div>
-        <span>Extra<br>Discounts</span>
-      </div>
-      <div class="divider"></div>
-      <div class="feature-item">
-        <div class="icon-wrap"><ion-icon name="calendar-outline"></ion-icon></div>
-        <span>Skip<br>Anytime</span>
-      </div>
-    </div>
-
-  </div>
-</ion-content>
-
-<ion-footer class="ion-no-border sub-footer">
-  <div class="footer-wrap">
-    <div class="price-info">
-      <span class="label">Total for {{months}} Month{{months > 1 ? 's' : ''}}</span>
-      <span class="amt">₹{{getTotalPrice}}</span>
-    </div>
-    <button class="action-btn" (click)="subscribe()" [disabled]="selectedMeals.length === 0 || isPlacingOrder">
-      <span *ngIf="!isPlacingOrder" class="btn-text">SUBSCRIBE NOW <ion-icon
+    <button class="footer-cta" (click)="choosePlan(selectedPlanIndex)"
+      [disabled]="isPlacingOrder || selectedMeals.length === 0">
+      <span *ngIf="!isPlacingOrder && selectedMeals.length === 0">Select Meals to Continue</span>
+      <span *ngIf="!isPlacingOrder && selectedMeals.length > 0">Subscribe Now <ion-icon
           name="arrow-forward-outline"></ion-icon></span>
       <ion-spinner *ngIf="isPlacingOrder" name="crescent" color="light"></ion-spinner>
     </button>
-  </div>
-</ion-footer>
+  </ion-footer>
+
+</ng-container>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     STATE 2: ACTIVE PLAN DASHBOARD
+     ═══════════════════════════════════════════════════════════ -->
+<ng-container *ngIf="activeSub">
+
+  <ion-header class="ion-no-border sub-page-header">
+    <div class="header-curve-bg"></div>
+    <ion-toolbar class="transparent-toolbar" style="--padding-top: 5px;">
+      <div class="header-content">
+        <ion-button (click)="goBack()" class="back-btn-pill">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </ion-button>
+        <div class="title-group">
+          <h1 class="page-title">Your Meal Plan</h1>
+        </div>
+        <div class="header-actions">
+          <ion-button fill="clear" class="more-btn" (click)="openPlanOptions()">
+            <ion-icon name="ellipsis-vertical"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content [fullscreen]="true" class="subscribe-content active-plan-content">
+    <div class="scrollable-body">
+
+      <!-- ── Active Plan Hero Card ── -->
+      <div class="active-hero-card">
+        <div class="ahc-badge">ACTIVE PLAN</div>
+        <div class="ahc-body">
+          <div class="ahc-info">
+            <h3>{{activeSub.months}} Month Plan</h3>
+            <div class="ahc-dates">
+              <div class="ahc-date">
+                <ion-icon name="calendar-outline"></ion-icon>
+                <div>
+                  <span class="ahc-d-label">Start Date</span>
+                  <span class="ahc-d-value">{{activeSub.startDate | date:'d MMM yyyy'}}</span>
+                </div>
+              </div>
+              <div class="ahc-date">
+                <ion-icon name="calendar-outline"></ion-icon>
+                <div>
+                  <span class="ahc-d-label">End Date</span>
+                  <span class="ahc-d-value">{{activeSub.endDate | date:'d MMM yyyy'}}</span>
+                </div>
+              </div>
+            </div>
+            <div class="ahc-days-left">
+              <ion-icon name="time-outline"></ion-icon>
+              <span>{{daysLeft}} days left</span>
+            </div>
+          </div>
+          <div class="ahc-ring">
+            <svg viewBox="0 0 100 100">
+              <circle class="ring-bg" cx="50" cy="50" r="42" />
+              <circle class="ring-fill" cx="50" cy="50" r="42"
+                [attr.stroke-dasharray]="goalProgress * 2.64 + ' ' + (264 - goalProgress * 2.64)" />
+            </svg>
+            <div class="ring-label">
+              <span class="ring-pct">{{goalProgress}}%</span>
+              <span class="ring-sub">Completed</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Today's Meal ── -->
+      <div class="todays-meal-card">
+        <div class="tm-header">
+          <h3>Today's Meal</h3>
+          <span class="tm-badge">
+            <span class="tm-dot"></span> Arriving Today
+          </span>
+        </div>
+        <div class="tm-body">
+          <div class="tm-img">
+            <img [src]="todaysMeal.image" [alt]="todaysMeal.name">
+          </div>
+          <div class="tm-info">
+            <h4>{{todaysMeal.name}}</h4>
+            <p>{{todaysMeal.details}}</p>
+            <div class="tm-veg-badge">
+              <span class="veg-dot"></span> Veg
+            </div>
+            <div class="tm-delivery">
+              <span class="tm-del-label">Delivery Time</span>
+              <span class="tm-del-time">1:00 PM</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Your Rotation ── -->
+      <div class="rotation-section">
+        <h3 class="sec-label">Your Rotation <span class="rot-sub">(Repeats Every {{activeSub.rotationMeals.length}}
+            Days)</span></h3>
+        <div class="rotation-row">
+          <div class="rot-item" *ngFor="let rm of rotationDisplay; let i = index" [class.active]="rm.isToday">
+            <span class="rot-day-tag" [class.today]="rm.isToday">{{rm.dayLabel}}</span>
+            <div class="rot-item-img">
+              <img [src]="rm.image" [alt]="rm.name">
+            </div>
+            <span class="rot-item-name">{{rm.name}}</span>
+            <span class="rot-item-when">{{rm.whenLabel}}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Monthly Khata (Wallet) ── -->
+      <div class="khata-section">
+        <div class="khata-header">
+          <h3 class="sec-label">Monthly Khata (Wallet)</h3>
+          <ion-icon name="wallet-outline" class="khata-icon"></ion-icon>
+        </div>
+        <div class="khata-stats">
+          <div class="khata-stat">
+            <span class="ks-label">Total Deducted<br>This Month</span>
+            <span class="ks-value">₹{{monthlyDeducted | number:'1.0-0'}}</span>
+          </div>
+          <div class="khata-stat">
+            <span class="ks-label">Daily<br>Deduction</span>
+            <span class="ks-value">₹{{activeSub.dailyDeduction | number:'1.0-0'}}/day</span>
+          </div>
+          <div class="khata-stat">
+            <span class="ks-label">Remaining<br>Days</span>
+            <span class="ks-value">{{daysLeft}}</span>
+          </div>
+          <div class="khata-stat">
+            <span class="ks-label">Next<br>Deduction</span>
+            <span class="ks-value highlight">Today</span>
+          </div>
+        </div>
+        <div class="khata-note">
+          <ion-icon name="checkmark-circle" class="kn-icon"></ion-icon>
+          <span>Auto deduction from wallet • <strong (click)="router.navigate(['/wallet'])">Manage in
+              Wallet</strong></span>
+        </div>
+      </div>
+
+      <!-- ── This Week Progress ── -->
+      <div class="week-section">
+        <div class="sec-row">
+          <h3 class="sec-label">This Week Progress</h3>
+          <span class="week-count">{{weekMealsCompleted}} / 7 meals delivered</span>
+        </div>
+        <div class="week-dots">
+          <div class="week-dot" *ngFor="let day of weekDays" [class.completed]="day.completed"
+            [class.today]="day.isToday">
+            <div class="dot-circle">
+              <ion-icon *ngIf="day.completed" name="checkmark"></ion-icon>
+              <span *ngIf="!day.completed && day.isToday" class="today-pulse"></span>
+            </div>
+            <span class="dot-label">{{day.short}}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Upcoming Deliveries ── -->
+      <div class="upcoming-section">
+        <div class="sec-row">
+          <h3 class="sec-label">Upcoming Deliveries</h3>
+          <button class="view-all" (click)="viewAllMeals()">View all →</button>
+        </div>
+        <div class="upcoming-item" *ngFor="let item of upcomingDeliveries">
+          <div class="upc-date-col">
+            <span class="upc-dd">{{item.dateNum}}</span>
+            <span class="upc-mm">{{item.dateMonth}}</span>
+          </div>
+          <div class="upc-img">
+            <img [src]="item.image" [alt]="item.name">
+          </div>
+          <div class="upc-info">
+            <h4>{{item.name}}</h4>
+            <p>{{item.details}}</p>
+          </div>
+          <div class="upc-right">
+            <span class="upc-day">{{item.dayLabel}}</span>
+            <span class="upc-time">{{item.time}}</span>
+          </div>
+          <ion-icon name="chevron-forward" class="upc-chevron"></ion-icon>
+        </div>
+      </div>
+
+      <!-- ── Need a Break? ── -->
+      <div class="action-card break-card">
+        <div class="ac-info">
+          <h4>Need a Break?</h4>
+          <p>Pause your plan anytime and we'll extend it for you.</p>
+          <button class="ac-btn pause-btn" (click)="togglePause()">
+            <ion-icon [name]="activeSub.status === 'Paused' ? 'play' : 'pause'"></ion-icon>
+            {{activeSub.status === 'Paused' ? 'Resume Plan' : 'Pause Plan'}}
+          </button>
+        </div>
+        <div class="ac-illustration">
+          <img src="assets/onboarding/calendar_clock.png" alt="Calendar clock">
+        </div>
+      </div>
+
+      <!-- ── Customize Rotation ── -->
+      <div class="action-card rotation-card">
+        <div class="ac-info">
+          <h4>Customize Rotation</h4>
+          <p>Swap meals or change preferences anytime.</p>
+          <button class="ac-btn manage-btn" (click)="manageRotation()">
+            <ion-icon name="refresh-outline"></ion-icon>
+            Manage Rotation
+          </button>
+        </div>
+        <div class="ac-illustration">
+          <img src="assets/onboarding/salad_bowl_checked.png" alt="">
+        </div>
+      </div>
+
+    </div>
+  </ion-content>
+</ng-container>
