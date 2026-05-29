@@ -1,52 +1,122 @@
-<ion-header class="ion-no-border premium-header">
-  <div class="header-curve-bg"></div>
-  <ion-toolbar class="transparent-toolbar">
-    <ion-buttons slot="start">
-      <ion-button (click)="goBack()" class="back-btn-pill">
-        <ion-icon name="arrow-back-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-title class="page-title-text">Manage Menu</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="isAddMealModalOpen = true" style="color: #FF7235; font-size: 1.5rem; margin-right: 14px;">
-        <ion-icon name="add-circle"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+<ion-header class="ion-no-border sub-page-header" style="background: white !important;">
+  <div class="header-curve-bg" style="background: white !important;"></div>
+  <ion-toolbar class="transparent-toolbar"
+    style="--padding-top: 5px; --background: white !important; background: white !important;">
+
+    <div class="header-content">
+      <div class="title-group">
+        <h1 class="page-title">Manage Menu</h1>
+        <p class="subtitle">Add, edit or remove menu items</p>
+      </div>
+      <div class="header-actions">
+        <button class="plus-sq-btn" (click)="isAddMealModalOpen = true">
+          <ion-icon name="add-outline"></ion-icon>
+        </button>
+      </div>
+
+    </div>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true" class="premium-content">
   <div class="content-wrapper">
+    <div class="search-section-wrap">
+      <div class="search-pill-box">
+        <ion-icon name="search-outline"></ion-icon>
+        <input type="text" placeholder="Search menu items..." [(ngModel)]="searchQuery" (input)="filterMeals()">
+      </div>
+      <button class="filter-sq-btn">
+        <ion-icon name="options-outline"></ion-icon>
+      </button>
+    </div>
 
-    <div class="empty-state" *ngIf="agentMeals.length === 0">
+    <!-- Category Pills -->
+    <div class="cat-pill-scroll">
+      <div class="cat-pill" [class.active]="selectedCat === 'All'" (click)="selectCategory('All')">
+        <ion-icon name="restaurant-outline"></ion-icon>
+        <span>All</span>
+        <div class="count">{{agentMeals.length}}</div>
+      </div>
+      <div class="cat-pill" [class.active]="selectedCat === 'Breakfast'" (click)="selectCategory('Breakfast')">
+        <ion-icon name="sunny-outline"></ion-icon>
+        <span>Breakfast</span>
+        <div class="count">{{getCatCount('Breakfast')}}</div>
+      </div>
+      <div class="cat-pill" [class.active]="selectedCat === 'Lunch'" (click)="selectCategory('Lunch')">
+        <ion-icon name="partly-sunny-outline"></ion-icon>
+        <span>Lunch</span>
+        <div class="count">{{getCatCount('Lunch')}}</div>
+      </div>
+      <div class="cat-pill" [class.active]="selectedCat === 'Dinner'" (click)="selectCategory('Dinner')">
+        <ion-icon name="moon-outline"></ion-icon>
+        <span>Dinner</span>
+        <div class="count">{{getCatCount('Dinner')}}</div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="filteredMeals.length === 0">
       <div class="empty-icon-box">
         <ion-icon name="restaurant-outline"></ion-icon>
       </div>
       <h2>Your Menu is Empty</h2>
       <p>Customers can't order until you add some delicious meals!</p>
-      <ion-button class="browse-btn" expand="block" (click)="isAddMealModalOpen = true">
+      <ion-button class="org-btn" expand="block" (click)="isAddMealModalOpen = true">
         Add First Meal
       </ion-button>
     </div>
 
-    <div class="meals-grid-section" *ngIf="agentMeals.length > 0">
-      <div class="grid">
-        <div class="meal-item-card" *ngFor="let meal of agentMeals">
-          <div class="card-thumb">
-            <img [src]="meal.image" [alt]="meal.name">
-            <div class="type-indicator" [class.non-veg]="meal.type === 'Non-Veg'"></div>
-          </div>
-          <div class="card-body">
-            <div class="category-tag">{{meal.category}}</div>
-            <h3 class="meal-name">{{meal.name}}</h3>
-            <p class="meal-desc">{{meal.description | slice:0:40}}...</p>
-            <div class="price-row">
-              <span class="price">₹{{meal.price}}</span>
-              <div class="toggle-wrap" (click)="toggleMealAvailability(meal)">
-                <span class="toggle-lab" [class.active]="meal.isAvailable !== false">{{meal.isAvailable !== false ?
-                  'Live' : 'Paused'}}</span>
-                <ion-toggle [checked]="meal.isAvailable !== false" mode="ios"></ion-toggle>
+    <div class="meals-list-container" *ngIf="filteredMeals.length > 0">
+      <div class="premium-meal-card" *ngFor="let meal of filteredMeals">
+        <div class="live-tag" *ngIf="meal.isAvailable !== false">
+          <span class="dot"></span> LIVE
+        </div>
+
+        <div class="meal-image-container">
+          <img [src]="meal.image" [alt]="meal.name">
+          <button class="more-btn" (click)="openPopover($event, meal)">
+            <ion-icon name="ellipsis-vertical"></ion-icon>
+          </button>
+        </div>
+
+        <ion-popover #popover [isOpen]="isPopoverOpen" [event]="popoverEvent" (didDismiss)="isPopoverOpen = false"
+          class="premium-meal-popover">
+          <ng-template>
+            <div class="popover-content">
+              <div class="popover-item" (click)="handleEditFromPopover()">
+                <ion-icon name="create-outline"></ion-icon>
+                <span>Edit Meal</span>
               </div>
+              <div class="popover-item danger" (click)="handleDeleteFromPopover()">
+                <ion-icon name="trash-outline"></ion-icon>
+                <span>Delete</span>
+              </div>
+              <div class="popover-item" (click)="handleStatusFromPopover()">
+                <ion-icon name="refresh-outline"></ion-icon>
+                <span>Change Status</span>
+                <div class="status-pill-small" [class.live]="selectedMeal?.isAvailable !== false">
+                  {{selectedMeal?.isAvailable !== false ? 'Live' : 'Paused'}}
+                </div>
+                <ion-icon name="chevron-forward-outline" class="end-icon"></ion-icon>
+              </div>
+            </div>
+          </ng-template>
+        </ion-popover>
+
+
+        <div class="meal-details-box">
+          <div class="cat-label">{{meal.category}}</div>
+          <h2 class="meal-name">{{meal.name}}</h2>
+          <p class="meal-desc">{{meal.description || 'A calming meal for every Indian...'}}</p>
+
+          <div class="meal-meta-row">
+            <div class="price-chip">
+              <span class="currency">₹</span>
+              <span class="val">{{meal.price}}</span>
+            </div>
+
+            <div class="live-indicator-wrap" *ngIf="meal.isAvailable !== false">
+              <span class="dot"></span>
+              <span class="status-lab">Available</span>
             </div>
           </div>
         </div>
@@ -54,94 +124,153 @@
     </div>
   </div>
 
-  <!-- Add New Meal Modal (Light Premium Theme) -->
-  <ion-modal [isOpen]="isAddMealModalOpen" (didDismiss)="isAddMealModalOpen = false" class="premium-modal light-modal"
-    [initialBreakpoint]="1" [breakpoints]="[0, 1]">
+
+  <!-- Add New Meal Modal (PREMIUM HIGH-FIDELITY) -->
+  <ion-modal [isOpen]="isAddMealModalOpen" (didDismiss)="isAddMealModalOpen = false" class="premium-full-modal">
     <ng-template>
-      <ion-header class="ion-no-border">
-        <ion-toolbar class="modal-toolbar">
-          <ion-title>Create New Meal</ion-title>
-          <ion-buttons slot="end">
-            <ion-button (click)="isAddMealModalOpen = false" class="close-btn">Cancel</ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
+      <div class="modal-main-wrap">
+        <!-- Custom Header -->
+        <div class="custom-modal-header">
+          <button class="header-circle-btn" (click)="isAddMealModalOpen = false">
+            <ion-icon name="arrow-back-outline"></ion-icon>
+          </button>
+          <h2 class="header-title">Create New Meal</h2>
+          <button class="header-cancel-link" (click)="isAddMealModalOpen = false">Cancel</button>
+        </div>
 
-      <ion-content class="ion-padding light-modal-content">
-        <div class="form-container">
+        <div class="modal-scroll-content">
+          <div class="form-body-wrapper">
 
-          <div class="form-section">
-            <label class="form-label">Select Meal Photo</label>
-            <div class="photo-upload-box" (click)="triggerImageUpload()">
-              <input type="file" #fileInput (change)="onImageSelected($event)" accept="image/*" style="display: none;">
-
-              <div class="preview-wrap" *ngIf="mealForm.image">
-                <img [src]="mealForm.image" alt="Meal Preview">
-                <div class="edit-overlay"><ion-icon name="create-outline"></ion-icon></div>
+            <!-- Photo Upload Section -->
+            <div class="section-group">
+              <div class="label-heading">
+                <span class="title">Meal Photo</span>
+                <span class="sub">Add a tempting photo of your meal</span>
               </div>
 
-              <div class="empty-upload" *ngIf="!mealForm.image">
-                <div class="icon-circle"><ion-icon name="camera"></ion-icon></div>
-                <span>Tap to choose photo</span>
+              <div class="premium-upload-box" (click)="triggerImageUpload()">
+                <input type="file" #fileInput (change)="onImageSelected($event)" accept="image/*"
+                  style="display: none;">
+
+                <div class="preview-mode" *ngIf="mealForm.image">
+                  <img [src]="mealForm.image" alt="Meal Preview">
+                  <div class="edit-pill"><ion-icon name="color-wand-outline"></ion-icon></div>
+                </div>
+
+                <div class="empty-mode" *ngIf="!mealForm.image">
+                  <div class="orange-icon-circle">
+                    <ion-icon name="camera-outline"></ion-icon>
+                  </div>
+                  <span class="main-txt">Upload Meal Photo</span>
+                  <span class="small-txt">Tap to choose from gallery</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="input-card">
-            <div class="form-group">
-              <label>Meal Name</label>
-              <input type="text" [(ngModel)]="mealForm.name" placeholder="e.g. Butter Chicken Combo">
-            </div>
-          </div>
-
-          <div class="input-row">
-            <div class="input-card half">
-              <div class="form-group">
-                <label>Price (₹)</label>
-                <input type="number" [(ngModel)]="mealForm.price" placeholder="150">
+            <!-- Name Input -->
+            <div class="section-group">
+              <div class="icon-label-wrap">
+                <div class="icon-badge green"><ion-icon name="restaurant-outline"></ion-icon></div>
+                <span class="field-label">Meal Name</span>
+              </div>
+              <div class="premium-input-box">
+                <input type="text" [(ngModel)]="mealForm.name" placeholder="e.g. Butter Chicken Combo">
               </div>
             </div>
-            <div class="input-card half">
-              <div class="form-group">
-                <label>Category</label>
-                <select class="custom-select" [(ngModel)]="mealForm.category">
-                  <option value="Lunch">Lunch</option>
-                  <option value="Dinner">Dinner</option>
-                </select>
+
+            <!-- Price & Category Row -->
+            <div class="input-grid-row">
+              <div class="grid-item">
+                <div class="icon-label-wrap">
+                  <div class="icon-badge orange"><ion-icon name="cash-outline"></ion-icon></div>
+                  <span class="field-label">Price (₹)</span>
+                </div>
+                <div class="premium-input-box">
+                  <input type="number" [(ngModel)]="mealForm.price" placeholder="0">
+                </div>
+              </div>
+              <div class="grid-item">
+                <div class="icon-label-wrap">
+                  <div class="icon-badge purple"><ion-icon name="grid-outline"></ion-icon></div>
+                  <span class="field-label">Category</span>
+                </div>
+                <div class="premium-input-box">
+                  <select [(ngModel)]="mealForm.category">
+                    <option value="Breakfast">Breakfast</option>
+                    <option value="Lunch">Lunch</option>
+                    <option value="Dinner">Dinner</option>
+                  </select>
+                  <ion-icon name="chevron-down-outline" class="select-arrow"></ion-icon>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="input-card type-card">
-            <label class="type-label">Dietary Preference</label>
-            <div class="type-picker">
-              <button class="type-btn veg" [class.active]="mealForm.type === 'Veg'" (click)="mealForm.type = 'Veg'">
-                <div class="veg-icon"></div> Vegetarian
-              </button>
-              <button class="type-btn nonveg" [class.active]="mealForm.type === 'Non-Veg'"
-                (click)="mealForm.type = 'Non-Veg'">
-                <div class="nonveg-icon"></div> Non-Veg
-              </button>
+            <!-- Diet Preference -->
+            <div class="section-group">
+              <div class="icon-label-wrap">
+                <div class="icon-badge leaf"><ion-icon name="leaf-outline"></ion-icon></div>
+                <span class="field-label">Dietary Preference</span>
+              </div>
+              <div class="diet-selector-row">
+                <button class="diet-btn veg" [class.active]="mealForm.type === 'Veg'" (click)="mealForm.type = 'Veg'">
+                  <div class="radio-dot"></div> Vegetarian
+                </button>
+                <button class="diet-btn nonveg" [class.active]="mealForm.type === 'Non-Veg'"
+                  (click)="mealForm.type = 'Non-Veg'">
+                  <div class="radio-dot"></div> Non-Veg
+                </button>
+              </div>
             </div>
-          </div>
 
-          <div class="input-card">
-            <div class="form-group">
-              <label>Description</label>
-              <textarea [(ngModel)]="mealForm.description"
-                placeholder="Describe the flavors, spices, and ingredients..."></textarea>
+            <!-- Description -->
+            <div class="section-group">
+              <div class="icon-label-wrap">
+                <div class="icon-badge blue"><ion-icon name="clipboard-outline"></ion-icon></div>
+                <span class="field-label">Description</span>
+              </div>
+              <p class="field-hint">Tell us about the flavors, spices, and ingredients</p>
+              <div class="premium-textarea-box">
+                <textarea rows="4" [(ngModel)]="mealForm.description"
+                  placeholder="Describe the flavors, spices, and ingredients..."></textarea>
+                <div class="char-count">{{mealForm.description.length || 0}}/250</div>
+              </div>
             </div>
+
           </div>
         </div>
-      </ion-content>
 
-      <ion-footer class="ion-no-border light-modal-footer">
-        <div class="footer-wrap">
-          <button class="action-btn" (click)="saveNewMeal()" [disabled]="!mealForm.name || !mealForm.price">
-            Publish Meal <ion-icon name="rocket"></ion-icon>
+        <!-- Sticky Footer -->
+        <div class="modal-footer-cta">
+          <button class="primary-btn-rocket" (click)="saveNewMeal()" [disabled]="!mealForm.name || !mealForm.price">
+            <ion-icon name="rocket-outline"></ion-icon>
+            <span>Publish Meal</span>
           </button>
         </div>
-      </ion-footer>
+      </div>
+    </ng-template>
+  </ion-modal>
+  <!-- Centered Delete Confirmation Modal -->
+  <ion-modal [isOpen]="isDeleteModalOpen" (didDismiss)="isDeleteModalOpen = false" class="premium-center-modal">
+    <ng-template>
+      <div class="delete-popover-card">
+        <div class="icon-pulse">
+          <div class="icon-box">
+            <ion-icon name="trash-outline"></ion-icon>
+          </div>
+        </div>
+
+        <h2 class="modal-title">Delete {{mealToDelete?.name}}?</h2>
+        <p class="modal-text">This action cannot be undone. The menu item will be permanently removed.</p>
+
+        <div class="modal-action-vertical">
+          <button class="confirm-btn" (click)="confirmDelete()">
+            Yes, Delete Item
+          </button>
+          <button class="cancel-btn" (click)="isDeleteModalOpen = false">
+            Cancel
+          </button>
+        </div>
+      </div>
     </ng-template>
   </ion-modal>
 

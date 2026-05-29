@@ -3,9 +3,50 @@
      ============================================================ -->
 
 <!-- ═══════════════════════════════════════════════════════════
+     STATE 0: SKELETON LOADER
+     ═══════════════════════════════════════════════════════════ -->
+<ng-container *ngIf="isLoading">
+  <ion-header class="ion-no-border sub-page-header">
+    <div class="header-curve-bg"></div>
+    <ion-toolbar class="transparent-toolbar" style="--padding-top: 5px;">
+      <div class="header-content">
+        <ion-button (click)="goBack()" class="back-btn-pill">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </ion-button>
+        <div class="title-group">
+          <h1 class="page-title">Meal Plan</h1>
+        </div>
+      </div>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content [fullscreen]="true" class="subscribe-content">
+    <div class="skeleton-container sk-pulse">
+      <div class="sk-hero">
+        <div class="sk-img"></div>
+        <div class="sk-title"></div>
+        <div class="sk-subtitle"></div>
+      </div>
+
+      <div class="sk-section">
+        <div class="sk-sec-label"></div>
+        <div class="sk-grid">
+          <div class="sk-card"></div>
+          <div class="sk-card"></div>
+          <div class="sk-card"></div>
+        </div>
+      </div>
+
+      <div class="sk-long-card" style="margin-top: 20px;"></div>
+      <div class="sk-long-card"></div>
+    </div>
+  </ion-content>
+</ng-container>
+
+<!-- ═══════════════════════════════════════════════════════════
      STATE 1: NO ACTIVE PLAN
      ═══════════════════════════════════════════════════════════ -->
-<ng-container *ngIf="!activeSub">
+<ng-container *ngIf="!isLoading && !activeSub">
 
   <ion-header class="ion-no-border sub-page-header">
     <div class="header-curve-bg"></div>
@@ -132,29 +173,29 @@
     </div>
   </ion-content>
 
-  <!-- ── Sticky Footer CTA ── -->
-  <ion-footer class="ion-no-border sub-footer">
-    <div class="footer-info" *ngIf="selectedMeals.length > 0">
-      <span class="fi-meals">{{selectedMeals.length}} meal{{selectedMeals.length > 1 ? 's' : ''}} selected</span>
-      <span class="fi-price">₹{{plans[selectedPlanIndex].price | number:'1.0-0'}} ·
-        {{plans[selectedPlanIndex].name}}</span>
-    </div>
-    <button class="footer-cta" (click)="choosePlan(selectedPlanIndex)"
-      [disabled]="isPlacingOrder || selectedMeals.length === 0">
-      <span *ngIf="!isPlacingOrder && selectedMeals.length === 0">Select Meals to Continue</span>
-      <span *ngIf="!isPlacingOrder && selectedMeals.length > 0">Subscribe Now <ion-icon
-          name="arrow-forward-outline"></ion-icon></span>
-      <ion-spinner *ngIf="isPlacingOrder" name="crescent" color="light"></ion-spinner>
-    </button>
-  </ion-footer>
-
 </ng-container>
+
+<!-- ── Sticky Footer CTA ── -->
+<ion-footer class="ion-no-border sub-footer" *ngIf="!isLoading && !activeSub">
+  <div class="footer-info" *ngIf="selectedMeals.length > 0">
+    <span class="fi-meals">{{selectedMeals.length}} meal{{selectedMeals.length > 1 ? 's' : ''}} selected</span>
+    <span class="fi-price">₹{{plans[selectedPlanIndex].price | number:'1.0-0'}} ·
+      {{plans[selectedPlanIndex].name}}</span>
+  </div>
+  <button class="footer-cta" (click)="choosePlan(selectedPlanIndex)"
+    [disabled]="isPlacingOrder || selectedMeals.length === 0">
+    <span *ngIf="!isPlacingOrder && selectedMeals.length === 0">Select Meals to Continue</span>
+    <span *ngIf="!isPlacingOrder && selectedMeals.length > 0">Subscribe Now <ion-icon
+        name="arrow-forward-outline"></ion-icon></span>
+    <ion-spinner *ngIf="isPlacingOrder" name="crescent" color="light"></ion-spinner>
+  </button>
+</ion-footer>
 
 
 <!-- ═══════════════════════════════════════════════════════════
      STATE 2: ACTIVE PLAN DASHBOARD
      ═══════════════════════════════════════════════════════════ -->
-<ng-container *ngIf="activeSub">
+<ng-container *ngIf="!isLoading && activeSub">
 
   <ion-header class="ion-no-border sub-page-header">
     <div class="header-curve-bg"></div>
@@ -368,4 +409,220 @@
 
     </div>
   </ion-content>
+
+  <!-- ── Custom Plan Controls Modal (Bottom Sheet) ── -->
+  <ion-modal [isOpen]="isPlanControlsOpen" (didDismiss)="isPlanControlsOpen = false"
+    [initialBreakpoint]="0.85" [breakpoints]="[0, 0.85, 0.95]" class="plan-controls-modal">
+    <ng-template>
+      <div class="plan-controls-sheet">
+        <div class="sheet-handle"></div>
+
+        <div class="sheet-header">
+          <div class="header-text">
+            <h2>Plan Controls</h2>
+            <p>Manage your subscription with ease</p>
+          </div>
+          <div class="header-illustration">
+            <img src="assets/onboarding/plan_controls_illustration.png" alt="Plan Controls Illustration">
+          </div>
+        </div>
+
+        <div class="sheet-body">
+          <!-- Pause Plan -->
+          <div class="control-row pause-row" (click)="togglePause(); isPlanControlsOpen = false">
+            <div class="row-icon orange">
+              <ion-icon name="pause"></ion-icon>
+            </div>
+            <div class="row-info">
+              <h3>Pause Plan</h3>
+              <p>Pause your plan anytime. We'll extend your end date.</p>
+            </div>
+            <button class="row-pill-btn orange">
+              <span class="pause-symbol">||</span> Pause
+            </button>
+            <ion-icon name="chevron-forward" class="row-chevron"></ion-icon>
+          </div>
+
+          <!-- Change Plan -->
+          <div class="control-row change-row" (click)="changePlan(); isPlanControlsOpen = false">
+            <div class="row-icon blue">
+              <ion-icon name="swap-horizontal"></ion-icon>
+            </div>
+            <div class="row-info">
+              <h3>Change Plan</h3>
+              <p>Upgrade, downgrade or switch to a different plan.</p>
+            </div>
+            <ion-icon name="chevron-forward" class="row-chevron"></ion-icon>
+          </div>
+
+          <!-- Manage Rotation -->
+          <div class="control-row rotation-row" (click)="manageRotation(); isPlanControlsOpen = false">
+            <div class="row-icon purple">
+              <ion-icon name="refresh"></ion-icon>
+            </div>
+            <div class="row-info">
+              <h3>Manage Rotation</h3>
+              <p>Swap meals or change your 3-meal rotation anytime.</p>
+            </div>
+            <ion-icon name="chevron-forward" class="row-chevron"></ion-icon>
+          </div>
+
+          <!-- Cancel Subscription -->
+          <div class="control-row cancel-row" (click)="cancelSubscription(); isPlanControlsOpen = false">
+            <div class="row-icon red">
+              <ion-icon name="trash"></ion-icon>
+            </div>
+            <div class="row-info">
+              <h3>Cancel Subscription</h3>
+              <p>Cancel your plan. You can resubscribe anytime.</p>
+            </div>
+            <ion-icon name="chevron-forward" class="row-chevron"></ion-icon>
+          </div>
+
+          <!-- Need Help -->
+          <div class="control-row help-row">
+            <div class="row-icon gold">
+              <ion-icon name="bulb-outline"></ion-icon>
+            </div>
+            <div class="row-info">
+              <h3>Need help?</h3>
+              <p>We're here to help you with your plan.</p>
+            </div>
+            <button class="chat-support-btn" (click)="contactSupport(); isPlanControlsOpen = false">
+              <ion-icon name="headset-outline"></ion-icon>
+              Chat Support
+            </button>
+          </div>
+        </div>
+
+        <div class="sheet-footer">
+          <button class="sheet-close-btn" (click)="isPlanControlsOpen = false">
+            Close
+          </button>
+        </div>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+
+
 </ng-container>
+
+  <!-- ── Cancel Subscription Confirmation Modal (Centered Modal) ── -->
+  <ion-modal [isOpen]="isCancelModalOpen" (didDismiss)="isCancelModalOpen = false" class="cancel-modal">
+    <ng-template>
+      <div class="cancel-modal-container">
+        <!-- Close button top-right -->
+        <button class="modal-close-circle-btn" (click)="isCancelModalOpen = false">
+          <ion-icon name="close"></ion-icon>
+        </button>
+
+        <!-- Illustration -->
+        <div class="cancel-illustration-box">
+          <img src="assets/onboarding/cancel_plan_illustration.png" alt="Cancel Subscription Warning">
+        </div>
+
+        <!-- Header -->
+        <h2 class="cancel-modal-title">Cancel Subscription?</h2>
+        <p class="cancel-modal-subtitle">Are you sure? Your remaining balance will be refunded to your wallet.</p>
+
+        <!-- Refund Card Details -->
+        <div class="refund-detail-card">
+          <div class="refund-row">
+            <div class="wallet-icon-circle">
+              <ion-icon name="wallet"></ion-icon>
+            </div>
+            <span class="refund-label-text">Refund to Wallet</span>
+            <span class="refund-amount-text" *ngIf="activeSub">₹{{ (daysLeft * activeSub.dailyDeduction) | number:'1.0-0' }}</span>
+            <span class="refund-amount-text" *ngIf="!activeSub">₹2,420</span>
+          </div>
+
+          <div class="refund-divider"></div>
+
+          <div class="refund-note-row">
+            <div class="shield-icon-circle">
+              <ion-icon name="shield-checkmark-outline"></ion-icon>
+            </div>
+            <p class="refund-note-text">You can resubscribe anytime and continue from where you left off.</p>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="cancel-modal-actions">
+          <button class="keep-plan-btn" (click)="isCancelModalOpen = false">
+            Keep Plan
+          </button>
+          <button class="confirm-cancel-btn" (click)="confirmCancelSubscription()">
+            Yes, Cancel Plan
+          </button>
+        </div>
+
+        <!-- Secure Footer -->
+        <div class="secure-footer">
+          <ion-icon name="lock-closed-outline"></ion-icon>
+          <span>100% secure. No hidden charges.</span>
+        </div>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+  <!-- ── Confirm Subscription Modal (Centered Modal) ── -->
+  <ion-modal [isOpen]="isConfirmModalOpen" (didDismiss)="isConfirmModalOpen = false" class="confirm-modal">
+    <ng-template>
+      <div class="confirm-modal-container">
+        <!-- Close button top-right -->
+        <button class="modal-close-circle-btn" (click)="isConfirmModalOpen = false">
+          <ion-icon name="close"></ion-icon>
+        </button>
+
+        <!-- Illustration -->
+        <div class="confirm-illustration-box">
+          <img src="assets/onboarding/salad_bowl_checked.png" alt="Confirm Subscription">
+        </div>
+
+        <!-- Header -->
+        <h2 class="confirm-modal-title">Confirm Subscription</h2>
+        <p class="confirm-modal-subtitle">Review your plan details and rotation selection before confirming.</p>
+
+        <!-- Plan Details Card -->
+        <div class="confirm-detail-card" *ngIf="confirmingPlan">
+          <div class="plan-main-info">
+            <span class="plan-name-badge">{{ confirmingPlan.name }}</span>
+            <div class="plan-price-row">
+              <span class="price-val">₹{{ confirmingPlan.price | number:'1.0-0' }}</span>
+              <span class="price-per-day">/ ₹{{ confirmingPlan.perDay }}/day</span>
+            </div>
+            <span class="plan-days-tag">Duration: {{ confirmingPlan.days }} Days</span>
+          </div>
+
+          <div class="confirm-divider"></div>
+
+          <div class="confirm-rotation-info">
+            <span class="rotation-label">Rotation Menu Preview</span>
+            <div class="rotation-meals-row">
+              <div class="meal-badge" *ngFor="let meal of selectedMeals">
+                <ion-icon name="restaurant-outline"></ion-icon>
+                <span>{{ meal.name }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="confirm-modal-actions">
+          <button class="keep-plan-btn" (click)="isConfirmModalOpen = false">
+            Cancel
+          </button>
+          <button class="confirm-cancel-btn" (click)="confirmPurchase()">
+            Subscribe Now
+          </button>
+        </div>
+
+        <!-- Secure Footer -->
+        <div class="secure-footer">
+          <ion-icon name="lock-closed-outline"></ion-icon>
+          <span>100% secure. No hidden charges.</span>
+        </div>
+      </div>
+    </ng-template>
+  </ion-modal>

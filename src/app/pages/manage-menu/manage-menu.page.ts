@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { MealService, Meal } from '../../services/meal.service';
 import { AuthService } from '../../services/auth';
-import { NavController, ToastController } from '@ionic/angular';
+import { NavController, ToastController, ActionSheetController } from '@ionic/angular';
+
 
 @Component({
   selector: 'app-manage-menu',
@@ -20,16 +21,32 @@ export class ManageMenuPage implements OnInit {
     description: '',
     price: 0,
     category: 'Lunch' as any,
-    image: '', // Will store Base64 or URL
+    image: '', 
     type: 'Veg' as any
   };
+
+  searchQuery: string = '';
+  selectedCat: string = 'All';
+  filteredMeals: Meal[] = [];
+
+  isPopoverOpen = false;
+  popoverEvent: any = null;
+  selectedMeal: Meal | null = null;
+  
+  isDeleteModalOpen = false;
+  mealToDelete: Meal | null = null;
+
+
+
 
   constructor(
     private mealService: MealService,
     private auth: AuthService,
     private navCtrl: NavController,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private actionSheetCtrl: ActionSheetController
   ) { }
+
 
   async ngOnInit() {
     await this.loadMeals();
@@ -39,8 +56,37 @@ export class ManageMenuPage implements OnInit {
     const agentId = this.auth.userId;
     if (agentId) {
       this.agentMeals = await this.mealService.getMealsByAgent(agentId) as Meal[];
+      this.filterMeals();
     }
   }
+
+  selectCategory(cat: string) {
+    this.selectedCat = cat;
+    this.filterMeals();
+  }
+
+  getCatCount(cat: string): number {
+    return this.agentMeals.filter(m => m.category === cat).length;
+  }
+
+  filterMeals() {
+    let temp = [...this.agentMeals];
+    
+    if (this.selectedCat !== 'All') {
+      temp = temp.filter(m => m.category === this.selectedCat);
+    }
+
+    if (this.searchQuery) {
+      const q = this.searchQuery.toLowerCase();
+      temp = temp.filter(m => 
+        m.name.toLowerCase().includes(q) || 
+        m.description?.toLowerCase().includes(q)
+      );
+    }
+
+    this.filteredMeals = temp;
+  }
+
 
   goBack() {
     this.navCtrl.back();
@@ -97,12 +143,74 @@ export class ManageMenuPage implements OnInit {
     };
   }
 
-  toggleMealAvailability(meal: Meal) {
-    if (meal.isAvailable === undefined) {
-      meal.isAvailable = false;
-    } else {
-      meal.isAvailable = !meal.isAvailable;
+  openPopover(ev: any, meal: Meal) {
+    ev.stopPropagation();
+    this.selectedMeal = meal;
+    this.popoverEvent = ev;
+    this.isPopoverOpen = true;
+  }
+
+  handleEditFromPopover() {
+    this.isPopoverOpen = false;
+    if (this.selectedMeal) {
+      this.editMeal(this.selectedMeal);
     }
-    // Update API if needed
+  }
+
+  handleDeleteFromPopover() {
+    this.isPopoverOpen = false;
+    if (this.selectedMeal) {
+      this.deleteMeal(this.selectedMeal);
+    }
+  }
+
+  handleStatusFromPopover() {
+    this.isPopoverOpen = false;
+    if (this.selectedMeal) {
+      this.toggleMealAvailability(this.selectedMeal);
+      // Optional: Show feedback toast
+    }
+  }
+
+
+  async deleteMeal(meal: Meal) {
+    this.mealToDelete = meal;
+    this.isDeleteModalOpen = true;
+  }
+
+  async confirmDelete() {
+    if (this.mealToDelete && this.mealToDelete.id) {
+      await this.mealService.deleteMeal(this.mealToDelete.id);
+      this.isDeleteModalOpen = false;
+      this.mealToDelete = null;
+      await this.loadMeals();
+      const t = await this.toastCtrl.create({ 
+        message: 'Meal removed successfully', 
+        duration: 2000, 
+        color: 'danger',
+        position: 'bottom'
+      });
+      t.present();
+    }
+  }
+
+
+  editMeal(meal: Meal) {
+    // Open add modal but pre-fill with meal data for "Edit" mode
+    this.mealForm = {
+      name: meal.name,
+      description: meal.description || '',
+      price: meal.price,
+      category: meal.category,
+      image: meal.image,
+      type: meal.type
+    };
+    this.isAddMealModalOpen = true;
+  }
+
+  toggleMealAvailability(meal: Meal) {
+    meal.isAvailable = meal.isAvailable === undefined ? false : !meal.isAvailable;
+    this.mealService.updateMeal(meal);
   }
 }
+

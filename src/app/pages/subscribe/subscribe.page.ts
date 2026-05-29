@@ -27,9 +27,12 @@ export class SubscribePage implements OnInit {
   meals: Meal[] = [];
   selectedMeals: Meal[] = [];
   isPlacingOrder = false;
+  isPlanControlsOpen = false;
+  isCancelModalOpen = false;
 
   // Active subscription
   activeSub: Subscription | null = null;
+  isLoading = true;
 
   // Plan selection
   selectedPlanIndex = 0;
@@ -87,13 +90,28 @@ export class SubscribePage implements OnInit {
     private actionSheetCtrl: ActionSheetController
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     this.mealService.meals$.subscribe(m => {
       this.meals = m;
     });
+  }
+
+  async ionViewWillEnter() {
     this.mealService.refreshMeals();
-    this.checkActiveSubscription();
-    this.buildWeekDays();
+    
+    // Only show skeleton on first entry or when there is no plan loaded yet
+    if (!this.activeSub) {
+      this.isLoading = true;
+    }
+    
+    try {
+      await this.checkActiveSubscription();
+      this.buildWeekDays();
+    } catch (error) {
+      console.error('Error fetching subscription in subscribe.page:', error);
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   goBack() {
@@ -127,7 +145,10 @@ export class SubscribePage implements OnInit {
     this.selectedPlanIndex = index;
   }
 
-  async choosePlan(index: number) {
+  isConfirmModalOpen = false;
+  confirmingPlan: PlanOption | null = null;
+
+  choosePlan(index: number) {
     this.selectedPlanIndex = index;
     const plan = this.plans[index];
 
@@ -143,24 +164,15 @@ export class SubscribePage implements OnInit {
       return;
     }
 
-    const mealNames = this.selectedMeals.map(m => m.name).join(', ');
-    const alert = await this.alertCtrl.create({
-      header: 'Confirm Subscription',
-      message: `
-        <div style="text-align:center;">
-          <strong>${plan.name}</strong><br>
-          <span style="font-size:1.3rem;font-weight:900;color:#FF7235;">₹${plan.price.toLocaleString()}</span><br>
-          <span style="font-size:0.8rem;color:#8E7C76;">₹${plan.perDay}/day · ${plan.days} days</span><br><br>
-          <span style="font-size:0.75rem;">Rotation: ${mealNames}</span>
-        </div>
-      `,
-      cssClass: 'premium-alert',
-      buttons: [
-        { text: 'Cancel', role: 'cancel' },
-        { text: 'Subscribe Now', handler: () => this.processSubscription(plan) }
-      ]
-    });
-    await alert.present();
+    this.confirmingPlan = plan;
+    this.isConfirmModalOpen = true;
+  }
+
+  confirmPurchase() {
+    if (this.confirmingPlan) {
+      this.isConfirmModalOpen = false;
+      this.processSubscription(this.confirmingPlan);
+    }
   }
 
   async processSubscription(plan: PlanOption) {
@@ -223,10 +235,11 @@ export class SubscribePage implements OnInit {
   // ACTIVE PLAN DASHBOARD (State 2)
   // ═══════════════════════════════════════════════════
 
-  checkActiveSubscription() {
+  async checkActiveSubscription() {
     const userId = this.auth.userId;
     if (!userId) return;
 
+    await this.subscriptionService.fetchUserSubscriptions(userId);
     const subs = this.subscriptionService.getUserSubscriptions(userId);
     const active = subs.find(s => s.status === 'Active');
     if (active) {
@@ -359,45 +372,18 @@ export class SubscribePage implements OnInit {
   // ACTIONS
   // ═══════════════════════════════════════════════════
 
-  async openPlanOptions() {
-    const actionSheet = await this.actionSheetCtrl.create({
-      header: 'Plan Options',
-      buttons: [
-        {
-          text: this.activeSub?.status === 'Paused' ? 'Resume Plan' : 'Pause Plan',
-          icon: this.activeSub?.status === 'Paused' ? 'play-outline' : 'pause-outline',
-          handler: () => this.togglePause()
-        },
-        {
-          text: 'Change Plan',
-          icon: 'swap-horizontal-outline',
-          handler: () => this.changePlan()
-        },
-        {
-          text: 'Manage Rotation',
-          icon: 'refresh-outline',
-          handler: () => this.manageRotation()
-        },
-        {
-          text: 'Cancel Subscription',
-          icon: 'close-circle-outline',
-          role: 'destructive',
-          handler: () => this.cancelSubscription()
-        },
-        { text: 'Close', role: 'cancel' }
-      ]
-    });
-    await actionSheet.present();
+  openPlanOptions() {
+    this.isPlanControlsOpen = true;
   }
 
-  togglePause() {
+  async togglePause() {
     if (!this.activeSub) return;
     if (this.activeSub.status === 'Active') {
-      this.subscriptionService.pauseSubscription(this.activeSub.id);
+      await this.subscriptionService.pauseSubscription(this.activeSub.id);
       this.activeSub.status = 'Paused';
       this.showToast('Plan paused. We\'ll extend your end date ⏸️');
     } else if (this.activeSub.status === 'Paused') {
-      this.subscriptionService.resumeSubscription(this.activeSub.id);
+      await this.subscriptionService.resumeSubscription(this.activeSub.id);
       this.activeSub.status = 'Active';
       this.showToast('Plan resumed! 🎉');
     }
@@ -408,36 +394,40 @@ export class SubscribePage implements OnInit {
     this.showToast('Select a new plan below');
   }
 
-  async manageRotation() {
-    // Show rotation management options
-    const alert = await this.alertCtrl.create({
-      header: 'Manage Rotation',
-      message: 'Rotation customization will be available in the next update. Currently your meals rotate automatically.',
-      buttons: ['Got it']
-    });
-    await alert.present();
+  // ═══════════════════════════════════════════════════
+  // ROTATION MANAGEMENT
+  // ═══════════════════════════════════════════════════
+
+  manageRotation() {
+    this.router.navigate(['/manage-rotation']);
   }
 
-  async cancelSubscription() {
-    const alert = await this.alertCtrl.create({
-      header: 'Cancel Subscription?',
-      message: 'Are you sure? Your remaining balance will be refunded to your wallet.',
-      buttons: [
-        { text: 'Keep Plan', role: 'cancel' },
-        {
-          text: 'Cancel Plan',
-          role: 'destructive',
-          handler: () => {
-            if (this.activeSub) {
-              this.subscriptionService.pauseSubscription(this.activeSub.id);
-              this.activeSub = null;
-              this.showToast('Subscription cancelled. Refund processed to wallet.');
-            }
-          }
+  cancelSubscription() {
+    this.isCancelModalOpen = true;
+  }
+
+  async confirmCancelSubscription() {
+    if (this.activeSub) {
+      this.isPlacingOrder = true;
+      try {
+        const res = await this.subscriptionService.cancelSubscription(this.activeSub.id);
+        const refundAmt = res.RefundAmount || res.refundAmount || 0;
+        
+        const userId = this.auth.userId;
+        if (userId) {
+          await this.wallet.loadWallet(userId);
         }
-      ]
-    });
-    await alert.present();
+        
+        this.activeSub = null;
+        this.isCancelModalOpen = false;
+        this.showToast(`Subscription cancelled. Refund of ₹${refundAmt.toLocaleString()} processed to wallet.`);
+      } catch (error) {
+        console.error('Failed to cancel subscription:', error);
+        this.showToast('Could not cancel subscription. Try again.');
+      } finally {
+        this.isPlacingOrder = false;
+      }
+    }
   }
 
   viewAllMeals() {

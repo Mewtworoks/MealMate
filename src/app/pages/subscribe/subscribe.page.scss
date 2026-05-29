@@ -567,3 +567,810 @@
     img { width: 100%; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.08)); }
   }
 }
+
+/* ════════════════ CUSTOM PLAN CONTROLS MODAL ════════════════ */
+
+.plan-controls-modal {
+  --height: auto;
+  --max-height: 85%;
+  --border-radius: 28px 28px 0 0;
+  --background: #FFFFFF;
+  --box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.12);
+  align-items: flex-end;
+  
+  &::part(content) {
+    border-radius: 28px 28px 0 0;
+  }
+}
+
+.plan-controls-sheet {
+  background: #FFFFFF;
+  padding: 16px 20px calc(20px + env(safe-area-inset-bottom)) 20px;
+  display: flex;
+  flex-direction: column;
+  color: #483129;
+
+  .sheet-handle {
+    width: 48px;
+    height: 5px;
+    background: #E4E4E7;
+    border-radius: 10px;
+    margin: 0 auto 16px auto;
+  }
+
+  .sheet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+
+    .header-text {
+      flex: 1;
+      h2 {
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: #483129;
+        margin: 0 0 4px 0;
+      }
+      p {
+        font-size: 0.8rem;
+        color: #8E7C76;
+        margin: 0;
+        font-weight: 600;
+      }
+    }
+
+    .header-illustration {
+      width: 90px;
+      height: 90px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+    }
+  }
+
+  .sheet-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .control-row {
+      display: flex;
+      align-items: center;
+      border: 1.5px solid #F3F4F6;
+      border-radius: 20px;
+      padding: 16px;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:active {
+        transform: scale(0.98);
+        opacity: 0.95;
+      }
+
+      .row-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        ion-icon {
+          font-size: 1.3rem;
+        }
+
+        &.orange {
+          background: linear-gradient(135deg, #FFA26B 0%, #FF7235 100%);
+          color: white;
+        }
+        &.blue {
+          background: #E8EFFF;
+          color: #4A72FF;
+        }
+        &.purple {
+          background: #F3EBFF;
+          color: #9C43FF;
+        }
+        &.red {
+          background: #FFEBEB;
+          color: #FF5B5B;
+        }
+        &.gold {
+          background: #FFF2E0;
+          color: #FFA000;
+        }
+      }
+
+      .row-info {
+        flex: 1;
+        min-width: 0;
+
+        h3 {
+          font-size: 0.95rem;
+          font-weight: 800;
+          color: #483129;
+          margin: 0 0 3px 0;
+        }
+
+        p {
+          font-size: 0.7rem;
+          color: #8E7C76;
+          margin: 0;
+          font-weight: 500;
+          line-height: 1.35;
+        }
+      }
+
+      .row-pill-btn {
+        background: #FFE9DF;
+        color: #FF7235;
+        border: none;
+        border-radius: 12px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 6px 12px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-left: auto;
+        flex-shrink: 0;
+        box-shadow: 0 2px 6px rgba(255, 114, 53, 0.05);
+
+        .pause-symbol {
+          font-size: 0.65rem;
+          font-weight: 800;
+        }
+      }
+
+      .row-chevron {
+        font-size: 1rem;
+        color: #9CA3AF;
+        margin-left: 4px;
+        flex-shrink: 0;
+      }
+
+      // Special row modifications
+      &.pause-row {
+        background: #FFF8F5;
+        border-color: #FFE5D8;
+      }
+
+      &.change-row {
+        background: #F4F6FF;
+        border-color: #E5E9FF;
+      }
+
+      &.rotation-row {
+        background: #FAF5FF;
+        border-color: #F2E6FF;
+      }
+
+      &.cancel-row {
+        background: #FFF5F5;
+        border-color: #FFE2E2;
+      }
+
+      &.help-row {
+        background: #FFFBED;
+        border-color: #FFE1A6;
+        border-style: dashed;
+        cursor: default;
+
+        &:active {
+          transform: none;
+          opacity: 1;
+        }
+      }
+
+      .chat-support-btn {
+        background: transparent;
+        color: #FF7235;
+        border: 1.5px solid #FF7235;
+        border-radius: 20px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 6px 12px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-left: auto;
+        flex-shrink: 0;
+        transition: background 0.2s;
+
+        ion-icon {
+          font-size: 0.85rem;
+        }
+
+        &:active {
+          background: rgba(255, 114, 53, 0.08);
+        }
+      }
+    }
+  }
+
+  .sheet-footer {
+    .sheet-close-btn {
+      width: 100%;
+      background: #FFFFFF;
+      color: #483129;
+      border: 1.5px solid #E4E4E7;
+      border-radius: 18px;
+      padding: 16px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      margin-top: 18px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:active {
+        transform: scale(0.98);
+        background: #FAF9F8;
+      }
+    }
+  }
+}
+
+/* ════════════════ CUSTOM CANCEL CONFIRMATION MODAL ════════════════ */
+
+
+.cancel-modal {
+  --width: 92%;
+  --max-width: 350px;
+  --height: auto;
+  --border-radius: 28px;
+  --backdrop-opacity: 0.6;
+
+  &::part(content) {
+    border-radius: 28px;
+    overflow: hidden;
+  }
+}
+
+.cancel-modal-container {
+  background: #FFFFFF;
+  padding: 24px 20px 20px 20px;
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #483129;
+
+  .modal-close-circle-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #F4F4F5;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #71717A;
+    transition: background 0.2s;
+
+    &:active {
+      background: #E4E4E7;
+    }
+
+    ion-icon {
+      font-size: 1.15rem;
+    }
+  }
+
+  .cancel-illustration-box {
+    width: 100px;
+    height: 100px;
+    margin: 8px auto 20px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  .cancel-modal-title {
+    font-size: 1.45rem;
+    font-weight: 900;
+    color: #483129;
+    margin: 0 0 8px 0;
+  }
+
+  .cancel-modal-subtitle {
+    font-size: 0.8rem;
+    color: #8E7C76;
+    line-height: 1.4;
+    margin: 0 0 24px 0;
+    font-weight: 500;
+    max-width: 280px;
+    text-align: center;
+  }
+
+  .refund-detail-card {
+    width: 100%;
+    background: #FFF9F6;
+    border: 1.5px solid #FFE9DF;
+    border-radius: 20px;
+    padding: 16px;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .refund-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .refund-label-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        .wallet-icon-circle {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          background: #FFEBE0;
+          color: #FF7235;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          ion-icon {
+            font-size: 1.1rem;
+          }
+        }
+
+        .refund-label-text {
+          font-size: 0.85rem;
+          font-weight: 800;
+          color: #483129;
+        }
+      }
+
+      .refund-amount-text {
+        font-size: 1.1rem;
+        font-weight: 900;
+        color: #10B981;
+      }
+    }
+
+    .refund-divider {
+      height: 1px;
+      border-top: 1px dashed #FFE1D3;
+      width: 100%;
+    }
+
+    .refund-note-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+
+      .shield-icon-circle {
+        color: #FF7235;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 2px;
+
+        ion-icon {
+          font-size: 1.05rem;
+        }
+      }
+
+      .refund-note-text {
+        font-size: 0.72rem;
+        color: #8E7C76;
+        font-weight: 500;
+        line-height: 1.35;
+        text-align: left;
+        margin: 0;
+      }
+    }
+  }
+
+  .cancel-modal-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+
+    button {
+      width: 100%;
+      height: 50px;
+      border-radius: 16px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:active {
+        transform: scale(0.97);
+      }
+    }
+
+    .keep-plan-btn {
+      background: #FFFFFF;
+      color: #FF7235;
+      border: 1.5px solid #FF7235;
+
+      &:active {
+        background: rgba(255, 114, 53, 0.05);
+      }
+    }
+
+    .confirm-cancel-btn {
+      background: #FF7235;
+      color: white;
+      border: none;
+      box-shadow: 0 6px 16px rgba(255, 114, 53, 0.25);
+
+      &:active {
+        background: #E6662F;
+      }
+    }
+  }
+
+  .secure-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    color: #A1A1AA;
+
+    ion-icon {
+      font-size: 0.85rem;
+      color: #FF7235;
+    }
+
+    span {
+      font-size: 0.68rem;
+      font-weight: 600;
+    }
+  }
+}
+
+/* ════════════════ CUSTOM CONFIRM SUB MODAL ════════════════ */
+
+.confirm-modal {
+  --width: 92%;
+  --max-width: 350px;
+  --height: auto;
+  --border-radius: 28px;
+  --backdrop-opacity: 0.6;
+
+  &::part(content) {
+    border-radius: 28px;
+    overflow: hidden;
+  }
+}
+
+.confirm-modal-container {
+  background: #FFFFFF;
+  padding: 24px 20px 20px 20px;
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #483129;
+
+  .modal-close-circle-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #F4F4F5;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #71717A;
+    transition: background 0.2s;
+
+    &:active {
+      background: #E4E4E7;
+    }
+
+    ion-icon {
+      font-size: 1.15rem;
+    }
+  }
+
+  .confirm-illustration-box {
+    width: 100px;
+    height: 100px;
+    margin: 8px auto 20px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.06));
+    }
+  }
+
+  .confirm-modal-title {
+    font-size: 1.45rem;
+    font-weight: 900;
+    color: #483129;
+    margin: 0 0 8px 0;
+  }
+
+  .confirm-modal-subtitle {
+    font-size: 0.8rem;
+    color: #8E7C76;
+    line-height: 1.4;
+    margin: 0 0 24px 0;
+    font-weight: 500;
+    max-width: 280px;
+    text-align: center;
+  }
+
+  .confirm-detail-card {
+    width: 100%;
+    background: #FFFBF8;
+    border: 1.5px solid #FFE9DF;
+    border-radius: 20px;
+    padding: 16px;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: left;
+
+    .plan-main-info {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+
+      .plan-name-badge {
+        background: #FFE9DF;
+        color: #FF7235;
+        font-size: 0.72rem;
+        font-weight: 800;
+        padding: 4px 10px;
+        border-radius: 8px;
+        width: fit-content;
+        text-transform: uppercase;
+      }
+
+      .plan-price-row {
+        display: flex;
+        align-items: baseline;
+        gap: 4px;
+
+        .price-val {
+          font-size: 1.6rem;
+          font-weight: 900;
+          color: #FF7235;
+        }
+
+        .price-per-day {
+          font-size: 0.85rem;
+          color: #8E7C76;
+          font-weight: 600;
+        }
+      }
+
+      .plan-days-tag {
+        font-size: 0.8rem;
+        color: #483129;
+        font-weight: 700;
+      }
+    }
+
+    .confirm-divider {
+      height: 1px;
+      border-top: 1px dashed #FFE1D3;
+      width: 100%;
+    }
+
+    .confirm-rotation-info {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      .rotation-label {
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: #8E7C76;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+      }
+
+      .rotation-meals-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+
+        .meal-badge {
+          background: #FFFFFF;
+          border: 1px solid #FFE9DF;
+          border-radius: 10px;
+          padding: 6px 10px;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+
+          ion-icon {
+            font-size: 0.85rem;
+            color: #FF7235;
+          }
+
+          span {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #483129;
+          }
+        }
+      }
+    }
+  }
+
+  .confirm-modal-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+
+    button {
+      width: 100%;
+      height: 50px;
+      border-radius: 16px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:active {
+        transform: scale(0.97);
+      }
+    }
+
+    .keep-plan-btn {
+      background: #FFFFFF;
+      color: #FF7235;
+      border: 1.5px solid #FF7235;
+
+      &:active {
+        background: rgba(255, 114, 53, 0.05);
+      }
+    }
+
+    .confirm-cancel-btn {
+      background: #FF7235;
+      color: white;
+      border: none;
+      box-shadow: 0 6px 16px rgba(255, 114, 53, 0.25);
+
+      &:active {
+        background: #E6662F;
+      }
+    }
+  }
+
+  .secure-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    color: #A1A1AA;
+
+    ion-icon {
+      font-size: 0.85rem;
+      color: #FF7235;
+    }
+
+    span {
+      font-size: 0.68rem;
+      font-weight: 600;
+    }
+  }
+}
+
+/* ════════════════ SKELETON LOADER STATE ════════════════ */
+.skeleton-container {
+  padding: 20px;
+  .sk-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 32px;
+    padding-top: 16px;
+  }
+  .sk-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #F3F4F6;
+    margin-bottom: 20px;
+  }
+  .sk-title {
+    width: 60%;
+    height: 24px;
+    border-radius: 6px;
+    background: #F3F4F6;
+    margin-bottom: 12px;
+  }
+  .sk-subtitle {
+    width: 80%;
+    height: 16px;
+    border-radius: 6px;
+    background: #F3F4F6;
+  }
+  .sk-section {
+    margin-bottom: 28px;
+    .sk-sec-label {
+      width: 40%;
+      height: 20px;
+      border-radius: 6px;
+      background: #F3F4F6;
+      margin-bottom: 16px;
+    }
+  }
+  .sk-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .sk-card {
+    height: 110px;
+    border-radius: 12px;
+    background: #F3F4F6;
+  }
+  .sk-long-card {
+    height: 120px;
+    border-radius: 16px;
+    background: #F3F4F6;
+    margin-bottom: 24px;
+  }
+
+  // Animation for skeleton pulse
+  &.sk-pulse {
+    animation: sk-loading 1.5s infinite ease-in-out;
+  }
+}
+
+@keyframes sk-loading {
+  0% {
+    opacity: 0.65;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.65;
+  }
+}
+
+
+
