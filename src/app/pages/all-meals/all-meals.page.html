@@ -1,0 +1,103 @@
+<ion-header class="ion-no-border sub-page-header">
+  <div class="header-curve-bg"></div>
+  <ion-toolbar class="transparent-toolbar" style="--padding-top: 5px;">
+    <div class="header-content">
+      <ion-button (click)="goBack()" class="back-btn-pill">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+      <div class="title-group">
+        <h1 class="page-title">All Meals</h1>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="premium-content">
+  <div class="content-wrapper">
+    <!-- ===== SEARCH BAR ===== -->
+    <div class="search-container">
+      <ion-searchbar 
+        [(ngModel)]="searchTerm" 
+        (ionInput)="onSearchChange()" 
+        placeholder="Search healthy dishes..." 
+        class="custom-searchbar">
+      </ion-searchbar>
+    </div>
+
+    <!-- ===== CATEGORIES ===== -->
+    <div class="cat-section">
+      <div class="cat-scroll">
+        <div 
+          *ngFor="let cat of categories" 
+          class="cat-item" 
+          [class.active]="selectedCategory === cat" 
+          (click)="selectCategory(cat)">
+          <span class="cat-label">{{cat}}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SKELETON LOADER ===== -->
+    <div class="meals-grid-skeleton" *ngIf="isLoading">
+      <div class="meal-skeleton-card" *ngFor="let i of [1,2,4,5,6]">
+        <ion-skeleton-text animated class="sk-img"></ion-skeleton-text>
+        <ion-skeleton-text animated class="sk-title"></ion-skeleton-text>
+        <ion-skeleton-text animated class="sk-desc"></ion-skeleton-text>
+        <div class="sk-footer">
+          <ion-skeleton-text animated class="sk-price"></ion-skeleton-text>
+          <ion-skeleton-text animated class="sk-btn"></ion-skeleton-text>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== NO RESULTS ===== -->
+    <div class="no-results" *ngIf="!isLoading && filteredMeals.length === 0">
+      <div class="no-results-icon">
+        <ion-icon name="restaurant-outline"></ion-icon>
+      </div>
+      <h3>No Meals Found</h3>
+      <p>We couldn't find any meals matching "{{searchTerm}}". Try another keyword!</p>
+    </div>
+
+    <!-- ===== MEALS GRID ===== -->
+    <div class="meals-grid" *ngIf="!isLoading && filteredMeals.length > 0">
+      <div class="meal-card" *ngFor="let meal of filteredMeals">
+        <div class="pc-thumb">
+          <img [src]="meal.image" [alt]="meal.name">
+          <div class="pc-rating">
+            <ion-icon name="star"></ion-icon> {{getMealRating(meal)}}
+          </div>
+          <button class="pc-heart">
+            <ion-icon name="heart-outline"></ion-icon>
+          </button>
+          <div class="pc-kcal">{{getMealKcal(meal)}}</div>
+        </div>
+        <div class="pc-body">
+          <h4 class="pc-name">{{meal.name}}</h4>
+          <p class="pc-sub">{{meal.category || 'Lunch'}}</p>
+          <div class="pc-price-row">
+            <span class="pc-price">₹{{meal.price}}</span>
+            <button class="pc-add-btn" (click)="addToCart(meal, $event)">
+              <ion-icon name="add"></ion-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<!-- Floating Cart Pill -->
+<div class="floating-cart-pill" *ngIf="cartCount > 0" (click)="goToCart()">
+  <div class="pill-content">
+    <div class="items-count">
+      <span class="num">{{cartCount}}</span>
+      <span class="txt">Items</span>
+    </div>
+    <div class="divider"></div>
+    <div class="view-cart">
+      <span>View Cart</span>
+      <ion-icon name="arrow-forward"></ion-icon>
+    </div>
+  </div>
+</div>

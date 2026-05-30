@@ -1,0 +1,744 @@
+/* ==========================================================================
+   Health Tracker Page — Premium MealMate Styles
+   Matches Agent Earnings design system exactly
+   ========================================================================== */
+@import '../../../_variables';
+
+.health-content {
+  --background: #FCFAF8;
+
+  .health-wrapper {
+    padding: 16px 16px 140px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+
+/* ===== Greeting Section (same as earnings) ===== */
+.greeting-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  .greeting-left {
+    .greeting-line {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #4B5563;
+      margin: 0;
+
+      .chef-highlight {
+        color: $mm-primary;
+        font-weight: 800;
+      }
+    }
+    .greeting-sub {
+      font-size: 0.75rem;
+      color: #9CA3AF;
+      margin: 4px 0 0 0;
+      font-weight: 500;
+    }
+  }
+
+  .greeting-coins-decor {
+    position: relative;
+    width: 56px;
+    height: 40px;
+
+    .coin {
+      position: absolute;
+      font-size: 1.3rem;
+      animation: coinFloat 2.5s ease-in-out infinite;
+      &.c1 { top: 0; right: 0; animation-delay: 0s; }
+      &.c2 { top: 10px; right: 22px; animation-delay: 0.4s; font-size: 1rem; }
+      &.c3 { top: 18px; right: 6px; animation-delay: 0.8s; font-size: 0.9rem; }
+    }
+  }
+}
+
+@keyframes coinFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* ===== Hero Card (same as earnings) ===== */
+.hero-earnings-card {
+  position: relative;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #FF7235 0%, #FF9A5C 40%, #FF7235 100%);
+  padding: 24px;
+  color: white;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(255, 114, 53, 0.3);
+
+  .hero-card-bg-mesh {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 90% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
+      radial-gradient(circle at 10% 80%, rgba(255,255,255,0.06) 0%, transparent 40%);
+    pointer-events: none;
+  }
+
+  .hero-card-content {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    z-index: 2;
+  }
+
+  .hero-left {
+    flex: 1;
+    .hero-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      opacity: 0.85;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .hero-amount {
+      font-size: 2.8rem;
+      font-weight: 900;
+      margin: 4px 0 8px 0;
+      line-height: 1;
+      letter-spacing: -1px;
+    }
+    .hero-trend {
+      font-size: 0.7rem;
+      opacity: 0.9;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 600;
+      ion-icon { font-size: 0.85rem; }
+    }
+  }
+
+  .hero-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+
+    .hero-orders-block, .hero-avg-block { text-align: right; }
+    .hero-orders-label, .hero-avg-label {
+      font-size: 0.65rem;
+      opacity: 0.8;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .hero-orders-val {
+      font-size: 2rem;
+      font-weight: 900;
+      margin: 0;
+      line-height: 1.1;
+    }
+    .hero-avg-val {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin: 0;
+      line-height: 1.1;
+    }
+  }
+
+  .hero-coin-decor {
+    position: absolute;
+    right: 16px;
+    bottom: -8px;
+    opacity: 0.4;
+    z-index: 1;
+  }
+}
+
+/* ===== Quick Stats Row (same as earnings) ===== */
+.quick-stats-row {
+  display: flex;
+  gap: 10px;
+}
+
+.qs-card {
+  flex: 1;
+  background: white;
+  border-radius: 16px;
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.02);
+  border: 1px solid #F3F4F6;
+  text-align: center;
+
+  .qs-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    color: white;
+    &.orange-bg { background: $mm-primary; }
+    &.blue-bg { background: #3B82F6; }
+    &.gold-bg { background: #F59E0B; }
+  }
+
+  .qs-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .qs-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: #9CA3AF;
+    text-transform: uppercase;
+  }
+  .qs-value {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #1F2937;
+    margin: 0;
+    line-height: 1.1;
+  }
+  .qs-sub {
+    font-size: 0.65rem;
+    font-weight: 700;
+    &.orange-text { color: $mm-primary; }
+    &.blue-text { color: #3B82F6; }
+    &.gold-text { color: #F59E0B; }
+  }
+}
+
+/* ===== Shared Section Styles (same as earnings) ===== */
+.section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+
+  .section-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #1F2937;
+    margin: 0;
+  }
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: $mm-primary;
+  font-size: 0.75rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  ion-icon { font-size: 0.85rem; }
+}
+
+.target-badge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #10B981;
+  background: #ECFDF5;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.macro-cal-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: $mm-primary;
+  background: #FFF5EE;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.mia-role-badge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #10B981;
+  background: #ECFDF5;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+/* ===== Period Filter (same as earnings) ===== */
+.period-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: #10B981;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.2);
+  transition: all 0.2s;
+  &:active { transform: scale(0.96); }
+  ion-icon { font-size: 0.9rem; }
+}
+
+/* ===== Weekly Calorie Chart (same as earnings chart) ===== */
+.chart-section {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.02);
+  border: 1px solid #F3F4F6;
+}
+
+.bar-chart-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 180px;
+  padding-top: 30px;
+  gap: 6px;
+}
+
+.chart-bar-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+  gap: 6px;
+
+  .bar-value-label {
+    font-size: 0.55rem;
+    font-weight: 700;
+    color: #9CA3AF;
+    white-space: nowrap;
+  }
+
+  .chart-bar {
+    width: 100%;
+    max-width: 36px;
+    border-radius: 8px 8px 4px 4px;
+    background: #FFD4BC;
+    transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 8px;
+
+    &.today {
+      background: $mm-primary;
+      box-shadow: 0 4px 12px rgba(255, 114, 53, 0.3);
+    }
+    &.on-track {
+      background: #86EFAC;
+    }
+    &.off-track {
+      background: #FFD4BC;
+    }
+  }
+
+  .bar-day-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #9CA3AF;
+    margin-top: 4px;
+    &.today {
+      color: $mm-primary;
+      font-weight: 800;
+    }
+  }
+}
+
+/* ===== Macros Section ===== */
+.macros-section {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.02);
+  border: 1px solid #F3F4F6;
+}
+
+.macros-row {
+  display: flex;
+  justify-content: space-around;
+  gap: 12px;
+}
+
+.macro-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.macro-ring-wrap {
+  position: relative;
+  width: 72px;
+  height: 72px;
+
+  .macro-ring-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+  .ring-bg {
+    fill: none;
+    stroke: #F3F4F6;
+    stroke-width: 3.5;
+  }
+  .ring-fill {
+    fill: none;
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    transition: stroke-dasharray 0.8s ease;
+  }
+
+  &.protein .ring-fill { stroke: $mm-primary; }
+  &.carbs .ring-fill { stroke: #F59E0B; }
+  &.fat .ring-fill { stroke: #3B82F6; }
+
+  .macro-center-val {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 900;
+    color: #1F2937;
+  }
+}
+
+.macro-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #9CA3AF;
+  text-transform: uppercase;
+}
+
+/* ===== Goal Section ===== */
+.goal-section {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.02);
+  border: 1px solid #F3F4F6;
+}
+
+.goal-pills-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+
+  .goal-pill {
+    padding: 8px 16px;
+    border-radius: 30px;
+    background: #FAFAFA;
+    border: 1.5px solid #F3F4F6;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #9CA3AF;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+
+    &.active {
+      background: $mm-primary;
+      border-color: $mm-primary;
+      color: #FFFFFF;
+      box-shadow: 0 4px 12px rgba(255, 114, 53, 0.25);
+    }
+  }
+}
+
+.goal-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.goal-ring-container {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+
+  .goal-ring-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+    .goal-ring-progress {
+      transition: stroke-dashoffset 0.8s ease;
+    }
+  }
+
+  .goal-ring-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    .goal-pct {
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: $mm-primary;
+      line-height: 1;
+    }
+    .goal-pct-label {
+      font-size: 0.5rem;
+      font-weight: 700;
+      color: #9CA3AF;
+      margin-top: 2px;
+      text-transform: uppercase;
+    }
+  }
+}
+
+.goal-info {
+  flex: 1;
+  h4 {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #1F2937;
+    margin: 0 0 4px;
+  }
+  p {
+    font-size: 0.75rem;
+    color: #9CA3AF;
+    margin: 0;
+    font-weight: 600;
+  }
+}
+
+/* ===== Mia AI Insight ===== */
+.mia-section {
+  // No card bg here, card is the inner .mia-card
+}
+
+.mia-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.02);
+  border: 1px solid #F3F4F6;
+  border-left: 4px solid #10B981;
+
+  .mia-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: #ECFDF5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    ion-icon {
+      font-size: 1.2rem;
+      color: #10B981;
+    }
+  }
+
+  .mia-body {
+    flex: 1;
+    p {
+      font-size: 0.82rem;
+      color: #4B5563;
+      line-height: 1.55;
+      margin: 0;
+      font-weight: 500;
+    }
+  }
+}
+
+/* ===== Meal Log ===== */
+.meal-log-section {
+  // Uses shared section styles
+}
+
+.empty-state-mini {
+  text-align: center;
+  padding: 30px 20px;
+  background: white;
+  border-radius: 16px;
+  border: 1.5px dashed #E5E7EB;
+
+  ion-icon {
+    font-size: 2.5rem;
+    color: #FFB088;
+    margin-bottom: 8px;
+  }
+  p {
+    font-size: 0.8rem;
+    color: #8E7C76;
+    margin: 0;
+  }
+}
+
+.meal-log-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  border: 1px solid #F3F4F6;
+
+  .ml-icon-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #FFF5EE;
+    color: $mm-primary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .ml-details {
+    flex: 1;
+    min-width: 0;
+    .ml-name {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #1F2937;
+      margin: 0 0 2px 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .ml-meta {
+      font-size: 0.65rem;
+      color: #9CA3AF;
+      font-weight: 600;
+      margin: 0;
+    }
+  }
+
+  .ml-rating {
+    display: flex;
+    gap: 2px;
+    flex-shrink: 0;
+    .star-btn {
+      background: none;
+      border: none;
+      padding: 2px;
+      cursor: pointer;
+      ion-icon {
+        font-size: 0.85rem;
+        color: #D1D5DB;
+        transition: color 0.2s;
+      }
+      &.filled ion-icon {
+        color: #F59E0B;
+      }
+    }
+  }
+}
+
+/* ===== Weekly History ===== */
+.history-section {
+  // Uses shared section styles
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  border: 1px solid #F3F4F6;
+  transition: all 0.2s;
+
+  &.today-row {
+    border-color: rgba(255, 114, 53, 0.2);
+    background: #FFFAF7;
+  }
+
+  .hi-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 40px;
+    .hi-day-name {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: #1F2937;
+    }
+    .hi-date {
+      font-size: 0.55rem;
+      color: #9CA3AF;
+      font-weight: 600;
+    }
+  }
+
+  .hi-meal {
+    flex: 1;
+    min-width: 0;
+    .hi-meal-name {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #1F2937;
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .hi-kcal {
+      font-size: 0.65rem;
+      color: #9CA3AF;
+      font-weight: 600;
+    }
+    &.empty .hi-meal-name {
+      color: #9CA3AF;
+      font-weight: 600;
+    }
+  }
+
+  .hi-status-icon {
+    font-size: 1.1rem;
+    color: #D1D5DB;
+    flex-shrink: 0;
+    &.on-track { color: #10B981; }
+    &.off-track { color: $mm-primary; }
+  }
+}
+
+/* ===== Staggered Fade-In Animations (same as earnings) ===== */
+.health-wrapper > * {
+  animation: healthFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@for $i from 1 through 10 {
+  .health-wrapper > *:nth-child(#{$i}) {
+    animation-delay: #{$i * 0.05}s;
+  }
+}
+
+@keyframes healthFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
