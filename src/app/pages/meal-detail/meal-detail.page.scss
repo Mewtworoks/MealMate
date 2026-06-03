@@ -1,0 +1,341 @@
+@import '../../../variables';
+
+/* ===== HEADER (absolute, transparent) ===== */
+.md-header { position: absolute; top: 0; left: 0; right: 0; z-index: 100; }
+.md-toolbar { --background: transparent; --border-width: 0; padding-top: calc(4px + env(safe-area-inset-top)); }
+.md-header-row {
+  display: flex; justify-content: space-between; align-items: center; padding: 0 14px;
+}
+.md-back-btn {
+  width: 38px; height: 38px; border-radius: 50%; border: none;
+  background: rgba(255,255,255,0.92); backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06); cursor: pointer;
+  ion-icon { font-size: 1.15rem; color: $mm-text-dark; }
+  &:active { transform: scale(0.92); }
+}
+.md-action-btn {
+  width: 38px; height: 38px; border-radius: 50%; border: none;
+  background: rgba(255,255,255,0.92); backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06); cursor: pointer;
+  ion-icon { font-size: 1.15rem; color: $mm-text-dark; }
+  &:active { transform: scale(0.92); }
+  &.favorited ion-icon { color: #FF4757; }
+}
+.md-header-actions { display: flex; gap: 8px; }
+
+/* ===== CONTENT ===== */
+.md-content { --background: $mm-bg-page; }
+.md-skeleton { background: $mm-bg-page; }
+
+/* ===== HERO ===== */
+.md-hero {
+  position: relative; width: 100%; height: 260px; overflow: hidden;
+  background: linear-gradient(180deg, #FFF7F2 0%, #FFE8D8 100%);
+  display: flex; align-items: center; justify-content: center;
+}
+.md-hero-img {
+  width: 200px; height: 200px; object-fit: cover; border-radius: 50%;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+}
+.md-cat-pill {
+  position: absolute; bottom: 16px; left: 16px;
+  display: flex; align-items: center; gap: 4px;
+  font-size: 0.72rem; font-weight: 700; color: $mm-primary;
+  ion-icon { font-size: 0.85rem; }
+}
+.md-type-pill {
+  position: absolute; bottom: 16px; right: 16px;
+  display: flex; align-items: center; gap: 4px;
+  font-size: 0.72rem; font-weight: 700; color: $mm-green-text;
+  ion-icon { font-size: 0.85rem; color: $mm-green-text; }
+  &.non-veg {
+    color: #E53E3E;
+    ion-icon { color: #E53E3E; }
+  }
+}
+
+/* ===== INFO CARD (overlaps hero with rounded top) ===== */
+.md-info-card {
+  position: relative; margin-top: -28px; z-index: 10;
+  background: $mm-bg-card; border-radius: 24px 24px 0 0;
+  padding: 24px 20px 0;
+}
+
+/* ===== NAME ===== */
+.md-name {
+  font-size: 1.35rem; font-weight: 800; color: $mm-text-dark;
+  margin: 0 0 8px; letter-spacing: -0.2px;
+}
+
+/* ===== META ROW (rating left + description right) ===== */
+.md-meta-row {
+  display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px;
+}
+.md-meta-left {
+  display: flex; align-items: center; gap: 4px; flex-shrink: 0;
+  .md-stars-row {
+    display: flex; gap: 1px;
+    ion-icon { font-size: 0.8rem; color: #FFB300; }
+    ion-icon.empty { color: #E0E0E0; }
+    ion-icon.half { color: #FFB300; }
+  }
+  .md-rating-num { font-size: $mm-font-sm; font-weight: 800; color: $mm-text-dark; }
+  .md-review-count { font-size: $mm-font-xs; color: $mm-text-muted; white-space: nowrap; }
+}
+.md-desc-inline {
+  font-size: $mm-font-xs; color: $mm-text-muted; line-height: 1.45;
+  margin: 0; flex: 1; text-align: right;
+}
+
+/* ===== PRICE ===== */
+.md-price-block {
+  display: flex; align-items: baseline; gap: 6px; margin-bottom: 18px;
+  .md-price { font-size: 1.3rem; font-weight: 800; color: $mm-primary; }
+  .md-price-sub { font-size: $mm-font-xs; color: $mm-text-muted; }
+}
+
+/* ===== QUICK INFO PILLS (bordered, row of 4) ===== */
+.md-pills-row {
+  display: flex; gap: 8px; margin-bottom: 22px;
+}
+.md-pill {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  gap: 2px; padding: 12px 4px; border-radius: $mm-radius-sm;
+  border: 1px solid #EEEEEE; background: $mm-bg-card;
+  ion-icon { font-size: 1.05rem; color: $mm-text-muted; margin-bottom: 2px; }
+  .pill-val { font-size: $mm-font-sm; font-weight: 800; color: $mm-text-dark; line-height: 1.2; }
+  .pill-lbl { font-size: 0.58rem; color: $mm-text-muted; font-weight: 600; }
+}
+
+/* ===== SECTION HEADER ROW ===== */
+.md-section-row {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;
+}
+.md-sec-title {
+  font-size: $mm-font-base; font-weight: 800; color: $mm-text-dark; margin: 0;
+}
+.mt-20 { margin-top: 22px; }
+.md-sync-tag {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 0.58rem; font-weight: 700; color: $mm-green-text;
+  ion-icon { font-size: 0.7rem; }
+}
+
+/* ===== NUTRITION GRID (2x2) ===== */
+.md-nutri-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 4px;
+}
+.md-nutri-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px; border-radius: $mm-radius-sm;
+  background: $mm-bg-card; border: 1px solid #F0F0F0;
+  &.protein { border-left: 3px solid #FF7235; }
+  &.carbs   { border-left: 3px solid #FFB300; }
+  &.fat     { border-left: 3px solid #F87171; }
+  &.fiber   { border-left: 3px solid #4CAF50; }
+}
+.nutri-icon-circle {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  ion-icon { font-size: 1rem; }
+  &.protein { background: #FFF0E8; ion-icon { color: #FF7235; } }
+  &.carbs   { background: #FFF8E1; ion-icon { color: #FFB300; } }
+  &.fat     { background: #FFF0F0; ion-icon { color: #F87171; } }
+  &.fiber   { background: #E8F5E9; ion-icon { color: #4CAF50; } }
+}
+.nutri-data {
+  display: flex; flex-direction: column;
+  .nutri-val { font-size: 1rem; font-weight: 800; color: $mm-text-dark; }
+  .nutri-lbl { font-size: $mm-font-xs; color: $mm-text-muted; font-weight: 600; }
+}
+
+/* ===== INGREDIENTS ===== */
+.md-ing-list {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px;
+}
+.md-ing-chip {
+  display: flex; align-items: center; gap: 5px;
+  background: $mm-bg-page; padding: 7px 14px; border-radius: 20px;
+  font-size: $mm-font-xs; font-weight: 600; color: $mm-text-dark;
+  ion-icon { font-size: 0.8rem; color: $mm-green-text; }
+}
+
+/* ===== AI MATCH CARD ===== */
+.md-ai-card {
+  background: linear-gradient(135deg, #FFF5EE 0%, #FFE8D4 50%, #FFF9F5 100%);
+  border-radius: $mm-radius-md; padding: 18px; margin-bottom: 22px;
+  border: 1px solid rgba(255,114,53,0.08);
+}
+.md-ai-top {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+}
+.md-ai-icon-circle {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: $mm-primary; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 12px rgba(255,114,53,0.3);
+  ion-icon { color: white; font-size: 1rem; }
+}
+.md-ai-info {
+  flex: 1; display: flex; flex-direction: column;
+  .ai-label { font-size: $mm-font-xs; color: $mm-text-muted; font-weight: 600; }
+  .ai-score { font-size: 1.05rem; font-weight: 800; color: $mm-primary; }
+}
+.md-ai-ring {
+  width: 48px; height: 48px; position: relative;
+  svg { width: 100%; height: 100%; }
+  .ring-pct {
+    position: absolute; inset: 0; display: flex;
+    align-items: center; justify-content: center;
+    font-size: 0.6rem; font-weight: 800; color: $mm-primary;
+  }
+}
+.md-ai-reasons { display: flex; flex-direction: column; gap: 6px; }
+.md-ai-reason {
+  display: flex; align-items: center; gap: 7px;
+  font-size: $mm-font-xs; color: $mm-text-dark; font-weight: 600;
+  ion-icon { color: $mm-green-text; font-size: 0.9rem; flex-shrink: 0; }
+}
+
+/* ===== ADD TO ROTATION ROW ===== */
+.md-rotation-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 0; margin-bottom: 8px;
+  border-bottom: 1px solid #F0F0F0; cursor: pointer;
+  &:active { opacity: 0.7; }
+}
+.md-rot-icon {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: $mm-primary-surface; display: flex; align-items: center; justify-content: center;
+  ion-icon { font-size: 1.1rem; color: $mm-primary; }
+  &.promo { background: #E8F5E9; ion-icon { color: $mm-green-text; } }
+}
+.md-rot-text {
+  flex: 1;
+  h3 { font-size: $mm-font-sm; font-weight: 700; color: $mm-text-dark; margin: 0 0 1px; }
+  p { font-size: 0.65rem; color: $mm-text-muted; margin: 0; }
+}
+.md-rot-add { font-size: 1.3rem; color: $mm-text-muted; }
+
+/* ===== CUSTOMER REVIEWS ===== */
+.md-rating-badge {
+  display: flex; align-items: center; gap: 3px;
+  background: #FFF8E1; padding: 4px 10px; border-radius: 8px;
+  font-size: $mm-font-sm; font-weight: 800; color: #F59E0B;
+  ion-icon { font-size: 0.75rem; color: #FFB300; }
+}
+.md-reviews-list { margin-bottom: 4px; }
+.md-review-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 12px 0; border-bottom: 1px solid #F5F5F5;
+  &:last-child { border-bottom: none; }
+}
+.md-rev-avatar {
+  width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 800; font-size: 0.7rem;
+}
+.md-rev-body { flex: 1; }
+.md-rev-top-row {
+  display: flex; align-items: center; gap: 6px; margin-bottom: 3px; flex-wrap: wrap;
+  .md-rev-name { font-size: $mm-font-xs; font-weight: 700; color: $mm-text-dark; }
+  .md-rev-date { font-size: 0.6rem; color: $mm-text-muted; }
+  .md-rev-stars {
+    margin-left: auto; display: flex; gap: 1px;
+    ion-icon { font-size: 0.6rem; color: #FFB300; }
+  }
+}
+.md-rev-comment {
+  font-size: $mm-font-xs; color: $mm-text-muted; line-height: 1.4; margin: 0;
+}
+
+/* ===== SIMILAR MEALS ===== */
+.md-similar-scroll {
+  display: flex; gap: 10px; overflow-x: auto; padding: 10px 0 6px;
+  -ms-overflow-style: none; scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+.md-sim-card {
+  min-width: 130px; max-width: 130px; flex-shrink: 0;
+  background: $mm-bg-card; border-radius: $mm-radius-sm;
+  overflow: hidden; cursor: pointer;
+  box-shadow: $mm-shadow-sm; border: 1px solid #F0F0F0;
+  transition: transform 0.2s;
+  &:active { transform: scale(0.96); }
+}
+.md-sim-thumb {
+  position: relative; height: 100px; overflow: hidden;
+  img {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+  .md-sim-kcal {
+    position: absolute; top: 6px; left: 6px;
+    background: rgba(0,0,0,0.5); color: white;
+    padding: 2px 7px; border-radius: 6px;
+    font-size: 0.52rem; font-weight: 700;
+  }
+  .md-sim-heart {
+    position: absolute; top: 6px; right: 6px;
+    width: 24px; height: 24px; border-radius: 50%; border: none;
+    background: rgba(255,255,255,0.85); display: flex;
+    align-items: center; justify-content: center; cursor: pointer;
+    ion-icon { font-size: 0.75rem; color: $mm-text-muted; }
+  }
+  .md-sim-add {
+    position: absolute; bottom: -14px; right: 8px;
+    width: 28px; height: 28px; border-radius: 50%; border: none;
+    background: $mm-primary; color: white;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: 0 3px 8px rgba(255,114,53,0.3);
+    ion-icon { font-size: 0.9rem; }
+    &:active { transform: scale(0.9); }
+  }
+}
+.md-sim-body {
+  padding: 10px 8px 10px;
+  .md-sim-name {
+    display: block; font-size: 0.68rem; font-weight: 700; color: $mm-text-dark;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-bottom: 2px;
+  }
+  .md-sim-price { font-size: $mm-font-sm; font-weight: 800; color: $mm-primary; }
+}
+
+/* ===== BOTTOM BAR ===== */
+.md-bottom-bar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+  background: $mm-bg-card;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 -2px 16px rgba(0,0,0,0.05);
+  border-top: 1px solid #F0F0F0;
+}
+.md-qty-box {
+  display: flex; align-items: center;
+  border: 1px solid #E8E8E8; border-radius: 12px; overflow: hidden;
+}
+.md-qty-btn {
+  width: 40px; height: 42px; border: none; background: transparent;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  ion-icon { font-size: 1rem; color: $mm-text-dark; }
+  &:disabled ion-icon { color: #D0D0D0; }
+  &:active { background: #F5F5F5; }
+}
+.md-qty-val {
+  min-width: 30px; text-align: center;
+  font-size: $mm-font-base; font-weight: 800; color: $mm-text-dark;
+}
+.md-cart-btn {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: $mm-primary; color: white; border: none;
+  border-radius: 14px; padding: 13px 16px; cursor: pointer;
+  font-size: $mm-font-sm; font-weight: 800;
+  box-shadow: $mm-shadow-primary;
+  transition: transform 0.15s;
+  &:active { transform: scale(0.97); }
+  ion-icon { font-size: 1.05rem; }
+  .md-cart-total {
+    margin-left: auto; font-size: $mm-font-sm; font-weight: 800;
+  }
+}

@@ -1,0 +1,272 @@
+<!-- ===== TRANSPARENT HEADER (absolute over hero) ===== -->
+<ion-header class="ion-no-border md-header">
+  <ion-toolbar class="md-toolbar">
+    <div class="md-header-row">
+      <button class="md-back-btn" (click)="goBack()">
+        <ion-icon name="chevron-back"></ion-icon>
+      </button>
+      <div class="md-header-actions">
+        <button class="md-action-btn" (click)="shareItem()">
+          <ion-icon name="share-outline"></ion-icon>
+        </button>
+        <button class="md-action-btn" [class.favorited]="isFavorited" (click)="toggleFavorite()">
+          <ion-icon [name]="isFavorited ? 'heart' : 'heart-outline'"></ion-icon>
+        </button>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="md-content">
+
+  <!-- ===== SKELETON ===== -->
+  <div *ngIf="isLoading" class="md-skeleton">
+    <ion-skeleton-text animated style="width:100%; height:280px;"></ion-skeleton-text>
+    <div style="padding:20px;">
+      <ion-skeleton-text animated style="width:60%; height:22px; margin-bottom:8px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width:40%; height:14px; margin-bottom:20px;"></ion-skeleton-text>
+      <div style="display:flex; gap:10px;">
+        <ion-skeleton-text *ngFor="let i of [1,2,3,4]" animated style="flex:1; height:70px; border-radius:12px;"></ion-skeleton-text>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && meal" class="md-page">
+
+    <!-- ========== HERO IMAGE AREA ========== -->
+    <div class="md-hero">
+      <img [src]="meal.image" [alt]="meal.name" class="md-hero-img" />
+      <!-- Category pill bottom-left -->
+      <div class="md-cat-pill">
+        <ion-icon name="leaf-outline"></ion-icon>
+        <span>{{meal.category}}</span>
+      </div>
+      <!-- Veg / Non-Veg bottom-right -->
+      <div class="md-type-pill" [class.non-veg]="meal.type === 'Non-Veg'">
+        <ion-icon [name]="meal.type === 'Veg' ? 'leaf' : 'flame'"></ion-icon>
+        <span>{{meal.type}}</span>
+      </div>
+    </div>
+
+    <!-- ========== INFO CARD (overlaps hero) ========== -->
+    <div class="md-info-card">
+
+      <!-- Meal name -->
+      <h1 class="md-name">{{meal.name}}</h1>
+
+      <!-- Rating row + description -->
+      <div class="md-meta-row">
+        <div class="md-meta-left">
+          <div class="md-stars-row">
+            <ion-icon name="star" *ngFor="let s of getStars(+mealRating)"
+              [class.half]="s === 0.5" [class.empty]="s === 0"></ion-icon>
+          </div>
+          <span class="md-rating-num">{{mealRating}}</span>
+          <span class="md-review-count">({{reviewCount}} reviews)</span>
+        </div>
+        <p class="md-desc-inline" *ngIf="meal.description">{{meal.description}}</p>
+      </div>
+
+      <!-- Price -->
+      <div class="md-price-block">
+        <span class="md-price">₹{{meal.price}}</span>
+        <span class="md-price-sub">per serving</span>
+      </div>
+
+      <!-- ========== QUICK INFO PILLS ========== -->
+      <div class="md-pills-row">
+        <div class="md-pill">
+          <ion-icon name="flame-outline"></ion-icon>
+          <span class="pill-val">{{mealCalories}}</span>
+          <span class="pill-lbl">kcal</span>
+        </div>
+        <div class="md-pill">
+          <ion-icon name="time-outline"></ion-icon>
+          <span class="pill-val">{{prepTime}}</span>
+          <span class="pill-lbl">Prep Time</span>
+        </div>
+        <div class="md-pill">
+          <ion-icon name="thermometer-outline"></ion-icon>
+          <span class="pill-val">{{spiceLevelLabel}}</span>
+          <span class="pill-lbl">Spice</span>
+        </div>
+        <div class="md-pill">
+          <ion-icon name="cube-outline"></ion-icon>
+          <span class="pill-val">{{portionSize}}</span>
+          <span class="pill-lbl">Portion</span>
+        </div>
+      </div>
+
+      <!-- ========== NUTRITION BREAKDOWN ========== -->
+      <div class="md-section-row">
+        <h2 class="md-sec-title">Nutrition Breakdown</h2>
+        <span class="md-sync-tag">
+          <ion-icon name="fitness-outline"></ion-icon>
+          Synced with Health Tracker
+        </span>
+      </div>
+
+      <div class="md-nutri-grid">
+        <div class="md-nutri-item protein">
+          <div class="nutri-icon-circle protein"><ion-icon name="barbell-outline"></ion-icon></div>
+          <div class="nutri-data">
+            <span class="nutri-val">{{mealProtein}}g</span>
+            <span class="nutri-lbl">Protein</span>
+          </div>
+        </div>
+        <div class="md-nutri-item carbs">
+          <div class="nutri-icon-circle carbs"><ion-icon name="restaurant-outline"></ion-icon></div>
+          <div class="nutri-data">
+            <span class="nutri-val">{{mealCarbs}}g</span>
+            <span class="nutri-lbl">Carbs</span>
+          </div>
+        </div>
+        <div class="md-nutri-item fat">
+          <div class="nutri-icon-circle fat"><ion-icon name="water-outline"></ion-icon></div>
+          <div class="nutri-data">
+            <span class="nutri-val">{{mealFat}}g</span>
+            <span class="nutri-lbl">Fat</span>
+          </div>
+        </div>
+        <div class="md-nutri-item fiber">
+          <div class="nutri-icon-circle fiber"><ion-icon name="leaf-outline"></ion-icon></div>
+          <div class="nutri-data">
+            <span class="nutri-val">{{mealFiber}}g</span>
+            <span class="nutri-lbl">Fiber</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== INGREDIENTS ========== -->
+      <h2 class="md-sec-title mt-20">Ingredients</h2>
+      <div class="md-ing-list">
+        <span class="md-ing-chip" *ngFor="let ing of ingredients">
+          <ion-icon name="leaf-outline"></ion-icon>
+          {{ing}}
+        </span>
+      </div>
+
+      <!-- ========== AI MATCH ========== -->
+      <div class="md-ai-card">
+        <div class="md-ai-top">
+          <div class="md-ai-icon-circle">
+            <ion-icon name="sparkles"></ion-icon>
+          </div>
+          <div class="md-ai-info">
+            <span class="ai-label">Mia's AI Match</span>
+            <span class="ai-score">{{aiMatchScore}}% Match</span>
+          </div>
+          <div class="md-ai-ring">
+            <svg viewBox="0 0 48 48">
+              <circle cx="24" cy="24" r="20" fill="none" stroke="#FFE0CC" stroke-width="3.5"/>
+              <circle cx="24" cy="24" r="20" fill="none" stroke="#FF7235" stroke-width="3.5"
+                      stroke-linecap="round"
+                      [attr.stroke-dasharray]="125.66"
+                      [attr.stroke-dashoffset]="125.66 - (125.66 * aiMatchScore) / 100"
+                      style="transform:rotate(-90deg); transform-origin:center;"/>
+            </svg>
+            <span class="ring-pct">{{aiMatchScore}}%</span>
+          </div>
+        </div>
+        <div class="md-ai-reasons">
+          <div class="md-ai-reason" *ngFor="let reason of aiMatchReasons">
+            <ion-icon name="checkmark-circle"></ion-icon>
+            <span>{{reason}}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== ADD TO ROTATION ========== -->
+      <div class="md-rotation-row" *ngIf="activeSubscription" (click)="addToRotation()">
+        <div class="md-rot-icon">
+          <ion-icon name="repeat-outline"></ion-icon>
+        </div>
+        <div class="md-rot-text">
+          <h3>Add to My Rotation</h3>
+          <p>Include this meal in your active subscription cycle</p>
+        </div>
+        <ion-icon name="add-outline" class="md-rot-add"></ion-icon>
+      </div>
+
+      <div class="md-rotation-row promo" *ngIf="!activeSubscription" (click)="goToSubscribe()">
+        <div class="md-rot-icon promo">
+          <ion-icon name="calendar-outline"></ion-icon>
+        </div>
+        <div class="md-rot-text">
+          <h3>Subscribe & Get This Daily</h3>
+          <p>Get this meal delivered daily with our plans</p>
+        </div>
+        <ion-icon name="arrow-forward-outline" class="md-rot-add"></ion-icon>
+      </div>
+
+      <!-- ========== CUSTOMER REVIEWS ========== -->
+      <div class="md-section-row mt-20">
+        <h2 class="md-sec-title">Customer Reviews</h2>
+        <span class="md-rating-badge">
+          <ion-icon name="star"></ion-icon>
+          {{mealRating}}
+        </span>
+      </div>
+
+      <div class="md-reviews-list">
+        <div class="md-review-item" *ngFor="let review of reviews">
+          <div class="md-rev-avatar" [style.background]="review.avatar">
+            {{review.name.charAt(0)}}
+          </div>
+          <div class="md-rev-body">
+            <div class="md-rev-top-row">
+              <span class="md-rev-name">{{review.name}}</span>
+              <span class="md-rev-date">{{review.date}}</span>
+              <div class="md-rev-stars">
+                <ion-icon name="star" *ngFor="let s of [1,2,3,4,5]"></ion-icon>
+              </div>
+            </div>
+            <p class="md-rev-comment">{{review.comment}}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== SIMILAR MEALS ========== -->
+      <h2 class="md-sec-title mt-20">Similar Meals</h2>
+      <div class="md-similar-scroll">
+        <div class="md-sim-card" *ngFor="let sm of similarMeals" (click)="goToMealDetail(sm.id)">
+          <div class="md-sim-thumb">
+            <img [src]="sm.image" [alt]="sm.name" />
+            <span class="md-sim-kcal">{{380 + (sm.price % 120)}} kcal</span>
+            <button class="md-sim-heart" (click)="$event.stopPropagation()">
+              <ion-icon name="heart-outline"></ion-icon>
+            </button>
+            <button class="md-sim-add" (click)="$event.stopPropagation(); quickAdd(sm)">
+              <ion-icon name="add"></ion-icon>
+            </button>
+          </div>
+          <div class="md-sim-body">
+            <span class="md-sim-name">{{sm.name}}</span>
+            <span class="md-sim-price">₹{{sm.price}}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom spacer -->
+      <div style="height:90px;"></div>
+    </div>
+  </div>
+</ion-content>
+
+<!-- ========== BOTTOM STICKY BAR ========== -->
+<div class="md-bottom-bar" *ngIf="!isLoading && meal">
+  <div class="md-qty-box">
+    <button class="md-qty-btn" (click)="decrementQty()" [disabled]="quantity <= 1">
+      <ion-icon name="remove"></ion-icon>
+    </button>
+    <span class="md-qty-val">{{quantity}}</span>
+    <button class="md-qty-btn" (click)="incrementQty()">
+      <ion-icon name="add"></ion-icon>
+    </button>
+  </div>
+  <button class="md-cart-btn" (click)="addToCart()">
+    <ion-icon name="cart-outline"></ion-icon>
+    <span>Add to Cart</span>
+    <span class="md-cart-total">₹{{totalPrice}}</span>
+  </button>
+</div>
