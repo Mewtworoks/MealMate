@@ -1,0 +1,358 @@
+@import '../../../variables';
+
+/* ==========================================================================
+   Cart Pill Component — Blinkit-Style Floating Cart Pill (Orange Brand)
+   ========================================================================== */
+
+.cart-pill-wrapper {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+
+  // Entry animation for the whole wrapper
+  animation: pillSlideUp 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ============================
+   THE PILL — Matches the Blinkit reference
+   [Thumbnails] | View cart / N items | >
+   ============================ */
+.cart-pill {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: linear-gradient(135deg, $mm-primary 0%, #E65C23 100%);
+  border-radius: 50px;
+  padding: 6px 14px 6px 6px;
+  min-width: 200px;
+  box-shadow:
+    0 8px 28px rgba(255, 114, 53, 0.40),
+    0 2px 8px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  pointer-events: all;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: visible;
+
+  &:active {
+    transform: scale(0.96);
+    box-shadow:
+      0 4px 15px rgba(255, 114, 53, 0.30),
+      0 1px 4px rgba(0, 0, 0, 0.06);
+  }
+
+  &.bounce {
+    animation: pillBounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+}
+
+/* --- Left: Stacked meal thumbnails --- */
+.pill-thumbs {
+  flex-shrink: 0;
+  margin-right: 10px;
+
+  .thumb-stack {
+    display: flex;
+    align-items: center;
+    position: relative;
+    height: 44px;
+    min-width: 44px;
+
+    .thumb {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      object-fit: cover;
+      border: 2.5px solid rgba(255, 255, 255, 0.85);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      position: relative;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+      &.thumb-0 {
+        z-index: 3;
+      }
+
+      &.thumb-1 {
+        margin-left: -14px;
+        z-index: 2;
+        transform: scale(0.92);
+      }
+
+      &.thumb-2 {
+        margin-left: -14px;
+        z-index: 1;
+        transform: scale(0.85);
+        opacity: 0.85;
+      }
+    }
+  }
+}
+
+/* --- Right section: "View cart" + count --- */
+.pill-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-grow: 1;
+  margin-right: 10px;
+
+  .pill-label {
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.15;
+    white-space: nowrap;
+  }
+
+  .pill-count {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+}
+
+/* --- Arrow --- */
+.pill-arrow-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  flex-shrink: 0;
+
+  .pill-arrow-svg {
+    width: 16px;
+    height: 16px;
+    animation: arrowPulse 1.8s ease-in-out infinite;
+  }
+}
+
+/* ============================
+   FLYING ITEM (Add animation)
+   Meal image drops from above into the pill
+   ============================ */
+.fly-item {
+  position: absolute;
+  bottom: 20px;
+  left: 30px; // target the thumbnail area
+  width: 44px;
+  height: 44px;
+  transform: translateY(-120px) scale(1.2);
+  opacity: 0;
+  z-index: 1001;
+  pointer-events: none;
+
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: 14px;
+    object-fit: cover;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    border: 2.5px solid white;
+  }
+
+  &.flying {
+    animation: flyDown 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  }
+}
+
+/* ============================
+   BURST ANIMATION (Remove)
+   Meal image rises from pill and explodes
+   ============================ */
+.burst-container {
+  position: absolute;
+  bottom: 20px;
+  left: 30px;
+  width: 44px;
+  height: 44px;
+  transform: translateY(0);
+  z-index: 1001;
+  pointer-events: none;
+
+  .burst-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 14px;
+    object-fit: cover;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    border: 2.5px solid white;
+    opacity: 1;
+    transition: opacity 0.1s ease;
+
+    &.hide {
+      opacity: 0;
+    }
+  }
+
+  &.rising {
+    animation: riseUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  &.burst {
+    animation: none;
+    transform: translateY(-80px);
+  }
+}
+
+/* --- Burst particles --- */
+.burst-particles {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+
+  .particle {
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    opacity: 1;
+
+    &.p1 {
+      background: $mm-primary;
+      animation: particleBurst1 0.5s ease-out forwards;
+    }
+    &.p2 {
+      background: #FFB300;
+      animation: particleBurst2 0.5s ease-out forwards;
+    }
+    &.p3 {
+      background: $mm-primary-light;
+      animation: particleBurst3 0.5s ease-out forwards;
+    }
+    &.p4 {
+      background: #fff;
+      animation: particleBurst4 0.5s ease-out forwards;
+    }
+    &.p5 {
+      background: #FFB300;
+      animation: particleBurst5 0.5s ease-out forwards;
+    }
+    &.p6 {
+      background: $mm-primary;
+      animation: particleBurst6 0.5s ease-out forwards;
+    }
+    &.p7 {
+      background: $mm-primary-light;
+      animation: particleBurst7 0.5s ease-out forwards;
+    }
+    &.p8 {
+      background: #fff;
+      animation: particleBurst8 0.5s ease-out forwards;
+    }
+  }
+}
+
+
+/* ============================
+   KEYFRAME ANIMATIONS
+   ============================ */
+
+// Pill entrance
+@keyframes pillSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(60px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+// Pill bounce on add/remove
+@keyframes pillBounce {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.08); }
+  50% { transform: scale(0.95); }
+  75% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+// Arrow pulse
+@keyframes arrowPulse {
+  0%, 100% { transform: translateX(0); opacity: 0.8; }
+  50% { transform: translateX(2px); opacity: 1; }
+}
+
+// Fly down into pill (add)
+@keyframes flyDown {
+  0% {
+    opacity: 1;
+    transform: translateY(-120px) scale(1.2) rotate(-10deg);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-10px) scale(0.9) rotate(3deg);
+  }
+  80% {
+    opacity: 0.8;
+    transform: translateY(-15px) scale(0.6) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(0px) scale(0.2) rotate(0deg);
+  }
+}
+
+// Rise up from pill (remove)
+@keyframes riseUp {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.3);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-40px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(-80px) scale(1);
+  }
+}
+
+// Particle burst animations (8 directions)
+@keyframes particleBurst1 {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(30px, -25px) scale(0); opacity: 0; }
+}
+@keyframes particleBurst2 {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(-25px, -30px) scale(0); opacity: 0; }
+}
+@keyframes particleBurst3 {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(35px, 10px) scale(0); opacity: 0; }
+}
+@keyframes particleBurst4 {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(-30px, 15px) scale(0); opacity: 0; }
+}
+@keyframes particleBurst5 {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(15px, -35px) scale(0); opacity: 0; }
+}
+@keyframes particleBurst6 {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(-15px, 25px) scale(0); opacity: 0; }
+}
+@keyframes particleBurst7 {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(20px, 30px) scale(0); opacity: 0; }
+}
+@keyframes particleBurst8 {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(-35px, -10px) scale(0); opacity: 0; }
+}

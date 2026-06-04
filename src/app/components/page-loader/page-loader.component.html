@@ -1,0 +1,43 @@
+<div class="page-loader-overlay" *ngIf="isLoading" @fadeOut>
+  <div class="loader-container">
+    <!-- Logo & Branding -->
+    <div class="brand-area">
+      <div class="chef-logo">
+        <img src="assets/logo/chef_hat.png" alt="MealMate Logo">
+      </div>
+      <h1 class="brand-title">
+        Meal<span class="brand-highlight">Mate</span>
+      </h1>
+      <p class="brand-tagline">{{ tagline }}</p>
+    </div>
+
+    <!-- Food Bowls Carousel -->
+    <div class="bowls-showcase">
+      <!-- Steam / sparkle lines above active bowl -->
+      <div class="steam-lines" [ngClass]="'pos-' + activeBowl">
+        <span class="steam s1"></span>
+        <span class="steam s2"></span>
+        <span class="steam s3"></span>
+      </div>
+
+      <div class="bowls-row">
+        <div class="bowl-item" [class.active]="activeBowl === 1" [class.left]="activeBowl === 2" [class.far-left]="activeBowl === 3">
+          <img src="assets/onboarding/dal_makhani.png" alt="Bowl 1">
+        </div>
+        <div class="bowl-item" [class.active]="activeBowl === 2" [class.left]="activeBowl === 3" [class.far-left]="activeBowl === 1">
+          <img src="assets/onboarding/veg_pulao.png" alt="Bowl 2">
+        </div>
+        <div class="bowl-item" [class.active]="activeBowl === 3" [class.left]="activeBowl === 1" [class.far-left]="activeBowl === 2">
+          <img src="assets/onboarding/salad_bowl.png" alt="Bowl 3">
+        </div>
+      </div>
+
+      <!-- Dot indicators -->
+      <div class="dot-indicators">
+        <span class="dot" [class.active]="activeBowl === 1"></span>
+        <span class="dot" [class.active]="activeBowl === 2"></span>
+        <span class="dot" [class.active]="activeBowl === 3"></span>
+      </div>
+    </div>
+  </div>
+</div>

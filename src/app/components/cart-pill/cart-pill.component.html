@@ -1,0 +1,59 @@
+<!-- Cart Pill Container - positioned above tab bar -->
+<div class="cart-pill-wrapper" *ngIf="isVisible">
+
+  <!-- Flying items (add animation — falls from top into pill) -->
+  <div class="fly-item"
+       *ngFor="let fly of flyingItems"
+       [class.flying]="fly.phase === 'flying'">
+    <img [src]="fly.image" [alt]="fly.name">
+  </div>
+
+  <!-- Bursting items (remove animation — rises up then bursts) -->
+  <div class="burst-container"
+       *ngFor="let burst of burstingItems"
+       [class.rising]="burst.phase === 'rising'"
+       [class.burst]="burst.phase === 'burst'">
+    <img [src]="burst.image" [alt]="burst.name" class="burst-img"
+         [class.hide]="burst.phase === 'burst'">
+    <!-- Burst particles -->
+    <div class="burst-particles" *ngIf="burst.phase === 'burst'">
+      <span class="particle p1"></span>
+      <span class="particle p2"></span>
+      <span class="particle p3"></span>
+      <span class="particle p4"></span>
+      <span class="particle p5"></span>
+      <span class="particle p6"></span>
+      <span class="particle p7"></span>
+      <span class="particle p8"></span>
+    </div>
+  </div>
+
+  <!-- The Pill -->
+  <div class="cart-pill" #pillEl
+       [class.bounce]="pillBounce"
+       (click)="goToCart()">
+
+    <!-- Left: Stacked meal thumbnails -->
+    <div class="pill-thumbs">
+      <div class="thumb-stack">
+        <img *ngFor="let img of cartImages; let i = index"
+             [src]="img"
+             [style.z-index]="cartImages.length - i"
+             [class]="'thumb thumb-' + i"
+             alt="Cart item">
+      </div>
+    </div>
+
+    <!-- Right: "View cart" + count + arrow -->
+    <div class="pill-info">
+      <span class="pill-label">View cart</span>
+      <span class="pill-count">{{cartCount}} {{cartCount === 1 ? 'item' : 'items'}}</span>
+    </div>
+
+    <div class="pill-arrow-wrap">
+      <svg class="pill-arrow-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 6L15 12L9 18" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
+</div>
