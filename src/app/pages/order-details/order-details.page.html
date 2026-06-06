@@ -1,0 +1,201 @@
+<ion-header class="ion-no-border sub-page-header" *ngIf="!isLoading && order">
+  <div class="header-curve-bg"></div>
+  <ion-toolbar class="transparent-toolbar" style="--padding-top: 5px;">
+    <div class="header-content">
+      <ion-button (click)="goBack()" class="back-btn-pill" fill="clear">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+      <div class="title-group">
+        <h1 class="page-title">Order Details</h1>
+        <p class="subtitle">Order {{order.displayId || '#' + order.id.substring(0,8)}}</p>
+      </div>
+      <div class="header-actions">
+        <ion-button class="back-btn-pill" fill="clear">
+          <ion-icon name="help-circle-outline"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="order-details-bg">
+  <div class="od-container" *ngIf="!isLoading && order">
+    
+    <!-- Summary Card -->
+    <div class="od-card top-summary-card">
+      <div class="tsc-left">
+        <img [src]="getItemImage(0)" alt="Meal">
+      </div>
+      <div class="tsc-right">
+        <div class="status-pill" [ngClass]="order.status.toLowerCase()">
+          <ion-icon [name]="order.status === 'Delivered' ? 'checkmark-circle' : 'time'"></ion-icon>
+          <span>{{order.status}}</span>
+        </div>
+        <p class="del-label">{{order.status === 'Delivered' ? 'Delivered on' : 'Expected delivery'}}</p>
+        <p class="del-time">{{order.date | date:'MMM d • h:mm a'}}</p>
+        <button class="reorder-btn" (click)="reorder()">
+          <ion-icon name="refresh-outline"></ion-icon> Reorder
+        </button>
+      </div>
+    </div>
+
+    <!-- Address Card -->
+    <div class="od-card address-card">
+      <div class="ac-icon">
+        <ion-icon name="location"></ion-icon>
+      </div>
+      <div class="ac-details">
+        <h4>Delivery Address</h4>
+        <p>{{order.deliveryAddress || '221B, Baker Street, London, UK 10001'}}</p>
+      </div>
+      <button class="map-btn">View on Map</button>
+    </div>
+
+    <!-- Receipt Card -->
+    <div class="od-card receipt-card">
+      <h3 class="card-title">Order Summary</h3>
+      
+      <div class="item-list" *ngIf="order.items && order.items.length > 0">
+        <div class="r-item" *ngFor="let item of order.items; let i = index">
+          <img [src]="getItemImage(i)" class="r-img" alt="">
+          <div class="r-info">
+            <div class="r-name-row">
+              <span class="veg-dot"></span>
+              <span class="r-name">{{item.name || item.mealName || 'Item'}}</span>
+            </div>
+            <span class="r-qty">x{{item.quantity || 1}}</span>
+          </div>
+          <div class="r-price">₹{{(item.price || 0) * (item.quantity || 1)}}</div>
+        </div>
+      </div>
+      
+      <!-- Mock items if empty array -->
+      <div class="item-list" *ngIf="!order.items || order.items.length === 0">
+        <div class="r-item">
+          <img [src]="getItemImage(0)" class="r-img" alt="">
+          <div class="r-info">
+            <div class="r-name-row"><span class="veg-dot"></span><span class="r-name">Paneer Butter Masala</span></div>
+            <span class="r-qty">x1</span>
+          </div>
+          <div class="r-price">₹160</div>
+        </div>
+        <div class="r-item">
+          <img [src]="getItemImage(1)" class="r-img" alt="">
+          <div class="r-info">
+            <div class="r-name-row"><span class="veg-dot"></span><span class="r-name">Tandoori Roti</span></div>
+            <span class="r-qty">x2</span>
+          </div>
+          <div class="r-price">₹40</div>
+        </div>
+        <div class="r-item">
+          <img [src]="getItemImage(3)" class="r-img" alt="">
+          <div class="r-info">
+            <div class="r-name-row"><span class="veg-dot"></span><span class="r-name">Fresh Salad</span></div>
+            <span class="r-qty">x1</span>
+          </div>
+          <div class="r-price">₹20</div>
+        </div>
+      </div>
+
+      <div class="r-divider"></div>
+
+      <div class="r-row">
+        <span>Subtotal</span>
+        <span>₹{{order.total}}</span>
+      </div>
+      <div class="r-row">
+        <span>Delivery Fee</span>
+        <span class="free-txt">FREE</span>
+      </div>
+      <div class="r-row">
+        <span>Packaging Charges</span>
+        <span>₹0</span>
+      </div>
+
+      <div class="r-divider-dashed"></div>
+
+      <div class="r-row total-row">
+        <span>Total Paid</span>
+        <span class="tot-val">₹{{order.total}}</span>
+      </div>
+    </div>
+
+    <!-- Timeline Card -->
+    <div class="od-card timeline-card">
+      <h3 class="card-title">Order Timeline</h3>
+      
+      <div class="tl-container">
+        <!-- Node 1: Pending/Accepted -->
+        <div class="tl-node" [class.active]="isStatusReached('Pending') || isStatusReached('Accepted')">
+          <div class="t-line"></div>
+          <div class="t-dot"><ion-icon name="checkmark"></ion-icon></div>
+          <div class="t-content">
+            <h4>Order Placed</h4>
+            <p>{{order.date | date:'MMM d • h:mm a'}}</p>
+          </div>
+          <div class="t-icon-box"><ion-icon name="clipboard"></ion-icon></div>
+        </div>
+
+        <!-- Node 2: Accepted -->
+        <div class="tl-node" [class.active]="isStatusReached('Accepted')">
+          <div class="t-line"></div>
+          <div class="t-dot"><ion-icon name="checkmark"></ion-icon></div>
+          <div class="t-content">
+            <h4>Order Confirmed</h4>
+            <p>{{order.date | date:'MMM d • h:mm a'}}</p>
+          </div>
+          <div class="t-icon-box"><ion-icon name="restaurant"></ion-icon></div>
+        </div>
+
+        <!-- Node 3: Preparing -->
+        <div class="tl-node" [class.active]="isStatusReached('Preparing')">
+          <div class="t-line"></div>
+          <div class="t-dot"><ion-icon name="checkmark"></ion-icon></div>
+          <div class="t-content">
+            <h4>Food Prepared</h4>
+            <p>{{order.date | date:'MMM d • h:mm a'}}</p>
+          </div>
+          <div class="t-icon-box"><ion-icon name="flame"></ion-icon></div>
+        </div>
+
+        <!-- Node 4: OutForDelivery -->
+        <div class="tl-node" [class.active]="isStatusReached('OutForDelivery')">
+          <div class="t-line"></div>
+          <div class="t-dot"><ion-icon name="checkmark"></ion-icon></div>
+          <div class="t-content">
+            <h4>Out for Delivery</h4>
+            <p>{{order.date | date:'MMM d • h:mm a'}}</p>
+          </div>
+          <div class="t-icon-box"><ion-icon name="bicycle"></ion-icon></div>
+        </div>
+
+        <!-- Node 5: Delivered -->
+        <div class="tl-node" [class.active]="isStatusReached('Delivered')">
+          <div class="t-dot"><ion-icon name="checkmark"></ion-icon></div>
+          <div class="t-content">
+            <h4>Delivered</h4>
+            <p>{{order.date | date:'MMM d • h:mm a'}}</p>
+          </div>
+          <div class="t-icon-box"><ion-icon name="home"></ion-icon></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Support Banner -->
+    <div class="support-banner">
+      <div class="sb-icon">
+        <ion-icon name="headset"></ion-icon>
+      </div>
+      <div class="sb-text">
+        <h4>Need Help?</h4>
+        <p>We're here for you</p>
+      </div>
+      <button class="sb-btn">Contact Support</button>
+    </div>
+
+  </div>
+
+  <div class="loading-state" *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+</ion-content>

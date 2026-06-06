@@ -1,0 +1,59 @@
+/* ==========================================================================
+   MealMate Design Tokens — SCSS Variables Only (no CSS imports)
+   Import this partial in component SCSS files instead of global.scss
+   ========================================================================== */
+
+// Primary brand palette
+$mm-primary: #FF7235;
+$mm-primary-light: #FFB088;
+$mm-primary-bg: #FFFAF7;
+$mm-primary-surface: #FFF5EE;
+$mm-brand-orange: #F97316;
+
+// Text colors
+$mm-text-dark: #483129;
+$mm-text-muted: #8E7C76;
+$mm-text-light: rgba(255, 255, 255, 0.85);
+
+// Background
+$mm-bg-page: #f8f6f4;
+$mm-bg-card: #ffffff;
+$mm-bg-dark: #1f2937;
+$mm-bg-dark-alt: #374151;
+
+// Accent & status colors
+$mm-green: #4ade80;
+$mm-green-bg: #E8F5E9;
+$mm-green-text: #4caf50;
+$mm-red: #f87171;
+$mm-red-bg: #FFF5F5;
+$mm-red-border: #FECACA;
+$mm-blue: #2196F3;
+$mm-blue-bg: #E3F2FD;
+$mm-orange-bg: #FFF3E0;
+$mm-yellow: #fbbf24;
+$mm-cream-bg: #FDFBFA;
+$mm-text-darker: #2D2D2D;
+$mm-brand-green: #6DA03B;
+$mm-divider-orange: #FF8A5B;
+
+// Shadows
+$mm-shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.03);
+$mm-shadow-md: 0 4px 20px rgba(0, 0, 0, 0.06);
+$mm-shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.08);
+$mm-shadow-primary: 0 8px 20px rgba(255, 114, 53, 0.25);
+
+// Border Radius
+$mm-radius-sm: 12px;
+$mm-radius-md: 16px;
+$mm-radius-lg: 20px;
+$mm-radius-xl: 24px;
+
+// Typography
+$mm-font-xs: 0.7rem;
+$mm-font-sm: 0.8rem;
+$mm-font-base: 0.9rem;
+$mm-font-md: 0.95rem;
+$mm-font-lg: 1.1rem;
+$mm-font-xl: 1.3rem;
+$mm-font-xxl: 1.6rem;

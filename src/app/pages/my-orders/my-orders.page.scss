@@ -281,8 +281,13 @@
 
   &.live-card {
     border: 1.5px solid #FF7235;
+    padding-top: 40px; /* Make room for absolute banner */
 
     .live-banner {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
       background: #FF7235;
       color: white;
       font-size: 0.7rem;
@@ -291,7 +296,153 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      border-radius: 14px 14px 0 0;
+      border-radius: 18px 18px 0 0;
+
+      .live-dot {
+        width: 6px;
+        height: 6px;
+        background: white;
+        border-radius: 50%;
+        animation: pulse 1.5s infinite;
+      }
+    }
+  }
+}
+
+/* V2 Order Card (Screenshot Match) */
+.order-card-v2 {
+  background: white;
+  border-radius: 20px;
+  border: 1px solid #F8FAFC;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+  display: flex;
+  padding: 16px;
+  gap: 16px;
+  position: relative;
+  transition: transform 0.15s ease;
+  animation: cardSlideIn 0.4s ease-out both;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  .oc2-left {
+    flex-shrink: 0;
+
+    .oc2-img-bg {
+      width: 76px;
+      height: 76px;
+      background: #FFF5EE;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+    }
+  }
+
+  .oc2-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+
+    .oc2-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2px;
+
+      .oc2-title {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: #1A1D1E;
+      }
+
+      .oc2-price {
+        font-size: 1rem;
+        font-weight: 800;
+        color: #483129;
+      }
+    }
+
+    .oc2-date {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: #9CA3AF;
+      margin-bottom: 6px;
+    }
+
+    .oc2-status {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+
+      &.delivered {
+        color: #4caf50;
+      }
+      &.pending, &.preparing {
+        color: #FF9800;
+      }
+      &.outfordelivery {
+        color: #3B82F6;
+      }
+      
+      ion-icon {
+        font-size: 0.9rem;
+      }
+    }
+
+    .oc2-bottom {
+      .oc2-details-btn {
+        background: transparent;
+        color: #FF7235;
+        border: 1px solid rgba(255, 114, 53, 0.25);
+        border-radius: 12px;
+        padding: 5px 12px;
+        font-size: 0.65rem;
+        font-weight: 800;
+      }
+    }
+
+    .oc2-chevron {
+      position: absolute;
+      right: 0;
+      bottom: 12px;
+      color: #FF7235;
+      font-size: 1.1rem;
+    }
+  }
+
+  &.live-card {
+    border: 1.5px solid #FF7235;
+    padding-top: 40px; /* Make room for absolute banner */
+
+    .live-banner {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: #FF7235;
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 6px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 18px 18px 0 0;
 
       .live-dot {
         width: 6px;

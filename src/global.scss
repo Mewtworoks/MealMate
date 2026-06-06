@@ -21,7 +21,7 @@
 @import "@ionic/angular/css/flex-utils.css";
 
 /* Dark Mode */
-@import "@ionic/angular/css/palettes/dark.system.css";
+@import "@ionic/angular/css/palettes/dark.class.css";
 
 /* Leaflet Map Styles */
 @import "leaflet/dist/leaflet.css";
@@ -59,6 +59,10 @@ $mm-blue: #2196F3;
 $mm-blue-bg: #E3F2FD;
 $mm-orange-bg: #FFF3E0;
 $mm-yellow: #fbbf24;
+$mm-cream-bg: #FDFBFA;
+$mm-text-darker: #2D2D2D;
+$mm-brand-green: #6DA03B;
+$mm-divider-orange: #FF8A5B;
 
 // Shadows
 $mm-shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.03);
@@ -225,10 +229,31 @@ $mm-font-xxl: 1.6rem;
 
       .header-actions {
         margin-left: auto;
+
+        .plus-sq-btn {
+          width: 52px;
+          height: 52px;
+          border-radius: 16px;
+          background: #FF7235;
+          color: white;
+          border: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.8rem;
+          box-shadow: 0 8px 20px rgba(255, 114, 53, 0.3);
+          transition: all 0.2s;
+
+          &:active {
+            transform: scale(0.95);
+          }
+        }
       }
+
     }
   }
 }
+
 
 /* ==========================================================================
    Global Scrollbar Restyling (Forces Transparent/Light Mode Scroller)
@@ -249,4 +274,333 @@ $mm-font-xxl: 1.6rem;
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.25);
+}
+
+/* ==========================================================================
+   Premium Dark Mode Theme Overrides
+   ========================================================================== */
+body.dark {
+  --ion-background-color: #0B0B0C;
+  --ion-text-color: #FFFFFF;
+  --background: #0B0B0C;
+
+  // Global Ionic overrides
+  ion-content {
+    --background: #0B0B0C !important;
+    --color: #FFFFFF !important;
+  }
+
+  ion-tab-bar {
+    --background: #0B0B0C !important;
+    border-top: 1px solid #1F2023 !important;
+    --border-color: #1F2023 !important;
+
+    ion-tab-button {
+      --background: #0B0B0C !important;
+      --color: #8E8F91 !important;
+      --color-selected: #FF7235 !important;
+    }
+  }
+
+  ion-segment {
+    --background: #131416 !important;
+    border: 1px solid #1F2023 !important;
+    border-radius: 12px;
+
+    ion-segment-button {
+      --color: #8E8F91 !important;
+      --color-checked: #FF7235 !important;
+      --background-checked: #1F2023 !important;
+    }
+  }
+
+  ion-card,
+  .dish-card,
+  .meal-card,
+  .order-card,
+  .card {
+    background: #131416 !important;
+    border: 1px solid #1F2023 !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+
+    ion-card-title,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      color: #FFFFFF !important;
+    }
+
+    ion-card-subtitle,
+    p,
+    span,
+    div {
+      color: #8E8F91 !important;
+    }
+  }
+
+  // Header styles in dark mode
+  .premium-header,
+  .sub-page-header {
+    background: #0B0B0C !important;
+
+    .header-curve-bg {
+      background: #0B0B0C !important;
+
+      &::after {
+        background: radial-gradient(circle, rgba(255, 114, 53, 0.08) 0%, transparent 70%) !important;
+      }
+    }
+
+    .transparent-toolbar {
+      --color: #FFFFFF;
+
+      ion-title {
+        color: #FFFFFF !important;
+      }
+
+      .page-title-text,
+      .page-title {
+        color: #FFFFFF !important;
+      }
+
+      .back-btn-pill {
+        --background: #131416 !important;
+        --color: #FF7235 !important;
+        border-color: #1F2023 !important;
+      }
+    }
+  }
+
+  .premium-content {
+    --background: #0B0B0C !important;
+  }
+
+  // Cards
+  .action-card,
+  .stats-card,
+  .mr-rotation-card,
+  .mr-swap-card,
+  .mr-sched-card,
+  .mr-summary-box,
+  .mr-save-section,
+  .mr-info-note,
+  .why-box,
+  .faq-card {
+    background: #131416 !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+    border: 1px solid #1F2023 !important;
+
+    .action-row {
+      border-bottom-color: #1F2023 !important;
+
+      &:active {
+        background: #1C1D20 !important;
+      }
+
+      .text h4 {
+        color: #FFFFFF !important;
+      }
+
+      .text p {
+        color: #8E8F91 !important;
+      }
+    }
+
+    .stat-item {
+      .lab {
+        color: #8E8F91 !important;
+      }
+    }
+
+    .stat-divider {
+      background: #1F2023 !important;
+    }
+  }
+
+  // User Profile
+  .user-name {
+    color: #FFFFFF !important;
+  }
+
+  .user-email {
+    color: #8E8F91 !important;
+  }
+
+  .group-title {
+    color: #FFFFFF !important;
+  }
+
+  // Modals
+  .premium-modal {
+    --background: #0B0B0C;
+    --color: #FFFFFF;
+
+    ion-toolbar {
+      --background: #0B0B0C;
+      --color: #FFFFFF;
+
+      ion-title {
+        color: #FFFFFF !important;
+      }
+    }
+
+    ion-content {
+      --background: #0B0B0C;
+    }
+
+    .help-item,
+    .notif-toggle {
+      background: #131416 !important;
+      border: 1px solid #1F2023 !important;
+      color: #FFFFFF !important;
+
+      span,
+      h4 {
+        color: #FFFFFF !important;
+      }
+
+      p {
+        color: #8E8F91 !important;
+      }
+    }
+  }
+
+  // Input fields inside Edit Profile
+  .form-group {
+    label {
+      color: #FFFFFF !important;
+    }
+
+    .input-wrap {
+      background: #131416 !important;
+      border-color: #1F2023 !important;
+
+      input {
+        color: #FFFFFF !important;
+      }
+    }
+  }
+
+  // Manage Rotation cards and items
+  .mr-rotation-card,
+  .mr-swap-card,
+  .mr-sched-card,
+  .mr-summary-box,
+  .mr-info-note {
+
+    h4,
+    h3,
+    h2,
+    span,
+    strong {
+      color: #FFFFFF !important;
+    }
+
+    p,
+    .mr-swap-meta,
+    .mr-sched-meta {
+      color: #8E8F91 !important;
+    }
+  }
+
+  .mr-swap-card-wrapper::after {
+    background: #1F2023 !important;
+  }
+
+  .mr-reorder-badge {
+    background: #131416 !important;
+    color: #FF7235 !important;
+    border: 1px solid #1F2023 !important;
+  }
+
+  .mr-connector-arrow .dot-line {
+    border-left-color: #1F2023 !important;
+  }
+
+  .mr-segment-btn {
+    --color: #8E8F91 !important;
+
+    &.segment-button-checked {
+      --color: #FF7235 !important;
+    }
+  }
+
+  .mr-footer {
+    background: #0B0B0C !important;
+    border-top-color: #1F2023 !important;
+  }
+}
+
+/* ==========================================================================
+   Shared Meal Card Components (Global)
+   ========================================================================== */
+
+.pc-add-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: $mm-primary;
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(255, 114, 53, 0.25);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+
+  &:active {
+    transform: scale(0.9);
+  }
+
+  ion-icon {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+}
+
+/* Shared Quantity Control (- 1 +) for meal cards */
+.pc-qty-control {
+  display: flex;
+  align-items: center;
+  background: $mm-primary-surface;
+  border-radius: 50px;
+  padding: 4px;
+  border: 1px solid rgba(255, 114, 53, 0.15); // soft orange border
+  gap: 8px;
+
+  .qty-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: $mm-primary;
+    color: white;
+    transition: transform 0.2s;
+    box-shadow: 0 2px 6px rgba(255, 114, 53, 0.2);
+
+    &:active {
+      transform: scale(0.9);
+    }
+
+    ion-icon {
+      font-size: 1.1rem;
+    }
+  }
+
+  .qty-val {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: $mm-text-dark;
+    min-width: 14px;
+    text-align: center;
+  }
 }
