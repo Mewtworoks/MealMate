@@ -38,9 +38,9 @@ export interface Agent {
 })
 export class MealService {
   private agents: Agent[] = [
-    { id: 'a1', name: 'Usha\'s Kitchen', rating: 4.8, distance: '1.2 km', speciality: 'North Indian' },
-    { id: 'a2', name: 'Maa Ki Rasoi', rating: 4.9, distance: '0.8 km', speciality: 'Tiffin Specialist' },
-    { id: 'a3', name: 'Annapurna', rating: 4.6, distance: '2.5 km', speciality: 'Sattvic Food' }
+    { id: '11111111-1111-1111-1111-111111111111', name: 'Usha\'s Kitchen', rating: 4.8, distance: '1.2 km', speciality: 'North Indian' },
+    { id: '22222222-2222-2222-2222-222222222222', name: 'Maa Ki Rasoi', rating: 4.9, distance: '0.8 km', speciality: 'Tiffin Specialist' },
+    { id: '33333333-3333-3333-3333-333333333333', name: 'Annapurna', rating: 4.6, distance: '2.5 km', speciality: 'Sattvic Food' }
   ];
 
   private mealsSubject = new BehaviorSubject<Meal[]>([]);

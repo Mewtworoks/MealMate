@@ -45,7 +45,7 @@ export class WalletPage implements OnInit, OnDestroy {
       this.wallet.credits$.subscribe(c => this.loyaltyPoints = c)
     );
 
-    this.updateGreeting();
+    this.greeting = this.auth.greeting;
     this.userName = this.auth.userName || 'Foodie';
     this.fetchLocation();
 
@@ -78,13 +78,6 @@ export class WalletPage implements OnInit, OnDestroy {
     } else {
       this.userLocation = 'Location Unavailable';
     }
-  }
-
-  updateGreeting() {
-    const hour = new Date().getHours();
-    if (hour < 12) this.greeting = 'Good morning';
-    else if (hour < 17) this.greeting = 'Good afternoon';
-    else this.greeting = 'Good evening';
   }
 
   ngOnDestroy() {

@@ -28,10 +28,11 @@ export class MyOrdersPage implements OnInit {
     private subscriptionService: SubscriptionService
   ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     const userId = this.auth.userId;
     if (userId) {
       this.orderService.refreshUserOrders(userId);
+      await this.subscriptionService.fetchUserSubscriptions(userId);
     }
 
     this.subscriptionService.subscriptions$.subscribe(subs => {
@@ -91,11 +92,11 @@ export class MyOrdersPage implements OnInit {
     return sub.totalDays - this.getDaysElapsed(sub);
   }
 
-  togglePause(sub: Subscription) {
+  async togglePause(sub: Subscription) {
     if (sub.status === 'Active') {
-      this.subscriptionService.pauseSubscription(sub.id);
+      await this.subscriptionService.pauseSubscription(sub.id);
     } else if (sub.status === 'Paused') {
-      this.subscriptionService.resumeSubscription(sub.id);
+      await this.subscriptionService.resumeSubscription(sub.id);
     }
   }
 
@@ -130,9 +131,22 @@ export class MyOrdersPage implements OnInit {
     }
   }
 
+  getOrderImage(order: Order, index: number): string {
+    const images = [
+      'assets/onboarding/dal_makhani.png',
+      'assets/onboarding/paneer_tikka.png',
+      'assets/onboarding/veg_pulao.png',
+      'assets/onboarding/healthy_salad.png',
+      'assets/onboarding/dal_chawal.png'
+    ];
+    return images[index % images.length];
+  }
+
   onOrderClick(order: Order) {
     if (order.status === 'OutForDelivery') {
       this.router.navigate(['/live-tracking'], { queryParams: { orderId: order.id } });
+    } else {
+      this.router.navigate(['/order-details', order.id]);
     }
   }
 

@@ -6,6 +6,7 @@ import { CartItem } from './cart.service';
 
 export interface Order {
   id: string;
+  displayId?: string;
   date: string;
   total: number;
   items: any[];
@@ -18,6 +19,10 @@ export interface Order {
   creditUsed?: number;
   amountDue?: number;
   isCustomMeal?: boolean;
+  customMealDetails?: string;
+  customerName?: string;
+  customerPhone?: string;
+  distanceKm?: number;
 }
 
 @Injectable({
@@ -50,13 +55,19 @@ export class OrderService {
       const data: any[] = await firstValueFrom(this.http.get<any[]>(`${environment.apiUrl}/orders/user/${userId}`));
       const mappedOrders: Order[] = data.map(o => ({
         id: o.id || o.Id,
+        displayId: o.displayId || o.DisplayId,
         date: o.date || o.Date || o.orderDate || o.OrderDate || o.createdAt || o.CreatedAt,
         total: o.total || o.Total || o.totalAmount || o.TotalAmount,
         items: o.items || o.Items || o.orderItems || o.OrderItems || [],
         status: o.status || o.Status || 'Pending',
         agentId: o.agentId || o.AgentId,
         customerId: o.customerId || o.CustomerId,
-        deliveryAddress: o.deliveryAddress || o.DeliveryAddress
+        deliveryAddress: o.deliveryAddress || o.DeliveryAddress,
+        isCustomMeal: o.isCustomMeal || o.IsCustomMeal || false,
+        customMealDetails: o.customMealDetails || o.CustomMealDetails,
+        customerName: o.customerName || o.CustomerName || 'Guest',
+        customerPhone: o.customerPhone || o.CustomerPhone || '',
+        distanceKm: o.distanceKm || o.DistanceKm || 1.2
       }));
       this.ordersSubject.next(mappedOrders);
       return mappedOrders;
@@ -68,16 +79,22 @@ export class OrderService {
 
   async refreshAgentOrders(agentId: string) {
     try {
-      const data: any[] = await firstValueFrom(this.http.get<any[]>(`${environment.apiUrl}/orders/agent/${agentId}`));
+      const data: any[] = await firstValueFrom(this.http.get<any[]>(`${environment.apiUrl}/orders/agent-orders/${agentId}`));
       const mappedOrders: Order[] = data.map(o => ({
         id: o.id || o.Id,
+        displayId: o.displayId || o.DisplayId,
         date: o.date || o.Date || o.orderDate || o.OrderDate || o.createdAt || o.CreatedAt,
         total: o.total || o.Total || o.totalAmount || o.TotalAmount,
         items: o.items || o.Items || o.orderItems || o.OrderItems || [],
         status: o.status || o.Status || 'Pending',
         agentId: o.agentId || o.AgentId,
         customerId: o.customerId || o.CustomerId,
-        deliveryAddress: o.deliveryAddress || o.DeliveryAddress
+        deliveryAddress: o.deliveryAddress || o.DeliveryAddress,
+        isCustomMeal: o.isCustomMeal || o.IsCustomMeal || false,
+        customMealDetails: o.customMealDetails || o.CustomMealDetails,
+        customerName: o.customerName || o.CustomerName || 'Guest',
+        customerPhone: o.customerPhone || o.CustomerPhone || '',
+        distanceKm: o.distanceKm || o.DistanceKm || 1.2
       }));
       this.ordersSubject.next(mappedOrders);
       return mappedOrders;
@@ -100,5 +117,33 @@ export class OrderService {
 
   getOrders(): Order[] {
     return this.ordersSubject.value;
+  }
+
+  async getOrderById(id: string): Promise<Order | undefined> {
+    const localOrder = this.ordersSubject.value.find(o => o.id === id);
+    if (localOrder) return localOrder;
+
+    try {
+      const o: any = await firstValueFrom(this.http.get<any>(`${environment.apiUrl}/orders/${id}`));
+      return {
+        id: o.id || o.Id,
+        displayId: o.displayId || o.DisplayId,
+        date: o.date || o.Date || o.orderDate || o.OrderDate || o.createdAt || o.CreatedAt,
+        total: o.total || o.Total || o.totalAmount || o.TotalAmount,
+        items: o.items || o.Items || o.orderItems || o.OrderItems || [],
+        status: o.status || o.Status || 'Pending',
+        agentId: o.agentId || o.AgentId,
+        customerId: o.customerId || o.CustomerId,
+        deliveryAddress: o.deliveryAddress || o.DeliveryAddress,
+        isCustomMeal: o.isCustomMeal || o.IsCustomMeal || false,
+        customMealDetails: o.customMealDetails || o.CustomMealDetails,
+        customerName: o.customerName || o.CustomerName || 'Guest',
+        customerPhone: o.customerPhone || o.CustomerPhone || '',
+        distanceKm: o.distanceKm || o.DistanceKm || 1.2
+      };
+    } catch (e) {
+      console.error('Error fetching order by id', e);
+      return undefined;
+    }
   }
 }

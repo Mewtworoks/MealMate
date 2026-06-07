@@ -77,9 +77,23 @@
           <p class="pc-sub">{{meal.category || 'Lunch'}}</p>
           <div class="pc-price-row">
             <span class="pc-price">₹{{meal.price}}</span>
-            <button class="pc-add-btn" (click)="addToCart(meal, $event)">
-              <ion-icon name="add"></ion-icon>
-            </button>
+            <!-- Quantity Control -->
+            <ng-container *ngIf="cartService.getQuantity(meal.id) === 0; else qtyControl">
+              <button class="pc-add-btn" (click)="addToCart(meal, $event)">
+                <ion-icon name="add"></ion-icon>
+              </button>
+            </ng-container>
+            <ng-template #qtyControl>
+              <div class="pc-qty-control" (click)="$event.stopPropagation()">
+                <button class="qty-btn" (click)="removeFromCart(meal.id, $event)">
+                  <ion-icon name="remove"></ion-icon>
+                </button>
+                <span class="qty-val">{{cartService.getQuantity(meal.id)}}</span>
+                <button class="qty-btn" (click)="addToCart(meal, $event)">
+                  <ion-icon name="add"></ion-icon>
+                </button>
+              </div>
+            </ng-template>
           </div>
         </div>
       </div>
@@ -87,17 +101,6 @@
   </div>
 </ion-content>
 
-<!-- Floating Cart Pill -->
-<div class="floating-cart-pill" *ngIf="cartCount > 0" (click)="goToCart()">
-  <div class="pill-content">
-    <div class="items-count">
-      <span class="num">{{cartCount}}</span>
-      <span class="txt">Items</span>
-    </div>
-    <div class="divider"></div>
-    <div class="view-cart">
-      <span>View Cart</span>
-      <ion-icon name="arrow-forward"></ion-icon>
-    </div>
-  </div>
-</div>
+<!-- Blinkit-style Cart Pill -->
+<app-cart-pill></app-cart-pill>
+

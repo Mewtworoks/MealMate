@@ -2,9 +2,6 @@
   <div class="header-curve-bg"></div>
   <ion-toolbar class="transparent-toolbar">
     <ion-buttons slot="start">
-      <ion-button (click)="goBack()">
-        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
-      </ion-button>
     </ion-buttons>
     <ion-title>Your Profile</ion-title>
     <ion-buttons slot="end">
@@ -92,6 +89,14 @@
             <p>Password and data storage</p>
           </div>
           <ion-icon name="chevron-forward-outline" class="chev"></ion-icon>
+        </div>
+        <div class="action-row" (click)="toggleDarkMode()" style="cursor: pointer;">
+          <div class="icon-box purple"><ion-icon name="moon-outline"></ion-icon></div>
+          <div class="text">
+            <h4>Dark Mode</h4>
+            <p>Switch between light and dark themes</p>
+          </div>
+          <ion-toggle [checked]="isDarkMode" style="pointer-events: none;" color="success" mode="ios"></ion-toggle>
         </div>
       </div>
     </div>

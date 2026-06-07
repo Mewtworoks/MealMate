@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastController, AlertController } from '@ionic/angular';
 import { AuthService } from '../../services/auth';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-profile',
@@ -39,8 +40,17 @@ export class ProfilePage implements OnInit {
     private router: Router,
     private toastCtrl: ToastController,
     private alertCtrl: AlertController,
-    private auth: AuthService
+    private auth: AuthService,
+    private themeService: ThemeService
   ) { }
+
+  get isDarkMode(): boolean {
+    return this.themeService.isDarkMode;
+  }
+
+  toggleDarkMode() {
+    this.themeService.toggleTheme();
+  }
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
@@ -85,7 +95,7 @@ export class ProfilePage implements OnInit {
     this.userProfile.name = this.editData.name;
     this.userProfile.email = this.editData.email;
     this.isEditModalOpen = false;
-    
+
     const toast = await this.toastCtrl.create({
       message: 'Profile updated successfully!',
       duration: 2000,
@@ -109,8 +119,9 @@ export class ProfilePage implements OnInit {
   async showAbout() {
     const alert = await this.alertCtrl.create({
       header: 'About MealMate',
-      message: 'MealMate v2.4.0\nBridging the gap between home chefs and foodies.\n\nDeveloped with ❤️ by the Antigravity Team.',
+      message: 'MealMate v2.4.0\nBridging the gap between home chefs and foodies.\n\nDeveloped with ❤️ by Nikunj.',
       buttons: ['Close'],
+
       cssClass: 'premium-alert'
     });
     await alert.present();

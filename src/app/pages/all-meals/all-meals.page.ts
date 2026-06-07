@@ -21,7 +21,7 @@ export class AllMealsPage implements OnInit {
 
   constructor(
     private mealService: MealService,
-    private cartService: CartService,
+    public cartService: CartService,
     private router: Router,
     private navCtrl: NavController
   ) { }
@@ -35,7 +35,7 @@ export class AllMealsPage implements OnInit {
 
     // Subscribe to cart changes
     this.cartService.cart$.subscribe(items => {
-      this.cartCount = items.reduce((sum, i) => sum + i.quantity, 0);
+      this.cartCount = items.length;
     });
   }
 
@@ -95,6 +95,11 @@ export class AllMealsPage implements OnInit {
   addToCart(meal: Meal, event: Event) {
     event.stopPropagation(); // Avoid triggering card click or redirect if any
     this.cartService.addToCart(meal);
+  }
+
+  removeFromCart(mealId: string, event: Event) {
+    event.stopPropagation();
+    this.cartService.removeFromCart(mealId);
   }
 
   goToCart() {

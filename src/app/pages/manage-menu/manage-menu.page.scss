@@ -865,6 +865,110 @@ ion-content.premium-content {
             font-weight: 700;
           }
         }
+
+        /* ═══ NEW FORM FIELDS STYLES ═══ */
+        .nutri-input-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 12px;
+          margin-top: 8px;
+
+          .nutri-input-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+
+            label {
+              font-size: 0.8rem;
+              font-weight: 700;
+              color: #8E7C76;
+            }
+          }
+        }
+
+        .premium-input-box.compact {
+          height: 46px;
+          padding: 0 12px;
+          
+          input {
+            font-size: 0.9rem;
+          }
+          
+          .unit-tag {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #9A9FA5;
+            margin-left: 8px;
+          }
+        }
+
+        .mini-label {
+          display: block;
+          font-size: 0.8rem;
+          font-weight: 700;
+          color: #8E7C76;
+          margin-bottom: 6px;
+        }
+
+        .spice-selector-row {
+          display: flex;
+          gap: 10px;
+          margin-top: 8px;
+
+          .spice-btn {
+            flex: 1;
+            height: 44px;
+            border-radius: 12px;
+            border: 1.5px solid #F3F4F6;
+            background: #fff;
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: #8E7C76;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+
+            &.active {
+              &.mild {
+                background: #F0FDF4; border-color: #22C55E; color: #16A34A;
+              }
+              &.medium {
+                background: #FFF7ED; border-color: #F97316; color: #EA580C;
+              }
+              &.hot {
+                background: #FEF2F2; border-color: #EF4444; color: #DC2626;
+              }
+            }
+          }
+        }
+
+        .allergen-chips-row {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-top: 8px;
+
+          .allergen-chip {
+            padding: 8px 14px;
+            border-radius: 20px;
+            border: 1.5px solid #F3F4F6;
+            background: #fff;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #8E7C76;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+
+            &.active {
+              background: #FFF5EE;
+              border-color: #FF7235;
+              color: #FF7235;
+            }
+          }
+        }
       }
     }
 

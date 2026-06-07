@@ -22,7 +22,17 @@ export class ManageMenuPage implements OnInit {
     price: 0,
     category: 'Lunch' as any,
     image: '', 
-    type: 'Veg' as any
+    type: 'Veg' as any,
+    calories: 0,
+    protein: 0,
+    carbs: 0,
+    fat: 0,
+    fiber: 0,
+    spiceLevel: 'Medium',
+    prepTime: '25 min',
+    portionSize: '350g',
+    ingredients: '',
+    allergens: ''
   };
 
   searchQuery: string = '';
@@ -139,7 +149,17 @@ export class ManageMenuPage implements OnInit {
       price: 0,
       category: 'Lunch',
       image: '',
-      type: 'Veg'
+      type: 'Veg',
+      calories: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+      fiber: 0,
+      spiceLevel: 'Medium',
+      prepTime: '25 min',
+      portionSize: '350g',
+      ingredients: '',
+      allergens: ''
     };
   }
 
@@ -203,9 +223,30 @@ export class ManageMenuPage implements OnInit {
       price: meal.price,
       category: meal.category,
       image: meal.image,
-      type: meal.type
+      type: meal.type,
+      calories: meal.calories || 0,
+      protein: meal.protein || 0,
+      carbs: meal.carbs || 0,
+      fat: meal.fat || 0,
+      fiber: meal.fiber || 0,
+      spiceLevel: meal.spiceLevel || 'Medium',
+      prepTime: meal.prepTime || '25 min',
+      portionSize: meal.portionSize || '350g',
+      ingredients: meal.ingredients || '',
+      allergens: meal.allergens || ''
     };
     this.isAddMealModalOpen = true;
+  }
+
+  toggleAllergen(allergen: string) {
+    const list = this.mealForm.allergens ? this.mealForm.allergens.split(',').map(a => a.trim()).filter(a => a) : [];
+    const idx = list.indexOf(allergen);
+    if (idx > -1) {
+      list.splice(idx, 1);
+    } else {
+      list.push(allergen);
+    }
+    this.mealForm.allergens = list.join(', ');
   }
 
   toggleMealAvailability(meal: Meal) {

@@ -52,7 +52,11 @@ export class AiInsightsPage implements OnInit {
     private navCtrl: NavController
   ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
+    const userId = this.auth.userId || '';
+    if (userId) {
+      await this.subscriptionService.fetchUserSubscriptions(userId);
+    }
     this.loadContextData();
     this.generateSuggestions();
     this.setPersonalizedGreeting();

@@ -417,6 +417,30 @@
       display: flex; align-items: center; gap: 5px; background: #FFF3E0; color: $mm-primary;
       font-size: 0.6rem; font-weight: 700; padding: 4px 10px; border-radius: 8px;
       .tm-dot { width: 6px; height: 6px; border-radius: 50%; background: $mm-primary; animation: pulse 1.5s infinite; }
+
+      &.arriving {
+        background: #FFF3E0;
+        color: $mm-primary;
+        .tm-dot { background: $mm-primary; animation: pulse 1.5s infinite; }
+      }
+
+      &.delivered {
+        background: $mm-green-bg;
+        color: $mm-green-text;
+        .tm-dot { background: $mm-green-text; animation: none; }
+      }
+
+      &.paused {
+        background: #F3F4F6;
+        color: $mm-text-muted;
+        .tm-dot { background: $mm-text-muted; animation: none; }
+      }
+
+      &.skipped {
+        background: $mm-red-bg;
+        color: #FF5B5B;
+        .tm-dot { background: #FF5B5B; animation: none; }
+      }
     }
   }
   .tm-body {
@@ -448,9 +472,20 @@
 .rotation-section {
   margin-bottom: 20px;
   .rot-sub { font-size: $mm-font-xs; font-weight: 500; color: $mm-text-muted; }
-  .rotation-row { display: flex; justify-content: center; gap: 24px; padding: 8px 0; }
+  .rotation-row {
+    display: flex;
+    gap: 16px;
+    padding: 10px 4px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    &::-webkit-scrollbar { display: none; }
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
   .rot-item {
     display: flex; flex-direction: column; align-items: center; gap: 6px;
+    flex-shrink: 0; width: 76px; scroll-snap-align: start;
     .rot-day-tag {
       font-size: 0.55rem; font-weight: 700; color: $mm-text-muted; background: #F3F4F6;
       padding: 3px 10px; border-radius: 6px;
@@ -462,7 +497,10 @@
       img { width: 80%; height: 80%; object-fit: contain; border-radius: 50%; }
     }
     &.active .rot-item-img { border-color: $mm-primary; box-shadow: 0 4px 14px rgba(255,114,53,0.2); }
-    .rot-item-name { font-size: 0.7rem; font-weight: 700; color: $mm-text-dark; text-align: center; }
+    .rot-item-name {
+      font-size: 0.7rem; font-weight: 700; color: $mm-text-dark; text-align: center;
+      width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
     .rot-item-when { font-size: 0.6rem; font-weight: 600; color: $mm-primary; }
   }
 }
@@ -500,18 +538,51 @@
   box-shadow: $mm-shadow-sm; border: 1.5px solid #F0EDE9;
   .week-count { font-size: $mm-font-xs; color: $mm-text-muted; font-weight: 600; }
   .week-dots {
-    display: flex; justify-content: space-between; margin-top: 14px;
+    display: flex; justify-content: space-between; margin-top: 18px; position: relative; padding: 0 4px;
+    &::before {
+      content: ''; position: absolute; top: 17px; left: 20px; right: 20px; height: 2px; background: #E5E7EB; z-index: 1;
+    }
     .week-dot {
-      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      display: flex; flex-direction: column; align-items: center; gap: 8px; position: relative; z-index: 2; flex: 1;
       .dot-circle {
         width: 34px; height: 34px; border-radius: 50%; background: #F3F4F6;
-        display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;
-        ion-icon { font-size: 0.9rem; color: white; }
+        display: flex; align-items: center; justify-content: center; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid #FFFFFF; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03);
+        ion-icon { font-size: 0.95rem; color: white; }
         .today-pulse { width: 10px; height: 10px; border-radius: 50%; background: $mm-primary; animation: pulse 2s infinite; }
       }
-      .dot-label { font-size: 0.6rem; font-weight: 700; color: $mm-text-muted; }
-      &.completed .dot-circle { background: $mm-green-text; }
-      &.today .dot-circle { background: $mm-primary-surface; border: 2px solid $mm-primary; }
+      .dot-label { font-size: 0.65rem; font-weight: 700; color: $mm-text-muted; transition: all 0.2s ease; }
+
+      &.completed {
+        .dot-circle {
+          background: $mm-green-text; border-color: $mm-green-bg;
+          ion-icon { color: white; font-size: 1rem; font-weight: 900; }
+        }
+        .dot-label { color: $mm-text-dark; font-weight: 800; }
+      }
+
+      &.skipped {
+        .dot-circle {
+          background: $mm-red-bg; border-color: $mm-red-border;
+          ion-icon { color: $mm-red; font-size: 1.05rem; }
+        }
+        .dot-label { color: $mm-red; font-weight: 700; }
+      }
+
+      &.paused {
+        .dot-circle {
+          background: #F3F4F6; border-color: #E5E7EB;
+          ion-icon { color: $mm-text-muted; font-size: 0.9rem; }
+        }
+        .dot-label { color: $mm-text-muted; font-weight: 700; }
+      }
+
+      &.today {
+        .dot-label { color: $mm-primary; font-weight: 900; font-size: 0.7rem; }
+        &:not(.completed):not(.skipped):not(.paused) {
+          .dot-circle { background: $mm-primary-surface; border-color: $mm-primary; box-shadow: 0 0 10px rgba(255, 114, 53, 0.25); }
+        }
+      }
     }
   }
 }

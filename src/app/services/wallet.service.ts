@@ -17,7 +17,7 @@ export interface WalletInfo {
 })
 export class WalletService {
   // --- State ---
-  private _balance = 2500;
+  private _balance = 5000;
   private _creditLimit = 500;
   private _creditUsed = 0;
   private _credits = 1000; // loyaltyPoints

@@ -1,5 +1,8 @@
+<!-- Page Loader -->
+<app-page-loader [isLoading]="isLoading"></app-page-loader>
+
 <!-- ===== TRANSPARENT HEADER (absolute over hero) ===== -->
-<ion-header class="ion-no-border md-header">
+<ion-header class="ion-no-border md-header" *ngIf="!isLoading">
   <ion-toolbar class="md-toolbar">
     <div class="md-header-row">
       <button class="md-back-btn" (click)="goBack()">
@@ -17,21 +20,9 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="md-content">
+<ion-content [fullscreen]="true" class="md-content" *ngIf="!isLoading">
 
-  <!-- ===== SKELETON ===== -->
-  <div *ngIf="isLoading" class="md-skeleton">
-    <ion-skeleton-text animated style="width:100%; height:280px;"></ion-skeleton-text>
-    <div style="padding:20px;">
-      <ion-skeleton-text animated style="width:60%; height:22px; margin-bottom:8px;"></ion-skeleton-text>
-      <ion-skeleton-text animated style="width:40%; height:14px; margin-bottom:20px;"></ion-skeleton-text>
-      <div style="display:flex; gap:10px;">
-        <ion-skeleton-text *ngFor="let i of [1,2,3,4]" animated style="flex:1; height:70px; border-radius:12px;"></ion-skeleton-text>
-      </div>
-    </div>
-  </div>
-
-  <div *ngIf="!isLoading && meal" class="md-page">
+  <div *ngIf="meal" class="md-page">
 
     <!-- ========== HERO IMAGE AREA ========== -->
     <div class="md-hero">
@@ -270,3 +261,6 @@
     <span class="md-cart-total">₹{{totalPrice}}</span>
   </button>
 </div>
+
+<!-- Blinkit-style Cart Pill -->
+<app-cart-pill></app-cart-pill>

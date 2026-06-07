@@ -264,8 +264,8 @@
       <div class="todays-meal-card">
         <div class="tm-header">
           <h3>Today's Meal</h3>
-          <span class="tm-badge">
-            <span class="tm-dot"></span> Arriving Today
+          <span class="tm-badge" [ngClass]="todaysMeal.statusClass">
+            <span class="tm-dot"></span> {{ todaysMeal.statusText }}
           </span>
         </div>
         <div class="tm-body">
@@ -323,7 +323,7 @@
           </div>
           <div class="khata-stat">
             <span class="ks-label">Next<br>Deduction</span>
-            <span class="ks-value highlight">Today</span>
+            <span class="ks-value highlight">{{ nextDeductionLabel }}</span>
           </div>
         </div>
         <div class="khata-note">
@@ -340,11 +340,16 @@
           <span class="week-count">{{weekMealsCompleted}} / 7 meals delivered</span>
         </div>
         <div class="week-dots">
-          <div class="week-dot" *ngFor="let day of weekDays" [class.completed]="day.completed"
-            [class.today]="day.isToday">
+          <div class="week-dot" *ngFor="let day of weekDays" 
+            [class.completed]="day.completed"
+            [class.today]="day.isToday"
+            [class.skipped]="day.skipped"
+            [class.paused]="day.paused">
             <div class="dot-circle">
               <ion-icon *ngIf="day.completed" name="checkmark"></ion-icon>
-              <span *ngIf="!day.completed && day.isToday" class="today-pulse"></span>
+              <ion-icon *ngIf="day.skipped" name="close-outline"></ion-icon>
+              <ion-icon *ngIf="day.paused" name="pause-outline"></ion-icon>
+              <span *ngIf="!day.completed && !day.skipped && !day.paused && day.isToday" class="today-pulse"></span>
             </div>
             <span class="dot-label">{{day.short}}</span>
           </div>

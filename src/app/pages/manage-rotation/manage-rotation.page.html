@@ -1,8 +1,7 @@
-<!-- ══════════════════════════════════════════════════
-     MANAGE ROTATION — Redesigned Premium Page
-     ══════════════════════════════════════════════════ -->
+<!-- Page Loader -->
+<app-page-loader [isLoading]="isLoading"></app-page-loader>
 
-<ion-header class="ion-no-border sub-page-header">
+<ion-header class="ion-no-border sub-page-header" *ngIf="!isLoading">
   <div class="header-curve-bg"></div>
   <ion-toolbar class="transparent-toolbar" style="--padding-top: 5px;">
     <div class="header-content">
@@ -23,7 +22,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="mr-content">
+<ion-content [fullscreen]="true" class="mr-content" *ngIf="!isLoading">
   <div class="mr-body">
 
     <!-- No active sub fallback -->
@@ -379,7 +378,7 @@
 </ion-content>
 
 <!-- ── Sticky Footer CTA ── -->
-<ion-footer class="ion-no-border mr-footer" *ngIf="activeSub && activeTab !== 'schedule'">
+<ion-footer class="ion-no-border mr-footer" *ngIf="!isLoading && activeSub && activeTab !== 'schedule'">
   <!-- Tab 1 Save Button -->
   <div class="mr-save-section" *ngIf="activeTab === 'rotation'">
     <button class="mr-primary-btn" (click)="saveRotationOrder()">

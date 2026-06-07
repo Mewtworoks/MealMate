@@ -69,8 +69,9 @@ export class SubscribePage implements OnInit {
   goalProgress = 0;
   daysLeft = 0;
   monthlyDeducted = 0;
+  nextDeductionLabel = 'Today';
 
-  todaysMeal: any = { name: 'Dal Makhani Thali', details: 'High Protein • 520 kcal', image: 'assets/onboarding/dal_makhani.png' };
+  todaysMeal: any = { name: 'Dal Makhani Thali', details: 'High Protein • 520 kcal', image: 'assets/onboarding/dal_makhani.png', statusText: 'Arriving Today', statusClass: 'arriving' };
 
   rotationDisplay: any[] = [];
   weekDays: any[] = [];
@@ -216,6 +217,7 @@ export class SubscribePage implements OnInit {
       // Rebuild active plan data
       this.computeActivePlanData();
       this.buildUpcomingDeliveries();
+      this.buildWeekDays();
 
       await this.showToast('Subscription Activated! 🎉');
     } catch (error: any) {
@@ -254,30 +256,75 @@ export class SubscribePage implements OnInit {
 
     const start = new Date(this.activeSub.startDate);
     const end = new Date(this.activeSub.endDate);
-    const now = new Date();
+    const todayLocal = new Date();
 
-    const totalMs = end.getTime() - start.getTime();
-    const elapsedMs = Math.max(0, now.getTime() - start.getTime());
+    const startDateLocal = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    const todayDateLocal = new Date(todayLocal.getFullYear(), todayLocal.getMonth(), todayLocal.getDate());
 
-    this.goalProgress = Math.min(100, Math.max(0, Math.round((elapsedMs / totalMs) * 100)));
+    const msDiff = todayDateLocal.getTime() - startDateLocal.getTime();
+    const daysDiff = Math.max(0, Math.floor(msDiff / (1000 * 60 * 60 * 24)));
 
-    const totalDays = Math.ceil(totalMs / (1000 * 60 * 60 * 24));
-    const elapsedDays = Math.floor(elapsedMs / (1000 * 60 * 60 * 24));
-    this.daysLeft = Math.max(0, totalDays - elapsedDays);
+    // Determine today's meal status
+    const todayStr = `${todayLocal.getFullYear()}-${String(todayLocal.getMonth() + 1).padStart(2, '0')}-${String(todayLocal.getDate()).padStart(2, '0')}`;
+    const isTodaySkipped = this.activeSub?.skippedDays?.includes(todayStr) || false;
+    const isTodayPaused = this.activeSub?.pausedDays?.includes(todayStr) || this.activeSub?.status === 'Paused';
+    const isPastDeliveryTime = todayLocal.getHours() >= 13; // past 1:00 PM
+    const isTodayCompleted = isPastDeliveryTime && !isTodaySkipped && !isTodayPaused;
 
-    // Monthly wallet deducted
-    const daysSinceStart = Math.min(elapsedDays, 30);
-    this.monthlyDeducted = Math.round(daysSinceStart * this.activeSub.dailyDeduction);
+    // Calculate completed days so far (excluding today)
+    let completedDaysCount = 0;
+    for (let d = 0; d < daysDiff; d++) {
+      const currentCheckDate = new Date(startDateLocal);
+      currentCheckDate.setDate(startDateLocal.getDate() + d);
+      const dateStr = `${currentCheckDate.getFullYear()}-${String(currentCheckDate.getMonth() + 1).padStart(2, '0')}-${String(currentCheckDate.getDate()).padStart(2, '0')}`;
+      const isSkipped = this.activeSub?.skippedDays?.includes(dateStr) || false;
+      const isPaused = this.activeSub?.pausedDays?.includes(dateStr) || false;
+      if (!isSkipped && !isPaused) {
+        completedDaysCount++;
+      }
+    }
+
+    // Add today if completed
+    if (isTodayCompleted) {
+      completedDaysCount++;
+    }
+
+    this.goalProgress = Math.min(100, Math.max(0, Math.round((completedDaysCount / this.activeSub.totalDays) * 100)));
+    this.daysLeft = Math.max(0, this.activeSub.totalDays - completedDaysCount);
+
+    // Monthly wallet deducted (based on completed days so far)
+    this.monthlyDeducted = Math.round(completedDaysCount * this.activeSub.dailyDeduction);
 
     // Today's meal from rotation
     const rotation = this.activeSub.rotationMeals;
     if (rotation.length > 0) {
+      // elapsedDays including today if past start date
+      const totalElapsedMs = Math.max(0, todayLocal.getTime() - start.getTime());
+      const elapsedDays = Math.floor(totalElapsedMs / (1000 * 60 * 60 * 24));
+      
       const todayIdx = elapsedDays % rotation.length;
       const todayMeal = rotation[todayIdx];
+
+      let todayStatusText = 'Arriving Today';
+      let todayStatusClass = 'arriving';
+
+      if (isTodaySkipped) {
+        todayStatusText = 'Skipped';
+        todayStatusClass = 'skipped';
+      } else if (isTodayPaused) {
+        todayStatusText = 'Paused';
+        todayStatusClass = 'paused';
+      } else if (isTodayCompleted) {
+        todayStatusText = 'Delivered';
+        todayStatusClass = 'delivered';
+      }
+
       this.todaysMeal = {
         name: todayMeal.name,
         details: `High Protein • ${400 + todayIdx * 40} kcal`,
-        image: this.getMealImage(todayMeal.name)
+        image: this.getMealImage(todayMeal.name),
+        statusText: todayStatusText,
+        statusClass: todayStatusClass
       };
 
       // Build rotation display
@@ -297,6 +344,37 @@ export class SubscribePage implements OnInit {
         };
       });
     }
+
+    // Build next deduction label
+    if (this.activeSub.status === 'Paused') {
+      this.nextDeductionLabel = 'Paused';
+    } else {
+      let nextActiveDate = new Date(todayDateLocal);
+      if (isTodayCompleted || isTodaySkipped || isTodayPaused) {
+        nextActiveDate.setDate(nextActiveDate.getDate() + 1);
+      }
+
+      for (let i = 0; i < 30; i++) {
+        const checkStr = `${nextActiveDate.getFullYear()}-${String(nextActiveDate.getMonth() + 1).padStart(2, '0')}-${String(nextActiveDate.getDate()).padStart(2, '0')}`;
+        const isCheckSkipped = this.activeSub?.skippedDays?.includes(checkStr) || false;
+        const isCheckPaused = this.activeSub?.pausedDays?.includes(checkStr) || false;
+        if (!isCheckSkipped && !isCheckPaused) {
+          break;
+        }
+        nextActiveDate.setDate(nextActiveDate.getDate() + 1);
+      }
+
+      const diffTime = nextActiveDate.getTime() - todayDateLocal.getTime();
+      const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 0) {
+        this.nextDeductionLabel = 'Today';
+      } else if (diffDays === 1) {
+        this.nextDeductionLabel = 'Tomorrow';
+      } else {
+        this.nextDeductionLabel = nextActiveDate.toLocaleDateString('default', { day: 'numeric', month: 'short' });
+      }
+    }
   }
 
   getMealImage(name: string): string {
@@ -315,17 +393,47 @@ export class SubscribePage implements OnInit {
   }
 
   buildWeekDays() {
+    if (!this.activeSub) return;
+
     const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     const today = new Date();
     const todayDay = today.getDay();
     const mappedToday = todayDay === 0 ? 6 : todayDay - 1;
 
-    this.weekDays = dayNames.map((name, i) => ({
-      short: name,
-      completed: i < mappedToday,
-      isToday: i === mappedToday,
-      skipped: false
-    }));
+    const todayDateLocal = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const start = new Date(this.activeSub.startDate);
+    const startDateLocal = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+
+    // Find the Monday of the current calendar week
+    const mondayDate = new Date(todayDateLocal);
+    mondayDate.setDate(todayDateLocal.getDate() - mappedToday);
+
+    this.weekDays = dayNames.map((name, i) => {
+      const dayDate = new Date(mondayDate);
+      dayDate.setDate(mondayDate.getDate() + i);
+      const dateStr = `${dayDate.getFullYear()}-${String(dayDate.getMonth() + 1).padStart(2, '0')}-${String(dayDate.getDate()).padStart(2, '0')}`;
+
+      const isSkipped = this.activeSub?.skippedDays?.includes(dateStr) || false;
+      const isPaused = this.activeSub?.pausedDays?.includes(dateStr) || this.activeSub?.status === 'Paused';
+      const isToday = i === mappedToday;
+
+      let completed = false;
+      if (dayDate.getTime() < todayDateLocal.getTime()) {
+        // In the past
+        completed = dayDate.getTime() >= startDateLocal.getTime() && !isSkipped && !isPaused;
+      } else if (isToday) {
+        // Today — is completed if it's past 1:00 PM and not skipped/paused
+        completed = today.getHours() >= 13 && !isSkipped && !isPaused;
+      }
+
+      return {
+        short: name,
+        completed: completed,
+        isToday: isToday,
+        skipped: isSkipped,
+        paused: isPaused
+      };
+    });
 
     this.weekMealsCompleted = this.weekDays.filter(d => d.completed).length;
   }
@@ -387,6 +495,8 @@ export class SubscribePage implements OnInit {
       this.activeSub.status = 'Active';
       this.showToast('Plan resumed! 🎉');
     }
+    this.computeActivePlanData();
+    this.buildWeekDays();
   }
 
   async changePlan() {

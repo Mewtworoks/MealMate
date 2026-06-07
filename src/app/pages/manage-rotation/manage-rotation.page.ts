@@ -3,6 +3,7 @@ import { NavController, ToastController } from '@ionic/angular';
 import { MealService, Meal } from '../../services/meal.service';
 import { SubscriptionService, Subscription, RotationMeal } from '../../services/subscription.service';
 import { AuthService } from '../../services/auth';
+import { PageLoaderService } from '../../services/page-loader.service';
 
 @Component({
   selector: 'app-manage-rotation',
@@ -13,6 +14,7 @@ import { AuthService } from '../../services/auth';
 export class ManageRotationPage implements OnInit {
   activeSub: Subscription | null = null;
   meals: Meal[] = [];
+  isLoading = true;
 
   // Tab state
   activeTab: 'rotation' | 'swap' | 'schedule' = 'rotation';
@@ -38,13 +40,20 @@ export class ManageRotationPage implements OnInit {
     private toastCtrl: ToastController,
     private mealService: MealService,
     private subscriptionService: SubscriptionService,
-    private auth: AuthService
+    private auth: AuthService,
+    private pageLoader: PageLoaderService
   ) {}
 
   async ngOnInit() {
+    this.isLoading = true;
+    this.pageLoader.show(true);
     this.mealService.meals$.subscribe(m => this.meals = m);
     this.mealService.refreshMeals();
     await this.loadActiveSub();
+    setTimeout(() => {
+      this.isLoading = false;
+      this.pageLoader.show(false);
+    }, 1000);
   }
 
   goBack() {

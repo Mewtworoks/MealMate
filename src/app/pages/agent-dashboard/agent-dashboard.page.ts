@@ -8,6 +8,7 @@ import { TrackingService } from '../../services/tracking.service';
 import { GpsService } from '../../services/gps.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth';
+import { Subscription } from 'rxjs';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 
@@ -25,6 +26,18 @@ export class AgentDashboardPage implements OnInit {
   activeSegment = 'requests';
   earnings = 0;
   isProfileModalOpen = false;
+  isOnline = true;
+  chefName = '';
+  greeting = '';
+  private ordersSubscription?: Subscription;
+
+  get currentDelivery(): Order | null {
+    return this.activeOrders.find(o => o.status === 'OutForDelivery') || this.activeOrders[0] || null;
+  }
+
+  toggleOnlineStatus() {
+    this.isOnline = !this.isOnline;
+  }
 
   constructor(
     private orderService: OrderService,
@@ -37,18 +50,26 @@ export class AgentDashboardPage implements OnInit {
     private alertCtrl: AlertController
   ) { }
 
-  async ngOnInit() {
+  async ionViewWillEnter() {
+    this.chefName = this.auth.userName || 'Chef';
+    this.greeting = this.auth.greeting;
     const agentId = this.auth.userId;
     if (agentId) {
       await this.orderService.refreshAgentOrders(agentId);
     }
 
-    this.orderService.orders$.subscribe(allOrders => {
+    if (this.ordersSubscription) {
+      this.ordersSubscription.unsubscribe();
+    }
+    
+    this.ordersSubscription = this.orderService.orders$.subscribe(allOrders => {
       this.orders = allOrders;
       this.filterOrders();
       this.calculateEarnings();
     });
   }
+
+  ngOnInit() {}
 
   logout() {
     this.isProfileModalOpen = false;

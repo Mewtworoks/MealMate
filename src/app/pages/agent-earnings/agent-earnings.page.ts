@@ -95,11 +95,9 @@ export class AgentEarningsPage implements OnInit {
   async ionViewWillEnter() {
     this.isLoading = true;
     this.chefName = this.auth.userName || 'Chef';
-    this.updateGreeting();
-
+    this.greeting = this.auth.greeting;
     const now = new Date();
     this.selectedMonth = now.toLocaleString('default', { month: 'long', year: 'numeric' });
-
     const agentId = this.auth.userId;
     if (agentId) {
       // Try to load from backend API first
@@ -304,12 +302,7 @@ export class AgentEarningsPage implements OnInit {
   // =========================================================================
   // UI Helpers
   // =========================================================================
-  updateGreeting() {
-    const hour = new Date().getHours();
-    if (hour < 12) this.greeting = 'Good Morning';
-    else if (hour < 17) this.greeting = 'Good Afternoon';
-    else this.greeting = 'Good Evening';
-  }
+
 
   getBarHeight(amount: number): number {
     return Math.max(8, (amount / this.maxWeeklyEarning) * 100);

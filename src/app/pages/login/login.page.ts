@@ -19,7 +19,9 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   isMobileDev: boolean = false;
   showFallbackGoogle = false;
   private googleRetries = 0;
-  private deviceReady = false; // ADD THIS
+  private deviceReady = false; 
+
+  currentStep: number = 1;
 
   currentMealIndex = 0;
   meals = [
@@ -55,10 +57,10 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   ) { }
 
   ngOnInit() {
-    this.isMobileDev = this.platform.is('android') ||
-      this.platform.is('ios') ||
-      this.platform.is('cordova');
-    
+    // Only use the native plugin if running in a real native environment.
+    // In a browser (even with mobile view), we should use the Web GIS button.
+    this.isMobileDev = this.platform.is('capacitor') || this.platform.is('cordova');
+
     // Check if user is already logged in and redirect instantly
     if (this.auth.isAuthenticated) {
       const role = this.auth.userRole;
@@ -90,20 +92,23 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
 
   initializeGoogleSignIn() {
     if (typeof google !== 'undefined') {
-      google.accounts.id.initialize({
-        client_id: '1024312686784-u1071q8jimqbagni96q0856n1gm16d8v.apps.googleusercontent.com',
-        callback: (response: any) => this.handleGoogleLogin(response)
-      });
-      google.accounts.id.renderButton(
-        document.getElementById('google-btn'),
-        {
-          theme: 'filled_blue',
-          size: 'large',
-          width: 340,
-          shape: 'pill',
-          text: 'signin_with'
-        }
-      );
+      const btnElement = document.getElementById('google-btn');
+      if (btnElement) {
+        google.accounts.id.initialize({
+          client_id: '1024312686784-u1071q8jimqbagni96q0856n1gm16d8v.apps.googleusercontent.com',
+          callback: (response: any) => this.handleGoogleLogin(response)
+        });
+        google.accounts.id.renderButton(
+          btnElement,
+          {
+            theme: 'filled_blue',
+            size: 'large',
+            width: 340,
+            shape: 'pill',
+            text: 'signin_with'
+          }
+        );
+      }
     } else {
       this.googleRetries++;
       if (this.googleRetries > 2) {
@@ -195,6 +200,28 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.currentMealIndex = index;
     clearInterval(this.carouselTimer);
     this.startCarousel();
+  }
+
+  goToStep(step: number) {
+    this.currentStep = step;
+    if (step === 2) {
+      setTimeout(() => this.initializeGoogleSignIn(), 100);
+    }
+  }
+
+  nextStep() {
+    if (this.currentStep < 3) {
+      this.currentStep++;
+      if (this.currentStep === 2) {
+        setTimeout(() => this.initializeGoogleSignIn(), 100);
+      }
+    }
+  }
+
+  prevStep() {
+    if (this.currentStep > 1) {
+      this.currentStep--;
+    }
   }
 
   toggleRole() {

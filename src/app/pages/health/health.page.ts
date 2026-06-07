@@ -4,6 +4,7 @@ import { AuthService } from '../../services/auth';
 import { HealthService, HealthGoal, DailyLog, WeeklyDay } from '../../services/health.service';
 import { MealService } from '../../services/meal.service';
 import { SubscriptionService } from '../../services/subscription.service';
+import { PageLoaderService } from '../../services/page-loader.service';
 
 @Component({
   selector: 'app-health',
@@ -44,16 +45,19 @@ export class HealthPage implements OnInit {
     private auth: AuthService,
     private healthService: HealthService,
     private mealService: MealService,
-    private subscriptionService: SubscriptionService
+    private subscriptionService: SubscriptionService,
+    private pageLoader: PageLoaderService
   ) {}
 
   ngOnInit() {}
 
   async ionViewWillEnter() {
     this.isLoading = true;
+    this.pageLoader.show(true);
     const userId = this.auth.userId;
     if (!userId) {
       this.isLoading = false;
+      this.pageLoader.show(false);
       return;
     }
 
@@ -74,7 +78,8 @@ export class HealthPage implements OnInit {
 
     setTimeout(() => {
       this.isLoading = false;
-    }, 600);
+      this.pageLoader.show(false);
+    }, 1000);
   }
 
   loadHealthData(userId: string) {

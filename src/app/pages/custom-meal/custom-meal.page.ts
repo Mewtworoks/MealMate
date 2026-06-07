@@ -4,6 +4,7 @@ import { OrderService, Order } from '../../services/order.service';
 import { Router } from '@angular/router';
 import { NavController, ToastController } from '@ionic/angular';
 import { Gemini } from '../../services/gemini';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-custom-meal',
@@ -29,7 +30,8 @@ export class CustomMealPage implements OnInit {
     private router: Router,
     private navCtrl: NavController,
     private toastCtrl: ToastController,
-    private gemini: Gemini
+    private gemini: Gemini,
+    private auth: AuthService
   ) { }
 
   consultAi() {
@@ -92,29 +94,38 @@ export class CustomMealPage implements OnInit {
       return;
     }
 
-    const newOrder: Order = {
-      id: 'CUST-' + Math.floor(Math.random() * 8999 + 1000),
-      date: new Date().toISOString(),
-      total: 150, // Dummy estimate for custom meal
-      items: [],
-      status: 'Pending',
-      creditUsed: 0,
-      amountDue: 150,
-      isCustomMeal: true,
+    const userId = this.auth.userId || '11111111-1111-1111-1111-111111111111';
+    const orderPayload = {
+      customerId: userId,
       agentId: this.selectedAgentId,
-      deliveryTime: this.deliveryTime
+      deliveryAddress: 'Home',
+      paymentMethod: 'COD',
+      redeemPoints: false,
+      isCustomMeal: true,
+      customMealDetails: `${this.mealName} - ${this.details} | Type: ${this.mealType}`,
+      estimatedTotal: this.estimateMax,
+      items: []
     };
 
-    this.orderService.addOrder(newOrder);
+    try {
+      await this.orderService.placeOrder(orderPayload);
+      
+      const toast = await this.toastCtrl.create({
+        message: 'Custom meal request sent to agent!',
+        duration: 3000,
+        color: 'success'
+      });
+      toast.present();
 
-    const toast = await this.toastCtrl.create({
-      message: 'Custom meal request sent to agent!',
-      duration: 3000,
-      color: 'success'
-    });
-    toast.present();
-
-    this.router.navigate(['/my-orders']);
+      this.router.navigate(['/my-orders']);
+    } catch (e) {
+      const toast = await this.toastCtrl.create({
+        message: 'Failed to send custom meal request.',
+        duration: 2000,
+        color: 'danger'
+      });
+      toast.present();
+    }
   }
 
   goBack() {

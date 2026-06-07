@@ -221,29 +221,6 @@
         font-weight: 900;
         color: $mm-text-dark;
       }
-      
-      .pc-add-btn {
-        background: $mm-primary;
-        color: #FFFFFF;
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: none;
-        box-shadow: 0 4px 10px rgba(255, 114, 53, 0.25);
-        transition: transform 0.2s;
-        
-        ion-icon {
-          font-size: 1.1rem;
-          font-weight: bold;
-        }
-        
-        &:active {
-          transform: scale(0.9);
-        }
-      }
     }
   }
 }
@@ -321,54 +298,5 @@
   }
 }
 
-/* ========== FLOATING CART PILL ========== */
-.floating-cart-pill {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #1F2937;
-  padding: 10px 24px;
-  border-radius: 35px;
-  z-index: 1000;
-  box-shadow: 0 10px 30px rgba(31,41,55,0.4);
-  animation: cartSlideUp 0.4s cubic-bezier(0.4,0,0.2,1);
-  cursor: pointer;
-  
-  &:active {
-    transform: scale(0.95) translate(-52%, 0);
-  }
+/* Cart pill styles are now in the CartPillComponent */
 
-  .pill-content {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-
-    .items-count {
-      display: flex;
-      align-items: baseline;
-      gap: 4px;
-      .num { color: $mm-primary; font-size: 1.2rem; font-weight: 800; }
-      .txt { color: white; font-size: 0.85rem; font-weight: 600; }
-    }
-
-    .divider {
-      width: 1.5px;
-      height: 16px;
-      background: rgba(255,255,255,0.1);
-    }
-
-    .view-cart {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      span { color: white; font-size: 0.95rem; font-weight: 700; white-space: nowrap; }
-      ion-icon { color: white; font-size: 1.2rem; }
-    }
-  }
-}
-
-@keyframes cartSlideUp {
-  from { opacity: 0; transform: translate(-50%, 40px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
-}

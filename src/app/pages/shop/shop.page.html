@@ -1,215 +1,215 @@
-<ion-header class="ion-no-border premium-header">
+<!-- Page Loader -->
+<app-page-loader [isLoading]="isLoading"></app-page-loader>
+
+<ion-header class="ion-no-border sub-page-header" *ngIf="!isLoading">
   <div class="header-curve-bg"></div>
   <ion-toolbar class="transparent-toolbar">
-    <div class="header-content">
-      <div class="user-greeting">
-        <span class="welcome">{{greeting}},</span>
-        <h1 class="user-name">{{userName}}!</h1>
+    <div class="header-content" style="padding: 0 16px;">
+      <div class="title-group" style="flex: 1;">
+        <p class="subtitle">{{greeting}},</p>
+        <h2 class="page-title">{{userName}} 👋</h2>
       </div>
-
-      <div class="header-actions">
-        <div class="location-picker">
-          <ion-icon name="location-sharp" class="loc-icon"></ion-icon>
-          <span class="address">{{userLocation}}</span>
-          <ion-icon name="chevron-down-outline" class="chevron"></ion-icon>
+      <div class="header-actions" style="display: flex; gap: 8px; align-items: center;">
+        <div class="location-pill">
+          <ion-icon name="location-sharp" class="loc-pin"></ion-icon>
+          <span class="loc-text">{{userLocation}}</span>
+          <ion-icon name="chevron-down-outline" class="loc-chevron"></ion-icon>
         </div>
       </div>
     </div>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="premium-content">`
-  <div class="content-wrapper" *ngIf="isLoading" style="padding-top: 10px;">
-    <!-- Wallet Skeleton -->
-    <div class="wallet-card-container">
-      <div class="wallet-card" style="background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); border: none;">
-        <ion-skeleton-text animated
-          style="width: 100%; height: 100%; border-radius: 28px; opacity: 0.5;"></ion-skeleton-text>
-      </div>
-    </div>
+<ion-content [fullscreen]="true" class="premium-content" *ngIf="!isLoading">
 
-    <!-- AI Picks Skeleton -->
-    <section class="ai-concierge-section">
-      <div class="section-header">
-        <ion-skeleton-text animated style="width: 40%; height: 24px; border-radius: 4px;"></ion-skeleton-text>
-      </div>
-      <div class="ai-hero-card" style="background: #f8f9fa; border: 1px solid #eee; box-shadow: none;">
-        <div class="hero-image-left" style="background: #eee;">
-          <ion-skeleton-text animated style="width: 100%; height: 100%; border-radius: 100%;"></ion-skeleton-text>
-        </div>
-        <div class="hero-content-right" style="padding: 15px;">
-          <ion-skeleton-text animated style="width: 60%; height: 20px; margin-bottom: 10px;"></ion-skeleton-text>
-          <ion-skeleton-text animated style="width: 80%; height: 14px; margin-bottom: 15px;"></ion-skeleton-text>
-          <div style="display: flex; gap: 8px;">
-            <ion-skeleton-text animated style="width: 50px; height: 20px; border-radius: 10px;"></ion-skeleton-text>
-            <ion-skeleton-text animated style="width: 50px; height: 20px; border-radius: 10px;"></ion-skeleton-text>
+  <!-- ===== WALLET CARD V2 ===== -->
+  <div class="wallet-card-v2" routerLink="/wallet">
+    <div class="wc-bg-mesh"></div>
+    <div class="wc-content">
+      <div class="wc-top">
+        <div class="wc-left">
+          <span class="wc-label">MEALMATE WALLET</span>
+          <div class="wc-balance">
+            <span class="wc-currency">₹</span>
+            <span class="wc-amount">{{walletBalance}}</span>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Categories Skeleton -->
-    <section class="categories-section">
-      <div class="scroll-container" style="gap: 12px; display: flex; padding: 0 5px;">
-        <div *ngFor="let i of [1,2,3,4]"
-          style="width: 100px; height: 44px; background: #f8f9fa; border-radius: 22px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0 10px;">
-          <ion-skeleton-text animated
-            style="width: 24px; height: 24px; border-radius: 12px; margin-right: 8px;"></ion-skeleton-text>
-          <ion-skeleton-text animated style="width: 40px; height: 14px;"></ion-skeleton-text>
-        </div>
-      </div>
-    </section>
-
-    <!-- Meal Grid Skeleton -->
-    <section class="meals-grid-section">
-      <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 15px;">
-        <div class="meal-item-card" *ngFor="let i of [1,2,3,4]"
-          style="background: white; border: 1px solid #f0f0f0; border-radius: 24px;">
-          <div style="height: 140px; background: #f8f9fa; border-radius: 24px; margin: 8px;">
-            <ion-skeleton-text animated style="width: 100%; height: 100%; border-radius: 24px;"></ion-skeleton-text>
+          <div class="wc-stats">
+            <span>Credit: <b>₹{{wallet.availableCredit}}</b></span>
+            <span class="wc-dot">•</span>
+            <span>Points: <b>{{credits}} pts</b></span>
           </div>
-          <div style="padding: 0 15px 15px 15px;">
-            <ion-skeleton-text animated style="width: 80%; height: 16px; margin-bottom: 8px;"></ion-skeleton-text>
-            <ion-skeleton-text animated style="width: 40%; height: 16px;"></ion-skeleton-text>
-          </div>
+          <button class="wc-details-btn">View details <ion-icon name="arrow-forward-outline"></ion-icon></button>
         </div>
-      </div>
-    </section>
-  </div>
-
-  <div class="wallet-card-container" routerLink="/wallet" *ngIf="!isLoading">
-    <div class="wallet-card">
-      <div class="card-bg-mesh"></div>
-      <div class="card-content">
-        <div class="top-row">
-          <span class="card-label">MEALMATE WALLET</span>
-          <div class="mini-logo">
+        <div class="wc-right">
+          <div class="wc-active-chip">ACTIVE</div>
+          <div class="wc-logo-circle">
             <img src="assets/logo/chef_hat.png" alt="Logo">
           </div>
         </div>
-        <div class="balance-row">
-          <span class="currency">₹</span>
-          <span class="amount">{{walletBalance}}</span>
+      </div>
+      <div class="wc-bottom" *ngIf="activeSubscription">
+        <div class="wc-week-info">
+          <span class="wc-week-label">This Week</span>
+          <span class="wc-week-val">{{activeSubscription.currentDay}}/{{activeSubscription.totalDays > 7 ? 7 :
+            activeSubscription.totalDays}} meals completed</span>
         </div>
-        <div class="bottom-row">
-          <div class="stat">
-            <span class="s-lab">Credit</span>
-            <span class="s-val">₹{{wallet.availableCredit}}</span>
-            <span class="dot">•</span>
-            <span class="s-lab">Points</span>
-            <span class="s-val">{{credits}} pts</span>
-          </div>
-          <div class="chip">ACTIVE</div>
+        <div class="wc-delivery-info">
+          <ion-icon name="time-outline"></ion-icon>
+          <span>Next delivery: <b>{{ getNextDeliveryText(activeSubscription) }}</b></span>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="content-wrapper" *ngIf="!isLoading">
+  <div class="content-wrapper">
 
-    <!-- AI Concierge Section -->
-    <section class="ai-concierge-section">
-      <div class="section-header">
-        <div class="title-group">
-          <h2>AI Picks <ion-icon name="sparkles" class="sparkle"></ion-icon></h2>
-          <p>Curated for your health profile</p>
+    <!-- ===== AI PICKS SECTION ===== -->
+    <section class="ai-section">
+      <div class="section-hdr">
+        <div class="section-title-group">
+          <h2>AI Picks for You <ion-icon name="sparkles" class="sparkle-icon"></ion-icon></h2>
+          <p>Curated for your taste and health goals</p>
         </div>
-        <ion-button fill="clear" size="small" (click)="navigateToAi()" class="ask-ai-btn">
-          TALK TO AI <ion-icon name="chevron-forward" slot="end"></ion-icon>
-        </ion-button>
+        <button class="see-all-btn" (click)="navigateToAi()">See all <ion-icon
+            name="chevron-forward-outline"></ion-icon></button>
       </div>
 
-      <div class="ai-hero-card" *ngIf="aiPicks && aiPicks.length > 0" (click)="addToCart(aiPicks[0])">
-        <div class="hero-image-left">
-          <img [src]="aiPicks[0]?.image || 'assets/onboarding/dal_chawal.png'" alt="AI Pick">
+      <div class="ai-card" *ngIf="aiPicks && aiPicks.length > 0" (click)="goToMealDetail(aiPicks[0].id)">
+        <div class="ai-card-images">
+          <div class="ai-img-circle main">
+            <div class="match-tag">92% Match</div>
+            <img [src]="aiPicks[0]?.image || 'assets/onboarding/dal_chawal.png'" alt="AI Pick">
+          </div>
+          <div class="ai-img-circle secondary" *ngIf="aiPicks.length > 1">
+            <div class="match-tag">87% Match</div>
+            <img [src]="aiPicks[1]?.image || 'assets/onboarding/dal_chawal.png'" alt="AI Pick 2">
+          </div>
         </div>
-        <div class="hero-content-right">
-          <div class="match-badge">98% Match</div>
-          <div class="info">
-            <h3>{{aiPicks[0]?.name || 'Dal Makhani'}}</h3>
-            <p>Perfect for your high-protein diet</p>
-            <div class="tags">
-              <span>Low Cal</span>
-              <span>Rich in Fiber</span>
-            </div>
+        <div class="ai-card-info">
+          <h3>{{aiPicks[0]?.name || 'Dal Makhani Bowl'}}</h3>
+          <p class="ai-card-desc">High Protein • Low Oil • 520 kcal</p>
+          <div class="ai-tags">
+            <span class="ai-tag">High Protein</span>
+            <span class="ai-tag green">Rich in Fiber</span>
           </div>
-          <div class="action-bottom-right">
-            <ion-button fill="clear" class="arrow-btn">
-              <ion-icon name="arrow-forward-outline"></ion-icon>
-            </ion-button>
-          </div>
+          <button class="ai-why-btn">Why AI picked this? <ion-icon
+              name="information-circle-outline"></ion-icon></button>
         </div>
       </div>
 
-      <div class="pagination-dots">
-        <span class="dot active"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
+      <div class="ai-dots">
+        <span class="ai-dot active"></span>
+        <span class="ai-dot"></span>
+        <span class="ai-dot"></span>
       </div>
     </section>
 
-    <!-- Categories -->
-    <section class="categories-section">
-      <div class="scroll-container">
-        <div *ngFor="let cat of categories" class="category-pill" [class.active]="selectedCategory === cat"
+    <!-- ===== CATEGORIES ===== -->
+    <section class="cat-section">
+      <div class="cat-scroll">
+        <div *ngFor="let cat of categories" class="cat-item" [class.active]="selectedCategory === cat"
           (click)="selectedCategory = cat">
-          <ion-icon [name]="getCategoryIcon(cat)" class="cat-icon"></ion-icon>
-          <span>{{cat}}</span>
+          <div class="cat-icon-circle">
+            <ion-icon [name]="getCategoryIcon(cat)"></ion-icon>
+          </div>
+          <span class="cat-label">{{cat}}</span>
         </div>
       </div>
     </section>
 
-    <!-- Meal Grid -->
-    <section class="meals-grid-section">
-      <div class="grid">
-        <div class="meal-item-card" *ngFor="let meal of getFilteredMeals()">
-          <div class="card-thumb">
+    <!-- ===== POPULAR TODAY ===== -->
+    <section class="popular-section">
+      <div class="section-hdr">
+        <h2>Popular Today 🔥</h2>
+        <button class="see-all-btn" routerLink="/all-meals">View all <ion-icon
+            name="chevron-forward-outline"></ion-icon></button>
+      </div>
+
+      <div class="popular-scroll">
+        <div class="popular-card" *ngFor="let meal of getFilteredMeals()" (click)="goToMealDetail(meal.id)">
+          <div class="pc-thumb">
             <img [src]="meal.image" [alt]="meal.name">
-            <div class="type-indicator" [class.non-veg]="meal.type === 'Non-Veg'"></div>
+            <div class="pc-rating">
+              <ion-icon name="star"></ion-icon> 4.{{(meal.price % 5) + 5}}
+            </div>
+            <button class="pc-heart">
+              <ion-icon name="heart-outline"></ion-icon>
+            </button>
+            <div class="pc-kcal">{{380 + (meal.price % 120)}} kcal</div>
           </div>
-          <div class="card-body">
-            <h4 class="meal-name">{{meal.name}}</h4>
-            <div class="price-row">
-              <span class="price">₹{{meal.price}}</span>
-              <ion-button fill="clear" class="add-icon-btn" (click)="addToCart(meal)">
-                <ion-icon name="add-outline"></ion-icon>
-              </ion-button>
+          <div class="pc-body">
+            <h4 class="pc-name">{{meal.name}}</h4>
+            <p class="pc-sub">{{meal.category}}</p>
+            <div class="pc-price-row">
+              <span class="pc-price">₹{{meal.price}}</span>
+              <!-- Quantity Control -->
+              <ng-container *ngIf="cartService.getQuantity(meal.id) === 0; else qtyControl">
+                <button class="pc-add-btn" (click)="addToCart(meal, $event)">
+                  <ion-icon name="add"></ion-icon>
+                </button>
+              </ng-container>
+              <ng-template #qtyControl>
+                <div class="pc-qty-control" (click)="$event.stopPropagation()">
+                  <button class="qty-btn" (click)="removeFromCart(meal.id, $event)">
+                    <ion-icon name="remove"></ion-icon>
+                  </button>
+                  <span class="qty-val">{{cartService.getQuantity(meal.id)}}</span>
+                  <button class="qty-btn" (click)="addToCart(meal, $event)">
+                    <ion-icon name="add"></ion-icon>
+                  </button>
+                </div>
+              </ng-template>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- View All Menu -->
-    <div class="view-all-container">
-      <ion-button expand="block" fill="clear" class="view-all-btn">
-        <ion-icon name="grid-outline" slot="start"></ion-icon>
-        View All Menu
-      </ion-button>
-    </div>
-
-    <!-- Custom Meal / Personal Chef Banner -->
-    <div class="personal-chef-banner" (click)="createCustomMeal()">
-      <div class="banner-inner">
-        <div class="text-side">
-          <div class="badge">CONCIERGE</div>
-          <h3>Personal Chef</h3>
-          <p>Can't find what you like? Request a custom dish from our top agents.</p>
-        </div>
-        <div class="icon-side">
-          <ion-icon name="restaurant" class="chef-icon"></ion-icon>
+    <!-- ===== PERSONAL CHEF BANNER ===== -->
+    <div class="chef-banner" (click)="createCustomMeal()">
+      <div class="apc-ring">
+        <div class="chef-icon-circle">
+          <img src="assets/logo/chef_hat.png" alt="Chef Hat">
         </div>
       </div>
-      <div class="banner-action">
-        <ion-button fill="clear" class="request-btn">
-          REQUEST NOW <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
-        </ion-button>
+      <div class="apc-info">
+        <span class="apc-label">Your <b>Concierge</b></span>
+        <h3 class="apc-name">Personal Chef</h3>
+        <p class="apc-msg">Request a custom dish from our top agents.</p>
+      </div>
+      <div class="apc-right">
+        <button class="apc-view-btn">Request <ion-icon name="arrow-forward-outline"></ion-icon></button>
+        <img src="assets/onboarding/paneer_tikka.png" class="apc-decor-img" alt="">
       </div>
     </div>
 
-    <!-- Subscription Card -->
-    <div class="sub-promo-card">
+    <!-- ===== ACTIVE PLAN CARD ===== -->
+    <div class="active-plan-card" *ngIf="activeSubscription" (click)="openSubscriptionModal()">
+      <div class="apc-ring">
+        <svg viewBox="0 0 80 80" class="ring-svg">
+          <circle cx="40" cy="40" r="34" fill="none" stroke="#fce4d6" stroke-width="5" />
+          <circle cx="40" cy="40" r="34" fill="none" stroke="#FF7235" stroke-width="5" stroke-linecap="round"
+            [attr.stroke-dasharray]="213.6" [attr.stroke-dashoffset]="213.6 - (213.6 * activePlanPercent) / 100"
+            class="ring-progress" />
+        </svg>
+        <div class="ring-center">
+          <span class="ring-pct">{{activePlanPercent}}%</span>
+          <ion-icon name="leaf" class="ring-leaf"></ion-icon>
+        </div>
+      </div>
+      <div class="apc-info">
+        <span class="apc-label">Your <b>Meal Plan</b></span>
+        <h3 class="apc-name">{{planName}}</h3>
+        <p class="apc-msg">{{planMessage}}</p>
+      </div>
+      <div class="apc-right">
+        <button class="apc-view-btn">View Plan <ion-icon name="arrow-forward-outline"></ion-icon></button>
+        <img src="assets/onboarding/dal_chawal.png" class="apc-decor-img" alt="">
+      </div>
+    </div>
+
+    <!-- ===== SUBSCRIPTION PROMO (no active plan) ===== -->
+    <div class="sub-promo-card" *ngIf="!activeSubscription">
       <div class="promo-text">
         <div class="badge">HEALTH PLANS</div>
         <h3>Stay Healthy Everyday</h3>
@@ -223,20 +223,7 @@
     </div>
 
   </div>
-
 </ion-content>
 
-<!-- Floating Premium Cart -->
-<div class="floating-cart-pill" *ngIf="cartCount > 0" (click)="goToCart()">
-  <div class="pill-content">
-    <div class="items-count">
-      <span class="num">{{cartCount}}</span>
-      <span class="txt">Items</span>
-    </div>
-    <div class="divider"></div>
-    <div class="view-cart">
-      <span>View Cart</span>
-      <ion-icon name="arrow-forward"></ion-icon>
-    </div>
-  </div>
-</div>
+<!-- Blinkit-style Cart Pill -->
+<app-cart-pill></app-cart-pill>

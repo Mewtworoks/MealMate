@@ -7,14 +7,17 @@ import { IonicModule } from '@ionic/angular';
 import { AllMealsPageRoutingModule } from './all-meals-routing.module';
 
 import { AllMealsPage } from './all-meals.page';
+import { SharedComponentsModule } from '../../components/shared-components.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    AllMealsPageRoutingModule
+    AllMealsPageRoutingModule,
+    SharedComponentsModule
   ],
   declarations: [AllMealsPage]
 })
 export class AllMealsPageModule {}
+

@@ -236,6 +236,143 @@
               </div>
             </div>
 
+            <!-- ═══ NUTRITION INFO ═══ -->
+            <div class="section-group">
+              <div class="icon-label-wrap">
+                <div class="icon-badge orange"><ion-icon name="barbell-outline"></ion-icon></div>
+                <span class="field-label">Nutrition Info</span>
+              </div>
+              <p class="field-hint">Help customers track their health goals</p>
+
+              <div class="nutri-input-grid">
+                <div class="nutri-input-item">
+                  <label>Calories</label>
+                  <div class="premium-input-box compact">
+                    <input type="number" [(ngModel)]="mealForm.calories" placeholder="0">
+                    <span class="unit-tag">kcal</span>
+                  </div>
+                </div>
+                <div class="nutri-input-item">
+                  <label>Protein</label>
+                  <div class="premium-input-box compact">
+                    <input type="number" [(ngModel)]="mealForm.protein" placeholder="0">
+                    <span class="unit-tag">g</span>
+                  </div>
+                </div>
+                <div class="nutri-input-item">
+                  <label>Carbs</label>
+                  <div class="premium-input-box compact">
+                    <input type="number" [(ngModel)]="mealForm.carbs" placeholder="0">
+                    <span class="unit-tag">g</span>
+                  </div>
+                </div>
+                <div class="nutri-input-item">
+                  <label>Fat</label>
+                  <div class="premium-input-box compact">
+                    <input type="number" [(ngModel)]="mealForm.fat" placeholder="0">
+                    <span class="unit-tag">g</span>
+                  </div>
+                </div>
+                <div class="nutri-input-item">
+                  <label>Fiber</label>
+                  <div class="premium-input-box compact">
+                    <input type="number" [(ngModel)]="mealForm.fiber" placeholder="0">
+                    <span class="unit-tag">g</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ═══ COOKING DETAILS ═══ -->
+            <div class="section-group">
+              <div class="icon-label-wrap">
+                <div class="icon-badge purple"><ion-icon name="time-outline"></ion-icon></div>
+                <span class="field-label">Cooking Details</span>
+              </div>
+
+              <div class="input-grid-row">
+                <div class="grid-item">
+                  <label class="mini-label">Prep Time</label>
+                  <div class="premium-input-box">
+                    <select [(ngModel)]="mealForm.prepTime">
+                      <option value="10 min">10 min</option>
+                      <option value="15 min">15 min</option>
+                      <option value="20 min">20 min</option>
+                      <option value="25 min">25 min</option>
+                      <option value="30 min">30 min</option>
+                      <option value="45 min">45 min</option>
+                      <option value="60 min">60 min</option>
+                    </select>
+                    <ion-icon name="chevron-down-outline" class="select-arrow"></ion-icon>
+                  </div>
+                </div>
+                <div class="grid-item">
+                  <label class="mini-label">Portion Size</label>
+                  <div class="premium-input-box">
+                    <select [(ngModel)]="mealForm.portionSize">
+                      <option value="200g">200g</option>
+                      <option value="250g">250g</option>
+                      <option value="300g">300g</option>
+                      <option value="350g">350g</option>
+                      <option value="400g">400g</option>
+                      <option value="500g">500g</option>
+                    </select>
+                    <ion-icon name="chevron-down-outline" class="select-arrow"></ion-icon>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Spice Level Selector -->
+              <label class="mini-label" style="margin-top:14px;">Spice Level</label>
+              <div class="spice-selector-row">
+                <button class="spice-btn mild" [class.active]="mealForm.spiceLevel === 'Mild'" (click)="mealForm.spiceLevel = 'Mild'">
+                  🌶 Mild
+                </button>
+                <button class="spice-btn medium" [class.active]="mealForm.spiceLevel === 'Medium'" (click)="mealForm.spiceLevel = 'Medium'">
+                  🌶🌶 Medium
+                </button>
+                <button class="spice-btn hot" [class.active]="mealForm.spiceLevel === 'Hot'" (click)="mealForm.spiceLevel = 'Hot'">
+                  🔥 Hot
+                </button>
+              </div>
+            </div>
+
+            <!-- ═══ INGREDIENTS ═══ -->
+            <div class="section-group">
+              <div class="icon-label-wrap">
+                <div class="icon-badge green"><ion-icon name="leaf-outline"></ion-icon></div>
+                <span class="field-label">Ingredients</span>
+              </div>
+              <p class="field-hint">Separate each ingredient with a comma</p>
+              <div class="premium-textarea-box">
+                <textarea rows="3" [(ngModel)]="mealForm.ingredients"
+                  placeholder="e.g. Paneer, Onion, Tomato, Cream, Spices, Ghee"></textarea>
+              </div>
+            </div>
+
+            <!-- ═══ ALLERGENS ═══ -->
+            <div class="section-group">
+              <div class="icon-label-wrap">
+                <div class="icon-badge orange"><ion-icon name="warning-outline"></ion-icon></div>
+                <span class="field-label">Allergen Info</span>
+              </div>
+              <p class="field-hint">Select all that apply</p>
+              <div class="allergen-chips-row">
+                <button class="allergen-chip" [class.active]="mealForm.allergens.includes('Dairy')"
+                  (click)="toggleAllergen('Dairy')">🥛 Dairy</button>
+                <button class="allergen-chip" [class.active]="mealForm.allergens.includes('Gluten')"
+                  (click)="toggleAllergen('Gluten')">🌾 Gluten</button>
+                <button class="allergen-chip" [class.active]="mealForm.allergens.includes('Nuts')"
+                  (click)="toggleAllergen('Nuts')">🥜 Nuts</button>
+                <button class="allergen-chip" [class.active]="mealForm.allergens.includes('Soy')"
+                  (click)="toggleAllergen('Soy')">🫘 Soy</button>
+                <button class="allergen-chip" [class.active]="mealForm.allergens.includes('Egg')"
+                  (click)="toggleAllergen('Egg')">🥚 Egg</button>
+                <button class="allergen-chip" [class.active]="mealForm.allergens.includes('Seafood')"
+                  (click)="toggleAllergen('Seafood')">🐟 Seafood</button>
+              </div>
+            </div>
+
           </div>
         </div>
 

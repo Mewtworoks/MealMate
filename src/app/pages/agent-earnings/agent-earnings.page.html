@@ -2,9 +2,6 @@
   <div class="header-curve-bg"></div>
   <ion-toolbar class="transparent-toolbar">
     <div class="header-content">
-      <ion-button fill="clear" class="back-btn-pill" (click)="goBack()">
-        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
-      </ion-button>
       <div class="title-group">
         <h2 class="page-title">Earnings</h2>
       </div>
@@ -41,7 +38,8 @@
         <div class="hero-left">
           <span class="hero-label">Total Earned</span>
           <h1 class="hero-amount">₹{{ totalEarned | number:'1.0-0' }}</h1>
-          <p class="hero-trend"><ion-icon name="arrow-up-outline"></ion-icon> ₹{{ earningsVsLastWeek }} more than last week</p>
+          <p class="hero-trend"><ion-icon name="arrow-up-outline"></ion-icon> ₹{{ earningsVsLastWeek }} more than last
+            week</p>
         </div>
         <div class="hero-right">
           <div class="hero-orders-block">
@@ -57,7 +55,8 @@
       <!-- Decorative coin SVG -->
       <div class="hero-coin-decor">
         <svg viewBox="0 0 60 60" width="60" height="60">
-          <circle cx="30" cy="30" r="28" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.25)" stroke-width="2"/>
+          <circle cx="30" cy="30" r="28" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.25)"
+            stroke-width="2" />
           <text x="30" y="38" text-anchor="middle" font-size="24" fill="rgba(255,255,255,0.5)">₹</text>
         </svg>
       </div>
@@ -136,7 +135,8 @@
       <div class="advance-progress-bar-container">
         <div class="advance-progress-fill" [style.width.%]="(totalAdvanceDeducted / advanceTaken) * 100"></div>
       </div>
-      <p class="advance-footer-text">₹{{ totalAdvanceDeducted | number:'1.0-0' }} deducted out of ₹{{ advanceTaken | number:'1.0-0' }}</p>
+      <p class="advance-footer-text">₹{{ totalAdvanceDeducted | number:'1.0-0' }} deducted out of ₹{{ advanceTaken |
+        number:'1.0-0' }}</p>
     </section>
 
     <!-- ===== PENDING PAYOUT ===== -->

@@ -1,4 +1,7 @@
-<ion-header class="ion-no-border sub-page-header">
+<!-- Page Loader -->
+<app-page-loader [isLoading]="isLoading"></app-page-loader>
+
+<ion-header class="ion-no-border sub-page-header" *ngIf="!isLoading">
   <div class="header-curve-bg"></div>
   <ion-toolbar class="transparent-toolbar">
     <div class="header-content">
@@ -15,24 +18,10 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="health-content">
-
-  <!-- ===== SKELETON LOADING ===== -->
-  <div class="health-wrapper" *ngIf="isLoading">
-    <ion-skeleton-text animated style="width: 60%; height: 18px; margin-bottom: 8px;"></ion-skeleton-text>
-    <ion-skeleton-text animated style="width: 40%; height: 12px; margin-bottom: 16px;"></ion-skeleton-text>
-    <ion-skeleton-text animated style="width: 100%; height: 150px; border-radius: 24px;"></ion-skeleton-text>
-    <div style="display:flex; gap:10px; margin-top: 20px;">
-      <ion-skeleton-text animated style="flex:1; height: 100px; border-radius: 16px;"></ion-skeleton-text>
-      <ion-skeleton-text animated style="flex:1; height: 100px; border-radius: 16px;"></ion-skeleton-text>
-      <ion-skeleton-text animated style="flex:1; height: 100px; border-radius: 16px;"></ion-skeleton-text>
-    </div>
-    <ion-skeleton-text animated style="width: 100%; height: 200px; border-radius: 20px; margin-top: 20px;"></ion-skeleton-text>
-    <ion-skeleton-text animated style="width: 100%; height: 120px; border-radius: 20px; margin-top: 20px;"></ion-skeleton-text>
-  </div>
+<ion-content [fullscreen]="true" class="health-content" *ngIf="!isLoading">
 
   <!-- ===== MAIN CONTENT ===== -->
-  <div class="health-wrapper" *ngIf="!isLoading">
+  <div class="health-wrapper">
 
     <!-- ===== GREETING ===== -->
     <div class="greeting-section">

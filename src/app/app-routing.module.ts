@@ -70,6 +70,26 @@ const routes: Routes = [
     path: 'agent-earnings',
     loadChildren: () => import('./pages/agent-earnings/agent-earnings.module').then( m => m.AgentEarningsPageModule)
   },
+  {
+    path: 'manage-rotation',
+    loadChildren: () => import('./pages/manage-rotation/manage-rotation.module').then( m => m.ManageRotationPageModule)
+  },
+  {
+    path: 'all-meals',
+    loadChildren: () => import('./pages/all-meals/all-meals.module').then( m => m.AllMealsPageModule)
+  },
+  {
+    path: 'health',
+    loadChildren: () => import('./pages/health/health.module').then( m => m.HealthPageModule)
+  },
+  {
+    path: 'meal-detail/:id',
+    loadChildren: () => import('./pages/meal-detail/meal-detail.module').then( m => m.MealDetailPageModule)
+  },
+  {
+    path: 'order-details/:id',
+    loadChildren: () => import('./pages/order-details/order-details.module').then( m => m.OrderDetailsPageModule)
+  },
 
 
 ];

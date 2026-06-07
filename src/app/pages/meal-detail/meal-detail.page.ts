@@ -4,6 +4,8 @@ import { MealService, Meal, Agent } from '../../services/meal.service';
 import { CartService } from '../../services/cart.service';
 import { AuthService } from '../../services/auth';
 import { SubscriptionService, Subscription } from '../../services/subscription.service';
+import { PageLoaderService } from '../../services/page-loader.service';
+import { NavController, ToastController } from '@ionic/angular';
 
 interface Review {
   name: string;
@@ -54,7 +56,10 @@ export class MealDetailPage implements OnInit {
     private mealService: MealService,
     private cartService: CartService,
     private auth: AuthService,
-    private subscriptionService: SubscriptionService
+    private subscriptionService: SubscriptionService,
+    private pageLoader: PageLoaderService,
+    private navCtrl: NavController,
+    private toastCtrl: ToastController
   ) {}
 
   ngOnInit() {
@@ -66,6 +71,7 @@ export class MealDetailPage implements OnInit {
 
   async loadMealDetail(mealId: string) {
     this.isLoading = true;
+    this.pageLoader.show(true);
     await this.mealService.refreshMeals();
     const meals = this.mealService.getMeals();
     this.meal = meals.find(m => m.id === mealId) || null;
@@ -100,6 +106,7 @@ export class MealDetailPage implements OnInit {
     }
 
     this.isLoading = false;
+    this.pageLoader.show(false);
   }
 
   private generateMealDetails() {
@@ -230,25 +237,50 @@ export class MealDetailPage implements OnInit {
     if (this.quantity > 1) this.quantity--;
   }
 
-  toggleFavorite() {
+  async toggleFavorite() {
     this.isFavorited = !this.isFavorited;
+    const toast = await this.toastCtrl.create({
+      message: this.isFavorited ? 'Saved to favorites ❤️' : 'Removed from favorites',
+      duration: 2000,
+      position: 'top',
+      color: 'dark'
+    });
+    await toast.present();
   }
 
-  addToCart() {
+  async addToCart() {
     if (!this.meal) return;
     for (let i = 0; i < this.quantity; i++) {
       this.cartService.addToCart(this.meal);
     }
-    this.router.navigate(['/cart']);
+    
+    const toast = await this.toastCtrl.create({
+      message: `${this.quantity}x ${this.meal.name} added to cart!`,
+      duration: 2000,
+      position: 'bottom',
+      color: 'success',
+      icon: 'checkmark-circle'
+    });
+    await toast.present();
+    
+    this.navCtrl.back();
   }
 
-  addToRotation() {
+  async addToRotation() {
     if (!this.meal || !this.activeSubscription) return;
     this.subscriptionService.addMealToPool(this.activeSubscription.id, {
       mealId: this.meal.id,
       name: this.meal.name,
       price: this.meal.price
     });
+    
+    const toast = await this.toastCtrl.create({
+      message: `${this.meal.name} added to your rotation! 🔄`,
+      duration: 2500,
+      position: 'bottom',
+      color: 'success'
+    });
+    await toast.present();
   }
 
   goToSubscribe() {
@@ -265,20 +297,40 @@ export class MealDetailPage implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/customer-home']);
+    this.navCtrl.back();
   }
 
-  quickAdd(meal: Meal) {
+  async quickAdd(meal: Meal) {
     this.cartService.addToCart(meal);
+    const toast = await this.toastCtrl.create({
+      message: `1x ${meal.name} added to cart!`,
+      duration: 2000,
+      position: 'bottom',
+      color: 'success'
+    });
+    await toast.present();
   }
 
-  shareItem() {
+  async shareItem() {
     if (navigator.share && this.meal) {
-      navigator.share({
-        title: this.meal.name,
-        text: `Check out ${this.meal.name} on MealMate!`,
-        url: window.location.href
+      try {
+        await navigator.share({
+          title: this.meal.name,
+          text: `Check out ${this.meal.name} on MealMate!`,
+          url: window.location.href
+        });
+      } catch (err) {
+        console.log('Share cancelled or failed', err);
+      }
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      const toast = await this.toastCtrl.create({
+        message: 'Link copied to clipboard! 🔗',
+        duration: 2000,
+        position: 'top',
+        color: 'dark'
       });
+      await toast.present();
     }
   }
 }

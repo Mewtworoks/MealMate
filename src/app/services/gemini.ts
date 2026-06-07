@@ -92,7 +92,7 @@ Rules: Never recommend outside the list. Always mention prices.`.trim();
   // Simplified Suggestions
   async getMealSuggestions(userPref: string, availableMeals: any[]): Promise<any[]> {
     try {
-      const model = this.genAI.getGenerativeModel({ model: 'gemini-1.5-flash-002' });
+      const model = this.genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
       const prompt = `Return JSON array of 2 IDs from this list for "${userPref}": ${JSON.stringify(availableMeals.map(m => ({ id: m.id, name: m.name })))}`;
       const result = await model.generateContent(prompt);
       const resText = (await result.response).text();
