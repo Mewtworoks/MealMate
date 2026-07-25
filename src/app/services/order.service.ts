@@ -67,7 +67,7 @@ export class OrderService {
         customMealDetails: o.customMealDetails || o.CustomMealDetails,
         customerName: o.customerName || o.CustomerName || 'Guest',
         customerPhone: o.customerPhone || o.CustomerPhone || '',
-        distanceKm: o.distanceKm || o.DistanceKm || 1.2
+        distanceKm: o.distanceKm || o.DistanceKm || 0
       }));
       this.ordersSubject.next(mappedOrders);
       return mappedOrders;
@@ -94,7 +94,7 @@ export class OrderService {
         customMealDetails: o.customMealDetails || o.CustomMealDetails,
         customerName: o.customerName || o.CustomerName || 'Guest',
         customerPhone: o.customerPhone || o.CustomerPhone || '',
-        distanceKm: o.distanceKm || o.DistanceKm || 1.2
+        distanceKm: o.distanceKm || o.DistanceKm || 0
       }));
       this.ordersSubject.next(mappedOrders);
       return mappedOrders;
@@ -139,11 +139,56 @@ export class OrderService {
         customMealDetails: o.customMealDetails || o.CustomMealDetails,
         customerName: o.customerName || o.CustomerName || 'Guest',
         customerPhone: o.customerPhone || o.CustomerPhone || '',
-        distanceKm: o.distanceKm || o.DistanceKm || 1.2
+        distanceKm: o.distanceKm || o.DistanceKm || 0
       };
     } catch (e) {
       console.error('Error fetching order by id', e);
       return undefined;
     }
+  }
+
+  // --- UI Helper Functions ---
+  
+  getStatusColor(status: string): string {
+    switch (status) {
+      case 'Pending': return 'orange';
+      case 'Accepted': return 'blue';
+      case 'Preparing': return 'yellow';
+      case 'OutForDelivery': return 'purple';
+      case 'Delivered': return 'green';
+      case 'Rejected': return 'red';
+      default: return 'medium';
+    }
+  }
+
+  getStatusIcon(status: string): string {
+    switch (status) {
+      case 'Pending': return 'time-outline';
+      case 'Accepted': return 'checkmark-circle-outline';
+      case 'Preparing': return 'flame-outline';
+      case 'OutForDelivery': return 'bicycle-outline';
+      case 'Delivered': return 'checkmark-done-circle-outline';
+      case 'Rejected': return 'close-circle-outline';
+      default: return 'ellipse-outline';
+    }
+  }
+
+  getStatusLabel(status: string): string {
+    switch (status) {
+      case 'OutForDelivery': return 'On the way';
+      case 'Pending': return 'Waiting';
+      default: return status;
+    }
+  }
+
+  getMealFallbackImage(index: number): string {
+    const images = [
+      'assets/onboarding/dal_makhani.png',
+      'assets/onboarding/paneer_tikka.png',
+      'assets/onboarding/veg_pulao.png',
+      'assets/onboarding/healthy_salad.png',
+      'assets/onboarding/dal_chawal.png'
+    ];
+    return images[index % images.length];
   }
 }

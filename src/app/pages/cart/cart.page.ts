@@ -175,7 +175,7 @@ export class CartPage implements OnInit, OnDestroy {
     try {
       const orderPayload = {
         customerId: userId,
-        agentId: this.items[0]?.meal.agentId || 'default-agent',
+        agentId: this.items[0]?.meal.agentId || '05603423-ff0f-442c-8b8a-b306536cdb7b',
         deliveryAddress: 'Currently set to Profile Address',
         paymentMethod: this.paymentType === 'wallet' ? 'Wallet' : 'COD',
         redeemPoints: this.redeemPoints,

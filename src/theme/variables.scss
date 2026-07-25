@@ -2,36 +2,51 @@
   /** Font family **/
   --ion-font-family: 'Nunito Sans', sans-serif;
 
-  /** primary (Sage Green from image) **/
-  --ion-color-primary: #98b58d;
-  --ion-color-primary-rgb: 152, 181, 141;
-  --ion-color-primary-contrast: #000000;
-  --ion-color-primary-contrast-rgb: 0, 0, 0;
-  --ion-color-primary-shade: #869f7c;
-  --ion-color-primary-tint: #a2bc98;
+  /** Primary (MealMate Orange) **/
+  --ion-color-primary: #FF7235;
+  --ion-color-primary-rgb: 255, 114, 53;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #e0642f;
+  --ion-color-primary-tint: #ff8049;
 
   /** secondary (Medium Dark) **/
-  --ion-color-secondary: #2c2c2c;
-  --ion-color-secondary-rgb: 44, 44, 44;
+  --ion-color-secondary: #483129;
+  --ion-color-secondary-rgb: 72, 49, 41;
   --ion-color-secondary-contrast: #ffffff;
   --ion-color-secondary-contrast-rgb: 255, 255, 255;
-  --ion-color-secondary-shade: #272727;
-  --ion-color-secondary-tint: #414141;
+  --ion-color-secondary-shade: #3f2b24;
+  --ion-color-secondary-tint: #5a463e;
 
-  /** background (Deep Dark) **/
-  --ion-background-color: #0c0c0c;
-  --ion-background-color-rgb: 12, 12, 12;
-  --ion-text-color: #ffffff;
-  --ion-text-color-rgb: 255, 255, 255;
+  /** background (App Page BG) **/
+  --ion-background-color: #f8f6f4;
+  --ion-background-color-rgb: 248, 246, 244;
+  --ion-text-color: #483129;
+  --ion-text-color-rgb: 72, 49, 41;
 
-  /** Custom variables for the glossy UI **/
-  --premium-accent: #98b58d;
-  --premium-input-bg: #1a1a1a;
-  --premium-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
-  --premium-glow: 0 0 15px rgba(152, 181, 141, 0.3);
+  /** Global MealMate Variables **/
+  --mm-primary: #FF7235;
+  --mm-primary-light: #FFB088;
+  --mm-primary-bg: #FFFAF7;
+  --mm-primary-surface: #FFF5EE;
+  --mm-brand-orange: #F97316;
+
+  --mm-text-dark: #483129;
+  --mm-text-muted: #8E7C76;
+
+  --mm-bg-page: #f8f6f4;
+  --mm-bg-card: #ffffff;
+
+  --mm-green: #4ade80;
+  --mm-green-bg: #E8F5E9;
+  --mm-green-text: #4caf50;
+  --mm-red: #f87171;
+  --mm-red-bg: #FFF5F5;
+  --mm-blue: #2196F3;
+  --mm-yellow: #fbbf24;
 }
 
-.ion-color-premium {
+.ion-color-primary {
   --ion-color-base: var(--ion-color-primary);
   --ion-color-base-rgb: var(--ion-color-primary-rgb);
   --ion-color-contrast: var(--ion-color-primary-contrast);

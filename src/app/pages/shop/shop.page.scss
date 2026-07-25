@@ -5,7 +5,7 @@
 /* === Design Tokens (scoped) === */
 .premium-content {
   --background: #FAFAFA;
-  --primary-orange: #FF7235;
+  --primary-orange: var(--mm-primary);
   --primary-orange-light: #FFF5F0;
   --dark-text: #1A1D1E;
   --medium-text: #8E7C76;
@@ -65,7 +65,7 @@
   border: 1px solid rgba(255, 114, 53, 0.1);
 
   .loc-pin {
-    color: #FF7235;
+    color: var(--mm-primary);
     font-size: 0.95rem;
   }
 
@@ -105,7 +105,7 @@
     right: 10px;
     width: 8px;
     height: 8px;
-    background: #FF7235;
+    background: var(--mm-primary);
     border-radius: 50%;
     border: 1.5px solid white;
   }
@@ -213,7 +213,7 @@
   border-radius: var(--radius-lg);
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #FF7235 0%, #E65C23 100%);
+  background: linear-gradient(135deg, var(--mm-primary) 0%, #E65C23 100%);
   box-shadow: 0 10px 30px rgba(255, 114, 53, 0.25);
   cursor: pointer;
 

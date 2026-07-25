@@ -89,7 +89,7 @@ export class AllMealsPage implements OnInit {
   }
 
   getMealKcal(meal: Meal): string {
-    return `${380 + (meal.price % 120)} kcal`;
+    return `${this.mealService.getMealCalories(meal)} kcal`;
   }
 
   addToCart(meal: Meal, event: Event) {

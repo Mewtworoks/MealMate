@@ -50,7 +50,7 @@
         left: -5px;
         right: -5px;
         bottom: -5px;
-        border: 2px solid #FF7235;
+        border: 2px solid var(--mm-primary);
         border-radius: 50%;
         opacity: 0.3;
       }
@@ -71,7 +71,7 @@
         position: absolute;
         bottom: 0;
         right: 0;
-        background: #FF7235;
+        background: var(--mm-primary);
         color: white;
         width: 32px;
         height: 32px;
@@ -108,7 +108,7 @@
       letter-spacing: 1px;
 
       &.agent {
-        background: #FF7235;
+        background: var(--mm-primary);
       }
     }
   }
@@ -134,7 +134,7 @@
 
     ion-button {
       font-weight: 700;
-      color: #FF7235;
+      color: var(--mm-primary);
     }
   }
 
@@ -163,7 +163,7 @@
         padding: 4px 16px;
 
         &:focus-within {
-          border-color: #FF7235;
+          border-color: var(--mm-primary);
           background: white;
           box-shadow: 0 4px 15px rgba(255, 114, 53, 0.08);
         }
@@ -189,7 +189,7 @@
 
     .save-btn {
       width: 100%;
-      background: #FF7235;
+      background: var(--mm-primary);
       color: white;
       border: none;
       border-radius: 20px;
@@ -240,7 +240,7 @@
 
     ion-icon {
       font-size: 1.5rem;
-      color: #FF7235;
+      color: var(--mm-primary);
     }
 
     span {
@@ -284,7 +284,7 @@
     .val {
       font-size: 1.5rem;
       font-weight: 900;
-      color: #FF7235;
+      color: var(--mm-primary);
       line-height: 1;
       margin-bottom: 6px;
     }

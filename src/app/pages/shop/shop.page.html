@@ -135,7 +135,7 @@
             <button class="pc-heart">
               <ion-icon name="heart-outline"></ion-icon>
             </button>
-            <div class="pc-kcal">{{380 + (meal.price % 120)}} kcal</div>
+            <div class="pc-kcal">{{ getMealCalories(meal) }} kcal</div>
           </div>
           <div class="pc-body">
             <h4 class="pc-name">{{meal.name}}</h4>

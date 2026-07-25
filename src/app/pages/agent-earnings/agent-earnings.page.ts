@@ -176,13 +176,13 @@ export class AgentEarningsPage implements OnInit {
 
       // Recent orders
       const recent = res.RecentOrders ?? res.recentOrders ?? [];
-      const distances = ['1.2 km', '0.8 km', '2.1 km', '1.5 km', '3.0 km'];
+      const distances = ['1.2', '0.8', '2.1', '1.5', '3.0'];
       this.recentOrders = recent.map((o: any, i: number) => ({
         id: o.Id ?? o.id,
         mealName: o.MealName ?? o.mealName ?? 'Meal Order',
         mealImage: o.MealImage ?? o.mealImage ?? 'assets/onboarding/dal_chawal.png',
         customerName: o.CustomerName ?? o.customerName ?? 'Customer',
-        distance: distances[i % distances.length],
+        distance: `${(o.DistanceKm ?? o.distanceKm ?? distances[i % distances.length])} km`,
         earnings: o.Earnings ?? o.earnings ?? 0,
         time: new Date(o.OrderDate ?? o.orderDate).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
       }));

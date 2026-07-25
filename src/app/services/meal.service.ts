@@ -146,6 +146,10 @@ export class MealService {
     return this.mealsSubject.value;
   }
 
+  getMealCalories(meal: Meal): number {
+    return meal.calories && meal.calories > 0 ? meal.calories : 380 + (meal.price % 120);
+  }
+
   async getMealsByAgent(agentId: string) {
     try {
       const backendMeals: any[] = await firstValueFrom(this.http.get<any[]>(`${environment.apiUrl}/meals/agent/${agentId}`));

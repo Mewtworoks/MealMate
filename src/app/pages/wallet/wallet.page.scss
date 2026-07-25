@@ -16,7 +16,7 @@
 }
 
 .c-orange {
-  color: #FF7235;
+  color: var(--mm-primary);
 }
 
 .c-yellow {
@@ -207,7 +207,7 @@
   .section-tag {
     font-size: 0.85rem;
     font-weight: 700;
-    color: #FF7235;
+    color: var(--mm-primary);
   }
 }
 
@@ -249,7 +249,7 @@
         right: -8px;
         background: white;
         border-radius: 50%;
-        color: #FF7235;
+        color: var(--mm-primary);
         font-size: 1.3rem;
       }
 
@@ -268,7 +268,7 @@
         white-space: nowrap;
 
         &.tag-orange {
-          color: #FF7235;
+          color: var(--mm-primary);
           /* No background in design, just text */
         }
 
@@ -284,7 +284,7 @@
       }
 
       &.selected {
-        border-color: #FF7235;
+        border-color: var(--mm-primary);
         box-shadow: 0 4px 15px rgba(255, 114, 53, 0.1);
       }
     }
@@ -295,7 +295,7 @@
     padding: 16px;
     border-radius: 16px;
     border: none;
-    background: #FFAD8A;
+    background: var(--mm-primary-light);
     color: white;
     font-size: 1.05rem;
     font-weight: 800;
@@ -307,7 +307,7 @@
     margin-bottom: 20px;
 
     &.active {
-      background: #FF7235;
+      background: var(--mm-primary);
       box-shadow: 0 8px 20px rgba(255, 114, 53, 0.25);
     }
 
@@ -370,7 +370,7 @@
         top: 0;
         left: 0;
         height: 100%;
-        background: #FF7235;
+        background: var(--mm-primary);
         border-radius: 4px;
       }
 
@@ -380,7 +380,7 @@
         transform: translate(-50%, -50%);
         width: 18px;
         height: 18px;
-        background: #FF7235;
+        background: var(--mm-primary);
         border-radius: 50%;
         box-shadow: 0 2px 8px rgba(255, 114, 53, 0.4);
       }
@@ -445,16 +445,16 @@
 
       .left-content {
         span {
-          color: #FF7235;
+          color: var(--mm-primary);
         }
 
         ion-icon {
-          color: #FF7235;
+          color: var(--mm-primary);
         }
       }
 
       ion-icon[name="chevron-forward"] {
-        color: #FF7235;
+        color: var(--mm-primary);
       }
     }
   }
@@ -463,7 +463,7 @@
     width: 100%;
     padding: 14px;
     border-radius: 12px;
-    background: #FF7235;
+    background: var(--mm-primary);
     color: white;
     font-size: 0.95rem;
     font-weight: 700;
@@ -495,7 +495,7 @@
 
   span {
     font-size: 0.85rem;
-    color: #8E7C76;
+    color: var(--mm-text-muted);
     font-weight: 600;
   }
 }

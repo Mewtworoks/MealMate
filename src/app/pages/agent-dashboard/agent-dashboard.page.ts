@@ -120,13 +120,11 @@ export class AgentDashboardPage implements OnInit {
   }
 
   getStatusColor(status: string): string {
-    switch (status) {
-      case 'Pending': return 'warning';
-      case 'Accepted': return 'success';
-      case 'Preparing': return 'primary';
-      case 'OutForDelivery': return 'secondary';
-      case 'Delivered': return 'medium';
-      default: return 'dark';
-    }
+    return this.orderService.getStatusColor(status);
+  }
+
+  // Analytics Helpers
+  get todaysEarnings(): number {
+    return 0;
   }
 }

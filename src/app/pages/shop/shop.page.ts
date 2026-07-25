@@ -42,6 +42,10 @@ export class ShopPage implements OnInit {
     return icons[category] || 'restaurant-outline';
   }
 
+  getMealCalories(meal: Meal): number {
+    return this.mealService.getMealCalories(meal);
+  }
+
   getNextDeliveryText(sub: Subscription | null): string {
     if (!sub) return '';
     if (sub.status === 'Paused') {

@@ -110,36 +110,17 @@ export class MyOrdersPage implements OnInit {
   }
 
   // -------------------------
-
+  // UI Formatters delegated to shared service
   getStatusIcon(status: string): string {
-    switch (status) {
-      case 'Pending': return 'time-outline';
-      case 'Accepted': return 'checkmark-circle-outline';
-      case 'Preparing': return 'flame-outline';
-      case 'OutForDelivery': return 'bicycle-outline';
-      case 'Delivered': return 'checkmark-done-circle-outline';
-      case 'Rejected': return 'close-circle-outline';
-      default: return 'ellipse-outline';
-    }
+    return this.orderService.getStatusIcon(status);
   }
 
   getStatusLabel(status: string): string {
-    switch (status) {
-      case 'OutForDelivery': return 'On the way';
-      case 'Pending': return 'Waiting';
-      default: return status;
-    }
+    return this.orderService.getStatusLabel(status);
   }
 
   getOrderImage(order: Order, index: number): string {
-    const images = [
-      'assets/onboarding/dal_makhani.png',
-      'assets/onboarding/paneer_tikka.png',
-      'assets/onboarding/veg_pulao.png',
-      'assets/onboarding/healthy_salad.png',
-      'assets/onboarding/dal_chawal.png'
-    ];
-    return images[index % images.length];
+    return this.orderService.getMealFallbackImage(index);
   }
 
   onOrderClick(order: Order) {

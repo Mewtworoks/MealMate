@@ -94,7 +94,18 @@ export class CustomMealPage implements OnInit {
       return;
     }
 
-    const userId = this.auth.userId || '11111111-1111-1111-1111-111111111111';
+    const userId = this.auth.userId;
+    if (!userId) {
+      const toast = await this.toastCtrl.create({
+        message: 'You must be logged in to request a custom meal',
+        duration: 2000,
+        color: 'warning'
+      });
+      toast.present();
+      this.router.navigate(['/login']);
+      return;
+    }
+
     const orderPayload = {
       customerId: userId,
       agentId: this.selectedAgentId,

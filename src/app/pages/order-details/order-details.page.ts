@@ -47,13 +47,6 @@ export class OrderDetailsPage implements OnInit {
 
   // Get item image
   getItemImage(index: number): string {
-    const images = [
-      'assets/onboarding/dal_makhani.png',
-      'assets/onboarding/paneer_tikka.png',
-      'assets/onboarding/veg_pulao.png',
-      'assets/onboarding/healthy_salad.png',
-      'assets/onboarding/dal_chawal.png'
-    ];
-    return images[index % images.length];
+    return this.orderService.getMealFallbackImage(index);
   }
 }

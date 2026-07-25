@@ -49,7 +49,7 @@
       --background: rgba(255, 255, 255, 0.8);
       --border-radius: 14px;
       --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-      --color: #FF7235;
+      --color: var(--mm-primary);
       margin: 0;
       height: 48px;
       width: 48px;
@@ -172,7 +172,7 @@
     .ai-help-btn {
       background: white;
       border: 1px solid #FFEDD5;
-      color: #FF7235;
+      color: var(--mm-primary);
       font-size: 0.65rem;
       font-weight: 800;
       display: flex;
@@ -211,7 +211,7 @@
     }
 
     &:focus-within {
-      border-color: #FF7235;
+      border-color: var(--mm-primary);
     }
 
     &.textarea-box {
@@ -261,7 +261,7 @@
     &.veg-pill {
       .veg-dot { background: #4CAF50; box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2); }
       &.selected {
-        border-color: #FF7235;
+        border-color: var(--mm-primary);
         color: #4CAF50;
       }
     }
@@ -269,7 +269,7 @@
     &.non-veg-pill {
       .non-veg-dot { background: #F44336; box-shadow: 0 0 0 2px rgba(244, 67, 54, 0.2); }
       &.selected {
-        border-color: #FF7235;
+        border-color: var(--mm-primary);
         color: #483129;
       }
     }
@@ -318,7 +318,7 @@
         border-radius: 50%;
         width: 24px; height: 24px;
         display: flex; align-items: center; justify-content: center;
-        color: #FF7235;
+        color: var(--mm-primary);
         font-size: 1.4rem;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       }
@@ -330,7 +330,7 @@
         border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
         font-weight: 900;
-        color: #FF7235;
+        color: var(--mm-primary);
         font-size: 1.4rem;
         margin-bottom: 12px;
       }
@@ -366,13 +366,13 @@
         display: flex; align-items: center; gap: 4px;
         white-space: nowrap;
 
-        &.top-rated { background: #FFF5EE; color: #FF7235; }
+        &.top-rated { background: #FFF5EE; color: var(--mm-primary); }
         &.hygienic { background: #E8F5E9; color: #4CAF50; }
         &.homestyle { background: #FFEbee; color: #F44336; }
       }
 
       &.selected {
-        border-color: #FF7235;
+        border-color: var(--mm-primary);
       }
     }
   }
@@ -400,7 +400,7 @@
   .est-amount {
     font-size: 1.6rem;
     font-weight: 900;
-    color: #FF7235;
+    color: var(--mm-primary);
   }
 
   .est-amount-loading {
@@ -438,7 +438,7 @@
       .icon-circle {
         width: 36px; height: 36px;
         background: #FFF5EE;
-        color: #FF7235;
+        color: var(--mm-primary);
         border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
         font-size: 1.1rem;

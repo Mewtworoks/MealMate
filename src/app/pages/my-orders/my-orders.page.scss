@@ -49,7 +49,7 @@
       --background: rgba(255, 255, 255, 0.8);
       --border-radius: 14px;
       --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-      --color: #FF7235;
+      --color: var(--mm-primary);
       margin: 0;
       height: 48px;
       width: 48px;
@@ -99,7 +99,7 @@
           right: 6px;
           width: 10px;
           height: 10px;
-          background: #FF7235;
+          background: var(--mm-primary);
           border-radius: 50%;
           border: 2px solid #FFE5D0;
         }
@@ -147,7 +147,7 @@
       }
 
       .t-badge {
-        background: #FF7235;
+        background: var(--mm-primary);
         color: white;
         font-size: 0.6rem;
         font-weight: 800;
@@ -160,10 +160,10 @@
       }
 
       &.active {
-        color: #FF7235;
+        color: var(--mm-primary);
         background: white;
         border: 1px solid rgba(255, 114, 53, 0.15);
-        border-bottom: 2px solid #FF7235;
+        border-bottom: 2px solid var(--mm-primary);
         box-shadow: 0 4px 12px rgba(255, 114, 53, 0.08);
       }
     }
@@ -213,7 +213,7 @@
       &.orange-circle {
         margin-left: 12px;
         background: #FFF5EE;
-        color: #FF7235;
+        color: var(--mm-primary);
       }
 
       &.blue-circle {
@@ -243,7 +243,7 @@
       margin-bottom: 6px;
 
       &.status-orange {
-        color: #FF7235;
+        color: var(--mm-primary);
       }
 
       &.status-blue {
@@ -273,14 +273,14 @@
     }
 
     .arrow-icon {
-      color: #FF7235;
+      color: var(--mm-primary);
       font-size: 1.1rem;
       margin-top: 14px;
     }
   }
 
   &.live-card {
-    border: 1.5px solid #FF7235;
+    border: 1.5px solid var(--mm-primary);
     padding-top: 40px; /* Make room for absolute banner */
 
     .live-banner {
@@ -288,7 +288,7 @@
       top: 0;
       left: 0;
       right: 0;
-      background: #FF7235;
+      background: var(--mm-primary);
       color: white;
       font-size: 0.7rem;
       font-weight: 800;
@@ -407,7 +407,7 @@
     .oc2-bottom {
       .oc2-details-btn {
         background: transparent;
-        color: #FF7235;
+        color: var(--mm-primary);
         border: 1px solid rgba(255, 114, 53, 0.25);
         border-radius: 12px;
         padding: 5px 12px;
@@ -420,13 +420,13 @@
       position: absolute;
       right: 0;
       bottom: 12px;
-      color: #FF7235;
+      color: var(--mm-primary);
       font-size: 1.1rem;
     }
   }
 
   &.live-card {
-    border: 1.5px solid #FF7235;
+    border: 1.5px solid var(--mm-primary);
     padding-top: 40px; /* Make room for absolute banner */
 
     .live-banner {
@@ -434,7 +434,7 @@
       top: 0;
       left: 0;
       right: 0;
-      background: #FF7235;
+      background: var(--mm-primary);
       color: white;
       font-size: 0.7rem;
       font-weight: 800;
@@ -493,7 +493,7 @@
   }
 
   .shop-btn {
-    --background: #FF7235;
+    --background: var(--mm-primary);
     --border-radius: 14px;
     --box-shadow: 0 8px 20px rgba(255, 114, 53, 0.25);
     font-weight: 700;
@@ -522,7 +522,7 @@
       gap: 8px;
 
       ion-icon {
-        color: #FF7235;
+        color: var(--mm-primary);
         font-size: 1.1rem;
       }
 
@@ -581,7 +581,7 @@
         font-weight: 700;
 
         &.highlight {
-          color: #FF7235;
+          color: var(--mm-primary);
           font-weight: 800;
 
           small {

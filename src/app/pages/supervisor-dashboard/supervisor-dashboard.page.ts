@@ -104,12 +104,7 @@ export class SupervisorDashboardPage implements OnInit {
   }
 
   getOrderStatusColor(status: string): string {
-    switch (status) {
-      case 'Delivered': return 'success';
-      case 'Shipped': return 'primary';
-      case 'Pending': return 'warning';
-      default: return 'medium';
-    }
+    return this.orderService.getStatusColor(status);
   }
 
   getBarColor(index: number): string {

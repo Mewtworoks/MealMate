@@ -741,7 +741,7 @@
         }
 
         &.orange {
-          background: linear-gradient(135deg, #FFA26B 0%, #FF7235 100%);
+          background: linear-gradient(135deg, #FFA26B 0%, var(--mm-primary) 100%);
           color: white;
         }
         &.blue {
@@ -784,7 +784,7 @@
 
       .row-pill-btn {
         background: #FFE9DF;
-        color: #FF7235;
+        color: var(--mm-primary);
         border: none;
         border-radius: 12px;
         font-size: 0.72rem;
@@ -828,7 +828,7 @@
 
       &.cancel-row {
         background: #FFF5F5;
-        border-color: #FFE2E2;
+        border-color: var(--mm-primary);
       }
 
       &.help-row {
@@ -845,8 +845,8 @@
 
       .chat-support-btn {
         background: transparent;
-        color: #FF7235;
-        border: 1.5px solid #FF7235;
+        color: var(--mm-primary);
+        border: 1.5px solid var(--mm-primary);
         border-radius: 20px;
         font-size: 0.72rem;
         font-weight: 700;
@@ -1001,7 +1001,7 @@
           height: 32px;
           border-radius: 50%;
           background: #FFEBE0;
-          color: #FF7235;
+          color: var(--mm-primary);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -1037,7 +1037,7 @@
       gap: 8px;
 
       .shield-icon-circle {
-        color: #FF7235;
+        color: var(--mm-primary);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1082,8 +1082,8 @@
 
     .keep-plan-btn {
       background: #FFFFFF;
-      color: #FF7235;
-      border: 1.5px solid #FF7235;
+      color: var(--mm-primary);
+      border: 1.5px solid var(--mm-primary);
 
       &:active {
         background: rgba(255, 114, 53, 0.05);
@@ -1091,7 +1091,7 @@
     }
 
     .confirm-cancel-btn {
-      background: #FF7235;
+      background: var(--mm-primary);
       color: white;
       border: none;
       box-shadow: 0 6px 16px rgba(255, 114, 53, 0.25);
@@ -1111,7 +1111,7 @@
 
     ion-icon {
       font-size: 0.85rem;
-      color: #FF7235;
+      color: var(--mm-primary);
     }
 
     span {
@@ -1223,7 +1223,7 @@
 
       .plan-name-badge {
         background: #FFE9DF;
-        color: #FF7235;
+        color: var(--mm-primary);
         font-size: 0.72rem;
         font-weight: 800;
         padding: 4px 10px;
@@ -1240,7 +1240,7 @@
         .price-val {
           font-size: 1.6rem;
           font-weight: 900;
-          color: #FF7235;
+          color: var(--mm-primary);
         }
 
         .price-per-day {
@@ -1293,7 +1293,7 @@
 
           ion-icon {
             font-size: 0.85rem;
-            color: #FF7235;
+            color: var(--mm-primary);
           }
 
           span {
@@ -1329,8 +1329,8 @@
 
     .keep-plan-btn {
       background: #FFFFFF;
-      color: #FF7235;
-      border: 1.5px solid #FF7235;
+      color: var(--mm-primary);
+      border: 1.5px solid var(--mm-primary);
 
       &:active {
         background: rgba(255, 114, 53, 0.05);
@@ -1338,7 +1338,7 @@
     }
 
     .confirm-cancel-btn {
-      background: #FF7235;
+      background: var(--mm-primary);
       color: white;
       border: none;
       box-shadow: 0 6px 16px rgba(255, 114, 53, 0.25);
@@ -1358,7 +1358,7 @@
 
     ion-icon {
       font-size: 0.85rem;
-      color: #FF7235;
+      color: var(--mm-primary);
     }
 
     span {

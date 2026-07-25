@@ -13,14 +13,14 @@
   border-radius: 16px;
   font-size: 0.75rem;
   font-weight: 800;
-  color: #FF7235;
+  color: var(--mm-primary);
   letter-spacing: 0.5px;
   border: 1px solid #FFE5D0;
   margin-right: 4px;
 
   .dot {
     width: 6px; height: 6px;
-    background: #FF7235;
+    background: var(--mm-primary);
     border-radius: 50%;
     animation: pulse 1.5s ease-in-out infinite;
   }
@@ -59,7 +59,7 @@
     border: 1px solid rgba(0,0,0,0.05);
 
     ion-icon {
-      color: #FF7235;
+      color: var(--mm-primary);
       font-size: 1.3rem;
     }
   }
@@ -135,7 +135,7 @@
         font-weight: 800;
         color: #483129;
 
-        ion-icon { color: #FF7235; font-size: 1.1rem; }
+        ion-icon { color: var(--mm-primary); font-size: 1.1rem; }
       }
     }
   }
@@ -154,7 +154,7 @@
       .progress-fill {
         position: absolute;
         top: 0; left: 0; height: 100%;
-        background: #FF7235;
+        background: var(--mm-primary);
         border-radius: 2px;
         z-index: 1;
         transition: width 1s ease;
@@ -196,8 +196,8 @@
 
           /* States */
           &.active-point {
-            .point-node { background: #FF7235; border: 4px solid white; box-shadow: 0 0 0 2px #FF7235; width: 20px; height: 20px; }
-            .p-title { color: #FF7235; }
+            .point-node { background: var(--mm-primary); border: 4px solid white; box-shadow: 0 0 0 2px var(--mm-primary); width: 20px; height: 20px; }
+            .p-title { color: var(--mm-primary); }
           }
 
           &.current-point {
@@ -237,7 +237,7 @@
         border-radius: 14px;
         display: flex; align-items: center; justify-content: center;
         font-weight: 900;
-        color: #FF7235;
+        color: var(--mm-primary);
         font-size: 1.4rem;
       }
 
@@ -286,7 +286,7 @@
         width: 38px; height: 38px;
         border-radius: 10px;
         background: #FFF5EE;
-        color: #FF7235;
+        color: var(--mm-primary);
         display: flex; align-items: center; justify-content: center;
         font-size: 1.2rem;
         border: 1px solid rgba(255, 114, 53, 0.1);
@@ -297,7 +297,7 @@
     .right-wrap {
       display: flex; align-items: center; gap: 10px;
       .val { font-size: 0.85rem; color: #483129; font-weight: 800; }
-      .copy-icon { color: #FF7235; font-size: 1.2rem; cursor: pointer; }
+      .copy-icon { color: var(--mm-primary); font-size: 1.2rem; cursor: pointer; }
     }
   }
 
@@ -316,7 +316,7 @@
       .hs-icon {
         width: 40px; height: 40px;
         background: white; border-radius: 50%;
-        color: #FF7235; display: flex; align-items: center; justify-content: center;
+        color: var(--mm-primary); display: flex; align-items: center; justify-content: center;
         font-size: 1.3rem; box-shadow: 0 4px 10px rgba(255, 114, 53, 0.1);
       }
 
@@ -328,7 +328,7 @@
 
     .support-btn {
       background: white;
-      color: #FF7235;
+      color: var(--mm-primary);
       border: 1px solid rgba(255,114,53, 0.3);
       padding: 8px 12px;
       border-radius: 10px;
