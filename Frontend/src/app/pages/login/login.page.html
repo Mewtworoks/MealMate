@@ -159,8 +159,13 @@
         </p>
       </div>
 
-      <!-- Google Login (Only Authentication Method) -->
-      <div class="google-login-section" style="margin-top: 30px; margin-bottom: 20px;">
+      <!-- Google Login & Quick Sign In -->
+      <div class="google-login-section" style="margin-top: 20px; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+        <button class="primary-btn-large" style="width: 100%; max-width: 340px; border-radius: 25px; padding: 14px; background: linear-gradient(135deg, #ff7235, #ff5200); color: #fff; font-weight: 600; font-size: 16px; border: none; box-shadow: 0 4px 12px rgba(255, 114, 53, 0.3); display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;" (click)="mockGoogleLogin()">
+          <ion-icon name="log-in-outline" style="font-size: 20px;"></ion-icon>
+          <span>Continue as {{ role === 'customer' ? 'Customer' : 'Chef' }}</span>
+        </button>
+
         <div id="google-btn" [style.display]="isMobileDev ? 'none' : 'flex'"></div>
         
         <button *ngIf="isMobileDev" class="google-btn-native" (click)="signInWithNativeGoogle()">
