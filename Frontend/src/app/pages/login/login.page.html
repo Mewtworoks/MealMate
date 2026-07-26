@@ -159,30 +159,22 @@
         </p>
       </div>
 
-      <!-- Google Login & Quick Sign In -->
-      <div class="google-login-section" style="margin-top: 20px; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; gap: 12px;">
-        <button class="primary-btn-large" style="width: 100%; max-width: 340px; border-radius: 25px; padding: 14px; background: linear-gradient(135deg, #ff7235, #ff5200); color: #fff; font-weight: 600; font-size: 16px; border: none; box-shadow: 0 4px 12px rgba(255, 114, 53, 0.3); display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;" (click)="mockGoogleLogin()">
-          <ion-icon name="log-in-outline" style="font-size: 20px;"></ion-icon>
-          <span>Continue as {{ role === 'customer' ? 'Customer' : 'Chef' }}</span>
+      <!-- Email Login / Signup Buttons -->
+      <div class="google-login-section" style="margin-top: 20px; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%;">
+        <button class="primary-btn-large" style="width: 100%; max-width: 340px; border-radius: 25px; padding: 14px; background: linear-gradient(135deg, #ff7235, #ff5200); color: #fff; font-weight: 600; font-size: 16px; border: none; box-shadow: 0 4px 12px rgba(255, 114, 53, 0.3); display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;" (click)="goToStep(3)">
+          <ion-icon name="mail-outline" style="font-size: 20px;"></ion-icon>
+          <span>Continue with Email</span>
         </button>
 
-        <div id="google-btn" [style.display]="isMobileDev ? 'none' : 'flex'"></div>
-        
-        <button *ngIf="isMobileDev" class="google-btn-native" (click)="signInWithNativeGoogle()">
-          <svg class="google-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-          </svg>
-          <span>Continue with Google</span>
+        <button class="secondary-btn" style="width: 100%; max-width: 340px; border-radius: 25px; padding: 12px; background: rgba(0,0,0,0.04); color: #333; font-weight: 500; font-size: 14px; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;" (click)="mockGoogleLogin()">
+          <span>Instant Demo Entrance ({{ role === 'customer' ? 'Customer' : 'Chef' }})</span>
         </button>
       </div>
     </div>
   </div>
 
 
-  <!-- STEP 3: SIGN IN -->
+  <!-- STEP 3: SIGN IN / SIGN UP WITH EMAIL -->
   <div class="step-container step-3" *ngIf="currentStep === 3">
     <!-- Top Nav -->
     <div class="top-nav animate-down">
@@ -193,53 +185,59 @@
     </div>
 
     <div class="content-body animate-fade" style="padding-top: 20px; flex: 1;">
-      <div class="header-text" style="text-align: center; margin-bottom: 40px;">
-        <h1 class="main-title" style="color: var(--dark-text);">Welcome back!</h1>
-        <p class="desc-text">Sign in to continue</p>
-      </div>
-
-      <!-- Social Logins -->
-      <div class="social-logins">
-        <button class="social-circle" (click)="signInWithNativeGoogle()">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-        </button>
-        <button class="social-circle">
-          <ion-icon name="logo-facebook" style="color: #1877F2;"></ion-icon>
-        </button>
-        <button class="social-circle">
-          <ion-icon name="logo-apple" style="color: #000;"></ion-icon>
-        </button>
-      </div>
-
-      <!-- Divider -->
-      <div class="divider" style="margin: 30px 0;">
-        <span>OR</span>
+      <div class="header-text" style="text-align: center; margin-bottom: 25px;">
+        <h1 class="main-title" style="color: var(--dark-text); font-size: 24px; font-weight: 700; margin-bottom: 6px;">
+          {{ isSignUpMode ? 'Create Account' : 'Welcome back!' }}
+        </h1>
+        <p class="desc-text">
+          {{ isSignUpMode ? 'Sign up as ' + (role === 'customer' ? 'Customer' : 'Chef') : 'Sign in to continue as ' + (role === 'customer' ? 'Customer' : 'Chef') }}
+        </p>
       </div>
 
       <!-- Form Inputs -->
       <div class="form-group">
-        <div class="input-item">
+        <!-- Full Name (Only when signing up) -->
+        <div class="input-item" *ngIf="isSignUpMode" style="margin-bottom: 12px;">
+          <ion-icon name="person-outline" class="input-icon"></ion-icon>
+          <input type="text" [(ngModel)]="fullNameInput" placeholder="Full Name" class="custom-input">
+        </div>
+
+        <!-- Email -->
+        <div class="input-item" style="margin-bottom: 12px;">
           <ion-icon name="mail-outline" class="input-icon"></ion-icon>
-          <input type="text" placeholder="Email or Phone number" class="custom-input">
+          <input type="email" [(ngModel)]="emailInput" placeholder="Email address (e.g. user@gmail.com)" class="custom-input">
         </div>
         
-        <div class="input-item">
+        <!-- Phone (Only when signing up) -->
+        <div class="input-item" *ngIf="isSignUpMode" style="margin-bottom: 12px;">
+          <ion-icon name="call-outline" class="input-icon"></ion-icon>
+          <input type="tel" [(ngModel)]="phoneInput" placeholder="Phone Number (Optional)" class="custom-input">
+        </div>
+
+        <!-- Password -->
+        <div class="input-item" style="margin-bottom: 12px;">
           <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
-          <input type="password" placeholder="Password" class="custom-input">
-          <ion-icon name="eye-off-outline" class="action-icon"></ion-icon>
+          <input type="password" [(ngModel)]="passwordInput" placeholder="Password" class="custom-input">
         </div>
       </div>
 
-      <div class="forgot-pwd">
-        <button>Forgot password?</button>
+      <div class="forgot-pwd" *ngIf="!isSignUpMode" style="margin-bottom: 15px; text-align: right;">
+        <button style="background: none; border: none; color: #ff7235; font-size: 13px; font-weight: 500; cursor: pointer;">Forgot password?</button>
       </div>
 
-      <button class="primary-btn-large" (click)="mockGoogleLogin()">
-        Sign In
+      <!-- Submit Button -->
+      <button class="primary-btn-large" style="width: 100%; border-radius: 25px; padding: 14px; background: linear-gradient(135deg, #ff7235, #ff5200); color: #fff; font-weight: 600; font-size: 16px; border: none; box-shadow: 0 4px 12px rgba(255, 114, 53, 0.3); margin-top: 10px; cursor: pointer;" (click)="onSubmitEmailAuth()">
+        {{ isSignUpMode ? 'Create Account' : 'Sign In' }}
       </button>
 
-      <div class="signup-prompt">
-        <p>Don't have an account? <span class="highlight">Sign up</span></p>
+      <!-- Toggle Sign In / Sign Up -->
+      <div class="signup-prompt" style="margin-top: 25px; text-align: center;">
+        <p style="font-size: 14px; color: #666;" *ngIf="!isSignUpMode">
+          Don't have an account? <span class="highlight" style="color: #ff7235; font-weight: 600; cursor: pointer;" (click)="toggleAuthMode()">Sign up</span>
+        </p>
+        <p style="font-size: 14px; color: #666;" *ngIf="isSignUpMode">
+          Already have an account? <span class="highlight" style="color: #ff7235; font-weight: 600; cursor: pointer;" (click)="toggleAuthMode()">Sign in</span>
+        </p>
       </div>
     </div>
 

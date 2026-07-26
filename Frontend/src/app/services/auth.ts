@@ -13,6 +13,48 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
+  async loginWithEmail(email: string, password: string, role: 'customer' | 'agent'): Promise<any> {
+    const payload = { email, password, role };
+    const res: any = await firstValueFrom(
+      this.http.post(`${environment.apiUrl}/auth/login`, payload)
+    );
+
+    if (res.success && res.user) {
+      this.saveUserSession(res.user, role);
+      return res.user;
+    }
+    return res;
+  }
+
+  async register(fullName: string, email: string, password: string, phoneNumber: string, role: 'customer' | 'agent'): Promise<any> {
+    const payload = { fullName, email, password, phoneNumber, role };
+    const res: any = await firstValueFrom(
+      this.http.post(`${environment.apiUrl}/auth/register`, payload)
+    );
+
+    if (res.success && res.user) {
+      this.saveUserSession(res.user, role);
+      return res.user;
+    }
+    return res;
+  }
+
+  private saveUserSession(userData: any, role: 'customer' | 'agent') {
+    const userId = userData.id || userData.Id;
+    this._userId = userId;
+    this._userRole = role;
+    this._isAuthenticated = true;
+
+    localStorage.setItem('mealmate_user_id', userId);
+    localStorage.setItem('mealmate_role', role);
+
+    const email = userData.email || userData.Email || 'user@mealmate.com';
+    localStorage.setItem('mealmate_useremail', email);
+
+    const name = userData.fullName || userData.FullName || email.split('@')[0];
+    localStorage.setItem('mealmate_username', name);
+  }
+
   async loginWithGoogle(idToken: string, role: 'customer' | 'agent'): Promise<any> {
     const payload = {
       idToken,
@@ -24,31 +66,8 @@ export class AuthService {
     );
 
     const userData = res.user;
-    const userId = userData ? (userData.id || userData.Id) : null;
-
-    if (res.success && userId) {
-      this._userId = userId;
-      this._userRole = role;
-      this._isAuthenticated = true;
-
-      localStorage.setItem('mealmate_user_id', userId);
-      localStorage.setItem('mealmate_role', role);
-      
-      const parsedName = userData?.fullName || userData?.FullName || userData?.name;
-      if (parsedName) {
-        localStorage.setItem('mealmate_username', parsedName);
-      } else {
-        // Fallback for demo
-        localStorage.setItem('mealmate_username', 'Foodie');
-      }
-
-      const parsedEmail = userData?.email || userData?.Email;
-      if (parsedEmail) {
-        localStorage.setItem('mealmate_useremail', parsedEmail);
-      } else {
-        localStorage.setItem('mealmate_useremail', 'hello@mealmate.com');
-      }
-
+    if (res.success && userData) {
+      this.saveUserSession(userData, role);
       return res.user;
     }
 

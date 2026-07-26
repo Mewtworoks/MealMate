@@ -21,6 +21,12 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   private googleRetries = 0;
   private deviceReady = false; 
 
+  isSignUpMode: boolean = false;
+  emailInput: string = '';
+  passwordInput: string = '';
+  fullNameInput: string = '';
+  phoneInput: string = '';
+
   currentStep: number = 1;
 
   currentMealIndex = 0;
@@ -176,6 +182,60 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
 
   toggleRole() {
     this.role = this.role === 'customer' ? 'agent' : 'customer';
+  }
+
+  toggleAuthMode() {
+    this.isSignUpMode = !this.isSignUpMode;
+  }
+
+  async onSubmitEmailAuth() {
+    if (!this.emailInput || !this.emailInput.includes('@')) {
+      this.showToast('Please enter a valid email address', 'warning');
+      return;
+    }
+
+    const loading = await this.loadingCtrl.create({
+      message: this.isSignUpMode ? 'Creating your account...' : 'Signing in...',
+      spinner: 'circles'
+    });
+    await loading.present();
+
+    try {
+      let user: any;
+      if (this.isSignUpMode) {
+        user = await this.auth.register(
+          this.fullNameInput || this.emailInput.split('@')[0],
+          this.emailInput,
+          this.passwordInput || 'password123',
+          this.phoneInput || '',
+          this.role
+        );
+      } else {
+        user = await this.auth.loginWithEmail(
+          this.emailInput,
+          this.passwordInput || 'password123',
+          this.role
+        );
+      }
+
+      await loading.dismiss();
+
+      if (user) {
+        this.showToast(this.isSignUpMode ? 'Account created successfully!' : 'Welcome back!', 'success');
+        const userRole = (user.role || user.Role || this.role || '').toLowerCase();
+        if (userRole === 'customer') {
+          await this.router.navigateByUrl('/customer-home', { replaceUrl: true });
+        } else {
+          await this.router.navigateByUrl('/agent-home', { replaceUrl: true });
+        }
+      } else {
+        this.showToast('Authentication failed. Please try again.', 'danger');
+      }
+    } catch (error) {
+      await loading.dismiss();
+      console.error('Email Auth Error:', error);
+      this.showToast('Error connecting to backend server.', 'danger');
+    }
   }
 
   async handleGoogleLogin(response: any) {
