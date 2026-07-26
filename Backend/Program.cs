@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
 
 // Add services to the container.
 builder.Services.AddControllers()

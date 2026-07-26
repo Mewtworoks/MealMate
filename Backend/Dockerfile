@@ -18,5 +18,7 @@ COPY --from=build /app .
 # Expose the port the app runs on
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
+ENV PORT=8080
+ENV DOTNET_USE_POLLING_FILE_WATCHER=false
 
 ENTRYPOINT ["dotnet", "MealMate.Api.dll"]
