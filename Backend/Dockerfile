@@ -2,20 +2,21 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /source
 
-# Copy csproj and restore dependencies
-COPY *.csproj .
-RUN dotnet restore
-
-# Copy everything else and build
+# Copy all files
 COPY . .
-RUN dotnet publish -c Release -o /app
+
+# Detect project path dynamically & restore/publish
+RUN if [ -f "MealMate.Api.csproj" ]; then \
+        dotnet restore "MealMate.Api.csproj" && dotnet publish "MealMate.Api.csproj" -c Release -o /app; \
+    else \
+        dotnet restore "Backend/MealMate.Api.csproj" && dotnet publish "Backend/MealMate.Api.csproj" -c Release -o /app; \
+    fi
 
 # Runtime Stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 COPY --from=build /app .
 
-# Expose the port the app runs on
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
 ENV PORT=8080
