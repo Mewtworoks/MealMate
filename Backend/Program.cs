@@ -40,14 +40,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("IonicPolicy", policy =>
     {
-        policy.WithOrigins(
-                "http://localhost:8100",       // Ionic dev server
-                "http://localhost",             // Cordova Android webview
-                "https://localhost",            // Cordova Android HTTPS
-                "capacitor://localhost",        // Capacitor
-                "ionic://localhost",            // Ionic webview
-                "file://"                       // File-based webview (older Cordova)
-              )
+        policy.SetIsOriginAllowed(origin => true)
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
