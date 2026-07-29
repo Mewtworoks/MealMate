@@ -19,13 +19,7 @@ export class AuthService {
     const key = environment.clerkPublishableKey;
     if (key && key.startsWith('pk_test_') && !key.includes('clean-mudfish-62')) {
       try {
-        let clerkRes = await this.clerkAuth.signInWithEmailAndPassword(email, password);
-
-        // Auto account creation fallback if email not found in Clerk yet!
-        if (clerkRes.notFound) {
-          console.log('User email not found in Clerk. Automatically creating user account...');
-          clerkRes = await this.clerkAuth.signUpWithEmailAndPassword(email, password);
-        }
+        const clerkRes = await this.clerkAuth.signInWithEmailAndPassword(email, password);
 
         if (clerkRes.success && clerkRes.user) {
           const u = clerkRes.user;
@@ -38,6 +32,8 @@ export class AuthService {
           };
           this.saveUserSession(userData, role);
           return userData;
+        } else if (clerkRes.notFound) {
+          return { success: false, message: 'Account not found. Please click "Sign Up" to create an account!' };
         } else if (clerkRes.message) {
           return { success: false, message: clerkRes.message };
         }
@@ -51,7 +47,7 @@ export class AuthService {
       const res: any = await firstValueFrom(
         this.http.post(`${environment.apiUrl}/auth/login`, payload).pipe(
           timeout(8000),
-          catchError(() => of({ success: false, isTimeout: true }))
+          catchError(() => of({ success: false, message: 'Server connection timeout.' }))
         )
       );
 
@@ -59,30 +55,11 @@ export class AuthService {
         this.saveUserSession(res.user, role);
         return res.user;
       }
-      
-      if (res.isTimeout) {
-        console.warn('Backend cold start / timeout detected. Generating local session...');
-        const localUser = {
-          id: 'user_' + Date.now(),
-          email: email,
-          fullName: email.split('@')[0],
-          role: role
-        };
-        this.saveUserSession(localUser, role);
-        return localUser;
-      }
 
       return res;
-    } catch (err) {
-      console.warn('Backend login fallback to local session:', err);
-      const localUser = {
-        id: 'user_' + Date.now(),
-        email: email,
-        fullName: email.split('@')[0],
-        role: role
-      };
-      this.saveUserSession(localUser, role);
-      return localUser;
+    } catch (err: any) {
+      console.warn('Backend login note:', err);
+      return { success: false, message: 'Invalid email or password. Please check your credentials.' };
     }
   }
 
@@ -90,13 +67,7 @@ export class AuthService {
     const key = environment.clerkPublishableKey;
     if (key && key.startsWith('pk_test_') && !key.includes('clean-mudfish-62')) {
       try {
-        let clerkRes = await this.clerkAuth.signUpWithEmailAndPassword(email, password, fullName);
-
-        // Auto signin fallback if email already exists in Clerk!
-        if (clerkRes.exists) {
-          console.log('User email already exists in Clerk. Automatically signing in user...');
-          clerkRes = await this.clerkAuth.signInWithEmailAndPassword(email, password);
-        }
+        const clerkRes = await this.clerkAuth.signUpWithEmailAndPassword(email, password, fullName);
 
         if (clerkRes.success && clerkRes.user) {
           const u = clerkRes.user;
@@ -109,6 +80,8 @@ export class AuthService {
           };
           this.saveUserSession(userData, role);
           return userData;
+        } else if (clerkRes.exists) {
+          return { success: false, message: 'An account already exists with this email. Please click "Sign In"!' };
         } else if (clerkRes.message) {
           return { success: false, message: clerkRes.message };
         }
@@ -122,7 +95,7 @@ export class AuthService {
       const res: any = await firstValueFrom(
         this.http.post(`${environment.apiUrl}/auth/register`, payload).pipe(
           timeout(8000),
-          catchError(() => of({ success: false, isTimeout: true }))
+          catchError(() => of({ success: false, message: 'Server connection timeout.' }))
         )
       );
 
@@ -131,24 +104,10 @@ export class AuthService {
         return res.user;
       }
 
-      const localUser = {
-        id: 'user_' + Date.now(),
-        email: email,
-        fullName: fullName || email.split('@')[0],
-        role: role
-      };
-      this.saveUserSession(localUser, role);
-      return localUser;
-    } catch (err) {
-      console.warn('Backend register fallback to local session:', err);
-      const localUser = {
-        id: 'user_' + Date.now(),
-        email: email,
-        fullName: fullName || email.split('@')[0],
-        role: role
-      };
-      this.saveUserSession(localUser, role);
-      return localUser;
+      return res;
+    } catch (err: any) {
+      console.warn('Backend register note:', err);
+      return { success: false, message: 'Account creation failed. Please try again.' };
     }
   }
 
