@@ -29,6 +29,8 @@ export class AuthService {
           };
           this.saveUserSession(userData, role);
           return userData;
+        } else if (clerkRes.message) {
+          return { success: false, message: clerkRes.message };
         }
       } catch (clerkErr: any) {
         console.warn('Clerk auth note:', clerkErr?.message || clerkErr);
@@ -89,6 +91,8 @@ export class AuthService {
           };
           this.saveUserSession(userData, role);
           return userData;
+        } else if (clerkRes.message) {
+          return { success: false, message: clerkRes.message };
         }
       } catch (clerkErr: any) {
         console.warn('Clerk register note:', clerkErr?.message || clerkErr);

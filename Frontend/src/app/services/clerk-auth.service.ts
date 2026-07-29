@@ -26,45 +26,71 @@ export class ClerkAuthService {
   }
 
   async signInWithEmailAndPassword(email: string, password: string): Promise<any> {
-    const clerk = await this.getClerk();
-    const result = await clerk.client.signIn.create({
-      identifier: email,
-      password: password,
-    });
+    try {
+      const clerk = await this.getClerk();
+      const result = await clerk.client.signIn.create({
+        identifier: email,
+        password: password,
+      });
 
-    if (result.status === 'complete') {
-      await clerk.setActive({ session: result.createdSessionId });
+      if (result.status === 'complete') {
+        await clerk.setActive({ session: result.createdSessionId });
+        return {
+          success: true,
+          user: clerk.user,
+          sessionId: result.createdSessionId
+        };
+      }
+      return { success: false, result };
+    } catch (err: any) {
+      console.warn('Clerk SignIn Error:', err);
+      const errors = err?.errors || [];
+      const notFound = errors.some((e: any) => e.code === 'form_identifier_not_found');
       return {
-        success: true,
-        user: clerk.user,
-        sessionId: result.createdSessionId
+        success: false,
+        notFound,
+        message: notFound 
+          ? 'No account found with this email. Click "Create Account" below!' 
+          : (errors[0]?.longMessage || errors[0]?.message || 'Sign in failed. Check your password.')
       };
     }
-    return { success: false, result };
   }
 
   async signUpWithEmailAndPassword(email: string, password: string, fullName?: string): Promise<any> {
-    const clerk = await this.getClerk();
-    const nameParts = (fullName || '').split(' ');
-    const firstName = nameParts[0] || '';
-    const lastName = nameParts.slice(1).join(' ') || '';
+    try {
+      const clerk = await this.getClerk();
+      const nameParts = (fullName || '').split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
 
-    const result = await clerk.client.signUp.create({
-      emailAddress: email,
-      password: password,
-      firstName,
-      lastName,
-    });
+      const result = await clerk.client.signUp.create({
+        emailAddress: email,
+        password: password,
+        firstName,
+        lastName,
+      });
 
-    if (result.status === 'complete') {
-      await clerk.setActive({ session: result.createdSessionId });
+      if (result.status === 'complete') {
+        await clerk.setActive({ session: result.createdSessionId });
+        return {
+          success: true,
+          user: clerk.user,
+          sessionId: result.createdSessionId
+        };
+      }
+      return { success: false, result };
+    } catch (err: any) {
+      console.warn('Clerk SignUp Error:', err);
+      const errors = err?.errors || [];
+      const exists = errors.some((e: any) => e.code === 'form_identifier_exists');
       return {
-        success: true,
-        user: clerk.user,
-        sessionId: result.createdSessionId
+        success: false,
+        exists,
+        message: exists 
+          ? 'An account already exists with this email. Click "Sign In" instead!' 
+          : (errors[0]?.longMessage || errors[0]?.message || 'Account creation failed.')
       };
     }
-    return { success: false, result };
   }
 
   async mountSignInComponent(container: HTMLDivElement) {
