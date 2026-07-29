@@ -4,6 +4,27 @@
   --primary-orange-light: #FFF5F0;
   --dark-text: #2D2422;
   --medium-text: #8E7C76;
+
+  &::part(scroll) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+.desktop-brand-hero {
+  display: none;
+}
+
+.desktop-split-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  flex: 1;
 }
 
 .step-container {
@@ -15,6 +36,162 @@
   margin: 0 auto;
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   DESKTOP & WEB RESPONSIVE OPTIMIZATION (Screens >= 768px)
+   ========================================================================== */
+@media (min-width: 768px) {
+  ion-content.mealmate-login-content {
+    --background: radial-gradient(circle at 10% 20%, rgba(255, 114, 53, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(255, 82, 0, 0.1) 0%, transparent 45%),
+                linear-gradient(135deg, #FFFDFB 0%, #FFF2EA 100%);
+
+    &::part(scroll) {
+      padding: 40px 20px;
+    }
+  }
+
+  .step-container {
+    max-width: 560px;
+    margin: auto;
+    background: #FFFFFF;
+    border-radius: 28px;
+    box-shadow: 0 20px 60px rgba(255, 114, 53, 0.12), 0 8px 30px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 114, 53, 0.15);
+    padding: 12px 20px 30px 20px;
+    min-height: auto;
+    overflow: visible;
+  }
+
+  .step-container.step-3 {
+    max-width: 900px;
+    padding: 24px;
+  }
+
+  .desktop-split-wrapper {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 32px;
+  }
+
+  .desktop-brand-hero {
+    display: flex;
+    flex: 1;
+    background: linear-gradient(135deg, #FF7235 0%, #FF5200 100%);
+    border-radius: 22px;
+    padding: 40px 30px;
+    color: #FFFFFF;
+    box-shadow: 0 12px 30px rgba(255, 114, 53, 0.3);
+
+    .brand-hero-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      .brand-logo {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 16px;
+        filter: drop-shadow(0 4px 10px rgba(0,0,0,0.15));
+      }
+
+      .brand-title {
+        font-size: 2.4rem;
+        font-weight: 800;
+        margin: 0 0 10px 0;
+        letter-spacing: -0.5px;
+        color: #ffffff;
+      }
+
+      .brand-subtitle {
+        font-size: 1.1rem;
+        opacity: 0.95;
+        margin: 0 0 32px 0;
+        line-height: 1.5;
+        color: #ffffff;
+      }
+
+      .brand-features {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+
+        .feature-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-size: 0.98rem;
+          font-weight: 500;
+          color: #ffffff;
+
+          ion-icon {
+            font-size: 1.4rem;
+            color: #FFE5D9;
+            flex-shrink: 0;
+          }
+        }
+      }
+    }
+  }
+
+  .content-body {
+    flex: 1.1;
+    padding: 10px 16px 20px 16px;
+  }
+
+  .onboarding-page {
+    max-width: 520px;
+    margin: auto;
+    border-radius: 28px;
+    box-shadow: 0 20px 60px rgba(255, 114, 53, 0.12);
+    border: 1px solid rgba(255, 114, 53, 0.15);
+    height: 780px;
+  }
+
+  .header-text {
+    margin-bottom: 28px;
+    .main-title {
+      font-size: 2.2rem !important;
+    }
+    .desc-text {
+      font-size: 1.05rem !important;
+    }
+  }
+
+  .form-group .input-item {
+    height: 60px;
+    border-radius: 18px;
+    padding: 0 20px;
+
+    .input-icon {
+      font-size: 1.4rem;
+    }
+
+    .custom-input {
+      font-size: 1.05rem;
+    }
+  }
+
+  .primary-btn-large {
+    height: 58px;
+    font-size: 1.15rem;
+    border-radius: 20px;
+  }
+
+  .role-cards-row {
+    gap: 20px;
+    .role-card {
+      padding: 28px 16px 20px 16px;
+      .card-title {
+        font-size: 1.35rem;
+      }
+      .card-desc {
+        font-size: 0.85rem;
+      }
+    }
+  }
 }
 
 /* ==========================================================================

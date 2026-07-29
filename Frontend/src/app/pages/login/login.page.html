@@ -189,72 +189,99 @@
       <button class="help-btn">Need help?</button>
     </div>
 
-    <div class="content-body animate-fade" style="padding-top: 20px; flex: 1;">
-      <div class="header-text" style="text-align: center; margin-bottom: 25px;">
-        <h1 class="main-title" style="color: var(--dark-text); font-size: 24px; font-weight: 700; margin-bottom: 6px;">
-          {{ isSignUpMode ? 'Create Account' : 'Welcome back!' }}
-        </h1>
-        <p class="desc-text">
-          {{ isSignUpMode ? 'Sign up as ' + (role === 'customer' ? 'Customer' : 'Chef') : 'Sign in to continue as ' + (role === 'customer' ? 'Customer' : 'Chef') }}
-        </p>
-      </div>
+    <div class="desktop-split-wrapper">
+      <!-- Desktop Brand Side Banner (Only visible on desktop/web screens) -->
+      <div class="desktop-brand-hero">
+        <div class="brand-hero-content">
+          <img src="assets/logo/chef_hat.png" class="brand-logo" alt="MealMate" />
+          <h2 class="brand-title">MealMate</h2>
+          <p class="brand-subtitle">Delicious meals delivered right to your doorstep.</p>
 
-      <!-- Form Inputs -->
-      <div class="form-group">
-        <!-- Full Name (Only when signing up) -->
-        <div class="input-item" *ngIf="isSignUpMode" style="margin-bottom: 12px;">
-          <ion-icon name="person-outline" class="input-icon"></ion-icon>
-          <input type="text" [(ngModel)]="fullNameInput" placeholder="Full Name" class="custom-input">
-        </div>
-
-        <!-- Email -->
-        <div class="input-item" style="margin-bottom: 12px;">
-          <ion-icon name="mail-outline" class="input-icon"></ion-icon>
-          <input type="email" [(ngModel)]="emailInput" placeholder="Email address (e.g. user@gmail.com)" class="custom-input">
-        </div>
-        
-        <!-- Phone (Only when signing up) -->
-        <div class="input-item" *ngIf="isSignUpMode" style="margin-bottom: 12px;">
-          <ion-icon name="call-outline" class="input-icon"></ion-icon>
-          <input type="tel" [(ngModel)]="phoneInput" placeholder="Phone Number (Optional)" class="custom-input">
-        </div>
-
-        <!-- Password -->
-        <div class="input-item" style="margin-bottom: 12px; position: relative;">
-          <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
-          <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="passwordInput" placeholder="Password" class="custom-input" style="padding-right: 44px;">
-          <button 
-            type="button"
-            class="eye-toggle-btn"
-            (mousedown)="showPassword = true"
-            (mouseup)="showPassword = false"
-            (mouseleave)="showPassword = false"
-            (touchstart)="showPassword = true"
-            (touchend)="showPassword = false"
-            (click)="showPassword = !showPassword"
-            style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; padding: 6px; cursor: pointer; color: #888; display: flex; align-items: center; justify-content: center; z-index: 10;">
-            <ion-icon [name]="showPassword ? 'eye-outline' : 'eye-off-outline'" style="font-size: 20px; color: #ff7235;"></ion-icon>
-          </button>
+          <div class="brand-features">
+            <div class="feature-item">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+              <span>Verified Home Chefs & Fresh Ingredients</span>
+            </div>
+            <div class="feature-item">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+              <span>Instant Wallet Top-Up & Subscriptions</span>
+            </div>
+            <div class="feature-item">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+              <span>Fast & Safe Doorstep Delivery</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="forgot-pwd" *ngIf="!isSignUpMode" style="margin-bottom: 15px; text-align: right;">
-        <button style="background: none; border: none; color: #ff7235; font-size: 13px; font-weight: 500; cursor: pointer;">Forgot password?</button>
-      </div>
+      <!-- Right Form Section -->
+      <div class="content-body animate-fade">
+        <div class="header-text">
+          <h1 class="main-title">
+            {{ isSignUpMode ? 'Create Account' : 'Welcome back!' }}
+          </h1>
+          <p class="desc-text">
+            {{ isSignUpMode ? 'Sign up as ' + (role === 'customer' ? 'Customer' : 'Chef') : 'Sign in to continue as ' + (role === 'customer' ? 'Customer' : 'Chef') }}
+          </p>
+        </div>
 
-      <!-- Submit Button -->
-      <button class="primary-btn-large" style="width: 100%; border-radius: 25px; padding: 14px; background: linear-gradient(135deg, #ff7235, #ff5200); color: #fff; font-weight: 600; font-size: 16px; border: none; box-shadow: 0 4px 12px rgba(255, 114, 53, 0.3); margin-top: 10px; cursor: pointer;" (click)="onSubmitEmailAuth()">
-        {{ isSignUpMode ? 'Create Account' : 'Sign In' }}
-      </button>
+        <!-- Form Inputs -->
+        <div class="form-group">
+          <!-- Full Name (Only when signing up) -->
+          <div class="input-item" *ngIf="isSignUpMode">
+            <ion-icon name="person-outline" class="input-icon"></ion-icon>
+            <input type="text" [(ngModel)]="fullNameInput" placeholder="Full Name" class="custom-input">
+          </div>
 
-      <!-- Toggle Sign In / Sign Up -->
-      <div class="signup-prompt" style="margin-top: 25px; text-align: center;">
-        <p style="font-size: 14px; color: #666;" *ngIf="!isSignUpMode">
-          Don't have an account? <span class="highlight" style="color: #ff7235; font-weight: 600; cursor: pointer;" (click)="toggleAuthMode()">Sign up</span>
-        </p>
-        <p style="font-size: 14px; color: #666;" *ngIf="isSignUpMode">
-          Already have an account? <span class="highlight" style="color: #ff7235; font-weight: 600; cursor: pointer;" (click)="toggleAuthMode()">Sign in</span>
-        </p>
+          <!-- Email -->
+          <div class="input-item">
+            <ion-icon name="mail-outline" class="input-icon"></ion-icon>
+            <input type="email" [(ngModel)]="emailInput" placeholder="Email address (e.g. user@gmail.com)" class="custom-input">
+          </div>
+          
+          <!-- Phone (Only when signing up) -->
+          <div class="input-item" *ngIf="isSignUpMode">
+            <ion-icon name="call-outline" class="input-icon"></ion-icon>
+            <input type="tel" [(ngModel)]="phoneInput" placeholder="Phone Number (Optional)" class="custom-input">
+          </div>
+
+          <!-- Password -->
+          <div class="input-item" style="position: relative;">
+            <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
+            <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="passwordInput" placeholder="Password" class="custom-input" style="padding-right: 44px;">
+            <button 
+              type="button"
+              class="eye-toggle-btn"
+              (mousedown)="showPassword = true"
+              (mouseup)="showPassword = false"
+              (mouseleave)="showPassword = false"
+              (touchstart)="showPassword = true"
+              (touchend)="showPassword = false"
+              (click)="showPassword = !showPassword"
+              style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; padding: 6px; cursor: pointer; color: #888; display: flex; align-items: center; justify-content: center; z-index: 10;">
+              <ion-icon [name]="showPassword ? 'eye-outline' : 'eye-off-outline'" style="font-size: 20px; color: #ff7235;"></ion-icon>
+            </button>
+          </div>
+        </div>
+
+        <div class="forgot-pwd" *ngIf="!isSignUpMode">
+          <button style="background: none; border: none; color: #ff7235; font-size: 13px; font-weight: 500; cursor: pointer;">Forgot password?</button>
+        </div>
+
+        <!-- Submit Button -->
+        <button class="primary-btn-large" (click)="onSubmitEmailAuth()">
+          {{ isSignUpMode ? 'Create Account' : 'Sign In' }}
+        </button>
+
+        <!-- Toggle Sign In / Sign Up -->
+        <div class="signup-prompt">
+          <p *ngIf="!isSignUpMode">
+            Don't have an account? <span class="highlight" (click)="toggleAuthMode()">Sign up</span>
+          </p>
+          <p *ngIf="isSignUpMode">
+            Already have an account? <span class="highlight" (click)="toggleAuthMode()">Sign in</span>
+          </p>
+        </div>
       </div>
     </div>
 
