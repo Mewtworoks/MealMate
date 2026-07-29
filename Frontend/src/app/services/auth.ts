@@ -19,7 +19,14 @@ export class AuthService {
     const key = environment.clerkPublishableKey;
     if (key && key.startsWith('pk_test_') && !key.includes('clean-mudfish-62')) {
       try {
-        const clerkRes = await this.clerkAuth.signInWithEmailAndPassword(email, password);
+        let clerkRes = await this.clerkAuth.signInWithEmailAndPassword(email, password);
+
+        // Auto account creation fallback if email not found in Clerk yet!
+        if (clerkRes.notFound) {
+          console.log('User email not found in Clerk. Automatically creating user account...');
+          clerkRes = await this.clerkAuth.signUpWithEmailAndPassword(email, password);
+        }
+
         if (clerkRes.success && clerkRes.user) {
           const u = clerkRes.user;
           const userEmail = u.primaryEmailAddress?.emailAddress || email;
@@ -83,7 +90,14 @@ export class AuthService {
     const key = environment.clerkPublishableKey;
     if (key && key.startsWith('pk_test_') && !key.includes('clean-mudfish-62')) {
       try {
-        const clerkRes = await this.clerkAuth.signUpWithEmailAndPassword(email, password, fullName);
+        let clerkRes = await this.clerkAuth.signUpWithEmailAndPassword(email, password, fullName);
+
+        // Auto signin fallback if email already exists in Clerk!
+        if (clerkRes.exists) {
+          console.log('User email already exists in Clerk. Automatically signing in user...');
+          clerkRes = await this.clerkAuth.signInWithEmailAndPassword(email, password);
+        }
+
         if (clerkRes.success && clerkRes.user) {
           const u = clerkRes.user;
           const userEmail = u.primaryEmailAddress?.emailAddress || email;
