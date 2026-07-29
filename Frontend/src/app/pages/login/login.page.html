@@ -160,13 +160,18 @@
       </div>
 
       <!-- Email Login / Signup Buttons -->
-      <div class="google-login-section" style="margin-top: 20px; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%;">
-        <button class="primary-btn-large" style="width: 100%; max-width: 340px; border-radius: 25px; padding: 14px; background: linear-gradient(135deg, #ff7235, #ff5200); color: #fff; font-weight: 600; font-size: 16px; border: none; box-shadow: 0 4px 12px rgba(255, 114, 53, 0.3); display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;" (click)="goToStep(3)">
-          <ion-icon name="mail-outline" style="font-size: 20px;"></ion-icon>
-          <span>Continue with Email</span>
+      <div class="google-login-section" style="margin-top: 15px; margin-bottom: 15px; display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%;">
+        <button class="primary-btn-large" style="width: 100%; max-width: 340px; border-radius: 25px; padding: 14px; background: linear-gradient(135deg, #ff7235, #ff5200); color: #fff; font-weight: 600; font-size: 15px; border: none; box-shadow: 0 4px 12px rgba(255, 114, 53, 0.3); display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;" (click)="openEmailAuth(false)">
+          <ion-icon name="log-in-outline" style="font-size: 20px;"></ion-icon>
+          <span>Sign In (I have an account)</span>
         </button>
 
-        <button class="secondary-btn" style="width: 100%; max-width: 340px; border-radius: 25px; padding: 12px; background: rgba(0,0,0,0.04); color: #333; font-weight: 500; font-size: 14px; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;" (click)="mockGoogleLogin()">
+        <button class="secondary-btn" style="width: 100%; max-width: 340px; border-radius: 25px; padding: 12px; background: rgba(255, 114, 53, 0.1); color: #ff7235; font-weight: 600; font-size: 14px; border: 1px solid rgba(255, 114, 53, 0.3); display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;" (click)="openEmailAuth(true)">
+          <ion-icon name="person-add-outline" style="font-size: 18px;"></ion-icon>
+          <span>Create Account (Sign Up)</span>
+        </button>
+
+        <button class="secondary-btn" style="width: 100%; max-width: 340px; border-radius: 25px; padding: 10px; background: rgba(0,0,0,0.04); color: #555; font-weight: 500; font-size: 13px; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; margin-top: 4px;" (click)="mockGoogleLogin()">
           <span>Instant Demo Entrance ({{ role === 'customer' ? 'Customer' : 'Chef' }})</span>
         </button>
       </div>

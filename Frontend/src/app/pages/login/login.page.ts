@@ -188,6 +188,11 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.isSignUpMode = !this.isSignUpMode;
   }
 
+  openEmailAuth(signUpMode: boolean) {
+    this.isSignUpMode = signUpMode;
+    this.currentStep = 3;
+  }
+
   async onSubmitEmailAuth() {
     if (!this.emailInput || !this.emailInput.includes('@')) {
       this.showToast('Please enter a valid email address', 'warning');
@@ -220,7 +225,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
 
       await loading.dismiss();
 
-      if (user) {
+      if (user && (user.id || user.Id)) {
         this.showToast(this.isSignUpMode ? 'Account created successfully!' : 'Welcome back!', 'success');
         const userRole = (user.role || user.Role || this.role || '').toLowerCase();
         if (userRole === 'customer') {
@@ -229,12 +234,13 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           await this.router.navigateByUrl('/agent-home', { replaceUrl: true });
         }
       } else {
-        this.showToast('Authentication failed. Please try again.', 'danger');
+        const errorMsg = (user && user.message) ? user.message : (this.isSignUpMode ? 'Account creation failed. Please try again.' : 'Invalid email or password. If you don\'t have an account, click Sign Up!');
+        this.showToast(errorMsg, 'warning');
       }
-    } catch (error) {
+    } catch (error: any) {
       await loading.dismiss();
       console.error('Email Auth Error:', error);
-      this.showToast('Error connecting to backend server.', 'danger');
+      this.showToast('Error connecting to backend server. Please try again.', 'danger');
     }
   }
 
