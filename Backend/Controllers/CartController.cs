@@ -17,44 +17,52 @@ namespace MealMate.Api.Controllers
         }
 
         [HttpGet("{userId}")]
-        public async Task<IActionResult> GetCart(Guid userId)
+        public async Task<IActionResult> GetCart(string userId)
         {
-            var items = await _context.CartItems
-                .Include(c => c.Meal)
-                .Where(c => c.CustomerId == userId)
-                .ToListAsync();
-            return Ok(items);
+            if (Guid.TryParse(userId, out var guid))
+            {
+                var items = await _context.CartItems
+                    .Include(c => c.Meal)
+                    .Where(c => c.CustomerId == guid)
+                    .ToListAsync();
+                return Ok(items);
+            }
+            return Ok(new List<object>());
         }
 
         [HttpPost("{userId}/sync")]
-        public async Task<IActionResult> SyncCart(Guid userId, [FromBody] List<CartItemDto> cartDto)
+        public async Task<IActionResult> SyncCart(string userId, [FromBody] List<CartItemDto> cartDto)
         {
-            // Clear existing cart
-            var existingItems = await _context.CartItems.Where(c => c.CustomerId == userId).ToListAsync();
-            _context.CartItems.RemoveRange(existingItems);
-
-            // Add new ones
-            foreach (var item in cartDto)
+            if (Guid.TryParse(userId, out var guid))
             {
-                _context.CartItems.Add(new CartItem
-                {
-                    CustomerId = userId,
-                    MealId = item.MealId,
-                    Quantity = item.Quantity,
-                    Total = item.Total
-                });
-            }
+                var existingItems = await _context.CartItems.Where(c => c.CustomerId == guid).ToListAsync();
+                _context.CartItems.RemoveRange(existingItems);
 
-            await _context.SaveChangesAsync();
+                foreach (var item in cartDto)
+                {
+                    _context.CartItems.Add(new CartItem
+                    {
+                        CustomerId = guid,
+                        MealId = item.MealId,
+                        Quantity = item.Quantity,
+                        Total = item.Total
+                    });
+                }
+
+                await _context.SaveChangesAsync();
+            }
             return Ok(new { success = true });
         }
 
         [HttpDelete("{userId}")]
-        public async Task<IActionResult> ClearCart(Guid userId)
+        public async Task<IActionResult> ClearCart(string userId)
         {
-            var existingItems = await _context.CartItems.Where(c => c.CustomerId == userId).ToListAsync();
-            _context.CartItems.RemoveRange(existingItems);
-            await _context.SaveChangesAsync();
+            if (Guid.TryParse(userId, out var guid))
+            {
+                var existingItems = await _context.CartItems.Where(c => c.CustomerId == guid).ToListAsync();
+                _context.CartItems.RemoveRange(existingItems);
+                await _context.SaveChangesAsync();
+            }
             return Ok(new { success = true });
         }
     }

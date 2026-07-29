@@ -31,17 +31,25 @@ namespace MealMate.Api.Controllers
         }
 
         [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetCustomerOrders(Guid userId)
+        public async Task<IActionResult> GetCustomerOrders(string userId)
         {
-            var orders = await _orderService.GetCustomerOrdersAsync(userId);
-            return Ok(orders);
+            if (Guid.TryParse(userId, out var guid))
+            {
+                var orders = await _orderService.GetCustomerOrdersAsync(guid);
+                return Ok(orders);
+            }
+            return Ok(new List<object>());
         }
 
         [HttpGet("agent-orders/{agentId}")]
-        public async Task<IActionResult> GetAgentOrders(Guid agentId)
+        public async Task<IActionResult> GetAgentOrders(string agentId)
         {
-            var orders = await _orderService.GetAgentOrdersAsync(agentId);
-            return Ok(orders);
+            if (Guid.TryParse(agentId, out var guid))
+            {
+                var orders = await _orderService.GetAgentOrdersAsync(guid);
+                return Ok(orders);
+            }
+            return Ok(new List<object>());
         }
 
         [HttpPatch("{id}/status")]
