@@ -40,22 +40,7 @@ namespace MealMate.Api.Services
 
             if (user == null)
             {
-                var formattedRole = char.ToUpper(request.Role[0]) + request.Role.Substring(1).ToLower();
-                var displayName = emailClean.Split('@')[0];
-                displayName = char.ToUpper(displayName[0]) + displayName.Substring(1);
-
-                user = new User
-                {
-                    Id = Guid.NewGuid(),
-                    Email = emailClean,
-                    FullName = displayName,
-                    Role = formattedRole,
-                    WalletBalance = 2500,
-                    CreditLimit = 500,
-                    LoyaltyPoints = 1000,
-                    CreatedAt = DateTime.UtcNow
-                };
-                await _userRepository.AddAsync(user);
+                return null;
             }
 
             return _mapper.Map<UserResponseDto>(user);
@@ -68,7 +53,8 @@ namespace MealMate.Api.Services
             var emailClean = request.Email.Trim().ToLower();
             var user = await _userRepository.GetByEmailAsync(emailClean);
 
-            var formattedRole = char.ToUpper(request.Role[0]) + request.Role.Substring(1).ToLower();
+            var roleStr = string.IsNullOrWhiteSpace(request.Role) ? "Customer" : request.Role;
+            var formattedRole = char.ToUpper(roleStr[0]) + roleStr.Substring(1).ToLower();
 
             if (user == null)
             {
