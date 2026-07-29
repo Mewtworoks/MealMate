@@ -18,6 +18,94 @@
 }
 
 /* ==========================================================================
+   DESKTOP & WEB RESPONSIVE OPTIMIZATION
+   ========================================================================== */
+@media (min-width: 768px) {
+  .mealmate-login-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 40px 20px;
+    background: radial-gradient(circle at 15% 15%, rgba(255, 114, 53, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(255, 82, 0, 0.08) 0%, transparent 45%),
+                linear-gradient(135deg, #FFFDFB 0%, #FFF4EB 100%);
+  }
+
+  .step-container {
+    max-width: 580px;
+    margin: auto;
+    background: #FFFFFF;
+    border-radius: 28px;
+    box-shadow: 0 20px 60px rgba(255, 114, 53, 0.12), 0 8px 30px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 114, 53, 0.15);
+    padding: 16px 20px 30px 20px;
+    min-height: auto;
+    overflow: visible;
+  }
+
+  .onboarding-page {
+    max-width: 520px;
+    margin: auto;
+    border-radius: 28px;
+    box-shadow: 0 20px 60px rgba(255, 114, 53, 0.12);
+    border: 1px solid rgba(255, 114, 53, 0.15);
+    height: 780px;
+  }
+
+  .top-nav {
+    padding: 16px 12px;
+  }
+
+  .content-body {
+    padding: 10px 24px 20px 24px;
+  }
+
+  .header-text {
+    margin-bottom: 28px;
+    .main-title {
+      font-size: 2.6rem !important;
+    }
+    .desc-text {
+      font-size: 1.1rem !important;
+    }
+  }
+
+  .form-group .input-item {
+    height: 64px;
+    border-radius: 18px;
+    padding: 0 20px;
+
+    .input-icon {
+      font-size: 1.5rem;
+    }
+
+    .custom-input {
+      font-size: 1.1rem;
+    }
+  }
+
+  .primary-btn-large {
+    height: 62px;
+    font-size: 1.2rem;
+    border-radius: 20px;
+  }
+
+  .role-cards-row {
+    gap: 20px;
+    .role-card {
+      padding: 28px 16px 20px 16px;
+      .card-title {
+        font-size: 1.35rem;
+      }
+      .card-desc {
+        font-size: 0.85rem;
+      }
+    }
+  }
+}
+
+/* ==========================================================================
    STEP 1: ONBOARDING — Matches reference screenshot
    ========================================================================== */
 .onboarding-page {
