@@ -50,6 +50,19 @@ export class WalletService {
   // Load wallet from backend API
   // ======================================================================
   async loadWallet(userId: string): Promise<WalletInfo | null> {
+    if (!userId || userId.startsWith('user_')) {
+      this._loaded = true;
+      this.emitAll();
+      return {
+        walletBalance: this._balance,
+        creditLimit: this._creditLimit,
+        creditUsed: this._creditUsed,
+        loyaltyPoints: this._credits,
+        availableCredit: this.availableCredit,
+        monthlySettlementAmount: this._creditUsed
+      };
+    }
+
     try {
       const res: any = await firstValueFrom(
         this.http.get(`${environment.apiUrl}/wallet/${userId}`)

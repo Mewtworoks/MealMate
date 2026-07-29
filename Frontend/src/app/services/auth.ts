@@ -22,10 +22,12 @@ export class AuthService {
         const clerkRes = await this.clerkAuth.signInWithEmailAndPassword(email, password);
         if (clerkRes.success && clerkRes.user) {
           const u = clerkRes.user;
+          const userEmail = u.primaryEmailAddress?.emailAddress || email;
+          const userFullName = u.fullName || [u.firstName, u.lastName].filter(Boolean).join(' ') || u.username || userEmail.split('@')[0];
           const userData = {
             id: u.id,
-            email: u.primaryEmailAddress?.emailAddress || email,
-            fullName: u.fullName || email.split('@')[0]
+            email: userEmail,
+            fullName: userFullName
           };
           this.saveUserSession(userData, role);
           return userData;
@@ -84,10 +86,12 @@ export class AuthService {
         const clerkRes = await this.clerkAuth.signUpWithEmailAndPassword(email, password, fullName);
         if (clerkRes.success && clerkRes.user) {
           const u = clerkRes.user;
+          const userEmail = u.primaryEmailAddress?.emailAddress || email;
+          const userFullName = fullName || u.fullName || [u.firstName, u.lastName].filter(Boolean).join(' ') || u.username || userEmail.split('@')[0];
           const userData = {
             id: u.id,
-            email: u.primaryEmailAddress?.emailAddress || email,
-            fullName: fullName || u.fullName || email.split('@')[0]
+            email: userEmail,
+            fullName: userFullName
           };
           this.saveUserSession(userData, role);
           return userData;
@@ -146,7 +150,11 @@ export class AuthService {
     const email = userData.email || userData.Email || 'user@mealmate.com';
     localStorage.setItem('mealmate_useremail', email);
 
-    const name = userData.fullName || userData.FullName || email.split('@')[0];
+    // Extract best human-readable full name
+    let name = userData.fullName || userData.FullName;
+    if (!name || name === 'null' || name === 'undefined' || name.startsWith('user_')) {
+      name = email.split('@')[0];
+    }
     localStorage.setItem('mealmate_username', name);
   }
 

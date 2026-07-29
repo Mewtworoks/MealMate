@@ -83,6 +83,9 @@ export class SubscriptionService {
   }
 
   async fetchUserSubscriptions(customerId: string): Promise<Subscription[]> {
+    if (!customerId || customerId.startsWith('user_')) {
+      return this.getUserSubscriptions(customerId);
+    }
     try {
       const backendSubs = await firstValueFrom(
         this.http.get<any[]>(`${environment.apiUrl}/subscriptions/customer/${customerId}`)
