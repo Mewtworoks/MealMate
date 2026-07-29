@@ -28,6 +28,9 @@ export class ClerkAuthService {
   async signInWithEmailAndPassword(email: string, password: string): Promise<any> {
     try {
       const clerk = await this.getClerk();
+      if (clerk.session || clerk.user) {
+        try { await clerk.signOut(); } catch (e) {}
+      }
       const result = await clerk.client.signIn.create({
         identifier: email,
         password: password,
@@ -59,6 +62,9 @@ export class ClerkAuthService {
   async signUpWithEmailAndPassword(email: string, password: string, fullName?: string): Promise<any> {
     try {
       const clerk = await this.getClerk();
+      if (clerk.session || clerk.user) {
+        try { await clerk.signOut(); } catch (e) {}
+      }
       const nameParts = (fullName || '').split(' ');
       const firstName = nameParts[0] || '';
       const lastName = nameParts.slice(1).join(' ') || '';

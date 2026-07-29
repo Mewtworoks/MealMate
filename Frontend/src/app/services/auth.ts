@@ -187,7 +187,7 @@ export class AuthService {
     return 'Good evening';
   }
 
-  logout() {
+  async logout() {
     this._userRole = null;
     this._isAuthenticated = false;
     this._userId = null;
@@ -195,6 +195,12 @@ export class AuthService {
     localStorage.removeItem('mealmate_user_id');
     localStorage.removeItem('mealmate_username');
     localStorage.removeItem('mealmate_useremail');
+
+    try {
+      await this.clerkAuth.signOut();
+    } catch (e) {
+      console.warn('Clerk signOut note:', e);
+    }
 
     // Force Native Google Logout to clear session and show account picker next time
     const win = (window as any);
