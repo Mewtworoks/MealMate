@@ -220,9 +220,21 @@
         </div>
 
         <!-- Password -->
-        <div class="input-item" style="margin-bottom: 12px;">
+        <div class="input-item" style="margin-bottom: 12px; position: relative;">
           <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
-          <input type="password" [(ngModel)]="passwordInput" placeholder="Password" class="custom-input">
+          <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="passwordInput" placeholder="Password" class="custom-input" style="padding-right: 44px;">
+          <button 
+            type="button"
+            class="eye-toggle-btn"
+            (mousedown)="showPassword = true"
+            (mouseup)="showPassword = false"
+            (mouseleave)="showPassword = false"
+            (touchstart)="showPassword = true"
+            (touchend)="showPassword = false"
+            (click)="showPassword = !showPassword"
+            style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; padding: 6px; cursor: pointer; color: #888; display: flex; align-items: center; justify-content: center; z-index: 10;">
+            <ion-icon [name]="showPassword ? 'eye-outline' : 'eye-off-outline'" style="font-size: 20px; color: #ff7235;"></ion-icon>
+          </button>
         </div>
       </div>
 

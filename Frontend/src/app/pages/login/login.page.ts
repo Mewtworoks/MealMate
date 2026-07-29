@@ -22,6 +22,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   private deviceReady = false; 
 
   isSignUpMode: boolean = false;
+  showPassword: boolean = false;
   emailInput: string = '';
   passwordInput: string = '';
   fullNameInput: string = '';
