@@ -144,45 +144,54 @@ namespace MealMate.Api.Services
 
         public async Task<UserResponseDto?> SyncUserAsync(SyncUserDto request)
         {
-            if (string.IsNullOrWhiteSpace(request.Email)) return null;
-
-            var emailClean = request.Email.Trim().ToLower();
-            var user = await _userRepository.GetByEmailAsync(emailClean);
-
-            var roleStr = string.IsNullOrWhiteSpace(request.Role) ? "Customer" : request.Role;
-            var formattedRole = char.ToUpper(roleStr[0]) + roleStr.Substring(1).ToLower();
-
-            if (user == null)
+            try
             {
-                Guid newGuid = Guid.NewGuid();
-                if (!string.IsNullOrEmpty(request.UserId) && Guid.TryParse(request.UserId, out Guid parsedGuid))
+                if (string.IsNullOrWhiteSpace(request.Email)) return null;
+
+                var emailClean = request.Email.Trim().ToLower();
+                var user = await _userRepository.GetByEmailAsync(emailClean);
+
+                var roleStr = string.IsNullOrWhiteSpace(request.Role) ? "Customer" : request.Role;
+                var formattedRole = char.ToUpper(roleStr[0]) + roleStr.Substring(1).ToLower();
+
+                if (user == null)
                 {
-                    newGuid = parsedGuid;
+                    Guid newGuid = Guid.NewGuid();
+                    if (!string.IsNullOrEmpty(request.UserId) && Guid.TryParse(request.UserId, out Guid parsedGuid))
+                    {
+                        newGuid = parsedGuid;
+                    }
+
+                    user = new User
+                    {
+                        Id = newGuid,
+                        Email = emailClean,
+                        FullName = !string.IsNullOrWhiteSpace(request.FullName) ? request.FullName : emailClean.Split('@')[0],
+                        PhoneNumber = request.PhoneNumber,
+                        Role = formattedRole,
+                        WalletBalance = 2500,
+                        CreditLimit = 500,
+                        LoyaltyPoints = 1000,
+                        CreatedAt = DateTime.UtcNow
+                    };
+                    await _userRepository.AddAsync(user);
+                }
+                else
+                {
+                    if (!string.IsNullOrWhiteSpace(request.FullName)) user.FullName = request.FullName;
+                    if (!string.IsNullOrWhiteSpace(request.PhoneNumber)) user.PhoneNumber = request.PhoneNumber;
+                    user.Role = formattedRole;
+                    await _userRepository.UpdateAsync(user);
                 }
 
-                user = new User
-                {
-                    Id = newGuid,
-                    Email = emailClean,
-                    FullName = !string.IsNullOrWhiteSpace(request.FullName) ? request.FullName : emailClean.Split('@')[0],
-                    PhoneNumber = request.PhoneNumber,
-                    Role = formattedRole,
-                    WalletBalance = 2500,
-                    CreditLimit = 500,
-                    LoyaltyPoints = 1000,
-                    CreatedAt = DateTime.UtcNow
-                };
-                await _userRepository.AddAsync(user);
+                return _mapper.Map<UserResponseDto>(user);
             }
-            else
+            catch (Exception ex)
             {
-                if (!string.IsNullOrWhiteSpace(request.FullName)) user.FullName = request.FullName;
-                if (!string.IsNullOrWhiteSpace(request.PhoneNumber)) user.PhoneNumber = request.PhoneNumber;
-                user.Role = formattedRole;
-                await _userRepository.UpdateAsync(user);
+                Console.WriteLine($"SyncUser Error: {ex.Message}");
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                return null;
             }
-
-            return _mapper.Map<UserResponseDto>(user);
         }
     }
 }

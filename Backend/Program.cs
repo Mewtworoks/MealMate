@@ -71,6 +71,11 @@ Task.Run(() =>
                 try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD CreditLimit DECIMAL(18,2) DEFAULT 500"); } catch { }
                 try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD CreditUsed DECIMAL(18,2) DEFAULT 0"); } catch { }
                 try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD LoyaltyPoints INT DEFAULT 1000"); } catch { }
+                try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD Latitude DOUBLE NULL"); } catch { }
+                try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD Longitude DOUBLE NULL"); } catch { }
+                try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD Address LONGTEXT NULL"); } catch { }
+                try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD KitchenName LONGTEXT NULL"); } catch { }
+                try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD ServiceRadiusKm DOUBLE DEFAULT 20.0"); } catch { }
                 
                 try { context.Database.ExecuteSqlRaw("ALTER TABLE Orders ADD OrderNumber INT AUTO_INCREMENT UNIQUE"); } catch { }
                 try { context.Database.ExecuteSqlRaw("ALTER TABLE Orders ADD WalletAmount DECIMAL(18,2) DEFAULT 0"); } catch { }
