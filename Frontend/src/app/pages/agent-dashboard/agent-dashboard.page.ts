@@ -26,9 +26,18 @@ export class AgentDashboardPage implements OnInit {
   activeSegment = 'requests';
   earnings = 0;
   isProfileModalOpen = false;
+  isLocationModalOpen = false;
   isOnline = true;
   chefName = '';
   greeting = '';
+
+  // Kitchen location management
+  kitchenName = 'Grand Central Kitchen';
+  kitchenAddress = 'Connaught Place, New Delhi';
+  kitchenLat = 28.6139;
+  kitchenLng = 77.2090;
+  kitchenRadiusKm = 20;
+  isSavingLocation = false;
   private ordersSubscription?: Subscription;
 
   get currentDelivery(): Order | null {
@@ -78,6 +87,52 @@ export class AgentDashboardPage implements OnInit {
     const lastLoc = this.gpsService.lastLocation || { latitude: 0, longitude: 0 };
     this.gpsService.stopTracking(lastLoc.latitude, lastLoc.longitude);
     this.router.navigate(['/login']);
+  }
+
+  openLocationModal() {
+    this.isLocationModalOpen = true;
+  }
+
+  closeLocationModal() {
+    this.isLocationModalOpen = false;
+  }
+
+  useCurrentGpsLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        this.kitchenLat = pos.coords.latitude;
+        this.kitchenLng = pos.coords.longitude;
+      });
+    }
+  }
+
+  async saveKitchenLocation() {
+    const chefId = this.auth.userId;
+    if (!chefId) return;
+
+    this.isSavingLocation = true;
+    try {
+      await this.mealService.updateChefLocation(
+        chefId,
+        this.kitchenLat,
+        this.kitchenLng,
+        this.kitchenAddress,
+        this.kitchenName,
+        this.kitchenRadiusKm
+      );
+
+      const alert = await this.alertCtrl.create({
+        header: 'Location Updated',
+        message: 'Your kitchen location & 20 km delivery radius have been saved successfully!',
+        buttons: ['OK']
+      });
+      await alert.present();
+      this.isLocationModalOpen = false;
+    } catch (e) {
+      console.error('Error saving kitchen location:', e);
+    } finally {
+      this.isSavingLocation = false;
+    }
   }
 
   filterOrders() {

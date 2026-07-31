@@ -63,8 +63,21 @@
 
     <!-- Agent Selection -->
     <section class="agent-selection">
-      <h3 class="s-title">Choose Your Chef</h3>
-      <div class="agent-scroll">
+      <div class="s-header-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h3 class="s-title" style="margin: 0;">Choose Your Chef</h3>
+        <span class="radius-badge" style="font-size: 0.72rem; font-weight: 700; color: #ff7235; background: #fff5ee; padding: 4px 10px; border-radius: 12px; border: 1px solid rgba(255, 114, 53, 0.2); display: flex; align-items: center; gap: 4px;">
+          <ion-icon name="navigate-circle-outline"></ion-icon> Within 20 km radius
+        </span>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoadingChefs" style="text-align: center; padding: 24px 0;">
+        <ion-spinner name="crescent" color="warning"></ion-spinner>
+        <p style="font-size: 0.8rem; color: #8e7c76; margin-top: 8px;">Finding home chefs near you (20 km radius)...</p>
+      </div>
+
+      <!-- Chef Cards List (If chefs available within 20km) -->
+      <div class="agent-scroll" *ngIf="!isLoadingChefs && agents.length > 0">
         <div *ngFor="let agent of agents; let i = index" class="agent-card" [class.selected]="selectedAgentId === agent.id" (click)="selectedAgentId = agent.id">
           
           <div class="check-circle" *ngIf="selectedAgentId === agent.id">
@@ -75,15 +88,33 @@
           
           <div class="a-info">
             <span class="a-name">{{agent.name}}</span>
-            <span class="a-meta"><ion-icon name="star" class="star-icon"></ion-icon> {{agent.rating}} <span class="divider">|</span> {{ [120, 95, 80][i] || 50 }}+ orders</span>
+            <span class="a-meta">
+              <ion-icon name="star" class="star-icon"></ion-icon> {{agent.rating}} 
+              <span class="divider">|</span> 
+              <ion-icon name="location" style="color: #ff7235; font-size: 0.75rem;"></ion-icon> {{agent.distance}}
+            </span>
           </div>
 
           <div class="card-badge" [ngClass]="['top-rated', 'hygienic', 'homestyle'][i % 3]">
             <ion-icon [name]="['ribbon', 'shield-checkmark', 'heart'][i % 3]"></ion-icon>
-            {{ ['Top Rated', 'Hygienic', 'Homestyle'][i % 3] }}
+            {{ agent.tag || ['Top Rated', 'Hygienic', 'Homestyle'][i % 3] }}
           </div>
 
         </div>
+      </div>
+
+      <!-- Empty State (No Chefs within 20km) -->
+      <div class="no-chefs-card" *ngIf="!isLoadingChefs && agents.length === 0" style="background: white; border-radius: 20px; padding: 24px 16px; text-align: center; border: 1.5px dashed #ffd5c2; margin-top: 8px;">
+        <div style="width: 54px; height: 54px; background: #fff5ee; border-radius: 50%; margin: 0 auto 12px auto; display: flex; align-items: center; justify-content: center; color: #ff7235; font-size: 24px;">
+          <ion-icon name="compass-outline"></ion-icon>
+        </div>
+        <h4 style="font-size: 1.05rem; font-weight: 800; color: #483129; margin: 0 0 6px 0;">No Chefs Available Within 20 km</h4>
+        <p style="font-size: 0.8rem; color: #8e7c76; margin: 0 0 16px 0; line-height: 1.4;">
+          We couldn't find any home cooks active within your 20 km radius right now. Try refreshing your GPS location!
+        </p>
+        <button type="button" (click)="loadNearbyChefs()" style="background: #ff7235; color: white; border: none; padding: 10px 20px; border-radius: 14px; font-weight: 700; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 4px 12px rgba(255, 114, 53, 0.25);">
+          <ion-icon name="refresh-outline"></ion-icon> Refresh Location
+        </button>
       </div>
     </section>
 

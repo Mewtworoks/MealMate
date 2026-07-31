@@ -31,6 +31,10 @@ export interface Agent {
   rating: number;
   distance: string;
   speciality: string;
+  address?: string;
+  latitude?: number;
+  longitude?: number;
+  tag?: string;
 }
 
 @Injectable({
@@ -38,9 +42,9 @@ export interface Agent {
 })
 export class MealService {
   private agents: Agent[] = [
-    { id: '11111111-1111-1111-1111-111111111111', name: 'Usha\'s Kitchen', rating: 4.8, distance: '1.2 km', speciality: 'North Indian' },
-    { id: '22222222-2222-2222-2222-222222222222', name: 'Maa Ki Rasoi', rating: 4.9, distance: '0.8 km', speciality: 'Tiffin Specialist' },
-    { id: '33333333-3333-3333-3333-333333333333', name: 'Annapurna', rating: 4.6, distance: '2.5 km', speciality: 'Sattvic Food' }
+    { id: '11111111-1111-1111-1111-111111111111', name: 'Usha\'s Kitchen', rating: 4.8, distance: '1.2 km', speciality: 'North Indian', tag: 'Top Rated' },
+    { id: '22222222-2222-2222-2222-222222222222', name: 'Maa Ki Rasoi', rating: 4.9, distance: '0.8 km', speciality: 'Tiffin Specialist', tag: 'Hygienic' },
+    { id: '33333333-3333-3333-3333-333333333333', name: 'Annapurna', rating: 4.6, distance: '2.5 km', speciality: 'Sattvic Food', tag: 'Homestyle' }
   ];
 
   private mealsSubject = new BehaviorSubject<Meal[]>([]);
@@ -132,6 +136,40 @@ export class MealService {
     const res = await firstValueFrom(this.http.post(`${environment.apiUrl}/meals`, payload));
     this.refreshMeals();
     return res;
+  }
+
+  async getNearbyChefs(lat?: number, lng?: number, radiusKm: number = 20): Promise<Agent[]> {
+    try {
+      let url = `${environment.apiUrl}/chef/nearby?radiusKm=${radiusKm}`;
+      if (lat !== undefined && lng !== undefined) {
+        url += `&lat=${lat}&lng=${lng}`;
+      }
+      const backendChefs: any[] = await firstValueFrom(this.http.get<any[]>(url));
+      if (backendChefs && backendChefs.length > 0) {
+        const mapped: Agent[] = backendChefs.map(c => ({
+          id: c.id || c.Id,
+          name: c.kitchenName || c.name || c.Name || 'Chef Kitchen',
+          rating: c.rating || c.Rating || 4.8,
+          distance: c.distanceText || `${c.distanceKm} km`,
+          speciality: c.speciality || c.Speciality || 'Home-Cooked Tiffins',
+          address: c.address || c.Address,
+          latitude: c.latitude || c.Latitude,
+          longitude: c.longitude || c.Longitude,
+          tag: c.tag || c.Tag || 'Top Rated'
+        }));
+        this.agents = mapped;
+        return mapped;
+      }
+      return [];
+    } catch (e) {
+      console.error('Error fetching nearby chefs within radius:', e);
+      return [];
+    }
+  }
+
+  async updateChefLocation(chefId: string, latitude: number, longitude: number, address: string, kitchenName: string, serviceRadiusKm: number = 20): Promise<any> {
+    const payload = { chefId, latitude, longitude, address, kitchenName, serviceRadiusKm };
+    return await firstValueFrom(this.http.post(`${environment.apiUrl}/chef/location`, payload));
   }
 
   getAgents(): Agent[] {

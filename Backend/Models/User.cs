@@ -23,6 +23,13 @@ namespace MealMate.Api.Models
         public decimal CreditUsed { get; set; } = 0;
         public int LoyaltyPoints { get; set; } = 1000;
 
+        // ── Location & Kitchen Details ──
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
+        public string? Address { get; set; }
+        public string? KitchenName { get; set; }
+        public double ServiceRadiusKm { get; set; } = 20.0;
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

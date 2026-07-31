@@ -53,9 +53,14 @@ namespace MealMate.Api.Data
             {
                 Id = agentId,
                 Email = "agent@mealmate.com",
-                FullName = "Default Agent",
+                FullName = "Default Chef",
                 PhoneNumber = "1234567890",
                 Role = "Agent",
+                Latitude = 28.6139,
+                Longitude = 77.2090,
+                Address = "Connaught Place, New Delhi",
+                KitchenName = "Grand Central Kitchen",
+                ServiceRadiusKm = 20.0,
                 CreatedAt = DateTime.UtcNow
             });
 
