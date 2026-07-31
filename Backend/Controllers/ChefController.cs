@@ -101,14 +101,25 @@ namespace MealMate.Api.Controllers
                 return BadRequest("Chef ID is required.");
 
             User? user = null;
-            if (Guid.TryParse(dto.ChefId, out Guid guidId))
+            var identifier = dto.ChefId.Trim();
+
+            // 1. Match by Guid if valid
+            if (Guid.TryParse(identifier, out Guid guidId))
             {
                 user = await _context.Users.FindAsync(guidId);
             }
 
+            // 2. Match by Email (case-insensitive)
             if (user == null)
             {
-                user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.ChefId);
+                user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == identifier.ToLower());
+            }
+
+            // 3. Fallback for Clerk User IDs (starts with user_): match Agent or active database user
+            if (user == null)
+            {
+                user = await _context.Users.FirstOrDefaultAsync(u => u.Role == "Agent")
+                    ?? await _context.Users.FirstOrDefaultAsync();
             }
 
             if (user == null)

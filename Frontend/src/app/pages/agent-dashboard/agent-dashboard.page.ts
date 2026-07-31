@@ -179,7 +179,7 @@ export class AgentDashboardPage implements OnInit {
   }
 
   async saveKitchenLocation() {
-    const chefId = this.auth.userId;
+    const chefId = this.auth.userEmail || this.auth.userId;
     if (!chefId) return;
 
     this.isSavingLocation = true;
