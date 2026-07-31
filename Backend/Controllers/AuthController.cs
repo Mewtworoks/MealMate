@@ -110,7 +110,8 @@ namespace MealMate.Api.Controllers
                     AddParam("@id", newId.ToString());
                     AddParam("@email", emailClean);
                     AddParam("@name", fullName);
-                    AddParam("@phone", request.PhoneNumber ?? "");
+                    var phoneVal = string.IsNullOrWhiteSpace(request.PhoneNumber) ? (object)DBNull.Value : request.PhoneNumber.Trim();
+                    AddParam("@phone", phoneVal);
                     AddParam("@role", formattedRole);
                     AddParam("@wallet", 2500m);
                     AddParam("@credit", 500m);

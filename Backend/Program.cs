@@ -70,6 +70,7 @@ Task.Run(() =>
                 try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD Email VARCHAR(100) NULL"); } catch { }
                 try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD FullName LONGTEXT NULL"); } catch { }
                 try { context.Database.ExecuteSqlRaw("ALTER TABLE Users MODIFY PhoneNumber VARCHAR(15) NULL"); } catch { }
+                try { context.Database.ExecuteSqlRaw("UPDATE Users SET PhoneNumber = NULL WHERE PhoneNumber = '' OR PhoneNumber IS NULL"); } catch { }
                 try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD WalletBalance DECIMAL(18,2) DEFAULT 2500"); } catch { }
                 try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD CreditLimit DECIMAL(18,2) DEFAULT 500"); } catch { }
                 try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD CreditUsed DECIMAL(18,2) DEFAULT 0"); } catch { }

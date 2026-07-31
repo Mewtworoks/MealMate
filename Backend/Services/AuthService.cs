@@ -64,10 +64,12 @@ namespace MealMate.Api.Services
             var roleStr = string.IsNullOrWhiteSpace(request.Role) ? "Customer" : request.Role;
             var formattedRole = char.ToUpper(roleStr[0]) + roleStr.Substring(1).ToLower();
 
+            var phoneClean = string.IsNullOrWhiteSpace(request.PhoneNumber) ? null : request.PhoneNumber.Trim();
+
             if (user == null)
             {
                 var newId = Guid.NewGuid();
-                await InsertUserRawSql(newId, emailClean, request.FullName ?? emailClean.Split('@')[0], request.PhoneNumber ?? "", formattedRole);
+                await InsertUserRawSql(newId, emailClean, request.FullName ?? emailClean.Split('@')[0], phoneClean, formattedRole);
                 user = await _userRepository.GetByEmailAsync(emailClean);
                 if (user == null) return null;
             }
@@ -132,12 +134,13 @@ namespace MealMate.Api.Services
 
                 var roleStr = string.IsNullOrWhiteSpace(request.Role) ? "Customer" : request.Role;
                 var formattedRole = char.ToUpper(roleStr[0]) + roleStr.Substring(1).ToLower();
+                var phoneClean = string.IsNullOrWhiteSpace(request.PhoneNumber) ? null : request.PhoneNumber.Trim();
 
                 if (user == null)
                 {
                     var newGuid = Guid.NewGuid();
                     var fullName = !string.IsNullOrWhiteSpace(request.FullName) ? request.FullName : emailClean.Split('@')[0];
-                    await InsertUserRawSql(newGuid, emailClean, fullName, request.PhoneNumber ?? "", formattedRole);
+                    await InsertUserRawSql(newGuid, emailClean, fullName, phoneClean, formattedRole);
                     user = await _userRepository.GetByEmailAsync(emailClean);
                     if (user == null) return null;
                 }
@@ -163,7 +166,7 @@ namespace MealMate.Api.Services
         /// Insert a user using raw SQL to avoid EF Core including model columns that don't yet exist in the remote DB.
         /// Only uses core columns guaranteed to be present in the Users table.
         /// </summary>
-        private async Task InsertUserRawSql(Guid id, string email, string fullName, string phoneNumber, string role)
+        private async Task InsertUserRawSql(Guid id, string email, string fullName, string? phoneNumber, string role)
         {
             await _context.Database.ExecuteSqlRawAsync(
                 "INSERT INTO Users (Id, Email, FullName, PhoneNumber, Role, WalletBalance, CreditLimit, CreditUsed, LoyaltyPoints, CreatedAt) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9})",
