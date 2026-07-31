@@ -35,4 +35,13 @@ namespace MealMate.Api.DTOs
         public string PhoneNumber { get; set; } = string.Empty;
         public string Role { get; set; } = "Customer";
     }
+
+    public class SyncUserDto
+    {
+        public string? UserId { get; set; }
+        public string Email { get; set; } = string.Empty;
+        public string? FullName { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string Role { get; set; } = "Customer";
+    }
 }

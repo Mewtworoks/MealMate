@@ -14,6 +14,7 @@ namespace MealMate.Api.Services
         Task<UserResponseDto?> LoginWithGoogleAsync(GoogleLoginDto googleRequest);
         Task<UserResponseDto?> LoginWithEmailAsync(EmailLoginDto request);
         Task<UserResponseDto?> RegisterAsync(RegisterDto request);
+        Task<UserResponseDto?> SyncUserAsync(SyncUserDto request);
     }
 
     public class AuthService : IAuthService
@@ -38,9 +39,23 @@ namespace MealMate.Api.Services
             var emailClean = request.Email.Trim().ToLower();
             var user = await _userRepository.GetByEmailAsync(emailClean);
 
+            var roleStr = string.IsNullOrWhiteSpace(request.Role) ? "Customer" : request.Role;
+            var formattedRole = char.ToUpper(roleStr[0]) + roleStr.Substring(1).ToLower();
+
             if (user == null)
             {
-                return null;
+                user = new User
+                {
+                    Id = Guid.NewGuid(),
+                    Email = emailClean,
+                    FullName = emailClean.Split('@')[0],
+                    Role = formattedRole,
+                    WalletBalance = 2500,
+                    CreditLimit = 500,
+                    LoyaltyPoints = 1000,
+                    CreatedAt = DateTime.UtcNow
+                };
+                await _userRepository.AddAsync(user);
             }
 
             return _mapper.Map<UserResponseDto>(user);
@@ -125,6 +140,49 @@ namespace MealMate.Api.Services
                 Console.WriteLine($"Stack Trace: {ex.StackTrace}");
                 return null;
             }
+        }
+
+        public async Task<UserResponseDto?> SyncUserAsync(SyncUserDto request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Email)) return null;
+
+            var emailClean = request.Email.Trim().ToLower();
+            var user = await _userRepository.GetByEmailAsync(emailClean);
+
+            var roleStr = string.IsNullOrWhiteSpace(request.Role) ? "Customer" : request.Role;
+            var formattedRole = char.ToUpper(roleStr[0]) + roleStr.Substring(1).ToLower();
+
+            if (user == null)
+            {
+                Guid newGuid = Guid.NewGuid();
+                if (!string.IsNullOrEmpty(request.UserId) && Guid.TryParse(request.UserId, out Guid parsedGuid))
+                {
+                    newGuid = parsedGuid;
+                }
+
+                user = new User
+                {
+                    Id = newGuid,
+                    Email = emailClean,
+                    FullName = !string.IsNullOrWhiteSpace(request.FullName) ? request.FullName : emailClean.Split('@')[0],
+                    PhoneNumber = request.PhoneNumber,
+                    Role = formattedRole,
+                    WalletBalance = 2500,
+                    CreditLimit = 500,
+                    LoyaltyPoints = 1000,
+                    CreatedAt = DateTime.UtcNow
+                };
+                await _userRepository.AddAsync(user);
+            }
+            else
+            {
+                if (!string.IsNullOrWhiteSpace(request.FullName)) user.FullName = request.FullName;
+                if (!string.IsNullOrWhiteSpace(request.PhoneNumber)) user.PhoneNumber = request.PhoneNumber;
+                user.Role = formattedRole;
+                await _userRepository.UpdateAsync(user);
+            }
+
+            return _mapper.Map<UserResponseDto>(user);
         }
     }
 }

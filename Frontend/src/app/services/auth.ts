@@ -129,6 +129,24 @@ export class AuthService {
       name = email.split('@')[0];
     }
     localStorage.setItem('mealmate_username', name);
+
+    // Automatically sync user to backend MySQL DB so user table receives the record!
+    this.syncUserToBackend(userId, email, name, role);
+  }
+
+  async syncUserToBackend(userId: string, email: string, fullName: string, role: string) {
+    try {
+      const formattedRole = role.charAt(0).toUpperCase() + role.slice(1);
+      const payload = { userId, email, fullName, role: formattedRole };
+      await firstValueFrom(
+        this.http.post(`${environment.apiUrl}/auth/sync`, payload).pipe(
+          timeout(5000),
+          catchError(() => of(null))
+        )
+      );
+    } catch (e) {
+      console.warn('Backend sync note:', e);
+    }
   }
 
   async loginWithGoogle(idToken: string, role: 'customer' | 'agent'): Promise<any> {

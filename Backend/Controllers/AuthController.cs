@@ -62,5 +62,21 @@ namespace MealMate.Api.Controllers
 
             return Ok(new { success = true, user = result });
         }
+
+        [HttpPost("sync")]
+        public async Task<IActionResult> SyncUser([FromBody] SyncUserDto request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Email))
+                return BadRequest("Email is required.");
+
+            var result = await _authService.SyncUserAsync(request);
+
+            if (result == null)
+            {
+                return BadRequest(new { success = false, message = "User sync failed." });
+            }
+
+            return Ok(new { success = true, user = result });
+        }
     }
 }
