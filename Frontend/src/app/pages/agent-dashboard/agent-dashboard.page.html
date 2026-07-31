@@ -7,6 +7,10 @@
         <h2 class="page-title">{{chefName}} 🧑‍🍳</h2>
       </div>
       <div class="header-actions" style="display: flex; gap: 8px; align-items: center;">
+        <button type="button" (click)="openLocationModal()" style="background: rgba(255, 114, 53, 0.12); color: #ff7235; border: 1px solid rgba(255, 114, 53, 0.3); border-radius: 20px; padding: 6px 12px; font-weight: 700; font-size: 0.78rem; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+          <ion-icon name="location-sharp"></ion-icon> Kitchen Location
+        </button>
+
         <div class="status-indicator-pill" [class.offline]="!isOnline" (click)="toggleOnlineStatus()">
           <span class="status-dot"></span>
           <span class="status-label">{{ isOnline ? 'Online' : 'Offline' }}</span>
@@ -300,3 +304,68 @@
 
   </div>
 </ion-content>
+
+<!-- Kitchen Location & Service Radius Modal -->
+<ion-modal [isOpen]="isLocationModalOpen" (didDismiss)="closeLocationModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar style="--background: #fff; --border-width: 0;">
+        <ion-title style="font-weight: 800; font-size: 1.1rem; color: #483129;">Kitchen & Delivery Radius</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeLocationModal()" style="font-weight: 700; color: #ff7235;">Close</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding" style="--background: #fdfcfb;">
+      <div style="background: #fff; border-radius: 20px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid rgba(255,114,53,0.15);">
+        
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px; background: #fff5ee; padding: 12px; border-radius: 14px;">
+          <ion-icon name="information-circle-outline" style="font-size: 24px; color: #ff7235; flex-shrink: 0;"></ion-icon>
+          <p style="font-size: 0.82rem; color: #555; margin: 0; line-height: 1.4;">
+            Set your kitchen's exact location. Customers within your <strong>20 km delivery radius</strong> will see your chef profile and be able to order custom meals!
+          </p>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div>
+            <label style="font-weight: 800; font-size: 0.85rem; color: #483129; display: block; margin-bottom: 6px;">Kitchen / Brand Name</label>
+            <input type="text" [(ngModel)]="kitchenName" placeholder="e.g. Grand Central Kitchen" style="width: 100%; padding: 12px 14px; border-radius: 12px; border: 1.5px solid #eaeaea; outline: none; font-size: 0.95rem; font-weight: 600; color: #333;">
+          </div>
+
+          <div>
+            <label style="font-weight: 800; font-size: 0.85rem; color: #483129; display: block; margin-bottom: 6px;">Kitchen Address</label>
+            <input type="text" [(ngModel)]="kitchenAddress" placeholder="e.g. Connaught Place, New Delhi" style="width: 100%; padding: 12px 14px; border-radius: 12px; border: 1.5px solid #eaeaea; outline: none; font-size: 0.95rem; font-weight: 600; color: #333;">
+          </div>
+
+          <div style="display: flex; gap: 10px;">
+            <div style="flex: 1;">
+              <label style="font-weight: 800; font-size: 0.82rem; color: #483129; display: block; margin-bottom: 6px;">Latitude</label>
+              <input type="number" [(ngModel)]="kitchenLat" style="width: 100%; padding: 12px 14px; border-radius: 12px; border: 1.5px solid #eaeaea; outline: none; font-size: 0.9rem; font-weight: 600;">
+            </div>
+            <div style="flex: 1;">
+              <label style="font-weight: 800; font-size: 0.82rem; color: #483129; display: block; margin-bottom: 6px;">Longitude</label>
+              <input type="number" [(ngModel)]="kitchenLng" style="width: 100%; padding: 12px 14px; border-radius: 12px; border: 1.5px solid #eaeaea; outline: none; font-size: 0.9rem; font-weight: 600;">
+            </div>
+          </div>
+
+          <button type="button" (click)="useCurrentGpsLocation()" style="background: #fff5ee; color: #ff7235; border: 1px solid rgba(255,114,53,0.3); padding: 12px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <ion-icon name="navigate-outline" style="font-size: 18px;"></ion-icon> Detect My Kitchen GPS Location
+          </button>
+
+          <div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+              <label style="font-weight: 800; font-size: 0.85rem; color: #483129;">Delivery Radius Threshold</label>
+              <span style="font-weight: 800; font-size: 0.85rem; color: #ff7235;">{{kitchenRadiusKm}} km</span>
+            </div>
+            <input type="range" min="5" max="50" [(ngModel)]="kitchenRadiusKm" style="width: 100%; accent-color: #ff7235;">
+          </div>
+
+          <button type="button" (click)="saveKitchenLocation()" [disabled]="isSavingLocation" style="background: linear-gradient(135deg, #ff7235, #ff5200); color: white; border: none; padding: 14px; border-radius: 16px; font-weight: 800; font-size: 0.95rem; cursor: pointer; margin-top: 8px; box-shadow: 0 4px 15px rgba(255, 114, 53, 0.3);">
+            {{ isSavingLocation ? 'Saving Location...' : 'Save Kitchen Location' }}
+          </button>
+        </div>
+
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

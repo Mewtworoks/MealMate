@@ -76,10 +76,50 @@ export class CustomMealPage implements OnInit {
     }, 400); 
   }
 
-  ngOnInit() {
-    this.agents = this.mealService.getAgents();
-    if (this.agents.length > 0) {
-      this.selectedAgentId = this.agents[0].id;
+  isLoadingChefs: boolean = false;
+  userLat: number = 28.6139;
+  userLng: number = 77.2090;
+  radiusKm: number = 20;
+
+  async ngOnInit() {
+    await this.loadNearbyChefs();
+  }
+
+  async loadNearbyChefs() {
+    this.isLoadingChefs = true;
+    
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          this.userLat = position.coords.latitude;
+          this.userLng = position.coords.longitude;
+          await this.fetchChefs();
+        },
+        async (error) => {
+          console.log('GPS position unavailable, using city reference coords');
+          await this.fetchChefs();
+        },
+        { timeout: 5000 }
+      );
+    } else {
+      await this.fetchChefs();
+    }
+  }
+
+  async fetchChefs() {
+    try {
+      this.agents = await this.mealService.getNearbyChefs(this.userLat, this.userLng, this.radiusKm);
+      if (this.agents.length > 0) {
+        this.selectedAgentId = this.agents[0].id;
+      } else {
+        this.selectedAgentId = '';
+      }
+    } catch (e) {
+      console.error('Failed to load nearby chefs:', e);
+      this.agents = [];
+      this.selectedAgentId = '';
+    } finally {
+      this.isLoadingChefs = false;
     }
   }
 
