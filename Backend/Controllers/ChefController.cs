@@ -75,13 +75,13 @@ namespace MealMate.Api.Controllers
                         Id = agent.Id,
                         Name = !string.IsNullOrEmpty(agent.KitchenName) ? agent.KitchenName : (!string.IsNullOrEmpty(agent.FullName) ? agent.FullName : "Chef's Kitchen"),
                         KitchenName = !string.IsNullOrEmpty(agent.KitchenName) ? agent.KitchenName : "Home Kitchen",
-                        Rating = 4.7 + Math.Abs(agent.Id.GetHashCode() % 3) * 0.1,
-                        DistanceKm = Math.Round(distanceKm, 1),
-                        DistanceText = $"{Math.Round(distanceKm, 1)} km",
+                        Rating = Math.Round(4.7 + Math.Abs(agent.Id.GetHashCode() % 3) * 0.1, 1),
+                        DistanceKm = Math.Round(distanceKm, 2),
+                        DistanceText = $"{Math.Round(distanceKm, 2)} km",
                         Speciality = agent.Id.GetHashCode() % 2 == 0 ? "North Indian & Thali" : "Homestyle Tiffin",
                         Address = agent.Address ?? "City Service Area",
-                        Latitude = chefLat,
-                        Longitude = chefLng,
+                        Latitude = Math.Round(chefLat, 4),
+                        Longitude = Math.Round(chefLng, 4),
                         OrdersCount = 95 + Math.Abs(agent.Id.GetHashCode() % 50),
                         Tag = agent.Id.GetHashCode() % 2 == 0 ? "Top Rated" : "Hygienic"
                     });

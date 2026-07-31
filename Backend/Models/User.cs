@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MealMate.Api.Models
 {
@@ -18,8 +19,11 @@ namespace MealMate.Api.Models
         [Required]
         public string Role { get; set; } = "Customer"; // "Customer" or "Agent"
 
-        public decimal WalletBalance { get; set; } = 2500; // Default as requested
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal WalletBalance { get; set; } = 2500;
+        [Column(TypeName = "decimal(18,2)")]
         public decimal CreditLimit { get; set; } = 500;
+        [Column(TypeName = "decimal(18,2)")]
         public decimal CreditUsed { get; set; } = 0;
         public int LoyaltyPoints { get; set; } = 1000;
 
