@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, ModalController, AlertController } from '@ionic/angular';
+import { IonicModule, ModalController, AlertController, ToastController } from '@ionic/angular';
+import { HttpClient } from '@angular/common/http';
 import { OrderService, Order } from '../../services/order.service';
 import { MealService, Meal } from '../../services/meal.service';
 import { TrackingService } from '../../services/tracking.service';
 import { GpsService } from '../../services/gps.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth';
-import { Subscription } from 'rxjs';
+import { Subscription, firstValueFrom, timeout, catchError, of } from 'rxjs';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 
@@ -38,6 +39,7 @@ export class AgentDashboardPage implements OnInit {
   kitchenLng = 77.2090;
   kitchenRadiusKm = 20;
   isSavingLocation = false;
+  isDetectingGps = false;
   private ordersSubscription?: Subscription;
 
   get currentDelivery(): Order | null {
@@ -56,7 +58,9 @@ export class AgentDashboardPage implements OnInit {
     private auth: AuthService,
     private router: Router,
     private modalCtrl: ModalController,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private toastCtrl: ToastController,
+    private http: HttpClient
   ) { }
 
   async ionViewWillEnter() {
@@ -98,12 +102,62 @@ export class AgentDashboardPage implements OnInit {
   }
 
   useCurrentGpsLocation() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        this.kitchenLat = pos.coords.latitude;
-        this.kitchenLng = pos.coords.longitude;
-      });
+    if (!navigator.geolocation) {
+      this.showToast('Geolocation is not supported by your browser.', 'warning');
+      return;
     }
+
+    this.isDetectingGps = true;
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const rawLat = pos.coords.latitude;
+        const rawLng = pos.coords.longitude;
+
+        // Round to 6 decimal places (standard high-precision geo coordinates)
+        this.kitchenLat = Math.round(rawLat * 1000000) / 1000000;
+        this.kitchenLng = Math.round(rawLng * 1000000) / 1000000;
+
+        // Auto-fetch reverse geocoded human-readable address
+        await this.fetchAddressFromCoords(this.kitchenLat, this.kitchenLng);
+        this.isDetectingGps = false;
+        this.showToast('Kitchen GPS coordinates & address auto-fetched!', 'success');
+      },
+      (err) => {
+        console.warn('GPS Error:', err);
+        this.isDetectingGps = false;
+        this.showToast('Could not retrieve GPS location. Please check location permissions.', 'warning');
+      },
+      { timeout: 10000, enableHighAccuracy: true }
+    );
+  }
+
+  async fetchAddressFromCoords(lat: number, lng: number) {
+    try {
+      const res: any = await firstValueFrom(
+        this.http.get(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`).pipe(
+          timeout(5000),
+          catchError(() => of(null))
+        )
+      );
+
+      if (res && res.display_name) {
+        // Build clean readable address (street / suburb / city / state)
+        const parts = res.display_name.split(', ');
+        const cleanAddress = parts.slice(0, 4).join(', ');
+        this.kitchenAddress = cleanAddress;
+      }
+    } catch (e) {
+      console.warn('Reverse geocoding note:', e);
+    }
+  }
+
+  async showToast(message: string, color: string = 'dark') {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 3000,
+      color
+    });
+    toast.present();
   }
 
   async saveKitchenLocation() {

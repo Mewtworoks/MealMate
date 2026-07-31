@@ -968,11 +968,20 @@
 
         ion-icon {
           font-size: 1.15rem;
+
+          &.spin-icon {
+            animation: spin 1s linear infinite;
+          }
         }
 
         &:hover, &:active {
           background: #FFE5D5;
           transform: translateY(-1px);
+        }
+
+        &:disabled {
+          opacity: 0.7;
+          cursor: wait;
         }
       }
 

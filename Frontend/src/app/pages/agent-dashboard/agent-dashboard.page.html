@@ -375,9 +375,9 @@
           </div>
 
           <!-- Detect GPS Location Button -->
-          <button type="button" class="gps-detect-btn" (click)="useCurrentGpsLocation()">
-            <ion-icon name="navigate-outline"></ion-icon>
-            <span>Detect My Kitchen GPS Location</span>
+          <button type="button" class="gps-detect-btn" (click)="useCurrentGpsLocation()" [disabled]="isDetectingGps">
+            <ion-icon [name]="isDetectingGps ? 'sync-outline' : 'navigate-outline'" [class.spin-icon]="isDetectingGps"></ion-icon>
+            <span>{{ isDetectingGps ? 'Auto-Fetching Location & Address...' : 'Detect My Kitchen GPS Location' }}</span>
           </button>
 
           <!-- Delivery Radius Slider -->
