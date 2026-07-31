@@ -127,8 +127,8 @@ export class ProfilePage implements OnInit {
     await alert.present();
   }
 
-  logout() {
-    this.auth.logout();
+  async logout() {
+    await this.auth.logout();
     this.router.navigateByUrl('/login', { replaceUrl: true });
   }
 
