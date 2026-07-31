@@ -39,7 +39,7 @@
     </div>
 
     <!-- BUTTON -->
-    <button class="next-btn" (click)="nextStep()">
+    <button type="button" class="next-btn" (click)="nextStep()">
       <ion-icon name="arrow-forward-outline"></ion-icon>
     </button>
   </div>
@@ -49,10 +49,10 @@
   <div class="step-container step-2" *ngIf="currentStep === 2">
     <!-- Top Nav -->
     <div class="top-nav animate-down">
-      <button class="back-btn" (click)="prevStep()">
+      <button type="button" class="back-btn" (click)="prevStep()">
         <ion-icon name="arrow-back"></ion-icon>
       </button>
-      <button class="help-btn">Need help?</button>
+      <button type="button" class="help-btn">Need help?</button>
     </div>
 
     <div class="content-body animate-fade">
@@ -161,17 +161,17 @@
 
       <!-- Email Login / Signup Buttons -->
       <div class="google-login-section" style="margin-top: 15px; margin-bottom: 15px; display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%;">
-        <button class="primary-btn-large" style="width: 100%; max-width: 340px; border-radius: 25px; padding: 14px; background: linear-gradient(135deg, #ff7235, #ff5200); color: #fff; font-weight: 600; font-size: 15px; border: none; box-shadow: 0 4px 12px rgba(255, 114, 53, 0.3); display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;" (click)="openEmailAuth(false)">
+        <button type="button" class="primary-btn-large" style="width: 100%; max-width: 340px; border-radius: 25px; padding: 14px; background: linear-gradient(135deg, #ff7235, #ff5200); color: #fff; font-weight: 600; font-size: 15px; border: none; box-shadow: 0 4px 12px rgba(255, 114, 53, 0.3); display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;" (click)="openEmailAuth(false)">
           <ion-icon name="log-in-outline" style="font-size: 20px;"></ion-icon>
           <span>Sign In (I have an account)</span>
         </button>
 
-        <button class="secondary-btn" style="width: 100%; max-width: 340px; border-radius: 25px; padding: 12px; background: rgba(255, 114, 53, 0.1); color: #ff7235; font-weight: 600; font-size: 14px; border: 1px solid rgba(255, 114, 53, 0.3); display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;" (click)="openEmailAuth(true)">
+        <button type="button" class="secondary-btn" style="width: 100%; max-width: 340px; border-radius: 25px; padding: 12px; background: rgba(255, 114, 53, 0.1); color: #ff7235; font-weight: 600; font-size: 14px; border: 1px solid rgba(255, 114, 53, 0.3); display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;" (click)="openEmailAuth(true)">
           <ion-icon name="person-add-outline" style="font-size: 18px;"></ion-icon>
           <span>Create Account (Sign Up)</span>
         </button>
 
-        <button class="secondary-btn" style="width: 100%; max-width: 340px; border-radius: 25px; padding: 10px; background: rgba(0,0,0,0.04); color: #555; font-weight: 500; font-size: 13px; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; margin-top: 4px;" (click)="mockGoogleLogin()">
+        <button type="button" class="secondary-btn" style="width: 100%; max-width: 340px; border-radius: 25px; padding: 10px; background: rgba(0,0,0,0.04); color: #555; font-weight: 500; font-size: 13px; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; margin-top: 4px;" (click)="mockGoogleLogin()">
           <span>Instant Demo Entrance ({{ role === 'customer' ? 'Customer' : 'Chef' }})</span>
         </button>
       </div>
@@ -183,10 +183,10 @@
   <div class="step-container step-3" *ngIf="currentStep === 3">
     <!-- Top Nav -->
     <div class="top-nav animate-down">
-      <button class="back-btn" (click)="prevStep()">
+      <button type="button" class="back-btn" (click)="prevStep()">
         <ion-icon name="arrow-back"></ion-icon>
       </button>
-      <button class="help-btn">Need help?</button>
+      <button type="button" class="help-btn">Need help?</button>
     </div>
 
     <div class="content-body animate-fade" style="padding-top: 20px; flex: 1;">
@@ -239,11 +239,11 @@
       </div>
 
       <div class="forgot-pwd" *ngIf="!isSignUpMode" style="margin-bottom: 15px; text-align: right;">
-        <button style="background: none; border: none; color: #ff7235; font-size: 13px; font-weight: 500; cursor: pointer;">Forgot password?</button>
+        <button type="button" style="background: none; border: none; color: #ff7235; font-size: 13px; font-weight: 500; cursor: pointer;">Forgot password?</button>
       </div>
 
       <!-- Submit Button -->
-      <button class="primary-btn-large" style="width: 100%; border-radius: 25px; padding: 14px; background: linear-gradient(135deg, #ff7235, #ff5200); color: #fff; font-weight: 600; font-size: 16px; border: none; box-shadow: 0 4px 12px rgba(255, 114, 53, 0.3); margin-top: 10px; cursor: pointer;" (click)="onSubmitEmailAuth()">
+      <button type="button" class="primary-btn-large" style="width: 100%; border-radius: 25px; padding: 14px; background: linear-gradient(135deg, #ff7235, #ff5200); color: #fff; font-weight: 600; font-size: 16px; border: none; box-shadow: 0 4px 12px rgba(255, 114, 53, 0.3); margin-top: 10px; cursor: pointer;" (click)="onSubmitEmailAuth()">
         {{ isSignUpMode ? 'Create Account' : 'Sign In' }}
       </button>
 

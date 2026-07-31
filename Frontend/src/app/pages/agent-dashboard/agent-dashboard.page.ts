@@ -80,9 +80,9 @@ export class AgentDashboardPage implements OnInit {
 
   ngOnInit() {}
 
-  logout() {
+  async logout() {
     this.isProfileModalOpen = false;
-    this.auth.logout();
+    await this.auth.logout();
     this.trackingService.stopAgentTracking();
     const lastLoc = this.gpsService.lastLocation || { latitude: 0, longitude: 0 };
     this.gpsService.stopTracking(lastLoc.latitude, lastLoc.longitude);
