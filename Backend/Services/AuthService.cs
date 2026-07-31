@@ -44,18 +44,11 @@ namespace MealMate.Api.Services
 
             if (user == null)
             {
-                user = new User
-                {
-                    Id = Guid.NewGuid(),
-                    Email = emailClean,
-                    FullName = emailClean.Split('@')[0],
-                    Role = formattedRole,
-                    WalletBalance = 2500,
-                    CreditLimit = 500,
-                    LoyaltyPoints = 1000,
-                    CreatedAt = DateTime.UtcNow
-                };
-                await _userRepository.AddAsync(user);
+                var newId = Guid.NewGuid();
+                var fullName = emailClean.Split('@')[0];
+                await InsertUserRawSql(newId, emailClean, fullName, "", formattedRole);
+                user = await _userRepository.GetByEmailAsync(emailClean);
+                if (user == null) return null;
             }
 
             return _mapper.Map<UserResponseDto>(user);
@@ -73,19 +66,10 @@ namespace MealMate.Api.Services
 
             if (user == null)
             {
-                user = new User
-                {
-                    Id = Guid.NewGuid(),
-                    Email = emailClean,
-                    FullName = request.FullName,
-                    PhoneNumber = request.PhoneNumber,
-                    Role = formattedRole,
-                    WalletBalance = 2500,
-                    CreditLimit = 500,
-                    LoyaltyPoints = 1000,
-                    CreatedAt = DateTime.UtcNow
-                };
-                await _userRepository.AddAsync(user);
+                var newId = Guid.NewGuid();
+                await InsertUserRawSql(newId, emailClean, request.FullName ?? emailClean.Split('@')[0], request.PhoneNumber ?? "", formattedRole);
+                user = await _userRepository.GetByEmailAsync(emailClean);
+                if (user == null) return null;
             }
             else
             {
@@ -121,15 +105,10 @@ namespace MealMate.Api.Services
 
                 if (user == null)
                 {
-                    user = new User
-                    {
-                        Id = Guid.NewGuid(),
-                        Email = email,
-                        FullName = name,
-                        Role = googleRequest.Role,
-                        CreatedAt = DateTime.UtcNow
-                    };
-                    await _userRepository.AddAsync(user);
+                    var newId = Guid.NewGuid();
+                    await InsertUserRawSql(newId, email, name ?? email.Split('@')[0], "", googleRequest.Role);
+                    user = await _userRepository.GetByEmailAsync(email);
+                    if (user == null) return null;
                 }
 
                 return _mapper.Map<UserResponseDto>(user);
@@ -156,25 +135,11 @@ namespace MealMate.Api.Services
 
                 if (user == null)
                 {
-                    Guid newGuid = Guid.NewGuid();
-                    if (!string.IsNullOrEmpty(request.UserId) && Guid.TryParse(request.UserId, out Guid parsedGuid))
-                    {
-                        newGuid = parsedGuid;
-                    }
-
-                    user = new User
-                    {
-                        Id = newGuid,
-                        Email = emailClean,
-                        FullName = !string.IsNullOrWhiteSpace(request.FullName) ? request.FullName : emailClean.Split('@')[0],
-                        PhoneNumber = request.PhoneNumber,
-                        Role = formattedRole,
-                        WalletBalance = 2500,
-                        CreditLimit = 500,
-                        LoyaltyPoints = 1000,
-                        CreatedAt = DateTime.UtcNow
-                    };
-                    await _userRepository.AddAsync(user);
+                    var newGuid = Guid.NewGuid();
+                    var fullName = !string.IsNullOrWhiteSpace(request.FullName) ? request.FullName : emailClean.Split('@')[0];
+                    await InsertUserRawSql(newGuid, emailClean, fullName, request.PhoneNumber ?? "", formattedRole);
+                    user = await _userRepository.GetByEmailAsync(emailClean);
+                    if (user == null) return null;
                 }
                 else
                 {
@@ -192,6 +157,27 @@ namespace MealMate.Api.Services
                 Console.WriteLine($"Stack Trace: {ex.StackTrace}");
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Insert a user using raw SQL to avoid EF Core including model columns that don't yet exist in the remote DB.
+        /// Only uses core columns guaranteed to be present in the Users table.
+        /// </summary>
+        private async Task InsertUserRawSql(Guid id, string email, string fullName, string phoneNumber, string role)
+        {
+            await _context.Database.ExecuteSqlRawAsync(
+                "INSERT INTO Users (Id, Email, FullName, PhoneNumber, Role, WalletBalance, CreditLimit, CreditUsed, LoyaltyPoints, CreatedAt) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9})",
+                id.ToString(),
+                email,
+                fullName,
+                phoneNumber,
+                role,
+                2500m,
+                500m,
+                0m,
+                1000,
+                DateTime.UtcNow
+            );
         }
     }
 }

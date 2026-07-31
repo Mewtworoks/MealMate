@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MealMate.Api.Services;
 using MealMate.Api.DTOs;
+using MealMate.Api.Data;
 
 namespace MealMate.Api.Controllers
 {
@@ -9,10 +11,12 @@ namespace MealMate.Api.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly AppDbContext _context;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, AppDbContext context)
         {
             _authService = authService;
+            _context = context;
         }
 
         [HttpPost("login")]
@@ -69,14 +73,62 @@ namespace MealMate.Api.Controllers
             if (string.IsNullOrWhiteSpace(request.Email))
                 return BadRequest("Email is required.");
 
-            var result = await _authService.SyncUserAsync(request);
-
-            if (result == null)
+            try
             {
-                return BadRequest(new { success = false, message = "User sync failed." });
-            }
+                var emailClean = request.Email.Trim().ToLower();
+                var roleStr = string.IsNullOrWhiteSpace(request.Role) ? "Customer" : request.Role;
+                var formattedRole = char.ToUpper(roleStr[0]) + roleStr.Substring(1).ToLower();
+                var fullName = !string.IsNullOrWhiteSpace(request.FullName) ? request.FullName : emailClean.Split('@')[0];
+                var newId = Guid.NewGuid();
 
-            return Ok(new { success = true, user = result });
+                // Check if user already exists using ADO.NET (avoids EF model/column issues entirely)
+                var conn = _context.Database.GetDbConnection();
+                if (conn.State != System.Data.ConnectionState.Open) await conn.OpenAsync();
+
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT COUNT(*) FROM Users WHERE Email = @email";
+                    var param = cmd.CreateParameter();
+                    param.ParameterName = "@email";
+                    param.Value = emailClean;
+                    cmd.Parameters.Add(param);
+                    var count = Convert.ToInt64(await cmd.ExecuteScalarAsync());
+
+                    if (count > 0)
+                    {
+                        return Ok(new { success = true, message = "User already synced." });
+                    }
+                }
+
+                // Insert using raw ADO.NET — only core columns guaranteed to exist
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "INSERT INTO Users (Id, Email, FullName, PhoneNumber, Role, WalletBalance, CreditLimit, CreditUsed, LoyaltyPoints, CreatedAt) VALUES (@id, @email, @name, @phone, @role, @wallet, @credit, @used, @points, @created)";
+                    
+                    void AddParam(string name, object val) { var p = cmd.CreateParameter(); p.ParameterName = name; p.Value = val; cmd.Parameters.Add(p); }
+                    
+                    AddParam("@id", newId.ToString());
+                    AddParam("@email", emailClean);
+                    AddParam("@name", fullName);
+                    AddParam("@phone", request.PhoneNumber ?? "");
+                    AddParam("@role", formattedRole);
+                    AddParam("@wallet", 2500m);
+                    AddParam("@credit", 500m);
+                    AddParam("@used", 0m);
+                    AddParam("@points", 1000);
+                    AddParam("@created", DateTime.UtcNow);
+
+                    await cmd.ExecuteNonQueryAsync();
+                }
+
+                return Ok(new { success = true, message = "User synced to database.", userId = newId });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"SyncUser Controller Error: {ex.Message}");
+                Console.WriteLine($"Stack: {ex.StackTrace}");
+                return StatusCode(500, new { success = false, message = $"Sync error: {ex.Message}" });
+            }
         }
     }
 }
