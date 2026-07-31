@@ -134,17 +134,35 @@ export class AgentDashboardPage implements OnInit {
   async fetchAddressFromCoords(lat: number, lng: number) {
     try {
       const res: any = await firstValueFrom(
-        this.http.get(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`).pipe(
+        this.http.get(`https://nominatim.openstreetmap.org/reverse?format=json&accept-language=en&lat=${lat}&lon=${lng}`).pipe(
           timeout(5000),
           catchError(() => of(null))
         )
       );
 
+      if (res && res.address) {
+        const addr = res.address;
+        const subLocality = addr.road || addr.suburb || addr.neighbourhood || addr.residential || '';
+        const district = addr.subdistrict || addr.county || addr.city_district || addr.state_district || '';
+        const city = addr.city || addr.town || addr.village || addr.municipality || '';
+        const state = addr.state || '';
+
+        const components = [subLocality, district, city, state]
+          .map(c => c ? c.trim() : '')
+          .filter(c => c && c.length > 0 && !/[^\x00-\x7F]/.test(c)); // Filter out any non-English/non-ASCII characters
+
+        if (components.length > 0) {
+          // Remove duplicate consecutive parts
+          this.kitchenAddress = Array.from(new Set(components)).join(', ');
+          return;
+        }
+      }
+
       if (res && res.display_name) {
-        // Build clean readable address (street / suburb / city / state)
-        const parts = res.display_name.split(', ');
-        const cleanAddress = parts.slice(0, 4).join(', ');
-        this.kitchenAddress = cleanAddress;
+        // Fallback: Filter non-ASCII tokens from display_name
+        const parts = res.display_name.split(', ')
+          .filter((p: string) => !/[^\x00-\x7F]/.test(p));
+        this.kitchenAddress = parts.slice(0, 4).join(', ');
       }
     } catch (e) {
       console.warn('Reverse geocoding note:', e);
