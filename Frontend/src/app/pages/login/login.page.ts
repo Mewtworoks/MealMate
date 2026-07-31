@@ -194,10 +194,28 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.currentStep = 3;
   }
 
+  onPhoneInput(event: any) {
+    const val = event?.target?.value || '';
+    this.phoneInput = val.replace(/\D/g, '').slice(0, 10);
+    if (event.target) {
+      event.target.value = this.phoneInput;
+    }
+  }
+
   async onSubmitEmailAuth() {
-    if (!this.emailInput || !this.emailInput.includes('@')) {
-      this.showToast('Please enter a valid email address', 'warning');
+    const emailClean = (this.emailInput || '').trim();
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailClean || !emailRegex.test(emailClean)) {
+      this.showToast('Please enter a valid email address (e.g. user@gmail.com)', 'warning');
       return;
+    }
+
+    if (this.isSignUpMode) {
+      const cleanPhone = (this.phoneInput || '').replace(/\D/g, '');
+      if (cleanPhone.length > 0 && cleanPhone.length !== 10) {
+        this.showToast('Please enter a valid 10-digit phone number', 'warning');
+        return;
+      }
     }
 
     const loading = await this.loadingCtrl.create({

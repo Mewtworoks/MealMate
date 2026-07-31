@@ -242,7 +242,7 @@
           <!-- Phone (Only when signing up) -->
           <div class="input-item" *ngIf="isSignUpMode">
             <ion-icon name="call-outline" class="input-icon"></ion-icon>
-            <input type="tel" [(ngModel)]="phoneInput" placeholder="Phone Number (Optional)" class="custom-input">
+            <input type="tel" [(ngModel)]="phoneInput" (input)="onPhoneInput($event)" maxlength="10" placeholder="Phone Number (10 digits)" class="custom-input">
           </div>
 
           <!-- Password -->
