@@ -3,6 +3,8 @@ using MealMate.Api.Repositories;
 using MealMate.Api.Services;
 using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
@@ -11,7 +13,8 @@ builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnCh
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.PropertyNamingPolicy = null; // Keeps original casing or adjust as needed
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+        options.JsonSerializerOptions.Converters.Add(new RoundedDecimalConverter());
     });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -76,6 +79,16 @@ Task.Run(() =>
                 try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD Address LONGTEXT NULL"); } catch { }
                 try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD KitchenName LONGTEXT NULL"); } catch { }
                 try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD ServiceRadiusKm DOUBLE DEFAULT 20.0"); } catch { }
+
+                // Fix decimal column precision to 2 decimal places
+                try { context.Database.ExecuteSqlRaw("ALTER TABLE Users MODIFY WalletBalance DECIMAL(18,2) DEFAULT 2500"); } catch { }
+                try { context.Database.ExecuteSqlRaw("ALTER TABLE Users MODIFY CreditLimit DECIMAL(18,2) DEFAULT 500"); } catch { }
+                try { context.Database.ExecuteSqlRaw("ALTER TABLE Users MODIFY CreditUsed DECIMAL(18,2) DEFAULT 0"); } catch { }
+                try { context.Database.ExecuteSqlRaw("ALTER TABLE Orders MODIFY TotalAmount DECIMAL(18,2) DEFAULT 0"); } catch { }
+                try { context.Database.ExecuteSqlRaw("ALTER TABLE Orders MODIFY WalletAmount DECIMAL(18,2) DEFAULT 0"); } catch { }
+                try { context.Database.ExecuteSqlRaw("ALTER TABLE Orders MODIFY CreditUsedAmount DECIMAL(18,2) DEFAULT 0"); } catch { }
+                try { context.Database.ExecuteSqlRaw("ALTER TABLE OrderItems MODIFY UnitPrice DECIMAL(18,2) DEFAULT 0"); } catch { }
+                try { context.Database.ExecuteSqlRaw("ALTER TABLE Meals MODIFY Price DECIMAL(18,2) DEFAULT 0"); } catch { }
                 
                 try { context.Database.ExecuteSqlRaw("ALTER TABLE Orders ADD OrderNumber INT AUTO_INCREMENT UNIQUE"); } catch { }
                 try { context.Database.ExecuteSqlRaw("ALTER TABLE Orders ADD WalletAmount DECIMAL(18,2) DEFAULT 0"); } catch { }
@@ -239,3 +252,20 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+/// <summary>
+/// Global JSON converter that rounds all decimal values to 2 decimal places.
+/// Prevents values like 500.000000000000000000000 from appearing in API responses.
+/// </summary>
+public class RoundedDecimalConverter : JsonConverter<decimal>
+{
+    public override decimal Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        return reader.GetDecimal();
+    }
+
+    public override void Write(Utf8JsonWriter writer, decimal value, JsonSerializerOptions options)
+    {
+        writer.WriteNumberValue(Math.Round(value, 2));
+    }
+}
