@@ -769,3 +769,363 @@
     transform: translateY(0);
   }
 }
+
+/* ==========================================================================
+   Kitchen & Delivery Radius Location Modal Styling
+   ========================================================================== */
+.location-modal {
+  --border-radius: 24px 24px 0 0;
+
+  .location-modal-header {
+    ion-toolbar {
+      --background: #ffffff;
+      --border-width: 0;
+      padding: 6px 12px;
+    }
+
+    .modal-header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 4px 8px;
+    }
+
+    .modal-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .header-icon {
+        font-size: 1.3rem;
+      }
+
+      .modal-title {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #483129;
+        padding: 0;
+        margin: 0;
+        text-align: left;
+      }
+    }
+
+    .modal-close-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #FFF5EE;
+      border: 1px solid rgba(255, 114, 53, 0.2);
+      color: #FF7235;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      ion-icon {
+        font-size: 1.2rem;
+      }
+
+      &:active {
+        transform: scale(0.92);
+        background: #FFE5D5;
+      }
+    }
+  }
+
+  .location-modal-content {
+    --background: #FDFCFB;
+
+    .location-card-container {
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+      border: 1px solid rgba(255, 114, 53, 0.12);
+      margin: 12px;
+    }
+
+    .location-info-banner {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #FFF5EE;
+      border: 1px solid #FFE5D5;
+      padding: 14px 16px;
+      border-radius: 16px;
+      margin-bottom: 20px;
+
+      .info-icon-badge {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        background: #FF7235;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        ion-icon {
+          font-size: 1.3rem;
+        }
+      }
+
+      .info-text {
+        font-size: 0.82rem;
+        color: #555555;
+        margin: 0;
+        line-height: 1.45;
+
+        strong {
+          color: #FF7235;
+          font-weight: 800;
+        }
+      }
+    }
+
+    .location-form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+
+      .field-item {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+
+        &.flex-1 {
+          flex: 1;
+        }
+      }
+
+      .coords-row {
+        display: flex;
+        gap: 12px;
+      }
+
+      .field-label {
+        font-size: 0.82rem;
+        font-weight: 800;
+        color: #483129;
+        margin: 0;
+      }
+
+      .input-input-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+
+        .field-icon {
+          position: absolute;
+          left: 14px;
+          font-size: 1.15rem;
+          color: #FF7235;
+          pointer-events: none;
+          z-index: 2;
+        }
+
+        .styled-input {
+          width: 100%;
+          padding: 13px 14px 13px 44px;
+          border-radius: 14px;
+          background: #F8F9FA;
+          border: 1.5px solid #EAEAEA;
+          outline: none;
+          font-size: 0.92rem;
+          font-weight: 600;
+          color: #1F2937;
+          transition: all 0.25s ease;
+
+          &::placeholder {
+            color: #A0AEC0;
+            font-weight: 500;
+          }
+
+          &:focus {
+            background: #FFFFFF;
+            border-color: #FF7235;
+            box-shadow: 0 0 0 3px rgba(255, 114, 53, 0.15);
+          }
+        }
+      }
+
+      .gps-detect-btn {
+        background: #FFF5EE;
+        color: #FF7235;
+        border: 1.5px solid rgba(255, 114, 53, 0.3);
+        padding: 13px 16px;
+        border-radius: 14px;
+        font-weight: 800;
+        font-size: 0.88rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.25s ease;
+
+        ion-icon {
+          font-size: 1.15rem;
+        }
+
+        &:hover, &:active {
+          background: #FFE5D5;
+          transform: translateY(-1px);
+        }
+      }
+
+      .radius-slider-box {
+        background: #FDFBF9;
+        border: 1px solid #F3EDE7;
+        padding: 14px;
+        border-radius: 16px;
+
+        .slider-header-line {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 10px;
+
+          .radius-badge-val {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #FFFFFF;
+            background: linear-gradient(135deg, #FF7235, #FF5200);
+            padding: 4px 12px;
+            border-radius: 20px;
+            box-shadow: 0 3px 8px rgba(255, 114, 53, 0.25);
+          }
+        }
+
+        .styled-range-slider {
+          width: 100%;
+          accent-color: #FF7235;
+          height: 6px;
+          border-radius: 10px;
+          cursor: pointer;
+        }
+
+        .slider-labels-line {
+          display: flex;
+          justify-content: space-between;
+          margin-top: 6px;
+          font-size: 0.7rem;
+          font-weight: 700;
+          color: #A0AEC0;
+        }
+      }
+
+      .save-location-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #FF7235, #FF5200);
+        color: white;
+        border: none;
+        padding: 15px;
+        border-radius: 16px;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-top: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 6px 20px rgba(255, 114, 53, 0.35);
+        transition: all 0.25s ease;
+
+        ion-icon {
+          font-size: 1.25rem;
+        }
+
+        &:hover, &:active {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(255, 114, 53, 0.45);
+        }
+
+        &:disabled {
+          opacity: 0.65;
+          cursor: not-allowed;
+          transform: none;
+        }
+      }
+    }
+  }
+}
+
+/* Dark Mode Overrides for Location Modal */
+body.dark {
+  .location-modal {
+    .location-modal-header {
+      ion-toolbar {
+        --background: #131416 !important;
+      }
+      .modal-title-group .modal-title {
+        color: #FFFFFF !important;
+      }
+      .modal-close-btn {
+        background: #1F2023 !important;
+        border-color: #2D2E33 !important;
+        color: #FF7235 !important;
+      }
+    }
+
+    .location-modal-content {
+      --background: #0B0B0C !important;
+
+      .location-card-container {
+        background: #131416 !important;
+        border-color: #1F2023 !important;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4) !important;
+      }
+
+      .location-info-banner {
+        background: rgba(255, 114, 53, 0.08) !important;
+        border-color: rgba(255, 114, 53, 0.2) !important;
+
+        .info-text {
+          color: #A0AEC0 !important;
+        }
+      }
+
+      .location-form-group {
+        .field-label {
+          color: #FFFFFF !important;
+        }
+
+        .input-input-wrap {
+          .styled-input {
+            background: #1A1B1E !important;
+            border-color: #2D2E33 !important;
+            color: #FFFFFF !important;
+
+            &::placeholder {
+              color: #718096 !important;
+            }
+
+            &:focus {
+              border-color: #FF7235 !important;
+              box-shadow: 0 0 0 3px rgba(255, 114, 53, 0.25) !important;
+            }
+          }
+        }
+
+        .gps-detect-btn {
+          background: rgba(255, 114, 53, 0.1) !important;
+          border-color: rgba(255, 114, 53, 0.3) !important;
+          color: #FF7235 !important;
+        }
+
+        .radius-slider-box {
+          background: #1A1B1E !important;
+          border-color: #2D2E33 !important;
+
+          .slider-labels-line {
+            color: #718096 !important;
+          }
+        }
+      }
+    }
+  }
+}
