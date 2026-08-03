@@ -93,6 +93,51 @@ namespace MealMate.Api.Controllers
             return Ok(result);
         }
 
+        // GET: api/chef/location?chefId=...
+        [HttpGet("location")]
+        public async Task<IActionResult> GetChefLocation([FromQuery] string chefId)
+        {
+            if (string.IsNullOrEmpty(chefId))
+                return BadRequest("Chef ID is required.");
+
+            User? user = null;
+            var identifier = chefId.Trim();
+
+            if (Guid.TryParse(identifier, out Guid guidId))
+            {
+                user = await _context.Users.FindAsync(guidId);
+            }
+
+            if (user == null)
+            {
+                user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == identifier.ToLower());
+            }
+
+            if (user == null)
+            {
+                user = await _context.Users.FirstOrDefaultAsync(u => u.Role == "Agent")
+                    ?? await _context.Users.FirstOrDefaultAsync();
+            }
+
+            if (user == null)
+            {
+                return NotFound("Chef user not found.");
+            }
+
+            var hasKitchen = !string.IsNullOrWhiteSpace(user.KitchenName) || user.Latitude.HasValue;
+
+            return Ok(new
+            {
+                chefId = user.Id,
+                kitchenName = user.KitchenName ?? "",
+                address = user.Address ?? "",
+                latitude = user.Latitude,
+                longitude = user.Longitude,
+                serviceRadiusKm = user.ServiceRadiusKm > 0 ? user.ServiceRadiusKm : 20.0,
+                hasKitchen = hasKitchen
+            });
+        }
+
         // POST: api/chef/location
         [HttpPost("location")]
         public async Task<IActionResult> UpdateChefLocation([FromBody] ChefLocationDto dto)

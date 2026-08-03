@@ -7,8 +7,10 @@
         <h2 class="page-title">{{chefName}} 🧑‍🍳</h2>
       </div>
       <div class="header-actions" style="display: flex; gap: 8px; align-items: center;">
-        <button type="button" (click)="openLocationModal()" style="background: rgba(255, 114, 53, 0.12); color: #ff7235; border: 1px solid rgba(255, 114, 53, 0.3); border-radius: 20px; padding: 6px 12px; font-weight: 700; font-size: 0.78rem; display: flex; align-items: center; gap: 4px; cursor: pointer;">
-          <ion-icon name="location-sharp"></ion-icon> Kitchen Location
+        <button type="button" (click)="openLocationModal()" style="background: rgba(255, 114, 53, 0.12); color: #ff7235; border: 1px solid rgba(255, 114, 53, 0.3); border-radius: 20px; padding: 6px 12px; font-weight: 700; font-size: 0.78rem; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+          <ion-icon name="location-sharp"></ion-icon>
+          <span>{{ hasKitchenConfigured ? kitchenName : 'Add Kitchen Location' }}</span>
+          <ion-icon [name]="hasKitchenConfigured ? 'create-outline' : 'add-outline'" style="font-size: 0.85rem; opacity: 0.8;"></ion-icon>
         </button>
 
         <div class="status-indicator-pill" [class.offline]="!isOnline" (click)="toggleOnlineStatus()">
@@ -313,7 +315,7 @@
         <div class="modal-header-content">
           <div class="modal-title-group">
             <span class="header-icon">🍳</span>
-            <ion-title class="modal-title">Kitchen & Delivery Radius</ion-title>
+            <ion-title class="modal-title">{{ hasKitchenConfigured ? 'Manage Kitchen & Delivery Radius' : 'Create Kitchen & Delivery Radius' }}</ion-title>
           </div>
           <ion-buttons slot="end">
             <button type="button" class="modal-close-btn" (click)="closeLocationModal()">
@@ -330,9 +332,12 @@
         <!-- Info Banner -->
         <div class="location-info-banner">
           <div class="info-icon-badge">
-            <ion-icon name="information-circle-outline"></ion-icon>
+            <ion-icon [name]="hasKitchenConfigured ? 'checkmark-circle-outline' : 'information-circle-outline'"></ion-icon>
           </div>
-          <p class="info-text">
+          <p class="info-text" *ngIf="hasKitchenConfigured">
+            Your kitchen <strong>{{kitchenName}}</strong> is active! Customers within your <strong>{{kitchenRadiusKm}} km delivery radius</strong> see your profile. Edit details below to update.
+          </p>
+          <p class="info-text" *ngIf="!hasKitchenConfigured">
             Set your kitchen's exact location. Customers within your <strong>{{kitchenRadiusKm}} km delivery radius</strong> will see your chef profile and be able to order custom meals!
           </p>
         </div>
@@ -394,10 +399,10 @@
             </div>
           </div>
 
-          <!-- Save Button -->
+          <!-- Save / Update Button -->
           <button type="button" class="save-location-btn" (click)="saveKitchenLocation()" [disabled]="isSavingLocation">
-            <ion-icon name="checkmark-circle-outline" *ngIf="!isSavingLocation"></ion-icon>
-            <span>{{ isSavingLocation ? 'Saving Location...' : 'Save Kitchen Location' }}</span>
+            <ion-icon [name]="hasKitchenConfigured ? 'create-outline' : 'checkmark-circle-outline'" *ngIf="!isSavingLocation"></ion-icon>
+            <span>{{ isSavingLocation ? 'Saving Changes...' : (hasKitchenConfigured ? 'Update Kitchen Details' : 'Save Kitchen Location') }}</span>
           </button>
         </div>
 

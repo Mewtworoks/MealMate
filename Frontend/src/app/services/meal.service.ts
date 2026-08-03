@@ -167,6 +167,14 @@ export class MealService {
     }
   }
 
+  async getChefLocation(chefId: string): Promise<any> {
+    try {
+      return await firstValueFrom(this.http.get(`${environment.apiUrl}/chef/location?chefId=${encodeURIComponent(chefId)}`));
+    } catch (e) {
+      return null;
+    }
+  }
+
   async updateChefLocation(chefId: string, latitude: number, longitude: number, address: string, kitchenName: string, serviceRadiusKm: number = 20): Promise<any> {
     const payload = { chefId, latitude, longitude, address, kitchenName, serviceRadiusKm };
     return await firstValueFrom(this.http.post(`${environment.apiUrl}/chef/location`, payload));

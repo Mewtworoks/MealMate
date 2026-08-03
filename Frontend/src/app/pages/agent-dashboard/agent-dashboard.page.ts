@@ -40,6 +40,7 @@ export class AgentDashboardPage implements OnInit {
   kitchenRadiusKm = 20;
   isSavingLocation = false;
   isDetectingGps = false;
+  hasKitchenConfigured = false;
   private ordersSubscription?: Subscription;
 
   get currentDelivery(): Order | null {
@@ -70,6 +71,7 @@ export class AgentDashboardPage implements OnInit {
     if (agentId) {
       await this.orderService.refreshAgentOrders(agentId);
     }
+    await this.loadChefKitchenLocation();
 
     if (this.ordersSubscription) {
       this.ordersSubscription.unsubscribe();
@@ -80,6 +82,20 @@ export class AgentDashboardPage implements OnInit {
       this.filterOrders();
       this.calculateEarnings();
     });
+  }
+
+  async loadChefKitchenLocation() {
+    const chefId = this.auth.userEmail || this.auth.userId;
+    if (!chefId) return;
+    const loc = await this.mealService.getChefLocation(chefId);
+    if (loc) {
+      if (loc.kitchenName) this.kitchenName = loc.kitchenName;
+      if (loc.address) this.kitchenAddress = loc.address;
+      if (loc.latitude) this.kitchenLat = loc.latitude;
+      if (loc.longitude) this.kitchenLng = loc.longitude;
+      if (loc.serviceRadiusKm) this.kitchenRadiusKm = loc.serviceRadiusKm;
+      this.hasKitchenConfigured = !!loc.hasKitchen;
+    }
   }
 
   ngOnInit() {}
@@ -193,9 +209,11 @@ export class AgentDashboardPage implements OnInit {
         this.kitchenRadiusKm
       );
 
+      this.hasKitchenConfigured = true;
+
       const alert = await this.alertCtrl.create({
-        header: 'Location Updated',
-        message: 'Your kitchen location & 20 km delivery radius have been saved successfully!',
+        header: 'Kitchen Updated',
+        message: 'Your kitchen location & delivery radius have been updated successfully!',
         buttons: ['OK']
       });
       await alert.present();
