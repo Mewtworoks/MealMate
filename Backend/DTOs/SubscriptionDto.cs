@@ -6,7 +6,7 @@ namespace MealMate.Api.DTOs
 
     public class CreateSubscriptionDto
     {
-        public Guid CustomerId { get; set; }
+        public string? CustomerId { get; set; } = string.Empty;
         public int Months { get; set; }
         public decimal TotalPaid { get; set; }
         public string? PlanName { get; set; }
@@ -57,7 +57,7 @@ namespace MealMate.Api.DTOs
     public class SubscriptionResponseDto
     {
         public Guid Id { get; set; }
-        public Guid CustomerId { get; set; }
+        public string CustomerId { get; set; } = string.Empty;
         public string StartDate { get; set; } = string.Empty;
         public string EndDate { get; set; } = string.Empty;
         public int Months { get; set; }

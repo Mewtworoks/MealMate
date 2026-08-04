@@ -41,7 +41,7 @@ namespace MealMate.Api.Controllers
 
         /// <summary>Get all subscriptions for a customer.</summary>
         [HttpGet("customer/{customerId}")]
-        public async Task<IActionResult> GetByCustomerId(Guid customerId)
+        public async Task<IActionResult> GetByCustomerId(string customerId)
         {
             var subs = await _service.GetByCustomerIdAsync(customerId);
             return Ok(subs);
@@ -49,7 +49,7 @@ namespace MealMate.Api.Controllers
 
         /// <summary>Get active subscription for a customer.</summary>
         [HttpGet("customer/{customerId}/active")]
-        public async Task<IActionResult> GetActive(Guid customerId)
+        public async Task<IActionResult> GetActive(string customerId)
         {
             var sub = await _service.GetActiveByCustomerIdAsync(customerId);
             if (sub == null) return NotFound("No active subscription found.");

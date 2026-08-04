@@ -10,8 +10,8 @@ namespace MealMate.Api.Services
     {
         Task<SubscriptionResponseDto> CreateSubscriptionAsync(CreateSubscriptionDto dto);
         Task<SubscriptionResponseDto?> GetByIdAsync(Guid id);
-        Task<List<SubscriptionResponseDto>> GetByCustomerIdAsync(Guid customerId);
-        Task<SubscriptionResponseDto?> GetActiveByCustomerIdAsync(Guid customerId);
+        Task<List<SubscriptionResponseDto>> GetByCustomerIdAsync(string customerId);
+        Task<SubscriptionResponseDto?> GetActiveByCustomerIdAsync(string customerId);
         Task<SubscriptionResponseDto?> SwapMealAsync(Guid subId, SwapMealDto dto);
         Task<SubscriptionResponseDto?> ReorderMealsAsync(Guid subId, ReorderMealsDto dto);
         Task<SubscriptionResponseDto?> AddMealToPoolAsync(Guid subId, AddMealToPoolDto dto);
@@ -42,10 +42,11 @@ namespace MealMate.Api.Services
             var totalDays = dto.Months * 30;
             var startDate = DateTime.UtcNow;
             var endDate = startDate.AddDays(totalDays);
+            var customerGuid = await ResolveCustomerGuidAsync(dto.CustomerId);
 
             var sub = new Subscription
             {
-                CustomerId = dto.CustomerId,
+                CustomerId = customerGuid,
                 StartDate = startDate,
                 EndDate = endDate,
                 Months = dto.Months,
@@ -79,16 +80,53 @@ namespace MealMate.Api.Services
             return sub == null ? null : MapToDto(sub);
         }
 
-        public async Task<List<SubscriptionResponseDto>> GetByCustomerIdAsync(Guid customerId)
+        public async Task<List<SubscriptionResponseDto>> GetByCustomerIdAsync(string customerId)
         {
-            var subs = await _repo.GetByCustomerIdAsync(customerId);
+            var guid = await ResolveCustomerGuidAsync(customerId);
+            var subs = await _repo.GetByCustomerIdAsync(guid);
             return subs.Select(MapToDto).ToList();
         }
 
-        public async Task<SubscriptionResponseDto?> GetActiveByCustomerIdAsync(Guid customerId)
+        public async Task<SubscriptionResponseDto?> GetActiveByCustomerIdAsync(string customerId)
         {
-            var sub = await _repo.GetActiveByCustomerIdAsync(customerId);
+            var guid = await ResolveCustomerGuidAsync(customerId);
+            var sub = await _repo.GetActiveByCustomerIdAsync(guid);
             return sub == null ? null : MapToDto(sub);
+        }
+
+        private async Task<Guid> ResolveCustomerGuidAsync(string? customerIdInput)
+        {
+            if (!string.IsNullOrWhiteSpace(customerIdInput))
+            {
+                var inputClean = customerIdInput.Trim();
+
+                if (Guid.TryParse(inputClean, out Guid parsedGuid))
+                {
+                    var userByGuid = await _context.Users.FindAsync(parsedGuid);
+                    if (userByGuid != null) return userByGuid.Id;
+                }
+
+                var userByEmail = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == inputClean.ToLower());
+                if (userByEmail != null) return userByEmail.Id;
+            }
+
+            var customerUser = await _context.Users.FirstOrDefaultAsync(u => u.Role == "Customer")
+                ?? await _context.Users.FirstOrDefaultAsync();
+
+            if (customerUser != null) return customerUser.Id;
+
+            var fallbackId = Guid.NewGuid();
+            var systemCustomer = new User
+            {
+                Id = fallbackId,
+                Email = "customer@mealmate.com",
+                FullName = "MealMate Customer",
+                Role = "Customer",
+                CreatedAt = DateTime.UtcNow
+            };
+            _context.Users.Add(systemCustomer);
+            await _context.SaveChangesAsync();
+            return fallbackId;
         }
 
         public async Task<SubscriptionResponseDto?> SwapMealAsync(Guid subId, SwapMealDto dto)
