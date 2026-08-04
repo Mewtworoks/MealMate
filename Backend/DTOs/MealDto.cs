@@ -9,7 +9,7 @@ namespace MealMate.Api.DTOs
         public string? ImageUrl { get; set; } = string.Empty;
         public bool IsVeg { get; set; }
         public bool IsAvailable { get; set; } = true;
-        public Guid AgentId { get; set; }
+        public string? AgentId { get; set; } = string.Empty;
 
         // ── Nutrition & detail fields ──
         public int Calories { get; set; }
