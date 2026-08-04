@@ -2,8 +2,8 @@ namespace MealMate.Api.DTOs
 {
     public class OrderRequestDto
     {
-        public Guid CustomerId { get; set; }
-        public Guid AgentId { get; set; }
+        public string? CustomerId { get; set; } = string.Empty;
+        public string? AgentId { get; set; } = string.Empty;
         public string DeliveryAddress { get; set; } = string.Empty;
         public string PaymentMethod { get; set; } = "COD"; // Wallet, COD
         public bool RedeemPoints { get; set; }
@@ -22,8 +22,8 @@ namespace MealMate.Api.DTOs
     public class OrderResponseDto
     {
         public string Id { get; set; } = string.Empty;
-        public Guid CustomerId { get; set; }
-        public Guid AgentId { get; set; }
+        public string CustomerId { get; set; } = string.Empty;
+        public string AgentId { get; set; } = string.Empty;
         public DateTime OrderDate { get; set; }
         public decimal TotalAmount { get; set; }
         public string Status { get; set; } = string.Empty;

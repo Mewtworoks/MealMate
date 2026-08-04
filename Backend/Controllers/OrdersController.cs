@@ -33,23 +33,15 @@ namespace MealMate.Api.Controllers
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetCustomerOrders(string userId)
         {
-            if (Guid.TryParse(userId, out var guid))
-            {
-                var orders = await _orderService.GetCustomerOrdersAsync(guid);
-                return Ok(orders);
-            }
-            return Ok(new List<object>());
+            var orders = await _orderService.GetCustomerOrdersAsync(userId);
+            return Ok(orders);
         }
 
         [HttpGet("agent-orders/{agentId}")]
         public async Task<IActionResult> GetAgentOrders(string agentId)
         {
-            if (Guid.TryParse(agentId, out var guid))
-            {
-                var orders = await _orderService.GetAgentOrdersAsync(guid);
-                return Ok(orders);
-            }
-            return Ok(new List<object>());
+            var orders = await _orderService.GetAgentOrdersAsync(agentId);
+            return Ok(orders);
         }
 
         [HttpPatch("{id}/status")]
