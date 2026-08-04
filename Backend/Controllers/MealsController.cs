@@ -23,7 +23,7 @@ namespace MealMate.Api.Controllers
         }
 
         [HttpGet("agent/{agentId}")]
-        public async Task<IActionResult> GetByAgent(Guid agentId)
+        public async Task<IActionResult> GetByAgent(string agentId)
         {
             var meals = await _mealService.GetByAgentIdAsync(agentId);
             return Ok(meals);

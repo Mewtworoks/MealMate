@@ -10,7 +10,7 @@ namespace MealMate.Api.Services
     public interface IMealService
     {
         Task<IEnumerable<MealResponseDto>> GetAllAsync(string? category);
-        Task<IEnumerable<MealResponseDto>> GetByAgentIdAsync(Guid agentId);
+        Task<IEnumerable<MealResponseDto>> GetByAgentIdAsync(string agentId);
         Task<MealResponseDto?> GetByIdAsync(Guid id);
         Task<MealResponseDto> CreateAsync(MealRequestDto mealRequest);
         Task<bool> UpdateAsync(Guid id, MealRequestDto mealRequest);
@@ -36,9 +36,10 @@ namespace MealMate.Api.Services
             return _mapper.Map<IEnumerable<MealResponseDto>>(meals);
         }
 
-        public async Task<IEnumerable<MealResponseDto>> GetByAgentIdAsync(Guid agentId)
+        public async Task<IEnumerable<MealResponseDto>> GetByAgentIdAsync(string agentId)
         {
-            var meals = await _mealRepository.GetByAgentIdAsync(agentId);
+            var agentGuid = await ResolveAgentGuidAsync(agentId);
+            var meals = await _mealRepository.GetByAgentIdAsync(agentGuid);
             return _mapper.Map<IEnumerable<MealResponseDto>>(meals);
         }
 
