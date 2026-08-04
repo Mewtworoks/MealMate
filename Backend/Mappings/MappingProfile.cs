@@ -9,8 +9,10 @@ namespace MealMate.Api.Mappings
         public MappingProfile()
         {
             CreateMap<User, UserResponseDto>();
-            CreateMap<Meal, MealResponseDto>();
-            CreateMap<MealRequestDto, Meal>();
+            CreateMap<Meal, MealResponseDto>()
+                .ForMember(dest => dest.AgentId, opt => opt.MapFrom(src => src.AgentId.ToString()));
+            CreateMap<MealRequestDto, Meal>()
+                .ForMember(dest => dest.AgentId, opt => opt.Ignore());
             CreateMap<Order, OrderResponseDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => $"MM{src.OrderNumber}"))
                 .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(src => (src.Customer != null && !string.IsNullOrEmpty(src.Customer.FullName)) ? src.Customer.FullName : "Guest"))

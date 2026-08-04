@@ -71,22 +71,38 @@ namespace MealMate.Api.Services
 
         private async Task<Guid> ResolveAgentGuidAsync(string? agentIdInput)
         {
-            if (!string.IsNullOrWhiteSpace(agentIdInput) && Guid.TryParse(agentIdInput.Trim(), out Guid parsedGuid))
-            {
-                return parsedGuid;
-            }
-
             if (!string.IsNullOrWhiteSpace(agentIdInput))
             {
-                var inputClean = agentIdInput.Trim().ToLower();
-                var userByEmail = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == inputClean);
+                var inputClean = agentIdInput.Trim();
+
+                if (Guid.TryParse(inputClean, out Guid parsedGuid))
+                {
+                    var userByGuid = await _context.Users.FindAsync(parsedGuid);
+                    if (userByGuid != null) return userByGuid.Id;
+                }
+
+                var userByEmail = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == inputClean.ToLower());
                 if (userByEmail != null) return userByEmail.Id;
             }
 
             var agentUser = await _context.Users.FirstOrDefaultAsync(u => u.Role == "Agent")
                 ?? await _context.Users.FirstOrDefaultAsync();
 
-            return agentUser?.Id ?? Guid.NewGuid();
+            if (agentUser != null) return agentUser.Id;
+
+            // If no user exists, create a default Agent system user record to preserve database integrity
+            var fallbackId = Guid.NewGuid();
+            var systemAgent = new User
+            {
+                Id = fallbackId,
+                Email = "agent@mealmate.com",
+                FullName = "MealMate Chef",
+                Role = "Agent",
+                CreatedAt = DateTime.UtcNow
+            };
+            _context.Users.Add(systemAgent);
+            await _context.SaveChangesAsync();
+            return fallbackId;
         }
 
         public async Task<bool> DeleteAsync(Guid id)
