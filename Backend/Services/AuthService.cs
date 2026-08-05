@@ -23,13 +23,15 @@ namespace MealMate.Api.Services
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
+        private readonly IClerkService _clerkService;
 
-        public AuthService(IUserRepository userRepository, AppDbContext context, IMapper mapper, IConfiguration configuration)
+        public AuthService(IUserRepository userRepository, AppDbContext context, IMapper mapper, IConfiguration configuration, IClerkService clerkService)
         {
             _userRepository = userRepository;
             _context = context;
             _mapper = mapper;
             _configuration = configuration;
+            _clerkService = clerkService;
         }
 
         public async Task<UserResponseDto?> LoginWithEmailAsync(EmailLoginDto request)
@@ -56,32 +58,60 @@ namespace MealMate.Api.Services
 
         public async Task<UserResponseDto?> RegisterAsync(RegisterDto request)
         {
-            if (string.IsNullOrWhiteSpace(request.Email)) return null;
+            if (string.IsNullOrWhiteSpace(request.Email))
+                throw new InvalidOperationException("Email is required.");
 
             var emailClean = request.Email.Trim().ToLower();
-            var user = await _userRepository.GetByEmailAsync(emailClean);
-
             var roleStr = string.IsNullOrWhiteSpace(request.Role) ? "Customer" : request.Role;
             var formattedRole = char.ToUpper(roleStr[0]) + roleStr.Substring(1).ToLower();
-
             var phoneClean = string.IsNullOrWhiteSpace(request.PhoneNumber) ? null : request.PhoneNumber.Trim();
 
-            if (user == null)
+            // 1. Pre-flight Duplicate Check in Database
+            var existingUser = await _userRepository.GetByEmailAsync(emailClean);
+            if (existingUser != null)
             {
-                var newId = Guid.NewGuid();
-                await InsertUserRawSql(newId, emailClean, request.FullName ?? emailClean.Split('@')[0], phoneClean, formattedRole);
-                user = await _userRepository.GetByEmailAsync(emailClean);
-                if (user == null) return null;
-            }
-            else
-            {
-                if (!string.IsNullOrWhiteSpace(request.FullName)) user.FullName = request.FullName;
-                if (!string.IsNullOrWhiteSpace(request.PhoneNumber)) user.PhoneNumber = request.PhoneNumber;
-                user.Role = formattedRole;
-                await _userRepository.UpdateAsync(user);
+                throw new InvalidOperationException("An account already exists with this email address.");
             }
 
-            return _mapper.Map<UserResponseDto>(user);
+            if (!string.IsNullOrWhiteSpace(phoneClean))
+            {
+                await ValidatePhoneNumberUniqueAsync(phoneClean);
+            }
+
+            // 2. Transactional User Creation with Clerk Proxy & Rollback
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            string? createdClerkUserId = null;
+
+            try
+            {
+                var newId = Guid.NewGuid();
+                var fullName = !string.IsNullOrWhiteSpace(request.FullName) ? request.FullName : emailClean.Split('@')[0];
+
+                await InsertUserRawSql(newId, emailClean, fullName, phoneClean, formattedRole);
+
+                // Create user in Clerk (if Clerk SecretKey is configured)
+                var clerkResult = await _clerkService.CreateUserAsync(emailClean, request.Password ?? "MealMate@123", fullName, formattedRole);
+                if (!clerkResult.Success)
+                {
+                    await transaction.RollbackAsync();
+                    throw new InvalidOperationException(clerkResult.Message ?? "Clerk registration failed.");
+                }
+                createdClerkUserId = clerkResult.UserId;
+
+                await transaction.CommitAsync();
+
+                var user = await _userRepository.GetByEmailAsync(emailClean);
+                return _mapper.Map<UserResponseDto>(user);
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                if (!string.IsNullOrEmpty(createdClerkUserId))
+                {
+                    await _clerkService.DeleteUserAsync(createdClerkUserId);
+                }
+                throw;
+            }
         }
 
         public async Task<UserResponseDto?> LoginWithGoogleAsync(GoogleLoginDto googleRequest)
@@ -125,40 +155,64 @@ namespace MealMate.Api.Services
 
         public async Task<UserResponseDto?> SyncUserAsync(SyncUserDto request)
         {
-            try
+            if (string.IsNullOrWhiteSpace(request.Email))
+                throw new InvalidOperationException("Email is required.");
+
+            var emailClean = request.Email.Trim().ToLower();
+            var roleStr = string.IsNullOrWhiteSpace(request.Role) ? "Customer" : request.Role;
+            var formattedRole = char.ToUpper(roleStr[0]) + roleStr.Substring(1).ToLower();
+            var phoneClean = string.IsNullOrWhiteSpace(request.PhoneNumber) ? null : request.PhoneNumber.Trim();
+
+            var user = await _userRepository.GetByEmailAsync(emailClean);
+
+            if (user != null)
             {
-                if (string.IsNullOrWhiteSpace(request.Email)) return null;
-
-                var emailClean = request.Email.Trim().ToLower();
-                var user = await _userRepository.GetByEmailAsync(emailClean);
-
-                var roleStr = string.IsNullOrWhiteSpace(request.Role) ? "Customer" : request.Role;
-                var formattedRole = char.ToUpper(roleStr[0]) + roleStr.Substring(1).ToLower();
-                var phoneClean = string.IsNullOrWhiteSpace(request.PhoneNumber) ? null : request.PhoneNumber.Trim();
-
-                if (user == null)
-                {
-                    var newGuid = Guid.NewGuid();
-                    var fullName = !string.IsNullOrWhiteSpace(request.FullName) ? request.FullName : emailClean.Split('@')[0];
-                    await InsertUserRawSql(newGuid, emailClean, fullName, phoneClean, formattedRole);
-                    user = await _userRepository.GetByEmailAsync(emailClean);
-                    if (user == null) return null;
-                }
-                else
-                {
-                    if (!string.IsNullOrWhiteSpace(request.FullName)) user.FullName = request.FullName;
-                    if (!string.IsNullOrWhiteSpace(request.PhoneNumber)) user.PhoneNumber = request.PhoneNumber;
-                    user.Role = formattedRole;
-                    await _userRepository.UpdateAsync(user);
-                }
-
+                if (!string.IsNullOrWhiteSpace(request.FullName)) user.FullName = request.FullName;
+                if (!string.IsNullOrWhiteSpace(phoneClean)) user.PhoneNumber = phoneClean;
+                user.Role = formattedRole;
+                await _userRepository.UpdateAsync(user);
                 return _mapper.Map<UserResponseDto>(user);
             }
-            catch (Exception ex)
+
+            if (!string.IsNullOrWhiteSpace(phoneClean))
             {
-                Console.WriteLine($"SyncUser Error: {ex.Message}");
-                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
-                return null;
+                await ValidatePhoneNumberUniqueAsync(phoneClean);
+            }
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var newGuid = Guid.NewGuid();
+                var fullName = !string.IsNullOrWhiteSpace(request.FullName) ? request.FullName : emailClean.Split('@')[0];
+                await InsertUserRawSql(newGuid, emailClean, fullName, phoneClean, formattedRole);
+                await transaction.CommitAsync();
+
+                user = await _userRepository.GetByEmailAsync(emailClean);
+                return _mapper.Map<UserResponseDto>(user);
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
+        private async Task ValidatePhoneNumberUniqueAsync(string phoneNumber)
+        {
+            var conn = _context.Database.GetDbConnection();
+            if (conn.State != System.Data.ConnectionState.Open) await conn.OpenAsync();
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT COUNT(*) FROM Users WHERE PhoneNumber = @phone";
+            var param = cmd.CreateParameter();
+            param.ParameterName = "@phone";
+            param.Value = phoneNumber;
+            cmd.Parameters.Add(param);
+
+            var count = Convert.ToInt64(await cmd.ExecuteScalarAsync());
+            if (count > 0)
+            {
+                throw new InvalidOperationException($"An account already exists with phone number '{phoneNumber}'.");
             }
         }
 

@@ -64,6 +64,27 @@ export class AuthService {
   }
 
   async register(fullName: string, email: string, password: string, phoneNumber: string, role: 'customer' | 'agent'): Promise<any> {
+    // 1. Call Backend API First (Performs DB constraint validation & DB creation in a transaction)
+    const payload = { fullName, email, password, phoneNumber, role };
+    let backendRes: any = null;
+
+    try {
+      backendRes = await firstValueFrom(
+        this.http.post(`${environment.apiUrl}/auth/register`, payload).pipe(
+          timeout(8000),
+          catchError((err: any) => of({ success: false, message: err?.error?.message || 'Server connection timeout.' }))
+        )
+      );
+
+      if (!backendRes || backendRes.success === false) {
+        return { success: false, message: backendRes?.message || 'Account creation failed.' };
+      }
+    } catch (err: any) {
+      console.warn('Backend register note:', err);
+      return { success: false, message: err?.message || 'Account creation failed.' };
+    }
+
+    // 2. Sync with Clerk Client-Side if key is configured
     const key = environment.clerkPublishableKey;
     if (key && key.startsWith('pk_test_') && !key.includes('clean-mudfish-62')) {
       try {
@@ -81,34 +102,31 @@ export class AuthService {
           this.saveUserSession(userData, role);
           return userData;
         } else if (clerkRes.exists) {
-          return { success: false, message: 'An account already exists with this email. Please click "Sign In"!' };
-        } else if (clerkRes.message) {
-          return { success: false, message: clerkRes.message };
+          // Account already exists in Clerk; sign in to complete session
+          const signInRes = await this.clerkAuth.signInWithEmailAndPassword(email, password);
+          if (signInRes.success && signInRes.user) {
+            const u = signInRes.user;
+            const userData = {
+              id: u.id,
+              email: u.primaryEmailAddress?.emailAddress || email,
+              fullName: fullName || u.fullName
+            };
+            this.saveUserSession(userData, role);
+            return userData;
+          }
         }
       } catch (clerkErr: any) {
-        console.warn('Clerk register note:', clerkErr?.message || clerkErr);
+        console.warn('Clerk register sync note:', clerkErr?.message || clerkErr);
       }
     }
 
-    const payload = { fullName, email, password, phoneNumber, role };
-    try {
-      const res: any = await firstValueFrom(
-        this.http.post(`${environment.apiUrl}/auth/register`, payload).pipe(
-          timeout(8000),
-          catchError(() => of({ success: false, message: 'Server connection timeout.' }))
-        )
-      );
-
-      if (res.success && res.user) {
-        this.saveUserSession(res.user, role);
-        return res.user;
-      }
-
-      return res;
-    } catch (err: any) {
-      console.warn('Backend register note:', err);
-      return { success: false, message: 'Account creation failed. Please try again.' };
+    // Fallback to backend user session if Clerk client-side isn't initialized
+    if (backendRes.success && backendRes.user) {
+      this.saveUserSession(backendRes.user, role);
+      return backendRes.user;
     }
+
+    return backendRes;
   }
 
   private saveUserSession(userData: any, role: 'customer' | 'agent') {
