@@ -40,7 +40,7 @@ export class ClerkAuthService {
 
       // If signed in under a different user or stale session exists, clear session first
       if (clerk.user || clerk.session) {
-        await clerk.signOut();
+        await clerk.signOut({ redirectUrl: '' });
       }
 
       const result = await clerk.client.signIn.create({
@@ -73,7 +73,7 @@ export class ClerkAuthService {
               sessionId: clerk.session?.id
             };
           }
-          await clerk.signOut();
+          await clerk.signOut({ redirectUrl: '' });
           const retryResult = await clerk.client.signIn.create({
             identifier: email,
             password: password,
@@ -106,7 +106,7 @@ export class ClerkAuthService {
       const clerk = await this.getClerk();
 
       if (clerk.user || clerk.session) {
-        await clerk.signOut();
+        await clerk.signOut({ redirectUrl: '' });
       }
 
       const nameParts = (fullName || '').split(' ');
@@ -162,7 +162,7 @@ export class ClerkAuthService {
     try {
       const clerk = await this.getClerk();
       if (clerk) {
-        await clerk.signOut();
+        await clerk.signOut({ redirectUrl: '' });
       }
     } catch (e) {
       console.warn('Clerk signOut error:', e);
