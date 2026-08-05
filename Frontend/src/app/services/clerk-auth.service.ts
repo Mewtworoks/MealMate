@@ -28,6 +28,21 @@ export class ClerkAuthService {
   async signInWithEmailAndPassword(email: string, password: string): Promise<any> {
     try {
       const clerk = await this.getClerk();
+
+      // If user is already active in Clerk for this email, return existing user session
+      if (clerk.user && clerk.user.primaryEmailAddress?.emailAddress.toLowerCase() === email.trim().toLowerCase()) {
+        return {
+          success: true,
+          user: clerk.user,
+          sessionId: clerk.session?.id
+        };
+      }
+
+      // If signed in under a different user or stale session exists, clear session first
+      if (clerk.user || clerk.session) {
+        await clerk.signOut();
+      }
+
       const result = await clerk.client.signIn.create({
         identifier: email,
         password: password,
@@ -46,6 +61,36 @@ export class ClerkAuthService {
       console.warn('Clerk SignIn Error:', err);
       const errors = err?.errors || [];
       const notFound = errors.some((e: any) => e.code === 'form_identifier_not_found');
+      const alreadySignedIn = errors.some((e: any) => e.code === 'session_exists' || e.message?.includes('already signed in'));
+
+      if (alreadySignedIn) {
+        try {
+          const clerk = await this.getClerk();
+          if (clerk.user) {
+            return {
+              success: true,
+              user: clerk.user,
+              sessionId: clerk.session?.id
+            };
+          }
+          await clerk.signOut();
+          const retryResult = await clerk.client.signIn.create({
+            identifier: email,
+            password: password,
+          });
+          if (retryResult.status === 'complete') {
+            await clerk.setActive({ session: retryResult.createdSessionId });
+            return {
+              success: true,
+              user: clerk.user,
+              sessionId: retryResult.createdSessionId
+            };
+          }
+        } catch (retryErr: any) {
+          console.warn('Clerk retry error:', retryErr);
+        }
+      }
+
       return {
         success: false,
         notFound,
@@ -59,6 +104,11 @@ export class ClerkAuthService {
   async signUpWithEmailAndPassword(email: string, password: string, fullName?: string): Promise<any> {
     try {
       const clerk = await this.getClerk();
+
+      if (clerk.user || clerk.session) {
+        await clerk.signOut();
+      }
+
       const nameParts = (fullName || '').split(' ');
       const firstName = nameParts[0] || '';
       const lastName = nameParts.slice(1).join(' ') || '';
@@ -109,8 +159,13 @@ export class ClerkAuthService {
   }
 
   async signOut() {
-    if (this.clerkInstance) {
-      await this.clerkInstance.signOut();
+    try {
+      const clerk = await this.getClerk();
+      if (clerk) {
+        await clerk.signOut();
+      }
+    } catch (e) {
+      console.warn('Clerk signOut error:', e);
     }
   }
 }
