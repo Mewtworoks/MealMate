@@ -63,13 +63,27 @@ export class AllMealsPage implements OnInit {
 
     // Filter by Category
     if (this.selectedCategory !== 'All') {
-      // In this app, Bestseller and Trending are visual properties or category fallbacks
-      if (this.selectedCategory === 'Trending' || this.selectedCategory === 'Bestseller') {
-        // Just show a subset of meals as Trending/Bestseller for demo variety
-        result = this.meals.slice(0, Math.ceil(this.meals.length / 2));
-      } else {
-        result = this.meals.filter(m => m.category === this.selectedCategory);
+      const cat = this.selectedCategory;
+      let directMatches = this.meals.filter(m => m.category === cat);
+
+      if (cat === 'Lunch') {
+        const extra = this.meals.filter(m => m.category === 'Thali' || m.category === 'Non-Veg Thali' || m.category === 'Biryani');
+        directMatches = Array.from(new Set([...directMatches, ...extra]));
+      } else if (cat === 'Healthy') {
+        const extra = this.meals.filter(m => m.category === 'Breakfast' || m.type === 'Veg' || (m.calories && m.calories <= 450));
+        directMatches = Array.from(new Set([...directMatches, ...extra]));
+      } else if (cat === 'North Indian') {
+        const extra = this.meals.filter(m => m.category === 'Thali' || m.category === 'Fast Food' || m.name.includes('Paneer') || m.name.includes('Chicken') || m.name.includes('Dal') || m.name.includes('Rajma') || m.name.includes('Saag') || m.name.includes('Chole') || m.name.includes('Kulcha'));
+        directMatches = Array.from(new Set([...directMatches, ...extra]));
+      } else if (cat === 'Trending') {
+        const extra = this.meals.filter(m => m.price >= 200 || m.category === 'Biryani' || m.category === 'Fast Food');
+        directMatches = Array.from(new Set([...directMatches, ...extra]));
+      } else if (cat === 'Bestseller') {
+        const extra = this.meals.filter(m => m.name.includes('Butter') || m.name.includes('Paneer') || m.name.includes('Biryani') || m.name.includes('Chole') || m.name.includes('Dal'));
+        directMatches = Array.from(new Set([...directMatches, ...extra]));
       }
+
+      result = directMatches.length > 0 ? directMatches : this.meals;
     }
 
     // Filter by Search Term

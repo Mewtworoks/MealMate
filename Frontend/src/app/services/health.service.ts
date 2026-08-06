@@ -176,9 +176,7 @@ export class HealthService {
 
       // Determine which meal was served on this day
       const dayNumber = Math.floor((checkDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-      if (dayNumber < 0) continue;
-
-      const mealIndex = dayNumber % activeSub.rotationMeals.length;
+      const mealIndex = Math.abs(dayNumber) % activeSub.rotationMeals.length;
       const rotMeal = activeSub.rotationMeals[mealIndex];
       const nutrition = this.getNutrition(rotMeal);
 
@@ -266,25 +264,49 @@ export class HealthService {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    const subs = this.subscriptionService.getUserSubscriptions(userId);
+    const activeSub = subs.find(s => s.status === 'Active' || s.status === 'Paused');
+
     for (let d = 6; d >= 0; d--) {
       const date = new Date(today);
       date.setDate(date.getDate() - d);
       const dateStr = this.dateToStr(date);
       const log = this.getDailyLog(userId, dateStr);
-      const isToday = d === 0;
-      const isFuture = false; // We only look backward
+
+      let mealName = log.meals.length > 0 ? log.meals[0].mealName : '';
+      let calories = log.totalCalories;
+      let protein = log.totalProtein;
+      let carbs = log.totalCarbs;
+      let fat = log.totalFat;
+
+      // If no logged meal for this day, pull from active subscription rotation!
+      if (!mealName && activeSub && activeSub.rotationMeals && activeSub.rotationMeals.length > 0) {
+        const start = new Date(activeSub.startDate);
+        start.setHours(0, 0, 0, 0);
+        let dayDiff = Math.floor((date.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+        const rotIndex = Math.abs(dayDiff) % activeSub.rotationMeals.length;
+        const rotMeal = activeSub.rotationMeals[rotIndex];
+        if (rotMeal) {
+          mealName = rotMeal.name;
+          const nut = this.getNutrition(rotMeal);
+          calories = nut.calories;
+          protein = nut.protein;
+          carbs = nut.carbs;
+          fat = nut.fat;
+        }
+      }
 
       result.push({
         dayName: date.toLocaleDateString('en-IN', { weekday: 'short' }),
         dateStr,
-        isToday,
-        isFuture,
-        calories: log.totalCalories,
-        protein: log.totalProtein,
-        carbs: log.totalCarbs,
-        fat: log.totalFat,
-        onTrack: log.totalCalories > 0 && Math.abs(log.totalCalories - goal.targetCalories) <= 300,
-        mealName: log.meals.length > 0 ? log.meals[0].mealName : ''
+        isToday: d === 0,
+        isFuture: false,
+        calories,
+        protein,
+        carbs,
+        fat,
+        onTrack: calories > 0 && Math.abs(calories - goal.targetCalories) <= 350,
+        mealName
       });
     }
     return result;

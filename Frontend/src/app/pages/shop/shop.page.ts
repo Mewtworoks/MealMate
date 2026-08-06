@@ -211,13 +211,36 @@ export class ShopPage implements OnInit {
   }
 
   getFilteredMeals(): Meal[] {
-    // These categories show all meals since they are UI filters, not DB categories
-    const showAll = ['Trending', 'Bestseller', 'More', 'Healthy'];
-    if (showAll.includes(this.selectedCategory)) {
-      return this.meals.slice(0, 6);
+    if (!this.meals || this.meals.length === 0) return [];
+    
+    const cat = this.selectedCategory;
+
+    if (cat === 'More') {
+      return this.meals;
     }
-    const filtered = this.meals.filter(m => m.category === this.selectedCategory);
-    return filtered.length > 0 ? filtered : this.meals.slice(0, 6);
+
+    // Direct category match
+    let directMatches = this.meals.filter(m => m.category === cat);
+
+    // Smart fallback/supplement based on filter topic
+    if (cat === 'Lunch') {
+      const extra = this.meals.filter(m => m.category === 'Thali' || m.category === 'Non-Veg Thali' || m.category === 'Biryani');
+      directMatches = Array.from(new Set([...directMatches, ...extra]));
+    } else if (cat === 'Healthy') {
+      const extra = this.meals.filter(m => m.category === 'Breakfast' || m.type === 'Veg' || (m.calories && m.calories <= 450));
+      directMatches = Array.from(new Set([...directMatches, ...extra]));
+    } else if (cat === 'North Indian') {
+      const extra = this.meals.filter(m => m.category === 'Thali' || m.category === 'Fast Food' || m.name.includes('Paneer') || m.name.includes('Chicken') || m.name.includes('Dal') || m.name.includes('Rajma') || m.name.includes('Saag') || m.name.includes('Chole') || m.name.includes('Kulcha'));
+      directMatches = Array.from(new Set([...directMatches, ...extra]));
+    } else if (cat === 'Trending') {
+      const extra = this.meals.filter(m => m.price >= 200 || m.category === 'Biryani' || m.category === 'Fast Food');
+      directMatches = Array.from(new Set([...directMatches, ...extra]));
+    } else if (cat === 'Bestseller') {
+      const extra = this.meals.filter(m => m.name.includes('Butter') || m.name.includes('Paneer') || m.name.includes('Biryani') || m.name.includes('Chole') || m.name.includes('Dal'));
+      directMatches = Array.from(new Set([...directMatches, ...extra]));
+    }
+
+    return directMatches.length > 0 ? directMatches : this.meals.slice(0, 6);
   }
 
   addToCart(meal: Meal, event?: Event) {

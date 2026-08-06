@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { OrderService, Order } from '../../services/order.service';
+import { MealService } from '../../services/meal.service';
 
 @Component({
   selector: 'app-order-details',
@@ -16,7 +17,8 @@ export class OrderDetailsPage implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private navCtrl: NavController,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private mealService: MealService
   ) { }
 
   async ngOnInit() {
@@ -32,7 +34,6 @@ export class OrderDetailsPage implements OnInit {
   }
 
   reorder() {
-    // Add items to cart or navigate to shop
     console.log('Reorder clicked');
   }
 
@@ -45,8 +46,19 @@ export class OrderDetailsPage implements OnInit {
     return currentIndex >= checkIndex && checkIndex !== -1;
   }
 
-  // Get item image
-  getItemImage(index: number): string {
+  // Get item image dynamically
+  getItemImage(index: number, item?: any): string {
+    if (item) {
+      const name = item.name || item.mealName || item.MealName || '';
+      const img = item.imageUrl || item.ImageUrl || '';
+      return this.mealService.mapMealImage(img, name);
+    }
+    if (this.order && this.order.items && this.order.items.length > index) {
+      const it = this.order.items[index];
+      const name = it.name || it.mealName || it.MealName || '';
+      const img = it.imageUrl || it.ImageUrl || '';
+      return this.mealService.mapMealImage(img, name);
+    }
     return this.orderService.getMealFallbackImage(index);
   }
 }

@@ -5,6 +5,8 @@ import { NavController } from '@ionic/angular';
 import { AuthService } from '../../services/auth';
 import { SubscriptionService, Subscription, RotationMeal } from '../../services/subscription.service';
 
+import { MealService } from '../../services/meal.service';
+
 @Component({
   selector: 'app-my-orders',
   templateUrl: './my-orders.page.html',
@@ -22,6 +24,7 @@ export class MyOrdersPage implements OnInit {
 
   constructor(
     private orderService: OrderService,
+    private mealService: MealService,
     private auth: AuthService,
     private router: Router,
     private navCtrl: NavController,
@@ -29,6 +32,14 @@ export class MyOrdersPage implements OnInit {
   ) { }
 
   async ngOnInit() {
+    this.loadOrdersData();
+  }
+
+  async ionViewWillEnter() {
+    this.loadOrdersData();
+  }
+
+  private async loadOrdersData() {
     const userId = this.auth.userId;
     if (userId) {
       this.orderService.refreshUserOrders(userId);
@@ -120,6 +131,12 @@ export class MyOrdersPage implements OnInit {
   }
 
   getOrderImage(order: Order, index: number): string {
+    if (order.items && order.items.length > 0) {
+      const item = order.items[0];
+      const name = item.mealName || item.MealName || item.name || item.Name || '';
+      const img = item.imageUrl || item.ImageUrl || '';
+      return this.mealService.mapMealImage(img, name);
+    }
     return this.orderService.getMealFallbackImage(index);
   }
 

@@ -58,7 +58,14 @@ export class OrderService {
         displayId: o.displayId || o.DisplayId,
         date: o.date || o.Date || o.orderDate || o.OrderDate || o.createdAt || o.CreatedAt,
         total: o.total || o.Total || o.totalAmount || o.TotalAmount,
-        items: o.items || o.Items || o.orderItems || o.OrderItems || [],
+        items: (o.items || o.Items || o.orderItems || o.OrderItems || []).map((i: any) => ({
+          mealId: i.mealId || i.MealId,
+          name: i.mealName || i.MealName || i.name || i.Name || 'Item',
+          mealName: i.mealName || i.MealName || i.name || i.Name || 'Item',
+          price: i.unitPrice !== undefined ? i.unitPrice : (i.UnitPrice !== undefined ? i.UnitPrice : (i.price || 0)),
+          unitPrice: i.unitPrice !== undefined ? i.unitPrice : (i.UnitPrice !== undefined ? i.UnitPrice : (i.price || 0)),
+          quantity: i.quantity || i.Quantity || 1
+        })),
         status: o.status || o.Status || 'Pending',
         agentId: o.agentId || o.AgentId,
         customerId: o.customerId || o.CustomerId,
@@ -85,7 +92,14 @@ export class OrderService {
         displayId: o.displayId || o.DisplayId,
         date: o.date || o.Date || o.orderDate || o.OrderDate || o.createdAt || o.CreatedAt,
         total: o.total || o.Total || o.totalAmount || o.TotalAmount,
-        items: o.items || o.Items || o.orderItems || o.OrderItems || [],
+        items: (o.items || o.Items || o.orderItems || o.OrderItems || []).map((i: any) => ({
+          mealId: i.mealId || i.MealId,
+          name: i.mealName || i.MealName || i.name || i.Name || 'Item',
+          mealName: i.mealName || i.MealName || i.name || i.Name || 'Item',
+          price: i.unitPrice !== undefined ? i.unitPrice : (i.UnitPrice !== undefined ? i.UnitPrice : (i.price || 0)),
+          unitPrice: i.unitPrice !== undefined ? i.unitPrice : (i.UnitPrice !== undefined ? i.UnitPrice : (i.price || 0)),
+          quantity: i.quantity || i.Quantity || 1
+        })),
         status: o.status || o.Status || 'Pending',
         agentId: o.agentId || o.AgentId,
         customerId: o.customerId || o.CustomerId,
@@ -120,7 +134,7 @@ export class OrderService {
   }
 
   async getOrderById(id: string): Promise<Order | undefined> {
-    const localOrder = this.ordersSubject.value.find(o => o.id === id);
+    const localOrder = this.ordersSubject.value.find(o => o.id === id || o.displayId === id);
     if (localOrder) return localOrder;
 
     try {
@@ -130,7 +144,14 @@ export class OrderService {
         displayId: o.displayId || o.DisplayId,
         date: o.date || o.Date || o.orderDate || o.OrderDate || o.createdAt || o.CreatedAt,
         total: o.total || o.Total || o.totalAmount || o.TotalAmount,
-        items: o.items || o.Items || o.orderItems || o.OrderItems || [],
+        items: (o.items || o.Items || o.orderItems || o.OrderItems || []).map((i: any) => ({
+          mealId: i.mealId || i.MealId,
+          name: i.mealName || i.MealName || i.name || i.Name || 'Item',
+          mealName: i.mealName || i.MealName || i.name || i.Name || 'Item',
+          price: i.unitPrice !== undefined ? i.unitPrice : (i.UnitPrice !== undefined ? i.UnitPrice : (i.price || 0)),
+          unitPrice: i.unitPrice !== undefined ? i.unitPrice : (i.UnitPrice !== undefined ? i.UnitPrice : (i.price || 0)),
+          quantity: i.quantity || i.Quantity || 1
+        })),
         status: o.status || o.Status || 'Pending',
         agentId: o.agentId || o.AgentId,
         customerId: o.customerId || o.CustomerId,
@@ -186,7 +207,7 @@ export class OrderService {
       'assets/onboarding/dal_makhani.png',
       'assets/onboarding/paneer_tikka.png',
       'assets/onboarding/veg_pulao.png',
-      'assets/onboarding/healthy_salad.png',
+      'assets/onboarding/kadhai-paneer-chawal.png',
       'assets/onboarding/dal_chawal.png'
     ];
     return images[index % images.length];

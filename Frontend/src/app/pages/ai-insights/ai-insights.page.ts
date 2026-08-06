@@ -185,7 +185,7 @@ export class AiInsightsPage implements OnInit {
 
     this.messages = [{
       role: 'model',
-      content: `${greeting} ${userName}! 🍽️ ${todayMealInfo}Main aapka AI Concierge hoon — meal recommend karna ho, order track karna ho, ya kuch custom banana ho — bas poochho!`
+      content: `${greeting} ${userName}! 🍽️ ${todayMealInfo}Main aapka MealMantra AI assistant hoon — meal recommend karna ho, order track karna ho, ya kuch custom banana ho — bas poochho!`
     }];
   }
 

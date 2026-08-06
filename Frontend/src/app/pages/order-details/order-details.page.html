@@ -57,7 +57,7 @@
       
       <div class="item-list" *ngIf="order.items && order.items.length > 0">
         <div class="r-item" *ngFor="let item of order.items; let i = index">
-          <img [src]="getItemImage(i)" class="r-img" alt="">
+          <img [src]="getItemImage(i, item)" class="r-img" alt="Meal">
           <div class="r-info">
             <div class="r-name-row">
               <span class="veg-dot"></span>

@@ -3,225 +3,253 @@
   <!-- STEP 1: ONBOARDING -->
   <div class="onboarding-page" *ngIf="currentStep === 1">
     
-    <!-- Decorative Food Elements -->
-    <div class="onboarding-bg-decor">
-      <img src="assets/onboarding/dal_chawal.png" class="decor-leaves top-left" alt="" onerror="this.style.display='none'">
-      <img src="assets/onboarding/palak-paneer-top.png" class="decor-bowl top-right" alt="" onerror="this.style.display='none'">
-      <img src="assets/onboarding/dal_makhani.png" class="decor-tomato mid-left" alt="" onerror="this.style.display='none'">
-      <!-- Spice dots -->
-      <div class="spice-dot s1"></div>
-      <div class="spice-dot s2"></div>
-      <div class="spice-dot s3"></div>
-      <div class="spice-dot s4"></div>
-      <div class="spice-dot s5"></div>
+    <!-- Top Corner Food Bowls -->
+    <div class="top-food-bowls">
+      <img src="assets/onboarding/dal_chawal.png" class="bowl-left" alt="Food Bowl" onerror="this.style.display='none'">
+      <img src="assets/onboarding/palak-paneer-top.png" class="bowl-right" alt="Food Bowl" onerror="this.style.display='none'">
     </div>
 
-    <!-- TOP CONTENT -->
-    <div class="top-content">
-      <img src="assets/logo/chef_hat.png" class="logo" />
-
-      <h1>MealMate</h1>
-
-      <p>Delicious meals, delivered<br>to your doorstep.</p>
+    <!-- Floating Doodles & Dots -->
+    <div class="doodles-layer">
+      <img src="assets/onboarding/dal_makhani.png" class="doodle d-dish" alt="" onerror="this.style.display='none'">
+      <div class="dot s1"></div>
+      <div class="dot s2"></div>
+      <div class="dot s3"></div>
     </div>
 
-    <!-- SCOOTER SECTION -->
-    <div class="illustration-wrapper">
+    <!-- TOP HEADER -->
+    <div class="onboarding-header">
+      <img src="assets/logo/chef_hat.png" class="header-logo" alt="Chef Hat Logo" />
+      <h1 class="brand-name">MealMate</h1>
+      <p class="brand-tagline">Delicious meals, delivered<br>to your doorstep.</p>
 
-      <!-- TOP BLEND -->
+      <!-- Chef Divider -->
+      <div class="chef-divider">
+        <span class="line"></span>
+        <img src="assets/logo/chef_hat.png" class="divider-icon" alt="" />
+        <span class="line"></span>
+      </div>
+    </div>
+
+    <!-- SCOOTER SECTION (FULL EDGE-TO-EDGE VERTICALLY) -->
+    <div class="scooter-full-wrapper">
       <div class="fade-top"></div>
-
-      <img src="assets/onboarding/delivery_scooter.png" class="scooter-img" />
-
-      <!-- BOTTOM BLEND -->
+      <img src="assets/onboarding/delivery_scooter.png" class="scooter-img-full" alt="Delivery Scooter" />
       <div class="fade-bottom"></div>
-
     </div>
 
-    <!-- BUTTON -->
-    <button type="button" class="next-btn" (click)="nextStep()">
-      <ion-icon name="arrow-forward-outline"></ion-icon>
-    </button>
+    <!-- BOTTOM ACTION BUTTON & DOTS -->
+    <div class="onboarding-bottom-action">
+      <button type="button" class="halo-next-btn" (click)="nextStep()">
+        <ion-icon name="arrow-forward-outline"></ion-icon>
+      </button>
+
+      <div class="pagination-dots">
+        <span class="p-dot active"></span>
+        <span class="p-dot"></span>
+        <span class="p-dot"></span>
+      </div>
+    </div>
+
   </div>
 
 
   <!-- STEP 2: ROLE SELECTION -->
   <div class="step-container step-2" *ngIf="currentStep === 2">
-    <!-- Top Nav -->
-    <div class="top-nav animate-down">
-      <button type="button" class="back-btn" (click)="prevStep()">
-        <ion-icon name="arrow-back"></ion-icon>
-      </button>
-      <button type="button" class="help-btn">Need help?</button>
+    
+    <!-- Decorative Corner Doodles -->
+    <div class="step2-decor">
+      <ion-icon name="leaf-outline" class="doodle d-top-left"></ion-icon>
+      <ion-icon name="restaurant-outline" class="doodle d-top-right"></ion-icon>
+      <ion-icon name="restaurant-outline" class="doodle d-bottom-center"></ion-icon>
     </div>
 
-    <div class="content-body animate-fade">
-      <div class="header-text">
-        <p class="desc-text">Choose your role to continue</p>
-      </div>
+    <!-- Header Section -->
+    <div class="step2-header">
+      <img src="assets/logo/chef_hat.png" class="step2-logo" alt="Chef Hat Logo" />
+      <h1 class="step2-title">Choose your role</h1>
+      <p class="step2-sub">Select how you want to continue with MealMate</p>
+    </div>
 
-      <!-- Role Cards Row -->
-      <div class="role-cards-row">
-        <!-- Customer Card -->
-        <div class="role-card" 
-             [class.active]="role === 'customer'" 
-             (click)="role = 'customer'">
-          <div class="active-badge" *ngIf="role === 'customer'">
-            <ion-icon name="checkmark-circle"></ion-icon>
-          </div>
-          
-          <div class="avatar-container">
-            <img src="assets/onboarding/customer_avatar.png" alt="Customer" class="avatar-img" />
-          </div>
-
-          <h2 class="card-title">I'm a Customer</h2>
-          
-          <p class="card-desc">
-            Discover delicious meals and enjoy fast, hassle-free delivery at your doorstep.
-          </p>
-
-          <!-- Benefits Container -->
-          <div class="benefits-container">
-            <div class="benefit-item">
-              <div class="benefit-icon-badge">
-                <ion-icon name="restaurant"></ion-icon>
-              </div>
-              <span class="benefit-text">Wide variety of cuisines</span>
-            </div>
-            
-            <div class="benefit-item">
-              <div class="benefit-icon-badge">
-                <ion-icon name="bicycle"></ion-icon>
-              </div>
-              <span class="benefit-text">Fast & reliable delivery</span>
-            </div>
-            
-            <div class="benefit-item">
-              <div class="benefit-icon-badge">
-                <ion-icon name="pricetag"></ion-icon>
-              </div>
-              <span class="benefit-text">Exciting offers & deals</span>
-            </div>
-          </div>
+    <!-- Role Cards Row (Side-by-Side) -->
+    <div class="role-cards-row">
+      <!-- Customer Card -->
+      <div class="role-card customer-card" 
+           [class.active]="role === 'customer'" 
+           (click)="role = 'customer'">
+        
+        <div class="role-check-badge" *ngIf="role === 'customer'">
+          <ion-icon name="checkmark"></ion-icon>
         </div>
 
-        <!-- Chef Card -->
-        <div class="role-card" 
-             [class.active]="role === 'agent'" 
-             (click)="role = 'agent'">
-          <div class="active-badge" *ngIf="role === 'agent'">
-            <ion-icon name="checkmark-circle"></ion-icon>
-          </div>
-          
-          <div class="avatar-container">
-            <img src="assets/onboarding/chef_avatar.png" alt="Chef" class="avatar-img" />
-          </div>
-
-          <h2 class="card-title">I'm a Chef</h2>
-          
-          <p class="card-desc">
-            Share your culinary creations with thousands of food lovers and grow your business.
-          </p>
-
-          <!-- Benefits Container -->
-          <div class="benefits-container">
-            <div class="benefit-item">
-              <div class="benefit-icon-badge">
-                <ion-icon name="restaurant-outline"></ion-icon>
-              </div>
-              <span class="benefit-text">Showcase your dishes</span>
-            </div>
-            
-            <div class="benefit-item">
-              <div class="benefit-icon-badge">
-                <ion-icon name="storefront"></ion-icon>
-              </div>
-              <span class="benefit-text">Reach more customers</span>
-            </div>
-            
-            <div class="benefit-item">
-              <div class="benefit-icon-badge">
-                <ion-icon name="trending-up"></ion-icon>
-              </div>
-              <span class="benefit-text">Grow your business</span>
-            </div>
-          </div>
+        <div class="avatar-circle">
+          <img src="assets/onboarding/customer_avatar.png" alt="Customer" class="avatar-3d-img" />
         </div>
-      </div>
 
-      <div class="footer-terms">
-        <div class="shield-icon">
-          <ion-icon name="shield-checkmark"></ion-icon>
-        </div>
-        <p class="terms-text">
-          By continuing, you agree to our<br>
-          <span class="highlight">Terms of Service</span> and <span class="highlight">Privacy Policy</span>.
+        <h2 class="card-role-title">I'm a Customer</h2>
+        <p class="card-role-desc">
+          Discover delicious meals and enjoy fast, hassle-free delivery at your doorstep.
         </p>
+
+        <div class="you-can-divider">
+          <span>YOU GET:</span>
+        </div>
+
+        <div class="feature-circles-row">
+          <div class="f-item">
+            <div class="f-circle"><ion-icon name="restaurant-outline"></ion-icon></div>
+            <span class="f-label">Wide variety of cuisines</span>
+          </div>
+          <div class="f-item">
+            <div class="f-circle"><ion-icon name="bicycle-outline"></ion-icon></div>
+            <span class="f-label">Fast &amp; reliable delivery</span>
+          </div>
+          <div class="f-item">
+            <div class="f-circle"><ion-icon name="pricetag-outline"></ion-icon></div>
+            <span class="f-label">Exciting offers &amp; deals</span>
+          </div>
+        </div>
       </div>
 
-      <!-- Email Login / Signup Buttons -->
-      <div class="google-login-section" style="margin-top: 15px; margin-bottom: 15px; display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%;">
-        <button type="button" class="primary-btn-large" style="width: 100%; max-width: 340px; border-radius: 25px; padding: 14px; background: linear-gradient(135deg, #ff7235, #ff5200); color: #fff; font-weight: 600; font-size: 15px; border: none; box-shadow: 0 4px 12px rgba(255, 114, 53, 0.3); display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;" (click)="openEmailAuth(false)">
-          <ion-icon name="log-in-outline" style="font-size: 20px;"></ion-icon>
-          <span>Sign In (I have an account)</span>
-        </button>
+      <!-- Chef Card -->
+      <div class="role-card chef-card" 
+           [class.active]="role === 'agent'" 
+           (click)="role = 'agent'">
+        
+        <div class="role-check-badge" *ngIf="role === 'agent'">
+          <ion-icon name="checkmark"></ion-icon>
+        </div>
 
-        <button type="button" class="secondary-btn" style="width: 100%; max-width: 340px; border-radius: 25px; padding: 12px; background: rgba(255, 114, 53, 0.1); color: #ff7235; font-weight: 600; font-size: 14px; border: 1px solid rgba(255, 114, 53, 0.3); display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;" (click)="openEmailAuth(true)">
-          <ion-icon name="person-add-outline" style="font-size: 18px;"></ion-icon>
-          <span>Create Account (Sign Up)</span>
-        </button>
+        <div class="avatar-circle">
+          <img src="assets/onboarding/chef_avatar.png" alt="Chef" class="avatar-3d-img" />
+        </div>
 
-        <button type="button" class="secondary-btn" style="width: 100%; max-width: 340px; border-radius: 25px; padding: 10px; background: rgba(0,0,0,0.04); color: #555; font-weight: 500; font-size: 13px; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; margin-top: 4px;" (click)="mockGoogleLogin()">
-          <span>Instant Demo Entrance ({{ role === 'customer' ? 'Customer' : 'Chef' }})</span>
-        </button>
+        <h2 class="card-role-title">I'm a Chef</h2>
+        <p class="card-role-desc">
+          Share your culinary creations with thousands of food lovers and grow your business.
+        </p>
+
+        <div class="you-can-divider">
+          <span>YOU GET:</span>
+        </div>
+
+        <div class="feature-circles-row">
+          <div class="f-item">
+            <div class="f-circle"><ion-icon name="restaurant-outline"></ion-icon></div>
+            <span class="f-label">Showcase your dishes</span>
+          </div>
+          <div class="f-item">
+            <div class="f-circle"><ion-icon name="storefront-outline"></ion-icon></div>
+            <span class="f-label">Reach more customers</span>
+          </div>
+          <div class="f-item">
+            <div class="f-circle"><ion-icon name="trending-up-outline"></ion-icon></div>
+            <span class="f-label">Grow your business</span>
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- Terms Banner -->
+    <div class="terms-pill-banner">
+      <div class="shield-orange-circle">
+        <ion-icon name="shield-checkmark"></ion-icon>
+      </div>
+      <p class="terms-banner-text">
+        By continuing, you agree to our<br>
+        <span class="highlight">Terms of Service</span> and <span class="highlight">Privacy Policy</span>.
+      </p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="role-actions-group">
+      <button type="button" class="btn-role-primary" (click)="openEmailAuth(false)">
+        <ion-icon name="log-in-outline"></ion-icon>
+        <span>Sign In (I have an account)</span>
+      </button>
+
+      <button type="button" class="btn-role-secondary" (click)="openEmailAuth(true)">
+        <ion-icon name="person-add-outline"></ion-icon>
+        <span>Create Account (Sign Up)</span>
+      </button>
+    </div>
+
   </div>
 
 
   <!-- STEP 3: SIGN IN / SIGN UP WITH EMAIL -->
   <div class="step-container step-3" *ngIf="currentStep === 3">
-    <!-- Top Nav -->
-    <div class="top-nav animate-down">
-      <button type="button" class="back-btn" (click)="prevStep()">
-        <ion-icon name="arrow-back"></ion-icon>
-      </button>
-      <button type="button" class="help-btn">Need help?</button>
-    </div>
-
+    
     <div class="desktop-split-wrapper">
-      <!-- Desktop Brand Side Banner (Only visible on desktop/web screens) -->
+      <!-- Desktop Brand Side Banner -->
       <div class="desktop-brand-hero">
+        <button type="button" class="back-circle-btn" (click)="prevStep()">
+          <ion-icon name="arrow-back"></ion-icon>
+        </button>
+
         <div class="brand-hero-content">
-          <img src="assets/logo/chef_hat.png" class="brand-logo" alt="MealMate" />
-          <h2 class="brand-title">MealMate</h2>
+          <div class="brand-header-group">
+            <img src="assets/logo/chef_hat.png" class="brand-logo" alt="MealMate" />
+            <h2 class="brand-title">MealMate</h2>
+          </div>
           <p class="brand-subtitle">Delicious meals delivered right to your doorstep.</p>
 
           <div class="brand-features">
             <div class="feature-item">
-              <ion-icon name="checkmark-circle-outline"></ion-icon>
-              <span>Verified Home Chefs & Fresh Ingredients</span>
+              <div class="feature-icon-badge">
+                <ion-icon name="restaurant"></ion-icon>
+              </div>
+              <span>Verified Home Chefs &amp; Fresh Ingredients</span>
             </div>
             <div class="feature-item">
-              <ion-icon name="checkmark-circle-outline"></ion-icon>
-              <span>Instant Wallet Top-Up & Subscriptions</span>
+              <div class="feature-icon-badge">
+                <ion-icon name="wallet"></ion-icon>
+              </div>
+              <span>Instant Wallet Top-Up &amp; Subscriptions</span>
             </div>
             <div class="feature-item">
-              <ion-icon name="checkmark-circle-outline"></ion-icon>
-              <span>Fast & Safe Doorstep Delivery</span>
+              <div class="feature-icon-badge">
+                <ion-icon name="bicycle"></ion-icon>
+              </div>
+              <span>Fast &amp; Safe Doorstep Delivery</span>
             </div>
           </div>
+        </div>
+
+        <!-- Left Hero Bottom Food Dish Decoration -->
+        <img src="assets/onboarding/kadhai-paneer-chawal.png" class="hero-bottom-food-img" alt="North Indian Combo" onerror="this.style.display='none'">
+      </div>
+
+      <!-- Mobile Top Brand Hero (Visible on Mobile screens < 768px) -->
+      <div class="mobile-brand-hero">
+        <div class="mobile-nav-row">
+          <button type="button" class="mobile-back-btn" (click)="prevStep()">
+            <ion-icon name="arrow-back"></ion-icon>
+          </button>
+          <button type="button" class="help-btn-link">Need help? <ion-icon name="help-circle-outline"></ion-icon></button>
+        </div>
+
+        <div class="mobile-hero-body">
+          <div class="mobile-hero-left">
+            <img src="assets/logo/chef_hat.png" class="mobile-brand-logo" alt="MealMate" />
+            <h2 class="mobile-brand-title">MealMate</h2>
+            <p class="mobile-brand-subtitle">Delicious meals delivered right to your doorstep.</p>
+          </div>
+          <img src="assets/onboarding/kadhai-paneer-chawal.png" class="mobile-hero-food-img" alt="North Indian Combo" onerror="this.style.display='none'">
         </div>
       </div>
 
       <!-- Right Form Section -->
       <div class="content-body animate-fade">
+        <div class="top-help-row desktop-only-help">
+          <button type="button" class="help-btn-link">Need help? <ion-icon name="help-circle-outline"></ion-icon></button>
+        </div>
+
         <div class="header-text">
-          <h1 class="main-title">
-            {{ isSignUpMode ? 'Create Account' : 'Welcome back!' }}
-          </h1>
+          <h1 class="main-title" *ngIf="!isSignUpMode">Welcome <span class="highlight-orange">back!</span></h1>
+          <h1 class="main-title" *ngIf="isSignUpMode">Create <span class="highlight-orange">Account</span></h1>
           <p class="desc-text">
-            {{ isSignUpMode ? 'Sign up as ' + (role === 'customer' ? 'Customer' : 'Chef') : 'Sign in to continue as ' + (role === 'customer' ? 'Customer' : 'Chef') }}
+            {{ isSignUpMode ? 'Sign up to continue as ' + (role === 'customer' ? 'Customer' : 'Chef') : 'Sign in to continue as ' + (role === 'customer' ? 'Customer' : 'Chef') }}
           </p>
         </div>
 
@@ -265,13 +293,21 @@
         </div>
 
         <div class="forgot-pwd" *ngIf="!isSignUpMode">
-          <button type="button" style="background: none; border: none; color: #ff7235; font-size: 13px; font-weight: 500; cursor: pointer;">Forgot password?</button>
+          <button type="button" class="forgot-link-btn">Forgot password?</button>
         </div>
 
         <!-- Submit Button -->
-        <button type="button" class="primary-btn-large" (click)="onSubmitEmailAuth()">
-          {{ isSignUpMode ? 'Create Account' : 'Sign In' }}
+        <button type="button" class="primary-btn-large arrow-submit-btn" (click)="onSubmitEmailAuth()">
+          <span>{{ isSignUpMode ? 'Create Account' : 'Sign In' }}</span>
+          <span class="btn-arrow-circle">
+            <ion-icon name="arrow-forward"></ion-icon>
+          </span>
         </button>
+
+        <!-- Divider -->
+        <div class="or-divider-pill">
+          <span>OR</span>
+        </div>
 
         <!-- Toggle Sign In / Sign Up -->
         <div class="signup-prompt">
@@ -284,9 +320,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Bottom Decoration -->
-    <img src="assets/onboarding/dal_makhani.png" class="bottom-right-decor" alt="" onerror="this.style.display='none'">
   </div>
 
 </ion-content>

@@ -56,30 +56,31 @@ export class MealService {
 
   mapMealImage(imageUrl: string, name: string): string {
     const url = imageUrl || '';
-    if (url.includes('dal_makhani')) return 'assets/onboarding/dal_makhani.png';
-    if (url.includes('paneer_tikka')) return 'assets/onboarding/paneer_tikka.png';
-    if (url.includes('veg_pulao')) return 'assets/onboarding/veg_pulao.png';
-    if (url.includes('masala_dosa')) return 'assets/onboarding/veg_pulao.png';
-    if (url.includes('mango_lassi')) return 'assets/onboarding/salad_bowl.png';
-    if (url.includes('dal_chawal')) return 'assets/onboarding/dal_chawal.png';
-    if (url.includes('palak_paneer') || url.includes('palak-paneer')) return 'assets/onboarding/palak_paneer.png';
+    const lower = (name || url).toLowerCase();
 
-    const lower = (name || '').toLowerCase();
-    if (lower.includes('dal') && lower.includes('makhani')) return 'assets/onboarding/dal_makhani.png';
-    if (lower.includes('dal') || lower.includes('chawal')) return 'assets/onboarding/dal_chawal.png';
-    if (lower.includes('paneer') && lower.includes('tikka')) return 'assets/onboarding/paneer_tikka.png';
-    if (lower.includes('paneer')) return 'assets/onboarding/palak_paneer.png';
-    if (lower.includes('pulao') || lower.includes('dosa') || lower.includes('rice') || lower.includes('biryani')) return 'assets/onboarding/veg_pulao.png';
-    if (lower.includes('lassi') || lower.includes('drink') || lower.includes('mango')) return 'assets/onboarding/salad_bowl.png';
-    if (lower.includes('salad')) return 'assets/onboarding/salad_bowl.png';
+    if (lower.includes('chole') || lower.includes('bhature')) return 'assets/onboarding/chole_bhature.png';
+    if (lower.includes('kulcha') || lower.includes('amritsari')) return 'assets/onboarding/amritsari_kulcha_dish.png';
+    if (lower.includes('saag') || lower.includes('sarson')) return 'assets/onboarding/sarson_saag_makki_roti.png';
+    if (lower.includes('shahi paneer')) return 'assets/onboarding/shahi_paneer_thali.png';
+    if (lower.includes('rajma')) return 'assets/onboarding/homestyle_rajma_chawal.png';
+    if (lower.includes('butter chicken')) return 'assets/onboarding/butter_chicken_bowl.png';
+    if (lower.includes('biryani')) return 'assets/onboarding/awadhi_biryani_bowl.png';
+    if (lower.includes('kebab') || lower.includes('galouti')) return 'assets/onboarding/lucknowi_galouti_kebab.png';
+    if (lower.includes('moong')) return 'assets/onboarding/sprouted_moong_chilla.png';
+    if (lower.includes('oats')) return 'assets/onboarding/oats_sprouts_chilla.png';
+    if (lower.includes('quinoa')) return 'assets/onboarding/protein_quinoa_bowl.png';
+    if (lower.includes('keto') || lower.includes('avocado')) return 'assets/onboarding/keto_avocado_salad.png';
+    if (lower.includes('dal makhani')) return 'assets/onboarding/dal_makhani.png';
+    if (lower.includes('paneer tikka')) return 'assets/onboarding/paneer_tikka.png';
+    if (lower.includes('pulao')) return 'assets/onboarding/veg_pulao.png';
 
-    return url || 'assets/onboarding/dal_makhani.png';
+    return 'assets/onboarding/kadhai-paneer-chawal.png';
   }
 
   async refreshMeals(category?: string) {
     let url = `${environment.apiUrl}/meals`;
     if (category) url += `?category=${category}`;
-    
+
     try {
       const backendMeals: any[] = await firstValueFrom(this.http.get<any[]>(url));
       const mappedMeals: Meal[] = backendMeals.map(m => ({
@@ -132,7 +133,7 @@ export class MealService {
       ingredients: mealData.ingredients || '',
       allergens: mealData.allergens || ''
     };
-    
+
     const res = await firstValueFrom(this.http.post(`${environment.apiUrl}/meals`, payload));
     this.refreshMeals();
     return res;

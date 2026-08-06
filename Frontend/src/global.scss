@@ -256,24 +256,35 @@ $mm-font-xxl: 1.6rem;
 
 
 /* ==========================================================================
-   Global Scrollbar Restyling (Forces Transparent/Light Mode Scroller)
+   Global Scrollbar Hiding (Removes native black browser scrollbars completely)
    ========================================================================== */
+* {
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE / Edge */
+}
+
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
+::-webkit-scrollbar-track,
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.15);
-  border-radius: 10px;
+  background: transparent !important;
+  display: none !important;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.25);
+ion-content {
+  &::part(scroll) {
+    scrollbar-width: none !important;
+    &::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+  }
 }
 
 /* ==========================================================================
