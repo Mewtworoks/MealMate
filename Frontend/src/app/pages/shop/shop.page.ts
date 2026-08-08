@@ -309,29 +309,37 @@ export class ShopPage implements OnInit {
     }
   }
 
+  getSlideStep(el: HTMLElement): number {
+    const firstSlide = el.querySelector('.ms-slide') as HTMLElement;
+    if (firstSlide && firstSlide.offsetWidth > 0) {
+      return firstSlide.offsetWidth + 12;
+    }
+    return el.clientWidth * 0.84 + 12;
+  }
+
   onMobileSliderScroll(event: Event) {
     const el = event.target as HTMLElement;
     if (!el || el.clientWidth === 0) return;
 
+    const step = this.getSlideStep(el);
     const scrollPos = el.scrollLeft;
-    const slideWidth = el.clientWidth * 0.84 + 12;
-    const domIndex = Math.round(scrollPos / slideWidth);
+    const domIndex = Math.round(scrollPos / step);
 
     this.currentDomIndex = domIndex;
     if (domIndex === 0) {
       this.activeSlideIndex = 3;
-    } else if (domIndex === 5) {
+    } else if (domIndex >= 5) {
       this.activeSlideIndex = 0;
     } else {
-      this.activeSlideIndex = (domIndex - 1 + 4) % 4;
+      this.activeSlideIndex = Math.min(3, Math.max(0, domIndex - 1));
     }
 
     if (this.scrollDebounceTimer) clearTimeout(this.scrollDebounceTimer);
     this.scrollDebounceTimer = setTimeout(() => {
-      if (this.currentDomIndex === 0) {
+      if (this.currentDomIndex <= 0) {
         this.currentDomIndex = 4;
         this.scrollToDomIndex(4, 'auto');
-      } else if (this.currentDomIndex === 5) {
+      } else if (this.currentDomIndex >= 5) {
         this.currentDomIndex = 1;
         this.scrollToDomIndex(1, 'auto');
       }
@@ -348,8 +356,8 @@ export class ShopPage implements OnInit {
   scrollToDomIndex(domIndex: number, behavior: ScrollBehavior = 'smooth') {
     const el = document.querySelector('.mobile-slider') as HTMLElement;
     if (el) {
-      const slideWidth = el.clientWidth * 0.84 + 12;
-      el.scrollTo({ left: domIndex * slideWidth, behavior });
+      const step = this.getSlideStep(el);
+      el.scrollTo({ left: domIndex * step, behavior });
     }
   }
 }
