@@ -292,63 +292,6 @@
         </div>
       </section>
 
-      <!-- ===== PERSONAL CHEF BANNER ===== -->
-      <div class="chef-banner" (click)="createCustomMeal()">
-        <div class="apc-ring">
-          <div class="chef-icon-circle">
-            <img src="assets/logo/chef_hat.png" alt="Chef Hat">
-          </div>
-        </div>
-        <div class="apc-info">
-          <span class="apc-label">Your <b>Concierge</b></span>
-          <h3 class="apc-name">Personal Chef</h3>
-          <p class="apc-msg">Request a custom dish from our top agents.</p>
-        </div>
-        <div class="apc-right">
-          <button class="apc-view-btn">Request <ion-icon name="arrow-forward-outline"></ion-icon></button>
-          <img src="assets/onboarding/paneer_tikka.png" class="apc-decor-img" alt="">
-        </div>
-      </div>
-
-      <!-- ===== ACTIVE PLAN CARD ===== -->
-      <div class="active-plan-card" *ngIf="activeSubscription" (click)="openSubscriptionModal()">
-        <div class="apc-ring">
-          <svg viewBox="0 0 80 80" class="ring-svg">
-            <circle cx="40" cy="40" r="34" fill="none" stroke="#fce4d6" stroke-width="5" />
-            <circle cx="40" cy="40" r="34" fill="none" stroke="#FF7235" stroke-width="5" stroke-linecap="round"
-              [attr.stroke-dasharray]="213.6" [attr.stroke-dashoffset]="213.6 - (213.6 * activePlanPercent) / 100"
-              class="ring-progress" />
-          </svg>
-          <div class="ring-center">
-            <span class="ring-pct">{{activePlanPercent}}%</span>
-            <ion-icon name="leaf" class="ring-leaf"></ion-icon>
-          </div>
-        </div>
-        <div class="apc-info">
-          <span class="apc-label">Your <b>Meal Plan</b></span>
-          <h3 class="apc-name">{{planName}}</h3>
-          <p class="apc-msg">{{planMessage}}</p>
-        </div>
-        <div class="apc-right">
-          <button class="apc-view-btn">View Plan <ion-icon name="arrow-forward-outline"></ion-icon></button>
-          <img src="assets/onboarding/dal_chawal.png" class="apc-decor-img" alt="">
-        </div>
-      </div>
-
-      <!-- ===== SUBSCRIPTION PROMO (no active plan) ===== -->
-      <div class="sub-promo-card" *ngIf="!activeSubscription">
-        <div class="promo-text">
-          <div class="badge">HEALTH PLANS</div>
-          <h3>Stay Healthy Everyday</h3>
-          <p>Subscribe to weekly tiffin rotation plans curated by nutritionists.</p>
-          <button class="promo-btn" (click)="openSubscriptionModal()">VIEW PLANS <ion-icon
-              name="arrow-forward-outline"></ion-icon></button>
-        </div>
-        <div class="promo-img">
-          <img src="assets/onboarding/dal_chawal.png" alt="Promo">
-        </div>
-      </div>
-
       <div style="height: 100px;"></div>
     </div>
   </div>
