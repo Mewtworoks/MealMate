@@ -42,7 +42,7 @@
     <div class="mobile-slider-wrap">
       <div class="mobile-slider" (scroll)="onMobileSliderScroll($event)">
         <!-- Slide 1: MealMate Wallet Card -->
-        <div class="ms-slide">
+        <div class="ms-slide" [class.active-slide]="activeSlideIndex === 0">
           <div class="wallet-card-mob" routerLink="/wallet">
             <div class="wtop">
               <span class="k">MEALMATE WALLET</span>
@@ -66,8 +66,41 @@
           </div>
         </div>
 
-        <!-- Slide 2: This Week Delivery Status Card -->
-        <div class="ms-slide">
+        <!-- Slide 2: Personal Chef Concierge Card -->
+        <div class="ms-slide" [class.active-slide]="activeSlideIndex === 1">
+          <div class="chef-card-mob" (click)="createCustomMeal()">
+            <div class="wtop">
+              <span class="k">YOUR CONCIERGE</span>
+              <span class="chipact gold">TOP AGENTS</span>
+            </div>
+            <div class="pname">Personal Chef</div>
+            <div class="pmsg">Request a custom dish from our top agents.</div>
+            <button class="wbtn">
+              Request <ion-icon name="arrow-forward-outline"></ion-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Slide 3: Your Meal Plan Card -->
+        <div class="ms-slide" [class.active-slide]="activeSlideIndex === 2">
+          <div class="plan-card-mob" (click)="openSubscriptionModal()">
+            <div class="wtop">
+              <span class="k">YOUR MEAL PLAN</span>
+              <span class="chipact green">{{activeSubscription ? 'ACTIVE' : 'EXPLORE'}}</span>
+            </div>
+            <div class="pname">{{planName || 'Healthy Mix Plan'}}</div>
+            <div class="pmsg">{{planMessage || 'Awesome! You are eating balanced everyday.'}}</div>
+            <div class="pbar-mob">
+              <div class="pbar-fill" [style.width.%]="activePlanPercent || 15"></div>
+            </div>
+            <button class="wbtn outline">
+              View Plan <ion-icon name="arrow-forward-outline"></ion-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Slide 4: This Week Delivery Status Card -->
+        <div class="ms-slide" [class.active-slide]="activeSlideIndex === 3">
           <div class="rcard-mob">
             <div class="rhead">
               <h3>This week</h3>
@@ -93,24 +126,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Slide 3: Active Meal Plan Card -->
-        <div class="ms-slide">
-          <div class="plan-card-mob" (click)="openSubscriptionModal()">
-            <div class="rhead">
-              <h3>Meal Plan</h3>
-              <span class="tier">{{activeSubscription ? 'ACTIVE' : 'EXPLORE'}}</span>
-            </div>
-            <div class="pname">{{planName || 'Healthy Mix Plan'}}</div>
-            <div class="pmsg">{{planMessage || 'Everyday homestyle food curated for your health.'}}</div>
-            <div class="pbar-mob" *ngIf="activeSubscription">
-              <div class="pbar-fill" [style.width.%]="activePlanPercent"></div>
-            </div>
-            <button class="wbtn outline">
-              Manage plan <ion-icon name="arrow-forward-outline"></ion-icon>
-            </button>
-          </div>
-        </div>
       </div>
 
       <!-- Pagination Dots -->
@@ -118,6 +133,7 @@
         <span class="ms-dot" [class.active]="activeSlideIndex === 0" (click)="scrollToSlide(0)"></span>
         <span class="ms-dot" [class.active]="activeSlideIndex === 1" (click)="scrollToSlide(1)"></span>
         <span class="ms-dot" [class.active]="activeSlideIndex === 2" (click)="scrollToSlide(2)"></span>
+        <span class="ms-dot" [class.active]="activeSlideIndex === 3" (click)="scrollToSlide(3)"></span>
       </div>
     </div>
 
@@ -176,22 +192,21 @@
         </div>
       </section>
 
-      <!-- ===== POPULAR TODAY ===== -->
+      <!-- ===== ALL DISHES (2-COLUMN GRID) ===== -->
       <section class="popular-section">
         <div class="section-hdr">
-          <h2>Popular Today 🔥</h2>
-          <button class="see-all-btn" routerLink="/all-meals">View all <ion-icon
-              name="chevron-forward-outline"></ion-icon></button>
+          <h2>All Dishes 🔥</h2>
+          <span class="dish-count-badge">{{getFilteredMeals().length}} items</span>
         </div>
 
-        <div class="popular-scroll">
+        <div class="popular-grid">
           <div class="popular-card" *ngFor="let meal of getFilteredMeals()" (click)="goToMealDetail(meal.id)">
             <div class="pc-thumb">
               <img [src]="meal.image" [alt]="meal.name">
               <div class="pc-rating">
                 <ion-icon name="star"></ion-icon> 4.{{(meal.price % 5) + 5}}
               </div>
-              <button class="pc-heart">
+              <button class="pc-heart" (click)="$event.stopPropagation()">
                 <ion-icon name="heart-outline"></ion-icon>
               </button>
               <div class="pc-kcal">{{ getMealCalories(meal) }} kcal</div>

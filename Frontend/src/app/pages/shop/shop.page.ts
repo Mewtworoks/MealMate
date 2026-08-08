@@ -261,13 +261,41 @@ export class ShopPage implements OnInit {
   goToMealDetail(mealId: string) { this.router.navigate(['/meal-detail', mealId]); }
 
   activeSlideIndex = 0;
+  autoSlideTimer: any = null;
+
+  ionViewDidEnter() {
+    this.startAutoSlide();
+  }
+
+  ionViewWillLeave() {
+    this.stopAutoSlide();
+  }
+
+  ngOnDestroy() {
+    this.stopAutoSlide();
+  }
+
+  startAutoSlide() {
+    this.stopAutoSlide();
+    this.autoSlideTimer = setInterval(() => {
+      this.activeSlideIndex = (this.activeSlideIndex + 1) % 4;
+      this.scrollToSlide(this.activeSlideIndex);
+    }, 4000);
+  }
+
+  stopAutoSlide() {
+    if (this.autoSlideTimer) {
+      clearInterval(this.autoSlideTimer);
+      this.autoSlideTimer = null;
+    }
+  }
 
   onMobileSliderScroll(event: Event) {
     const el = event.target as HTMLElement;
     if (el && el.clientWidth > 0) {
       const scrollPosition = el.scrollLeft;
       const slideWidth = el.clientWidth * 0.85;
-      this.activeSlideIndex = Math.min(2, Math.max(0, Math.round(scrollPosition / slideWidth)));
+      this.activeSlideIndex = Math.min(3, Math.max(0, Math.round(scrollPosition / slideWidth)));
     }
   }
 
@@ -278,5 +306,6 @@ export class ShopPage implements OnInit {
       const slideWidth = el.clientWidth * 0.85;
       el.scrollTo({ left: index * slideWidth, behavior: 'smooth' });
     }
+    this.startAutoSlide();
   }
 }
