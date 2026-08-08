@@ -38,42 +38,86 @@
        MOBILE APP VIEW (Screens < 1001px)
        ═══════════════════════════════════════════════════ -->
   <div class="mobile-layout mobile-only" *ngIf="!isLoading">
-    <!-- ===== WALLET QUICK BAR ===== -->
-    <div class="wallet-bar-wrap" *ngIf="wallet">
-      <div class="wallet-card" routerLink="/wallet">
-        <div class="wc-left">
-          <div class="wc-label">
-            <ion-icon name="wallet-outline"></ion-icon>
-            <span>Wallet Balance</span>
+    <!-- ===== TOP SWIPEABLE CAROUSEL SLIDER FOR MOBILE ===== -->
+    <div class="mobile-slider-wrap">
+      <div class="mobile-slider" (scroll)="onMobileSliderScroll($event)">
+        <!-- Slide 1: MealMate Wallet Card -->
+        <div class="ms-slide">
+          <div class="wallet-card-mob" routerLink="/wallet">
+            <div class="wtop">
+              <span class="k">MEALMATE WALLET</span>
+              <span class="chipact">ACTIVE</span>
+            </div>
+            <div class="wamt"><sup>₹</sup>{{(wallet?.balance | number:'1.0-0') || '3,180'}}</div>
+            <div class="wsub">Available balance</div>
+            <div class="wsplit">
+              <div class="wcell">
+                <div class="k">Credit</div>
+                <div class="v">₹{{wallet?.availableCredit || 500}}</div>
+              </div>
+              <div class="wcell">
+                <div class="k">Points</div>
+                <div class="v">{{credits || 1132}}</div>
+              </div>
+            </div>
+            <button class="wbtn">
+              View details <ion-icon name="arrow-forward-outline"></ion-icon>
+            </button>
           </div>
-          <div class="wc-amount">
-            <span class="currency">₹</span>
-            <span class="val">{{wallet.balance | number:'1.0-0'}}</span>
-          </div>
-          <div class="wc-stats">
-            <span>Credit: <b>₹{{wallet.availableCredit}}</b></span>
-            <span class="wc-dot">•</span>
-            <span>Points: <b>{{credits}} pts</b></span>
-          </div>
-          <button class="wc-details-btn">View details <ion-icon name="arrow-forward-outline"></ion-icon></button>
         </div>
-        <div class="wc-right">
-          <div class="wc-active-chip">ACTIVE</div>
-          <div class="wc-logo-circle">
-            <img src="assets/logo/chef_hat.png" alt="Logo">
+
+        <!-- Slide 2: This Week Delivery Status Card -->
+        <div class="ms-slide">
+          <div class="rcard-mob">
+            <div class="rhead">
+              <h3>This week</h3>
+              <span class="mini">{{activeSubscription ? activeSubscription.currentDay : 7}} / 7 meals</span>
+            </div>
+            <div class="delivery">
+              <div class="dtick">
+                <ion-icon name="time-outline"></ion-icon>
+              </div>
+              <div>
+                <div class="v">{{activeSubscription ? getNextDeliveryText(activeSubscription) : 'Tomorrow, 1:00 PM'}}</div>
+                <div class="s">Next delivery · {{planName || 'Healthy Mix'}}</div>
+              </div>
+            </div>
+            <div class="weekbar">
+              <div class="wd"><i></i><span>M</span></div>
+              <div class="wd"><i></i><span>T</span></div>
+              <div class="wd"><i></i><span>W</span></div>
+              <div class="wd"><i></i><span>T</span></div>
+              <div class="wd"><i></i><span>F</span></div>
+              <div class="wd"><i></i><span>S</span></div>
+              <div class="wd"><i></i><span>S</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slide 3: Active Meal Plan Card -->
+        <div class="ms-slide">
+          <div class="plan-card-mob" (click)="openSubscriptionModal()">
+            <div class="rhead">
+              <h3>Meal Plan</h3>
+              <span class="tier">{{activeSubscription ? 'ACTIVE' : 'EXPLORE'}}</span>
+            </div>
+            <div class="pname">{{planName || 'Healthy Mix Plan'}}</div>
+            <div class="pmsg">{{planMessage || 'Everyday homestyle food curated for your health.'}}</div>
+            <div class="pbar-mob" *ngIf="activeSubscription">
+              <div class="pbar-fill" [style.width.%]="activePlanPercent"></div>
+            </div>
+            <button class="wbtn outline">
+              Manage plan <ion-icon name="arrow-forward-outline"></ion-icon>
+            </button>
           </div>
         </div>
       </div>
-      <div class="wc-bottom" *ngIf="activeSubscription">
-        <div class="wc-week-info">
-          <span class="wc-week-label">This Week</span>
-          <span class="wc-week-val">{{activeSubscription.currentDay}}/{{activeSubscription.totalDays > 7 ? 7 :
-            activeSubscription.totalDays}} meals completed</span>
-        </div>
-        <div class="wc-delivery-info">
-          <ion-icon name="time-outline"></ion-icon>
-          <span>Next delivery: <b>{{ getNextDeliveryText(activeSubscription) }}</b></span>
-        </div>
+
+      <!-- Pagination Dots -->
+      <div class="ms-dots">
+        <span class="ms-dot" [class.active]="activeSlideIndex === 0" (click)="scrollToSlide(0)"></span>
+        <span class="ms-dot" [class.active]="activeSlideIndex === 1" (click)="scrollToSlide(1)"></span>
+        <span class="ms-dot" [class.active]="activeSlideIndex === 2" (click)="scrollToSlide(2)"></span>
       </div>
     </div>
 

@@ -259,4 +259,24 @@ export class ShopPage implements OnInit {
   createCustomMeal() { this.router.navigate(['/custom-meal']); }
   async openSubscriptionModal() { this.router.navigate(['/subscribe']); }
   goToMealDetail(mealId: string) { this.router.navigate(['/meal-detail', mealId]); }
+
+  activeSlideIndex = 0;
+
+  onMobileSliderScroll(event: Event) {
+    const el = event.target as HTMLElement;
+    if (el && el.clientWidth > 0) {
+      const scrollPosition = el.scrollLeft;
+      const slideWidth = el.clientWidth * 0.85;
+      this.activeSlideIndex = Math.min(2, Math.max(0, Math.round(scrollPosition / slideWidth)));
+    }
+  }
+
+  scrollToSlide(index: number) {
+    this.activeSlideIndex = index;
+    const el = document.querySelector('.mobile-slider') as HTMLElement;
+    if (el) {
+      const slideWidth = el.clientWidth * 0.85;
+      el.scrollTo({ left: index * slideWidth, behavior: 'smooth' });
+    }
+  }
 }
