@@ -6,8 +6,21 @@ using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-var builder = WebApplication.CreateBuilder(args);
-builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
+Environment.SetEnvironmentVariable("DOTNET_USE_POLLING_FILE_WATCHER", "true");
+
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args
+});
+
+builder.Host.ConfigureAppConfiguration((hostingContext, config) =>
+{
+    config.Sources.Clear();
+    var env = hostingContext.HostingEnvironment;
+    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+          .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: false)
+          .AddEnvironmentVariables();
+});
 
 // Add services to the container.
 builder.Services.AddControllers()
