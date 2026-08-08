@@ -41,66 +41,8 @@
     <!-- ===== TOP SWIPEABLE CAROUSEL SLIDER FOR MOBILE ===== -->
     <div class="mobile-slider-wrap">
       <div class="mobile-slider" (scroll)="onMobileSliderScroll($event)">
-        <!-- Slide 1: MealMate Wallet Card -->
-        <div class="ms-slide" [class.active-slide]="activeSlideIndex === 0">
-          <div class="wallet-card-mob" routerLink="/wallet">
-            <div class="wtop">
-              <span class="k">MEALMATE WALLET</span>
-              <span class="chipact">ACTIVE</span>
-            </div>
-            <div class="wamt"><sup>₹</sup>{{(wallet?.balance | number:'1.0-0') || '3,180'}}</div>
-            <div class="wsub">Available balance</div>
-            <div class="wsplit">
-              <div class="wcell">
-                <div class="k">Credit</div>
-                <div class="v">₹{{wallet?.availableCredit || 500}}</div>
-              </div>
-              <div class="wcell">
-                <div class="k">Points</div>
-                <div class="v">{{credits || 1132}}</div>
-              </div>
-            </div>
-            <button class="wbtn">
-              View details <ion-icon name="arrow-forward-outline"></ion-icon>
-            </button>
-          </div>
-        </div>
-
-        <!-- Slide 2: Personal Chef Concierge Card -->
-        <div class="ms-slide" [class.active-slide]="activeSlideIndex === 1">
-          <div class="chef-card-mob" (click)="createCustomMeal()">
-            <div class="wtop">
-              <span class="k">YOUR CONCIERGE</span>
-              <span class="chipact gold">TOP AGENTS</span>
-            </div>
-            <div class="pname">Personal Chef</div>
-            <div class="pmsg">Request a custom dish from our top agents.</div>
-            <button class="wbtn">
-              Request <ion-icon name="arrow-forward-outline"></ion-icon>
-            </button>
-          </div>
-        </div>
-
-        <!-- Slide 3: Your Meal Plan Card -->
-        <div class="ms-slide" [class.active-slide]="activeSlideIndex === 2">
-          <div class="plan-card-mob" (click)="openSubscriptionModal()">
-            <div class="wtop">
-              <span class="k">YOUR MEAL PLAN</span>
-              <span class="chipact green">{{activeSubscription ? 'ACTIVE' : 'EXPLORE'}}</span>
-            </div>
-            <div class="pname">{{planName || 'Healthy Mix Plan'}}</div>
-            <div class="pmsg">{{planMessage || 'Awesome! You are eating balanced everyday.'}}</div>
-            <div class="pbar-mob">
-              <div class="pbar-fill" [style.width.%]="activePlanPercent || 15"></div>
-            </div>
-            <button class="wbtn outline">
-              View Plan <ion-icon name="arrow-forward-outline"></ion-icon>
-            </button>
-          </div>
-        </div>
-
-        <!-- Slide 4: This Week Delivery Status Card -->
-        <div class="ms-slide" [class.active-slide]="activeSlideIndex === 3">
+        <!-- DOM Index 0: Clone of Slide 3 (This Week) -->
+        <div class="ms-slide" [class.active-slide]="isSlideActive(0)">
           <div class="rcard-mob">
             <div class="rhead">
               <h3>This week</h3>
@@ -124,6 +66,117 @@
               <div class="wd"><i></i><span>S</span></div>
               <div class="wd"><i></i><span>S</span></div>
             </div>
+          </div>
+        </div>
+
+        <!-- DOM Index 1: Real Slide 0 (MealMate Wallet) -->
+        <div class="ms-slide" [class.active-slide]="isSlideActive(1)">
+          <div class="wallet-card-mob" routerLink="/wallet">
+            <div class="wtop">
+              <span class="k">MEALMATE WALLET</span>
+              <span class="chipact">ACTIVE</span>
+            </div>
+            <div class="wamt"><sup>₹</sup>{{(wallet?.balance | number:'1.0-0') || '3,180'}}</div>
+            <div class="wsub">Available balance</div>
+            <div class="wsplit">
+              <div class="wcell">
+                <div class="k">Credit</div>
+                <div class="v">₹{{wallet?.availableCredit || 500}}</div>
+              </div>
+              <div class="wcell">
+                <div class="k">Points</div>
+                <div class="v">{{credits || 1132}}</div>
+              </div>
+            </div>
+            <button class="wbtn">
+              View details <ion-icon name="arrow-forward-outline"></ion-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- DOM Index 2: Real Slide 1 (Personal Chef Concierge) -->
+        <div class="ms-slide" [class.active-slide]="isSlideActive(2)">
+          <div class="chef-card-mob" (click)="createCustomMeal()">
+            <div class="wtop">
+              <span class="k">YOUR CONCIERGE</span>
+              <span class="chipact gold">TOP AGENTS</span>
+            </div>
+            <div class="pname">Personal Chef</div>
+            <div class="pmsg">Request a custom dish from our top agents.</div>
+            <button class="wbtn">
+              Request <ion-icon name="arrow-forward-outline"></ion-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- DOM Index 3: Real Slide 2 (Your Meal Plan) -->
+        <div class="ms-slide" [class.active-slide]="isSlideActive(3)">
+          <div class="plan-card-mob" (click)="openSubscriptionModal()">
+            <div class="wtop">
+              <span class="k">YOUR MEAL PLAN</span>
+              <span class="chipact green">{{activeSubscription ? 'ACTIVE' : 'EXPLORE'}}</span>
+            </div>
+            <div class="pname">{{planName || 'Healthy Mix Plan'}}</div>
+            <div class="pmsg">{{planMessage || 'Awesome! You are eating balanced everyday.'}}</div>
+            <div class="pbar-mob">
+              <div class="pbar-fill" [style.width.%]="activePlanPercent || 15"></div>
+            </div>
+            <button class="wbtn outline">
+              View Plan <ion-icon name="arrow-forward-outline"></ion-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- DOM Index 4: Real Slide 3 (This Week Delivery) -->
+        <div class="ms-slide" [class.active-slide]="isSlideActive(4)">
+          <div class="rcard-mob">
+            <div class="rhead">
+              <h3>This week</h3>
+              <span class="mini">{{activeSubscription ? activeSubscription.currentDay : 7}} / 7 meals</span>
+            </div>
+            <div class="delivery">
+              <div class="dtick">
+                <ion-icon name="time-outline"></ion-icon>
+              </div>
+              <div>
+                <div class="v">{{activeSubscription ? getNextDeliveryText(activeSubscription) : 'Tomorrow, 1:00 PM'}}</div>
+                <div class="s">Next delivery · {{planName || 'Healthy Mix'}}</div>
+              </div>
+            </div>
+            <div class="weekbar">
+              <div class="wd"><i></i><span>M</span></div>
+              <div class="wd"><i></i><span>T</span></div>
+              <div class="wd"><i></i><span>W</span></div>
+              <div class="wd"><i></i><span>T</span></div>
+              <div class="wd"><i></i><span>F</span></div>
+              <div class="wd"><i></i><span>S</span></div>
+              <div class="wd"><i></i><span>S</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DOM Index 5: Clone of Slide 0 (MealMate Wallet) -->
+        <div class="ms-slide" [class.active-slide]="isSlideActive(5)">
+          <div class="wallet-card-mob" routerLink="/wallet">
+            <div class="wtop">
+              <span class="k">MEALMATE WALLET</span>
+              <span class="chipact">ACTIVE</span>
+            </div>
+            <div class="wamt"><sup>₹</sup>{{(wallet?.balance | number:'1.0-0') || '3,180'}}</div>
+            <div class="wsub">Available balance</div>
+            <div class="wsplit">
+              <div class="wcell">
+                <div class="k">Credit</div>
+                <div class="v">₹{{wallet?.availableCredit || 500}}</div>
+              </div>
+              <div class="wcell">
+                <div class="k">Points</div>
+                <div class="v">{{credits || 1132}}</div>
+              </div>
+            </div>
+            <button class="wbtn">
+              View details <ion-icon name="arrow-forward-outline"></ion-icon>
+            </button>
           </div>
         </div>
       </div>

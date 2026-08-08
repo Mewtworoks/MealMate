@@ -261,9 +261,14 @@ export class ShopPage implements OnInit {
   goToMealDetail(mealId: string) { this.router.navigate(['/meal-detail', mealId]); }
 
   activeSlideIndex = 0;
+  currentDomIndex = 1;
   autoSlideTimer: any = null;
+  scrollDebounceTimer: any = null;
 
   ionViewDidEnter() {
+    setTimeout(() => {
+      this.scrollToDomIndex(1, 'auto');
+    }, 100);
     this.startAutoSlide();
   }
 
@@ -275,11 +280,25 @@ export class ShopPage implements OnInit {
     this.stopAutoSlide();
   }
 
+  isSlideActive(domIndex: number): boolean {
+    return ((domIndex - 1 + 4) % 4) === this.activeSlideIndex;
+  }
+
   startAutoSlide() {
     this.stopAutoSlide();
     this.autoSlideTimer = setInterval(() => {
-      this.activeSlideIndex = (this.activeSlideIndex + 1) % 4;
-      this.scrollToSlide(this.activeSlideIndex);
+      this.currentDomIndex++;
+      this.scrollToDomIndex(this.currentDomIndex, 'smooth');
+
+      if (this.currentDomIndex >= 5) {
+        this.activeSlideIndex = 0;
+        setTimeout(() => {
+          this.currentDomIndex = 1;
+          this.scrollToDomIndex(1, 'auto');
+        }, 400);
+      } else {
+        this.activeSlideIndex = (this.currentDomIndex - 1 + 4) % 4;
+      }
     }, 4000);
   }
 
@@ -292,20 +311,45 @@ export class ShopPage implements OnInit {
 
   onMobileSliderScroll(event: Event) {
     const el = event.target as HTMLElement;
-    if (el && el.clientWidth > 0) {
-      const scrollPosition = el.scrollLeft;
-      const slideWidth = el.clientWidth * 0.85;
-      this.activeSlideIndex = Math.min(3, Math.max(0, Math.round(scrollPosition / slideWidth)));
+    if (!el || el.clientWidth === 0) return;
+
+    const scrollPos = el.scrollLeft;
+    const slideWidth = el.clientWidth * 0.84 + 12;
+    const domIndex = Math.round(scrollPos / slideWidth);
+
+    this.currentDomIndex = domIndex;
+    if (domIndex === 0) {
+      this.activeSlideIndex = 3;
+    } else if (domIndex === 5) {
+      this.activeSlideIndex = 0;
+    } else {
+      this.activeSlideIndex = (domIndex - 1 + 4) % 4;
     }
+
+    if (this.scrollDebounceTimer) clearTimeout(this.scrollDebounceTimer);
+    this.scrollDebounceTimer = setTimeout(() => {
+      if (this.currentDomIndex === 0) {
+        this.currentDomIndex = 4;
+        this.scrollToDomIndex(4, 'auto');
+      } else if (this.currentDomIndex === 5) {
+        this.currentDomIndex = 1;
+        this.scrollToDomIndex(1, 'auto');
+      }
+    }, 150);
   }
 
-  scrollToSlide(index: number) {
-    this.activeSlideIndex = index;
+  scrollToSlide(realIndex: number) {
+    this.activeSlideIndex = realIndex;
+    this.currentDomIndex = realIndex + 1;
+    this.scrollToDomIndex(this.currentDomIndex, 'smooth');
+    this.startAutoSlide();
+  }
+
+  scrollToDomIndex(domIndex: number, behavior: ScrollBehavior = 'smooth') {
     const el = document.querySelector('.mobile-slider') as HTMLElement;
     if (el) {
-      const slideWidth = el.clientWidth * 0.85;
-      el.scrollTo({ left: index * slideWidth, behavior: 'smooth' });
+      const slideWidth = el.clientWidth * 0.84 + 12;
+      el.scrollTo({ left: domIndex * slideWidth, behavior });
     }
-    this.startAutoSlide();
   }
 }
