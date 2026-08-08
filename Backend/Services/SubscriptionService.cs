@@ -398,7 +398,7 @@ namespace MealMate.Api.Services
             return new SubscriptionResponseDto
             {
                 Id = sub.Id,
-                CustomerId = sub.CustomerId,
+                CustomerId = sub.CustomerId.ToString(),
                 StartDate = sub.StartDate.ToString("yyyy-MM-dd"),
                 EndDate = sub.EndDate.ToString("yyyy-MM-dd"),
                 Months = sub.Months,

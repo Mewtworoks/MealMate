@@ -17,7 +17,9 @@ export class AuthService {
 
   async loginWithEmail(email: string, password: string, role: 'customer' | 'agent'): Promise<any> {
     const key = environment.clerkPublishableKey;
-    if (key && key.startsWith('pk_test_') && !key.includes('clean-mudfish-62')) {
+    const isRealClerkKey = key && key.startsWith('pk_test_') && !key.includes('clean-mudfish-62') && !key.includes('YOUR_CLERK');
+
+    if (isRealClerkKey) {
       try {
         const clerkRes = await this.clerkAuth.signInWithEmailAndPassword(email, password);
 
@@ -34,8 +36,6 @@ export class AuthService {
           return userData;
         } else if (clerkRes.notFound) {
           return { success: false, message: 'Account not found. Please click "Sign Up" to create an account!' };
-        } else if (clerkRes.message) {
-          return { success: false, message: clerkRes.message };
         }
       } catch (clerkErr: any) {
         console.warn('Clerk auth note:', clerkErr?.message || clerkErr);
@@ -47,11 +47,11 @@ export class AuthService {
       const res: any = await firstValueFrom(
         this.http.post(`${environment.apiUrl}/auth/login`, payload).pipe(
           timeout(8000),
-          catchError(() => of({ success: false, message: 'Server connection timeout.' }))
+          catchError((err: any) => of({ success: false, message: err?.error?.message || 'Server connection timeout.' }))
         )
       );
 
-      if (res.success && res.user) {
+      if (res && res.success && res.user) {
         this.saveUserSession(res.user, role);
         return res.user;
       }
@@ -86,7 +86,7 @@ export class AuthService {
 
     // 2. Sync with Clerk Client-Side if key is configured
     const key = environment.clerkPublishableKey;
-    if (key && key.startsWith('pk_test_') && !key.includes('clean-mudfish-62')) {
+    if (key && key.startsWith('pk_test_') && !key.includes('clean-mudfish-62') && !key.includes('YOUR_CLERK')) {
       try {
         const clerkRes = await this.clerkAuth.signUpWithEmailAndPassword(email, password, fullName);
 

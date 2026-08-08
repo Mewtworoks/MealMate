@@ -5,12 +5,15 @@ import { IonicModule } from '@ionic/angular';
 import { WalletPageRoutingModule } from './wallet-routing.module';
 import { WalletPage } from './wallet.page';
 
+import { SharedComponentsModule } from '../../components/shared-components.module';
+
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    WalletPageRoutingModule
+    WalletPageRoutingModule,
+    SharedComponentsModule
   ],
   declarations: [WalletPage]
 })

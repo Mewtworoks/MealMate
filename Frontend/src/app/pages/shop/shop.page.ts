@@ -21,23 +21,55 @@ export class ShopPage implements OnInit {
   meals: Meal[] = [];
   aiPicks: Meal[] = [];
   agents: Agent[] = [];
-  categories = ['Lunch', 'Healthy', 'North Indian', 'Trending', 'Bestseller', 'More'];
-  selectedCategory = 'Lunch';
+  categories = ['All', 'Lunch', 'Thali', 'Biryani', 'Non-Veg', 'Healthy'];
+  selectedCategory = 'All';
   isLoading = true;
+  searchQuery = '';
+  orderCount = 0;
 
   activeSubscription: Subscription | null = null;
   activePlanPercent: number = 0;
   planName: string = 'Protein Focus Plan';
   planMessage: string = 'Great going! You\'re on track with your protein goals.';
 
+  walletBalance = 0;
+  credits = 0;
+  cartCount = 0;
+  cartItems: any[] = [];
+  cartTotal = 0;
+
+  selectedAddress = { tag: 'Kalkaji', street: 'New Delhi' };
+  unreadNotifCount = 2;
+
+  openAddressModal() {
+    // Address modal trigger placeholder
+  }
+
+  openNotifications() {
+    // Notification drawer/modal trigger placeholder
+  }
+
+  onSearchInput(event: any) {
+    this.searchQuery = event.target?.value || '';
+    this.onSearch();
+  }
+
+  greeting = 'Good morning';
+  userName = 'Foodie';
+  userInitials = 'F';
+  userLocation = 'Fetching location...';
+  weekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+
   getCategoryIcon(category: string): string {
     const icons: { [key: string]: string } = {
+      'All': 'restaurant-outline',
       'Lunch': 'restaurant-outline',
       'Healthy': 'leaf-outline',
-      'North Indian': 'flame-outline',
+      'Thali': 'flame-outline',
+      'Biryani': 'flame-outline',
+      'Non-Veg': 'fish-outline',
       'Trending': 'trending-up-outline',
       'Bestseller': 'star-outline',
-      'More': 'grid-outline'
     };
     return icons[category] || 'restaurant-outline';
   }
@@ -46,32 +78,27 @@ export class ShopPage implements OnInit {
     return this.mealService.getMealCalories(meal);
   }
 
+  getMatchPercent(index: number): number {
+    const percents = [92, 86, 85, 83, 80];
+    return percents[index] || 80;
+  }
+
+  getPickMeals(): Meal[] {
+    if (this.aiPicks && this.aiPicks.length > 0) return this.aiPicks.slice(0, 3);
+    return this.meals.slice(0, 3);
+  }
+
   getNextDeliveryText(sub: Subscription | null): string {
     if (!sub) return '';
-    if (sub.status === 'Paused') {
-      return 'Paused - Resume to continue';
-    }
-    
-    // Simplistic logic: assume next delivery is tomorrow if active
+    if (sub.status === 'Paused') return 'Paused - Resume to continue';
     const tmrw = new Date();
     tmrw.setDate(tmrw.getDate() + 1);
-    
-    // Check if tomorrow is paused or skipped
     const tmrwStr = tmrw.toISOString().split('T')[0];
     if (sub.skippedDays?.includes(tmrwStr) || sub.pausedDays?.includes(tmrwStr)) {
       return 'Next unskipped day, 1:00 PM';
     }
-
     return 'Tomorrow, 1:00 PM';
   }
-
-  walletBalance = 0;
-  credits = 0;
-  cartCount = 0;
-
-  greeting = 'Good morning';
-  userName = 'Foodie';
-  userLocation = 'Fetching location...';
 
   constructor(
     private mealService: MealService,
@@ -92,11 +119,14 @@ export class ShopPage implements OnInit {
     this.wallet.credits$.subscribe(c => this.credits = c);
 
     this.cartService.cart$.subscribe(items => {
-      this.cartCount = items.length;
+      this.cartCount = items.reduce((sum: number, i: any) => sum + (i.quantity || 1), 0);
+      this.cartItems = items;
+      this.cartTotal = items.reduce((sum: number, i: any) => sum + (i.price * (i.quantity || 1)), 0);
     });
 
     this.greeting = this.auth.greeting;
     this.userName = this.auth.userName || 'Foodie';
+    this.userInitials = this.userName.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();
     this.fetchLocation();
   }
 
@@ -108,8 +138,6 @@ export class ShopPage implements OnInit {
             const { latitude, longitude } = position.coords;
             const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
             const data = await res.json();
-
-            // Extract a clean neighborhood/city view
             const town = data.address.suburb || data.address.neighbourhood || data.address.town || data.address.city;
             const state = data.address.state || data.address.country;
             this.userLocation = town ? `${town}, ${state}` : 'Current Location';
@@ -118,9 +146,7 @@ export class ShopPage implements OnInit {
             this.userLocation = 'Location Unknown';
           }
         },
-        (error) => {
-          this.userLocation = 'Location Disabled';
-        }
+        () => { this.userLocation = 'Location Disabled'; }
       );
     } else {
       this.userLocation = 'Location Unavailable';
@@ -137,32 +163,23 @@ export class ShopPage implements OnInit {
       await this.subscriptionService.fetchUserSubscriptions(userId);
       this.checkActiveSubscription(userId);
     }
-    this.loadAiPicks(); // Removed 'await' so it doesn't block the page load
+    this.loadAiPicks();
     setTimeout(() => {
       this.isLoading = false;
       this.pageLoader.show(false);
-    }, 1000); // Small delay to show off the loader
+    }, 1000);
   }
 
   checkActiveSubscription(userId: string) {
     const subs = this.subscriptionService.getUserSubscriptions(userId);
     const activeSub = subs.find(s => s.status === 'Active');
-    
     if (activeSub) {
       this.activeSubscription = activeSub;
-      const todayDate = new Date();
-      todayDate.setHours(0, 0, 0, 0);
-      const startDate = new Date(activeSub.startDate);
-      startDate.setHours(0, 0, 0, 0);
-
+      const todayDate = new Date(); todayDate.setHours(0, 0, 0, 0);
+      const startDate = new Date(activeSub.startDate); startDate.setHours(0, 0, 0, 0);
       const daysElapsed = Math.floor((todayDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-      
       let percent = Math.floor((daysElapsed / activeSub.totalDays) * 100);
-      if (percent < 0) percent = 0;
-      if (percent > 100) percent = 100;
-      
-      this.activePlanPercent = percent;
-
+      this.activePlanPercent = Math.max(0, Math.min(100, percent));
       if (activeSub.rotationMeals.some(m => m.name.toLowerCase().includes('paneer'))) {
         this.planName = 'Protein Focus Plan';
         this.planMessage = 'Great going! You\'re on track with your protein goals.';
@@ -177,70 +194,55 @@ export class ShopPage implements OnInit {
 
   async loadAiPicks() {
     if (this.meals.length === 0) return;
-
     const cachedPicksStr = localStorage.getItem('dailyAiPicks');
     const cachedDate = localStorage.getItem('dailyAiPicksDate');
     const today = new Date().toDateString();
-
-    // Use cached AI picks if they were generated today
     if (cachedPicksStr && cachedDate === today) {
-      try {
-        this.aiPicks = JSON.parse(cachedPicksStr);
-        return; // Fast exit!
-      } catch (e) {
-        console.error('Error parsing cached AI picks', e);
-      }
+      try { this.aiPicks = JSON.parse(cachedPicksStr); return; } catch (e) { }
     }
-
-    // Otherwise, call Gemini API in the background
     try {
-      this.aiPicks = await this.gemini.getMealSuggestions('Give me the best 2 balanced meals for today', this.meals);
-      
-      // Save to cache so subsequent loads today are instant
+      this.aiPicks = await this.gemini.getMealSuggestions('Give me the best 3 balanced meals for today', this.meals);
       if (this.aiPicks && this.aiPicks.length > 0) {
         localStorage.setItem('dailyAiPicks', JSON.stringify(this.aiPicks));
         localStorage.setItem('dailyAiPicksDate', today);
       }
-    } catch (e) {
-      console.error('AI Suggestion Error:', e);
-    }
+    } catch (e) { console.error('AI Suggestion Error:', e); }
   }
 
-  navigateToAi() {
-    this.router.navigate(['/ai-concierge']);
+  onSearch() {
+    // Search triggers re-render via getFilteredMeals()
   }
+
+  navigateToAi() { this.router.navigate(['/ai-concierge']); }
 
   getFilteredMeals(): Meal[] {
     if (!this.meals || this.meals.length === 0) return [];
-    
-    const cat = this.selectedCategory;
+    let list = this.meals;
 
-    if (cat === 'More') {
-      return this.meals;
+    // Category filter
+    if (this.selectedCategory !== 'All') {
+      const cat = this.selectedCategory;
+      if (cat === 'Non-Veg') {
+        list = list.filter(m => m.type === 'Non-Veg' || m.category === 'Non-Veg Thali');
+      } else if (cat === 'Healthy') {
+        list = list.filter(m => m.type === 'Veg' || (m.calories && m.calories <= 450));
+      } else {
+        let matches = list.filter(m => m.category === cat);
+        if (cat === 'Lunch') {
+          const extra = list.filter(m => ['Thali', 'Non-Veg Thali', 'Biryani'].includes(m.category));
+          matches = Array.from(new Set([...matches, ...extra]));
+        }
+        list = matches.length > 0 ? matches : list;
+      }
     }
 
-    // Direct category match
-    let directMatches = this.meals.filter(m => m.category === cat);
-
-    // Smart fallback/supplement based on filter topic
-    if (cat === 'Lunch') {
-      const extra = this.meals.filter(m => m.category === 'Thali' || m.category === 'Non-Veg Thali' || m.category === 'Biryani');
-      directMatches = Array.from(new Set([...directMatches, ...extra]));
-    } else if (cat === 'Healthy') {
-      const extra = this.meals.filter(m => m.category === 'Breakfast' || m.type === 'Veg' || (m.calories && m.calories <= 450));
-      directMatches = Array.from(new Set([...directMatches, ...extra]));
-    } else if (cat === 'North Indian') {
-      const extra = this.meals.filter(m => m.category === 'Thali' || m.category === 'Fast Food' || m.name.includes('Paneer') || m.name.includes('Chicken') || m.name.includes('Dal') || m.name.includes('Rajma') || m.name.includes('Saag') || m.name.includes('Chole') || m.name.includes('Kulcha'));
-      directMatches = Array.from(new Set([...directMatches, ...extra]));
-    } else if (cat === 'Trending') {
-      const extra = this.meals.filter(m => m.price >= 200 || m.category === 'Biryani' || m.category === 'Fast Food');
-      directMatches = Array.from(new Set([...directMatches, ...extra]));
-    } else if (cat === 'Bestseller') {
-      const extra = this.meals.filter(m => m.name.includes('Butter') || m.name.includes('Paneer') || m.name.includes('Biryani') || m.name.includes('Chole') || m.name.includes('Dal'));
-      directMatches = Array.from(new Set([...directMatches, ...extra]));
+    // Search filter
+    if (this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      list = list.filter(m => m.name.toLowerCase().includes(q) || m.category.toLowerCase().includes(q));
     }
 
-    return directMatches.length > 0 ? directMatches : this.meals.slice(0, 6);
+    return list;
   }
 
   addToCart(meal: Meal, event?: Event) {
@@ -253,19 +255,8 @@ export class ShopPage implements OnInit {
     this.cartService.removeFromCart(mealId);
   }
 
-  goToCart() {
-    this.router.navigate(['/cart']);
-  }
-
-  createCustomMeal() {
-    this.router.navigate(['/custom-meal']);
-  }
-
-  async openSubscriptionModal() {
-    this.router.navigate(['/subscribe']);
-  }
-
-  goToMealDetail(mealId: string) {
-    this.router.navigate(['/meal-detail', mealId]);
-  }
+  goToCart() { this.router.navigate(['/cart']); }
+  createCustomMeal() { this.router.navigate(['/custom-meal']); }
+  async openSubscriptionModal() { this.router.navigate(['/subscribe']); }
+  goToMealDetail(mealId: string) { this.router.navigate(['/meal-detail', mealId]); }
 }

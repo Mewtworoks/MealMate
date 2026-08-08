@@ -115,3 +115,9 @@
     }
   }
 }
+
+@media (min-width: 1001px) {
+  .premium-tabs-container {
+    display: none !important;
+  }
+}

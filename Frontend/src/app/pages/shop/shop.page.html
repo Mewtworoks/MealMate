@@ -1,37 +1,54 @@
-<!-- Page Loader -->
 <app-page-loader [isLoading]="isLoading"></app-page-loader>
 
-<ion-header class="ion-no-border sub-page-header" *ngIf="!isLoading">
+<!-- ═══════════════════════════════════════════════════
+     MOBILE HEADER (Screens < 1001px)
+     ═══════════════════════════════════════════════════ -->
+<ion-header class="ion-no-border main-header mobile-only">
   <div class="header-curve-bg"></div>
   <ion-toolbar class="transparent-toolbar">
-    <div class="header-content" style="padding: 0 16px;">
-      <div class="title-group" style="flex: 1;">
-        <p class="subtitle">{{greeting}},</p>
-        <h2 class="page-title">{{userName}} 👋</h2>
+    <div class="header-content">
+      <div class="location-group" (click)="openAddressModal()">
+        <span class="loc-label">DELIVERING TO <ion-icon name="chevron-down-outline"></ion-icon></span>
+        <h2 class="loc-address">
+          <ion-icon name="location" class="pin-icon"></ion-icon>
+          {{selectedAddress ? selectedAddress.tag + ' - ' + selectedAddress.street : 'Kalkaji, New Delhi'}}
+        </h2>
       </div>
-      <div class="header-actions" style="display: flex; gap: 8px; align-items: center;">
-        <div class="location-pill">
-          <ion-icon name="location-sharp" class="loc-pin"></ion-icon>
-          <span class="loc-text">{{userLocation}}</span>
-          <ion-icon name="chevron-down-outline" class="loc-chevron"></ion-icon>
-        </div>
+      <div class="header-actions">
+        <ion-button class="icon-circle-btn" (click)="navigateToAi()">
+          <ion-icon name="sparkles" class="ai-sparkle"></ion-icon>
+        </ion-button>
+        <ion-button class="icon-circle-btn" (click)="openNotifications()">
+          <ion-icon name="notifications-outline"></ion-icon>
+          <span class="notif-badge" *ngIf="unreadNotifCount > 0"></span>
+        </ion-button>
       </div>
     </div>
   </ion-toolbar>
+  <!-- Search bar embedded in header -->
+  <div class="search-bar-wrap">
+    <ion-searchbar placeholder="Search 'Dal Makhani', 'High Protein'..." [(ngModel)]="searchQuery"
+      (ionInput)="onSearchInput($event)" search-icon="search-outline" class="custom-searchbar"></ion-searchbar>
+  </div>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="premium-content" *ngIf="!isLoading">
+<ion-content [fullscreen]="true" class="shop-content">
 
-  <!-- ===== WALLET CARD V2 ===== -->
-  <div class="wallet-card-v2" routerLink="/wallet">
-    <div class="wc-bg-mesh"></div>
-    <div class="wc-content">
-      <div class="wc-top">
+  <!-- ═══════════════════════════════════════════════════
+       MOBILE APP VIEW (Screens < 1001px)
+       ═══════════════════════════════════════════════════ -->
+  <div class="mobile-layout mobile-only" *ngIf="!isLoading">
+    <!-- ===== WALLET QUICK BAR ===== -->
+    <div class="wallet-bar-wrap" *ngIf="wallet">
+      <div class="wallet-card" routerLink="/wallet">
         <div class="wc-left">
-          <span class="wc-label">MEALMATE WALLET</span>
-          <div class="wc-balance">
-            <span class="wc-currency">₹</span>
-            <span class="wc-amount">{{walletBalance}}</span>
+          <div class="wc-label">
+            <ion-icon name="wallet-outline"></ion-icon>
+            <span>Wallet Balance</span>
+          </div>
+          <div class="wc-amount">
+            <span class="currency">₹</span>
+            <span class="val">{{wallet.balance | number:'1.0-0'}}</span>
           </div>
           <div class="wc-stats">
             <span>Credit: <b>₹{{wallet.availableCredit}}</b></span>
@@ -59,171 +76,377 @@
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="content-wrapper">
-
-    <!-- ===== AI PICKS SECTION ===== -->
-    <section class="ai-section">
-      <div class="section-hdr">
-        <div class="section-title-group">
-          <h2>MealMantra Picks <ion-icon name="sparkles" class="sparkle-icon"></ion-icon></h2>
-          <p>Curated for your taste and health goals</p>
-        </div>
-        <button class="see-all-btn" (click)="navigateToAi()">See all <ion-icon
-            name="chevron-forward-outline"></ion-icon></button>
-      </div>
-
-      <div class="ai-card" *ngIf="aiPicks && aiPicks.length > 0" (click)="goToMealDetail(aiPicks[0].id)">
-        <div class="ai-card-images">
-          <div class="ai-img-circle main">
-            <div class="match-tag">92% Match</div>
-            <img [src]="aiPicks[0]?.image || 'assets/onboarding/dal_chawal.png'" alt="AI Pick">
+    <div class="content-wrapper">
+      <!-- ===== AI PICKS SECTION ===== -->
+      <section class="ai-section">
+        <div class="section-hdr">
+          <div class="section-title-group">
+            <h2>MealMantra Picks <ion-icon name="sparkles" class="sparkle-icon"></ion-icon></h2>
+            <p>Curated for your taste and health goals</p>
           </div>
-          <div class="ai-img-circle secondary" *ngIf="aiPicks.length > 1">
-            <div class="match-tag">87% Match</div>
-            <img [src]="aiPicks[1]?.image || 'assets/onboarding/dal_chawal.png'" alt="AI Pick 2">
-          </div>
+          <button class="see-all-btn" (click)="navigateToAi()">See all <ion-icon
+              name="chevron-forward-outline"></ion-icon></button>
         </div>
-        <div class="ai-card-info">
-          <h3>{{aiPicks[0]?.name || 'Dal Makhani Bowl'}}</h3>
-          <p class="ai-card-desc">High Protein • Low Oil • 520 kcal</p>
-          <div class="ai-tags">
-            <span class="ai-tag">High Protein</span>
-            <span class="ai-tag green">Rich in Fiber</span>
-          </div>
-          <button class="ai-why-btn">Why MealMantra picked this? <ion-icon
-              name="information-circle-outline"></ion-icon></button>
-        </div>
-      </div>
 
-      <div class="ai-dots">
-        <span class="ai-dot active"></span>
-        <span class="ai-dot"></span>
-        <span class="ai-dot"></span>
-      </div>
-    </section>
-
-    <!-- ===== CATEGORIES ===== -->
-    <section class="cat-section">
-      <div class="cat-scroll">
-        <div *ngFor="let cat of categories" class="cat-item" [class.active]="selectedCategory === cat"
-          (click)="selectedCategory = cat">
-          <div class="cat-icon-circle">
-            <ion-icon [name]="getCategoryIcon(cat)"></ion-icon>
-          </div>
-          <span class="cat-label">{{cat}}</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== POPULAR TODAY ===== -->
-    <section class="popular-section">
-      <div class="section-hdr">
-        <h2>Popular Today 🔥</h2>
-        <button class="see-all-btn" routerLink="/all-meals">View all <ion-icon
-            name="chevron-forward-outline"></ion-icon></button>
-      </div>
-
-      <div class="popular-scroll">
-        <div class="popular-card" *ngFor="let meal of getFilteredMeals()" (click)="goToMealDetail(meal.id)">
-          <div class="pc-thumb">
-            <img [src]="meal.image" [alt]="meal.name">
-            <div class="pc-rating">
-              <ion-icon name="star"></ion-icon> 4.{{(meal.price % 5) + 5}}
+        <div class="ai-card" *ngIf="aiPicks && aiPicks.length > 0" (click)="goToMealDetail(aiPicks[0].id)">
+          <div class="ai-card-images">
+            <div class="ai-img-circle main">
+              <div class="match-tag">92% Match</div>
+              <img [src]="aiPicks[0]?.image || 'assets/onboarding/dal_chawal.png'" alt="AI Pick">
             </div>
-            <button class="pc-heart">
-              <ion-icon name="heart-outline"></ion-icon>
-            </button>
-            <div class="pc-kcal">{{ getMealCalories(meal) }} kcal</div>
+            <div class="ai-img-circle secondary" *ngIf="aiPicks.length > 1">
+              <div class="match-tag">87% Match</div>
+              <img [src]="aiPicks[1]?.image || 'assets/onboarding/dal_chawal.png'" alt="AI Pick 2">
+            </div>
           </div>
-          <div class="pc-body">
-            <h4 class="pc-name">{{meal.name}}</h4>
-            <p class="pc-sub">{{meal.category}}</p>
-            <div class="pc-price-row">
-              <span class="pc-price">₹{{meal.price}}</span>
-              <!-- Quantity Control -->
-              <ng-container *ngIf="cartService.getQuantity(meal.id) === 0; else qtyControl">
-                <button class="pc-add-btn" (click)="addToCart(meal, $event)">
-                  <ion-icon name="add"></ion-icon>
-                </button>
-              </ng-container>
-              <ng-template #qtyControl>
-                <div class="pc-qty-control" (click)="$event.stopPropagation()">
-                  <button class="qty-btn" (click)="removeFromCart(meal.id, $event)">
-                    <ion-icon name="remove"></ion-icon>
-                  </button>
-                  <span class="qty-val">{{cartService.getQuantity(meal.id)}}</span>
-                  <button class="qty-btn" (click)="addToCart(meal, $event)">
+          <div class="ai-card-info">
+            <h3>{{aiPicks[0]?.name || 'Dal Makhani Bowl'}}</h3>
+            <p class="ai-card-desc">High Protein • Low Oil • 520 kcal</p>
+            <div class="ai-tags">
+              <span class="ai-tag">High Protein</span>
+              <span class="ai-tag green">Rich in Fiber</span>
+            </div>
+            <button class="ai-why-btn">Why MealMantra picked this? <ion-icon
+                name="information-circle-outline"></ion-icon></button>
+          </div>
+        </div>
+
+        <div class="ai-dots">
+          <span class="ai-dot active"></span>
+          <span class="ai-dot"></span>
+          <span class="ai-dot"></span>
+        </div>
+      </section>
+
+      <!-- ===== CATEGORIES ===== -->
+      <section class="cat-section">
+        <div class="cat-scroll">
+          <div *ngFor="let cat of categories" class="cat-item" [class.active]="selectedCategory === cat"
+            (click)="selectedCategory = cat">
+            <div class="cat-icon-circle">
+              <ion-icon [name]="getCategoryIcon(cat)"></ion-icon>
+            </div>
+            <span class="cat-label">{{cat}}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== POPULAR TODAY ===== -->
+      <section class="popular-section">
+        <div class="section-hdr">
+          <h2>Popular Today 🔥</h2>
+          <button class="see-all-btn" routerLink="/all-meals">View all <ion-icon
+              name="chevron-forward-outline"></ion-icon></button>
+        </div>
+
+        <div class="popular-scroll">
+          <div class="popular-card" *ngFor="let meal of getFilteredMeals()" (click)="goToMealDetail(meal.id)">
+            <div class="pc-thumb">
+              <img [src]="meal.image" [alt]="meal.name">
+              <div class="pc-rating">
+                <ion-icon name="star"></ion-icon> 4.{{(meal.price % 5) + 5}}
+              </div>
+              <button class="pc-heart">
+                <ion-icon name="heart-outline"></ion-icon>
+              </button>
+              <div class="pc-kcal">{{ getMealCalories(meal) }} kcal</div>
+            </div>
+            <div class="pc-body">
+              <h4 class="pc-name">{{meal.name}}</h4>
+              <p class="pc-sub">{{meal.category}}</p>
+              <div class="pc-price-row">
+                <span class="pc-price">₹{{meal.price}}</span>
+                <!-- Quantity Control -->
+                <ng-container *ngIf="cartService.getQuantity(meal.id) === 0; else qtyControl">
+                  <button class="pc-add-btn" (click)="addToCart(meal, $event)">
                     <ion-icon name="add"></ion-icon>
                   </button>
-                </div>
-              </ng-template>
+                </ng-container>
+                <ng-template #qtyControl>
+                  <div class="pc-qty-control" (click)="$event.stopPropagation()">
+                    <button class="qty-btn" (click)="removeFromCart(meal.id, $event)">
+                      <ion-icon name="remove"></ion-icon>
+                    </button>
+                    <span class="qty-val">{{cartService.getQuantity(meal.id)}}</span>
+                    <button class="qty-btn" (click)="addToCart(meal, $event)">
+                      <ion-icon name="add"></ion-icon>
+                    </button>
+                  </div>
+                </ng-template>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- ===== PERSONAL CHEF BANNER ===== -->
-    <div class="chef-banner" (click)="createCustomMeal()">
-      <div class="apc-ring">
-        <div class="chef-icon-circle">
-          <img src="assets/logo/chef_hat.png" alt="Chef Hat">
+      <!-- ===== PERSONAL CHEF BANNER ===== -->
+      <div class="chef-banner" (click)="createCustomMeal()">
+        <div class="apc-ring">
+          <div class="chef-icon-circle">
+            <img src="assets/logo/chef_hat.png" alt="Chef Hat">
+          </div>
+        </div>
+        <div class="apc-info">
+          <span class="apc-label">Your <b>Concierge</b></span>
+          <h3 class="apc-name">Personal Chef</h3>
+          <p class="apc-msg">Request a custom dish from our top agents.</p>
+        </div>
+        <div class="apc-right">
+          <button class="apc-view-btn">Request <ion-icon name="arrow-forward-outline"></ion-icon></button>
+          <img src="assets/onboarding/paneer_tikka.png" class="apc-decor-img" alt="">
         </div>
       </div>
-      <div class="apc-info">
-        <span class="apc-label">Your <b>Concierge</b></span>
-        <h3 class="apc-name">Personal Chef</h3>
-        <p class="apc-msg">Request a custom dish from our top agents.</p>
-      </div>
-      <div class="apc-right">
-        <button class="apc-view-btn">Request <ion-icon name="arrow-forward-outline"></ion-icon></button>
-        <img src="assets/onboarding/paneer_tikka.png" class="apc-decor-img" alt="">
-      </div>
-    </div>
 
-    <!-- ===== ACTIVE PLAN CARD ===== -->
-    <div class="active-plan-card" *ngIf="activeSubscription" (click)="openSubscriptionModal()">
-      <div class="apc-ring">
-        <svg viewBox="0 0 80 80" class="ring-svg">
-          <circle cx="40" cy="40" r="34" fill="none" stroke="#fce4d6" stroke-width="5" />
-          <circle cx="40" cy="40" r="34" fill="none" stroke="#FF7235" stroke-width="5" stroke-linecap="round"
-            [attr.stroke-dasharray]="213.6" [attr.stroke-dashoffset]="213.6 - (213.6 * activePlanPercent) / 100"
-            class="ring-progress" />
-        </svg>
-        <div class="ring-center">
-          <span class="ring-pct">{{activePlanPercent}}%</span>
-          <ion-icon name="leaf" class="ring-leaf"></ion-icon>
+      <!-- ===== ACTIVE PLAN CARD ===== -->
+      <div class="active-plan-card" *ngIf="activeSubscription" (click)="openSubscriptionModal()">
+        <div class="apc-ring">
+          <svg viewBox="0 0 80 80" class="ring-svg">
+            <circle cx="40" cy="40" r="34" fill="none" stroke="#fce4d6" stroke-width="5" />
+            <circle cx="40" cy="40" r="34" fill="none" stroke="#FF7235" stroke-width="5" stroke-linecap="round"
+              [attr.stroke-dasharray]="213.6" [attr.stroke-dashoffset]="213.6 - (213.6 * activePlanPercent) / 100"
+              class="ring-progress" />
+          </svg>
+          <div class="ring-center">
+            <span class="ring-pct">{{activePlanPercent}}%</span>
+            <ion-icon name="leaf" class="ring-leaf"></ion-icon>
+          </div>
+        </div>
+        <div class="apc-info">
+          <span class="apc-label">Your <b>Meal Plan</b></span>
+          <h3 class="apc-name">{{planName}}</h3>
+          <p class="apc-msg">{{planMessage}}</p>
+        </div>
+        <div class="apc-right">
+          <button class="apc-view-btn">View Plan <ion-icon name="arrow-forward-outline"></ion-icon></button>
+          <img src="assets/onboarding/dal_chawal.png" class="apc-decor-img" alt="">
         </div>
       </div>
-      <div class="apc-info">
-        <span class="apc-label">Your <b>Meal Plan</b></span>
-        <h3 class="apc-name">{{planName}}</h3>
-        <p class="apc-msg">{{planMessage}}</p>
+
+      <!-- ===== SUBSCRIPTION PROMO (no active plan) ===== -->
+      <div class="sub-promo-card" *ngIf="!activeSubscription">
+        <div class="promo-text">
+          <div class="badge">HEALTH PLANS</div>
+          <h3>Stay Healthy Everyday</h3>
+          <p>Subscribe to weekly tiffin rotation plans curated by nutritionists.</p>
+          <button class="promo-btn" (click)="openSubscriptionModal()">VIEW PLANS <ion-icon
+              name="arrow-forward-outline"></ion-icon></button>
+        </div>
+        <div class="promo-img">
+          <img src="assets/onboarding/dal_chawal.png" alt="Promo">
+        </div>
       </div>
-      <div class="apc-right">
-        <button class="apc-view-btn">View Plan <ion-icon name="arrow-forward-outline"></ion-icon></button>
-        <img src="assets/onboarding/dal_chawal.png" class="apc-decor-img" alt="">
+
+      <div style="height: 100px;"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       DESKTOP WEB VIEW (Screens >= 1001px)
+       ═══════════════════════════════════════════════════ -->
+  <div class="web-app desktop-only" *ngIf="!isLoading">
+    <!-- SIDEBAR -->
+    <aside class="side">
+      <div class="logo">
+        <span class="glyph">
+          <img src="assets/logo/chef_hat.png" alt="MealMate">
+        </span>
+        <b>MealMate</b>
+      </div>
+      <div class="navlabel">Menu</div>
+      <nav class="nav">
+        <button class="on" routerLink="/customer-home">
+          <ion-icon name="home-outline"></ion-icon>Home
+        </button>
+        <button routerLink="/my-orders">
+          <ion-icon name="bag-outline"></ion-icon>Orders<span class="pip" *ngIf="orderCount > 0">{{orderCount}}</span>
+        </button>
+        <button (click)="openSubscriptionModal()">
+          <ion-icon name="calendar-outline"></ion-icon>Meal Plans
+        </button>
+        <button routerLink="/health">
+          <ion-icon name="heart-outline"></ion-icon>Health
+        </button>
+        <button (click)="createCustomMeal()">
+          <ion-icon name="chatbubbles-outline"></ion-icon>Concierge
+        </button>
+        <button routerLink="/wallet">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>Wallet
+        </button>
+      </nav>
+      <div class="side-foot">
+        <div class="plan-mini" *ngIf="activeSubscription" (click)="openSubscriptionModal()">
+          <div class="t">Your Meal Plan</div>
+          <div class="v">{{planName}}</div>
+          <div class="pbar"><i [style.width.%]="activePlanPercent"></i></div>
+          <div class="f"><span>{{activePlanPercent}}% complete</span><span>{{activeSubscription.currentDay}} / {{activeSubscription.totalDays}}</span></div>
+        </div>
+        <button class="me" routerLink="/wallet">
+          <span class="ava">{{userInitials}}</span>
+          <span style="text-align:left"><span class="n">{{userName}}</span><br><span class="s">Premium member</span></span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN VIEW -->
+    <div class="view-main">
+      <header class="top">
+        <div class="hello">
+          <div class="k">{{greeting}},</div>
+          <div class="v">{{userName}} 👋</div>
+        </div>
+        <div class="search" style="margin-left:12px">
+          <ion-icon name="search-outline" class="search-icon"></ion-icon>
+          <input type="text" placeholder="Search dishes, thalis, cuisines…" [(ngModel)]="searchQuery" (input)="onSearchInput($event)">
+        </div>
+        <div class="top-r">
+          <button class="loc" (click)="openAddressModal()">
+            <ion-icon name="location-outline"></ion-icon>
+            <span style="text-align:left"><span class="cap">Deliver to</span>{{selectedAddress ? selectedAddress.tag + ', ' + selectedAddress.street : 'Kalkaji, Delhi'}}</span>
+            <ion-icon name="chevron-down-outline" style="width:13px;height:13px;margin-left:4px"></ion-icon>
+          </button>
+          <button class="iconbtn" (click)="openNotifications()" title="Notifications">
+            <span class="dot" *ngIf="unreadNotifCount > 0"></span>
+            <ion-icon name="notifications-outline"></ion-icon>
+          </button>
+        </div>
+      </header>
+
+      <div class="body">
+        <div class="main-col">
+          <!-- Categories Bar -->
+          <div class="cats">
+            <button *ngFor="let cat of categories" class="cat" [class.on]="selectedCategory === cat" (click)="selectedCategory = cat">
+              <ion-icon [name]="getCategoryIcon(cat)"></ion-icon>
+              <span>{{cat}}</span>
+            </button>
+          </div>
+
+          <!-- MealMantra Picks Section -->
+          <section class="sec" *ngIf="getPickMeals().length > 0">
+            <div class="sechead">
+              <div>
+                <h2>MealMantra Picks ✨</h2>
+                <p>Curated for your taste and health goals</p>
+              </div>
+              <a (click)="navigateToAi()" class="seelink" style="cursor:pointer">See all <ion-icon name="chevron-forward-outline"></ion-icon></a>
+            </div>
+            <div class="picks">
+              <div class="pick" *ngFor="let pick of getPickMeals(); let i = index" (click)="goToMealDetail(pick.id)">
+                <div class="thumb">
+                  <img [src]="pick.image || 'assets/onboarding/dal_chawal.png'" [alt]="pick.name">
+                </div>
+                <div class="col">
+                  <div class="nmrow">
+                    <span class="nm">{{pick.name}}</span>
+                    <span class="matchpill">{{getMatchPercent(i)}}%</span>
+                  </div>
+                  <div class="mt">{{ getMealCalories(pick) }} kcal · Low oil</div>
+                  <div class="tags">
+                    <span class="t o">High Protein</span>
+                    <span class="t g">Rich in Fiber</span>
+                  </div>
+                  <div class="why">Why this pick <ion-icon name="information-circle-outline"></ion-icon></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Popular Today Section -->
+          <section class="sec">
+            <div class="sechead">
+              <div>
+                <h2>Popular Today 🔥</h2>
+                <p>What {{selectedAddress ? selectedAddress.tag : 'Kalkaji'}} is ordering right now</p>
+              </div>
+              <span class="seelink" style="color:var(--ink-3);font-size:13.5px;font-weight:700">{{getFilteredMeals().length}} dishes</span>
+            </div>
+
+            <div class="grid">
+              <div class="dish" *ngFor="let meal of getFilteredMeals()" (click)="goToMealDetail(meal.id)">
+                <div class="dimg">
+                  <img [src]="meal.image" [alt]="meal.name">
+                  <div class="rate"><ion-icon name="star"></ion-icon>4.{{(meal.price % 5) + 5}}</div>
+                  <button class="fav" (click)="$event.stopPropagation()"><ion-icon name="heart-outline"></ion-icon></button>
+                  <div class="kcal">{{ getMealCalories(meal) }} kcal</div>
+                </div>
+                <div class="dbody">
+                  <div class="nm">{{meal.name}}</div>
+                  <div class="ct">{{meal.category}}</div>
+                  <div class="drow">
+                    <div class="price">₹{{meal.price}}</div>
+                    <button class="add" *ngIf="cartService.getQuantity(meal.id) === 0" (click)="$event.stopPropagation(); addToCart(meal, $event)">
+                      <ion-icon name="add"></ion-icon>
+                    </button>
+                    <div class="stepper" *ngIf="cartService.getQuantity(meal.id) > 0" (click)="$event.stopPropagation()">
+                      <button (click)="removeFromCart(meal.id, $event)"><ion-icon name="remove"></ion-icon></button>
+                      <span class="q">{{cartService.getQuantity(meal.id)}}</span>
+                      <button (click)="addToCart(meal, $event)"><ion-icon name="add"></ion-icon></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Right Rail -->
+        <aside class="rail">
+          <!-- MealMate Wallet Card -->
+          <div class="wallet" *ngIf="wallet">
+            <div class="wtop"><span class="k">MealMate Wallet</span><span class="chipact">ACTIVE</span></div>
+            <div class="wamt"><sup>₹</sup>{{wallet.balance | number:'1.0-0'}}</div>
+            <div class="wsub">Available balance</div>
+            <div class="wsplit">
+              <div class="wcell"><div class="k">Credit</div><div class="v">₹{{wallet.availableCredit}}</div></div>
+              <div class="wcell"><div class="k">Points</div><div class="v">{{credits}}</div></div>
+            </div>
+            <button class="wbtn" routerLink="/wallet">View details <ion-icon name="arrow-forward-outline"></ion-icon></button>
+          </div>
+
+          <!-- Delivery Card -->
+          <div class="rcard">
+            <div class="rhead"><h3>This week</h3><span class="mini">{{activeSubscription ? activeSubscription.currentDay : 7}} / 7 meals</span></div>
+            <div class="delivery">
+              <div class="dtick"><ion-icon name="time-outline"></ion-icon></div>
+              <div><div class="v">{{activeSubscription ? getNextDeliveryText(activeSubscription) : 'Tomorrow, 1:00 PM'}}</div><div class="s">Next delivery · {{planName}}</div></div>
+            </div>
+            <div class="weekbar">
+              <div class="wd"><i></i><span>M</span></div>
+              <div class="wd"><i></i><span>T</span></div>
+              <div class="wd"><i></i><span>W</span></div>
+              <div class="wd"><i></i><span>T</span></div>
+              <div class="wd"><i></i><span>F</span></div>
+              <div class="wd"><i></i><span>S</span></div>
+              <div class="wd"><i></i><span>S</span></div>
+            </div>
+          </div>
+
+          <!-- Your Cart Card -->
+          <div class="rcard">
+            <div class="rhead"><h3>Your cart</h3><span class="mini">{{cartCount}} items</span></div>
+            <div class="cart-list" *ngIf="cartItems && cartItems.length > 0; else emptyCartMsg">
+              <div class="citem" *ngFor="let item of cartItems">
+                <div class="cthumb">
+                  <img [src]="item.image || 'assets/onboarding/dal_chawal.png'" [alt]="item.name">
+                </div>
+                <div style="min-width:0;flex:1">
+                  <div class="nm">{{item.name}}</div>
+                  <div class="q">Qty: {{item.quantity || 1}}</div>
+                </div>
+                <div class="p">₹{{item.price * (item.quantity || 1)}}</div>
+              </div>
+            </div>
+            <ng-template #emptyCartMsg>
+              <div style="padding: 16px 0; text-align: center; color: var(--ink-3); font-size: 13px; font-weight: 500;">Your cart is empty</div>
+            </ng-template>
+            <div class="ctotal"><span class="k">Total</span><span class="v">₹{{cartTotal}}</span></div>
+            <button class="checkout" (click)="goToCart()">Checkout <ion-icon name="arrow-forward-outline"></ion-icon></button>
+          </div>
+        </aside>
       </div>
     </div>
-
-    <!-- ===== SUBSCRIPTION PROMO (no active plan) ===== -->
-    <div class="sub-promo-card" *ngIf="!activeSubscription">
-      <div class="promo-text">
-        <div class="badge">HEALTH PLANS</div>
-        <h3>Stay Healthy Everyday</h3>
-        <p>Subscribe to weekly tiffin rotation plans curated by nutritionists.</p>
-        <button class="promo-btn" (click)="openSubscriptionModal()">VIEW PLANS <ion-icon
-            name="arrow-forward-outline"></ion-icon></button>
-      </div>
-      <div class="promo-img">
-        <img src="assets/onboarding/dal_chawal.png" alt="Promo">
-      </div>
-    </div>
-
   </div>
 </ion-content>
 
-<!-- Blinkit-style Cart Pill -->
 <app-cart-pill></app-cart-pill>

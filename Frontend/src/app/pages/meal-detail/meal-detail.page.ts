@@ -30,6 +30,14 @@ export class MealDetailPage implements OnInit {
   isLoading: boolean = true;
   isFavorited: boolean = false;
 
+  get isFavorite(): boolean {
+    return this.isFavorited;
+  }
+
+  shareMeal() {
+    this.shareItem();
+  }
+
   // Active subscription info
   activeSubscription: Subscription | null = null;
 
@@ -182,7 +190,10 @@ export class MealDetailPage implements OnInit {
     this.aiMatchReasons = reasons;
   }
 
-  // Helpers
+  getMealCalories(meal: Meal): number {
+    return meal?.calories || 420;
+  }
+
   get mealCalories(): number {
     return this.meal?.calories || 0;
   }

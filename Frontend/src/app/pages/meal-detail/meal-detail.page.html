@@ -1,58 +1,66 @@
-<!-- Page Loader -->
 <app-page-loader [isLoading]="isLoading"></app-page-loader>
 
-<!-- ===== TRANSPARENT HEADER (absolute over hero) ===== -->
-<ion-header class="ion-no-border md-header" *ngIf="!isLoading">
-  <ion-toolbar class="md-toolbar">
-    <div class="md-header-row">
-      <button class="md-back-btn" (click)="goBack()">
-        <ion-icon name="chevron-back"></ion-icon>
-      </button>
-      <div class="md-header-actions">
-        <button class="md-action-btn" (click)="shareItem()">
-          <ion-icon name="share-outline"></ion-icon>
-        </button>
-        <button class="md-action-btn" [class.favorited]="isFavorited" (click)="toggleFavorite()">
-          <ion-icon [name]="isFavorited ? 'heart' : 'heart-outline'"></ion-icon>
-        </button>
-      </div>
-    </div>
+<!-- ═══════════════════════════════════════════════════
+     MOBILE HEADER (Screens < 1001px)
+     ═══════════════════════════════════════════════════ -->
+<ion-header class="ion-no-border detail-header mobile-only">
+  <ion-toolbar class="transparent-toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" class="back-btn-pill">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="page-title-text">{{meal?.name || 'Meal Details'}}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleFavorite()" class="fav-btn-pill">
+        <ion-icon [name]="isFavorite ? 'heart' : 'heart-outline'" [class.is-fav]="isFavorite"></ion-icon>
+      </ion-button>
+      <ion-button (click)="shareMeal()" class="share-btn-pill">
+        <ion-icon name="share-social-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="md-content" *ngIf="!isLoading">
+<ion-content class="meal-detail-content" [fullscreen]="true">
 
-  <div *ngIf="meal" class="md-page">
+  <!-- ═══════════════════════════════════════════════════
+       MOBILE APP VIEW (Screens < 1001px)
+       ═══════════════════════════════════════════════════ -->
+  <div class="mobile-layout mobile-only" *ngIf="!isLoading && meal">
+    <!-- ===== HERO IMAGE CAROUSEL ===== -->
+    <div class="md-hero-wrap">
+      <img [src]="meal.image" [alt]="meal.name" class="md-hero-img">
+      <div class="md-hero-gradient"></div>
 
-    <!-- ========== HERO IMAGE AREA ========== -->
-    <div class="md-hero">
-      <img [src]="meal.image" [alt]="meal.name" class="md-hero-img" />
-      <!-- Category pill bottom-left -->
-      <div class="md-cat-pill">
-        <ion-icon name="leaf-outline"></ion-icon>
-        <span>{{meal.category}}</span>
-      </div>
-      <!-- Veg / Non-Veg bottom-right -->
-      <div class="md-type-pill" [class.non-veg]="meal.type === 'Non-Veg'">
-        <ion-icon [name]="meal.type === 'Veg' ? 'leaf' : 'flame'"></ion-icon>
-        <span>{{meal.type}}</span>
+      <!-- Floating badges on hero -->
+      <div class="md-hero-tags">
+        <span class="md-tag veg" *ngIf="meal.category?.toLowerCase()?.includes('veg') || meal.category?.toLowerCase()?.includes('thali')">
+          <span class="veg-dot"></span> VEG
+        </span>
+        <span class="md-tag category">{{meal.category}}</span>
+        <span class="md-tag cal" *ngIf="mealCalories">{{mealCalories}} kcal</span>
       </div>
     </div>
 
-    <!-- ========== INFO CARD (overlaps hero) ========== -->
-    <div class="md-info-card">
+    <!-- ===== MAIN CONTENT CARD ===== -->
+    <div class="md-content-card">
 
-      <!-- Meal name -->
-      <h1 class="md-name">{{meal.name}}</h1>
+      <!-- Title & Rating -->
+      <div class="md-title-row">
+        <div class="md-title-block">
+          <h1 class="md-meal-title">{{meal.name}}</h1>
+          <p class="md-chef-sub">Prepared by Chef Agent Mia • Fresh Daily</p>
+        </div>
+        <div class="md-rating-badge-large">
+          <ion-icon name="star"></ion-icon>
+          <span class="rating-val">{{mealRating}}</span>
+        </div>
+      </div>
 
-      <!-- Rating row + description -->
-      <div class="md-meta-row">
-        <div class="md-meta-left">
-          <div class="md-stars-row">
-            <ion-icon name="star" *ngFor="let s of getStars(+mealRating)"
-              [class.half]="s === 0.5" [class.empty]="s === 0"></ion-icon>
-          </div>
-          <span class="md-rating-num">{{mealRating}}</span>
+      <div class="md-desc-block">
+        <div class="md-stars-row">
+          <ion-icon name="star" *ngFor="let s of [1,2,3,4,5]"></ion-icon>
           <span class="md-review-count">({{reviewCount}} reviews)</span>
         </div>
         <p class="md-desc-inline" *ngIf="meal.description">{{meal.description}}</p>
@@ -64,7 +72,7 @@
         <span class="md-price-sub">per serving</span>
       </div>
 
-      <!-- ========== QUICK INFO PILLS ========== -->
+      <!-- Quick Info Pills -->
       <div class="md-pills-row">
         <div class="md-pill">
           <ion-icon name="flame-outline"></ion-icon>
@@ -88,7 +96,7 @@
         </div>
       </div>
 
-      <!-- ========== NUTRITION BREAKDOWN ========== -->
+      <!-- Nutrition Breakdown -->
       <div class="md-section-row">
         <h2 class="md-sec-title">Nutrition Breakdown</h2>
         <span class="md-sync-tag">
@@ -128,7 +136,7 @@
         </div>
       </div>
 
-      <!-- ========== INGREDIENTS ========== -->
+      <!-- Ingredients -->
       <h2 class="md-sec-title mt-20">Ingredients</h2>
       <div class="md-ing-list">
         <span class="md-ing-chip" *ngFor="let ing of ingredients">
@@ -137,7 +145,7 @@
         </span>
       </div>
 
-      <!-- ========== AI MATCH ========== -->
+      <!-- AI Match -->
       <div class="md-ai-card">
         <div class="md-ai-top">
           <div class="md-ai-icon-circle">
@@ -167,7 +175,7 @@
         </div>
       </div>
 
-      <!-- ========== ADD TO ROTATION ========== -->
+      <!-- Rotation -->
       <div class="md-rotation-row" *ngIf="activeSubscription" (click)="addToRotation()">
         <div class="md-rot-icon">
           <ion-icon name="repeat-outline"></ion-icon>
@@ -190,7 +198,7 @@
         <ion-icon name="arrow-forward-outline" class="md-rot-add"></ion-icon>
       </div>
 
-      <!-- ========== CUSTOMER REVIEWS ========== -->
+      <!-- Customer Reviews -->
       <div class="md-section-row mt-20">
         <h2 class="md-sec-title">Customer Reviews</h2>
         <span class="md-rating-badge">
@@ -217,7 +225,7 @@
         </div>
       </div>
 
-      <!-- ========== SIMILAR MEALS ========== -->
+      <!-- Similar Meals -->
       <h2 class="md-sec-title mt-20">Similar Meals</h2>
       <div class="md-similar-scroll">
         <div class="md-sim-card" *ngFor="let sm of similarMeals" (click)="goToMealDetail(sm.id)">
@@ -238,14 +246,193 @@
         </div>
       </div>
 
-      <!-- Bottom spacer -->
-      <div style="height:90px;"></div>
+      <div style="height:100px;"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       DESKTOP WEB VIEW (Screens >= 1001px)
+       ═══════════════════════════════════════════════════ -->
+  <div class="web-app desktop-only" *ngIf="!isLoading && meal">
+    <!-- SIDEBAR -->
+    <aside class="side">
+      <div class="logo">
+        <span class="glyph">
+          <img src="assets/logo/chef_hat.png" alt="MealMate">
+        </span>
+        <b>MealMate</b>
+      </div>
+      <div class="navlabel">Menu</div>
+      <nav class="nav">
+        <button class="on" routerLink="/customer-home">
+          <ion-icon name="home-outline"></ion-icon>Home
+        </button>
+        <button routerLink="/my-orders">
+          <ion-icon name="bag-outline"></ion-icon>Orders
+        </button>
+        <button routerLink="/subscribe">
+          <ion-icon name="calendar-outline"></ion-icon>Meal Plans
+        </button>
+        <button routerLink="/health">
+          <ion-icon name="heart-outline"></ion-icon>Health
+        </button>
+        <button routerLink="/ai-concierge">
+          <ion-icon name="chatbubbles-outline"></ion-icon>Concierge
+        </button>
+        <button routerLink="/wallet">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>Wallet
+        </button>
+      </nav>
+    </aside>
+
+    <!-- MAIN VIEW -->
+    <div class="view-main">
+      <header class="top">
+        <button class="iconbtn" (click)="goBack()" title="Back">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </button>
+        <div>
+          <h1>{{meal.name}}</h1>
+          <div class="sub">{{meal.category}} · Homestyle Fresh</div>
+        </div>
+        <div class="top-r">
+          <button class="iconbtn" (click)="toggleFavorite()" title="Favorite">
+            <ion-icon [name]="isFavorite ? 'heart' : 'heart-outline'" [style.color]="isFavorite ? 'var(--orange)' : 'inherit'"></ion-icon>
+          </button>
+          <button class="iconbtn" (click)="shareMeal()" title="Share">
+            <ion-icon name="share-social-outline"></ion-icon>
+          </button>
+        </div>
+      </header>
+
+      <div class="body">
+        <div class="main-col">
+          <!-- Meal Hero Card -->
+          <div class="detail-hero">
+            <div class="hero-img-box">
+              <img [src]="meal.image" [alt]="meal.name">
+            </div>
+            <div class="hero-info">
+              <div class="hero-tags">
+                <span class="tag o">{{meal.category}}</span>
+                <span class="tag g">{{mealCalories}} kcal</span>
+                <span class="tag b">{{prepTime}} prep</span>
+              </div>
+              <h2 class="hero-title">{{meal.name}}</h2>
+              <p class="hero-desc">{{meal.description || 'Freshly prepared homestyle dish with balanced macros.'}}</p>
+              
+              <div class="hero-price-row">
+                <div class="hero-price">₹{{meal.price}}</div>
+                <div class="hero-qty-box">
+                  <button (click)="decrementQty()" [disabled]="quantity <= 1">−</button>
+                  <span>{{quantity}}</span>
+                  <button (click)="incrementQty()">+</button>
+                </div>
+                <button class="hero-add-btn" (click)="addToCart()">
+                  <ion-icon name="cart-outline"></ion-icon>
+                  Add ₹{{totalPrice}}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Nutrition Grid -->
+          <div class="chartcard">
+            <div class="blkhead">
+              <h2>Macro Breakdown</h2>
+              <span class="pillg">Synced with Health Tracker</span>
+            </div>
+            <div class="d-nutri-grid">
+              <div class="d-nutri-card">
+                <ion-icon name="barbell-outline" style="color:var(--orange)"></ion-icon>
+                <div class="v">{{mealProtein}}g</div>
+                <div class="l">Protein</div>
+              </div>
+              <div class="d-nutri-card">
+                <ion-icon name="restaurant-outline" style="color:#E0A11B"></ion-icon>
+                <div class="v">{{mealCarbs}}g</div>
+                <div class="l">Carbs</div>
+              </div>
+              <div class="d-nutri-card">
+                <ion-icon name="water-outline" style="color:var(--blue)"></ion-icon>
+                <div class="v">{{mealFat}}g</div>
+                <div class="l">Fat</div>
+              </div>
+              <div class="d-nutri-card">
+                <ion-icon name="leaf-outline" style="color:var(--green)"></ion-icon>
+                <div class="v">{{mealFiber}}g</div>
+                <div class="l">Fiber</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ingredients -->
+          <div class="chartcard">
+            <div class="blkhead"><h2>Fresh Ingredients</h2></div>
+            <div class="d-ing-chips">
+              <span class="chip" *ngFor="let ing of ingredients">
+                <ion-icon name="leaf-outline"></ion-icon> {{ing}}
+              </span>
+            </div>
+          </div>
+
+          <!-- Customer Reviews -->
+          <div class="chartcard" style="margin-bottom:0">
+            <div class="blkhead">
+              <h2>Customer Reviews</h2>
+              <span class="tag o">★ {{mealRating}} ({{reviewCount}})</span>
+            </div>
+            <div class="d-rev-list">
+              <div class="d-rev-item" *ngFor="let r of reviews">
+                <div class="avatar" [style.background]="r.avatar">{{r.name.charAt(0)}}</div>
+                <div class="bdy">
+                  <div class="hdr">
+                    <b>{{r.name}}</b>
+                    <span>{{r.date}}</span>
+                  </div>
+                  <p>{{r.comment}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Rail -->
+        <aside class="rail">
+          <div class="rcard">
+            <div class="rhead">
+              <h3>Mia's AI Match</h3>
+              <span class="tier">{{aiMatchScore}}% MATCH</span>
+            </div>
+            <div class="aimsg">
+              <div class="aireason" *ngFor="let reason of aiMatchReasons">
+                <ion-icon name="checkmark-circle-outline" style="color:var(--green)"></ion-icon>
+                <span>{{reason}}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="rcard" *ngIf="activeSubscription">
+            <div class="rhead"><h3>Meal Plan</h3></div>
+            <div class="pmsg">Add this item to your active meal plan rotation cycle.</div>
+            <button class="railbtn" (click)="addToRotation()">Add to Rotation</button>
+          </div>
+
+          <div class="rcard">
+            <div class="rhead"><h3>Order Summary</h3></div>
+            <div class="sumrow"><span>Base Price</span><span>₹{{meal.price}}</span></div>
+            <div class="sumrow"><span>Quantity</span><span>× {{quantity}}</span></div>
+            <div class="sumrow tot"><span>Total</span><span>₹{{totalPrice}}</span></div>
+            <button class="railbtn" (click)="addToCart()">Add to Cart</button>
+          </div>
+        </aside>
+      </div>
     </div>
   </div>
 </ion-content>
 
-<!-- ========== BOTTOM STICKY BAR ========== -->
-<div class="md-bottom-bar" *ngIf="!isLoading && meal">
+<!-- Sticky Bottom Bar (Mobile Only) -->
+<div class="md-bottom-bar mobile-only" *ngIf="!isLoading && meal">
   <div class="md-qty-box">
     <button class="md-qty-btn" (click)="decrementQty()" [disabled]="quantity <= 1">
       <ion-icon name="remove"></ion-icon>
@@ -262,5 +449,4 @@
   </button>
 </div>
 
-<!-- Blinkit-style Cart Pill -->
 <app-cart-pill></app-cart-pill>

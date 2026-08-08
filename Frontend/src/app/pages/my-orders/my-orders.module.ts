@@ -8,12 +8,15 @@ import { MyOrdersPageRoutingModule } from './my-orders-routing.module';
 
 import { MyOrdersPage } from './my-orders.page';
 
+import { SharedComponentsModule } from '../../components/shared-components.module';
+
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    MyOrdersPageRoutingModule
+    MyOrdersPageRoutingModule,
+    SharedComponentsModule
   ],
   declarations: [MyOrdersPage]
 })

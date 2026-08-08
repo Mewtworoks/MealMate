@@ -21,8 +21,35 @@ export class WalletPage implements OnInit, OnDestroy {
   greeting = 'Good morning';
   userName = 'Foodie';
   userLocation = 'Fetching location...';
-  selectedTopUp = 0;
+  selectedTopUp = 500;
+  customTopUp: number | null = null;
   isTopUp = false;
+  txnFilter: 'all' | 'in' | 'out' = 'all';
+  selectedPayIndex = 1;
+
+  presetAmounts = [
+    { value: 100, badge: 'Popular', badgeClass: 'o' },
+    { value: 250 },
+    { value: 500, badge: 'Best value', badgeClass: 'g' },
+    { value: 1000, badge: 'Great for you', badgeClass: 'b' },
+    { value: 2000 },
+    { value: 5000 }
+  ];
+
+  paymentMethods = [
+    { name: 'HDFC Bank •••• 4821', sub: 'Visa Debit · Expires 09/28', bg: '#1A3E7A', text: 'VISA' },
+    { name: 'UPI · mealmate@okaxis', sub: 'Instant · No charges', bg: '#0B7D5A', text: 'UPI' },
+    { name: 'Add a new card', sub: 'Credit or debit', bg: '#948A83', text: '+' }
+  ];
+
+  sampleTransactions = [
+    { type: 'out', title: 'Executive Deluxe Thali', sub: 'Order #MM30042 · Aug 6, 4:02 PM', amount: 240, bal: 3180 },
+    { type: 'in', title: 'Wallet top-up', sub: 'UPI · Aug 6, 9:14 AM', amount: 1000, bal: 3420 },
+    { type: 'out', title: 'Homestyle Rajma Chawal', sub: 'Order #MM30041 · Aug 6, 3:58 PM', amount: 470, bal: 2420 },
+    { type: 'in', title: 'Cashback · Silver tier', sub: '2% on Aug orders · Aug 5', amount: 48, bal: 2890 },
+    { type: 'out', title: 'Hyderabadi Veg Biryani', sub: 'Order #MM30038 · Aug 5, 1:12 PM', amount: 390, bal: 2842 },
+    { type: 'in', title: 'Referral bonus', sub: 'Rahul joined MealMate · Aug 4', amount: 200, bal: 3232 }
+  ];
 
   private subs: Subscription[] = [];
 
@@ -130,6 +157,25 @@ export class WalletPage implements OnInit, OnDestroy {
 
   selectTopUp(amount: number) {
     this.selectedTopUp = amount;
+    this.customTopUp = null;
+  }
+
+  onCustomAmountInput(event: any) {
+    const val = parseInt(event.target.value, 10);
+    if (!isNaN(val) && val > 0) {
+      this.selectedTopUp = val;
+    } else {
+      this.selectedTopUp = 0;
+    }
+  }
+
+  selectPayMethod(index: number) {
+    this.selectedPayIndex = index;
+  }
+
+  getFilteredTransactions() {
+    if (this.txnFilter === 'all') return this.sampleTransactions;
+    return this.sampleTransactions.filter(t => t.type === this.txnFilter);
   }
 
   async processTopUp() {
