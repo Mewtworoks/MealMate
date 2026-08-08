@@ -331,8 +331,139 @@
     opacity: 1;
   }
 
-  /* UNIFIED LIGHT CAROUSEL CARD BASE SCHEME */
-  .wallet-card-mob,
+  /* 1. Wallet Card (Vibrant Orange Fill & White Text) */
+  .wallet-card-mob {
+    border-radius: var(--r-lg);
+    padding: 20px;
+    background: linear-gradient(145deg, #FF8A47 0%, #F26A21 48%, #D9500C 100%);
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 24px rgba(242, 106, 33, 0.25);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    &::after {
+      content: "";
+      position: absolute;
+      right: -40px;
+      top: -40px;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+      pointer-events: none;
+    }
+
+    .wtop {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+
+      .k {
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: .11em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.88);
+      }
+
+      .chipact {
+        font-size: 9.5px;
+        font-weight: 800;
+        letter-spacing: .08em;
+        background: rgba(255, 255, 255, 0.22);
+        color: #fff;
+        padding: 3px 8px;
+        border-radius: 99px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+    }
+
+    .wamt {
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: -.03em;
+      margin: 8px 0 2px;
+      position: relative;
+      z-index: 1;
+      color: #fff;
+
+      sup {
+        font-size: 18px;
+        font-weight: 700;
+        top: -.5em;
+        margin-right: 1px;
+        color: #fff;
+      }
+    }
+
+    .wsub {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.88);
+      position: relative;
+      z-index: 1;
+    }
+
+    .wsplit {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      position: relative;
+      z-index: 1;
+
+      .wcell {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 12px;
+        padding: 8px 10px;
+
+        .k {
+          font-size: 10px;
+          font-weight: 700;
+          color: rgba(255, 255, 255, 0.85);
+        }
+
+        .v {
+          font-size: 14px;
+          font-weight: 800;
+          margin-top: 2px;
+          color: #fff;
+        }
+      }
+    }
+
+    .wbtn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      margin-top: 14px;
+      padding: 10px;
+      border-radius: 12px;
+      background: #fff;
+      color: #D9500C;
+      font-size: 13px;
+      font-weight: 800;
+      position: relative;
+      z-index: 1;
+      border: 0;
+      cursor: pointer;
+
+      ion-icon {
+        width: 14px;
+        height: 14px;
+      }
+    }
+  }
+
+  /* 2. Personal Chef Card & 3. Meal Plan Card Base */
   .chef-card-mob,
   .plan-card-mob,
   .rcard-mob {
@@ -358,115 +489,6 @@
       border-radius: 50%;
       background: rgba(255, 114, 53, 0.08);
       pointer-events: none;
-    }
-  }
-
-  /* 1. Wallet Card */
-  .wallet-card-mob {
-    .wtop {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: relative;
-      z-index: 1;
-
-      .k {
-        font-size: 10.5px;
-        font-weight: 800;
-        letter-spacing: .11em;
-        text-transform: uppercase;
-        color: var(--ink-3);
-      }
-
-      .chipact {
-        font-size: 9.5px;
-        font-weight: 800;
-        letter-spacing: .08em;
-        background: #ECFDF5;
-        color: #10B981;
-        padding: 3px 8px;
-        border-radius: 99px;
-        border: 1px solid #A7F3D0;
-      }
-    }
-
-    .wamt {
-      font-size: 34px;
-      font-weight: 800;
-      letter-spacing: -.03em;
-      margin: 6px 0 2px;
-      position: relative;
-      z-index: 1;
-      color: var(--ink);
-
-      sup {
-        font-size: 18px;
-        font-weight: 700;
-        top: -.5em;
-        margin-right: 1px;
-        color: var(--orange);
-      }
-    }
-
-    .wsub {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--ink-3);
-      position: relative;
-      z-index: 1;
-    }
-
-    .wsplit {
-      display: flex;
-      gap: 8px;
-      margin-top: 10px;
-      position: relative;
-      z-index: 1;
-
-      .wcell {
-        flex: 1;
-        background: #FFF;
-        border: 1px solid #FFDEC9;
-        border-radius: 12px;
-        padding: 8px 10px;
-
-        .k {
-          font-size: 10px;
-          font-weight: 700;
-          color: var(--ink-3);
-        }
-
-        .v {
-          font-size: 14px;
-          font-weight: 800;
-          margin-top: 2px;
-          color: var(--ink);
-        }
-      }
-    }
-
-    .wbtn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      width: 100%;
-      margin-top: 12px;
-      padding: 10px;
-      border-radius: 12px;
-      background: var(--orange);
-      color: #fff;
-      font-size: 13px;
-      font-weight: 800;
-      position: relative;
-      z-index: 1;
-      border: 0;
-      cursor: pointer;
-
-      ion-icon {
-        width: 14px;
-        height: 14px;
-      }
     }
   }
 
@@ -541,7 +563,7 @@
     }
   }
 
-  /* 3. Meal Plan Card */
+  /* 3. Meal Plan Card (Warm Light Peach with Orange Active Chip & Orange View Plan Button) */
   .plan-card-mob {
     .wtop {
       display: flex;
@@ -560,9 +582,9 @@
       .chipact.green {
         font-size: 9.5px;
         font-weight: 800;
-        background: #ECFDF5;
-        color: #10B981;
-        border: 1px solid #A7F3D0;
+        background: #FFF2EA;
+        color: var(--orange);
+        border: 1px solid #FFDEC9;
         padding: 3px 8px;
         border-radius: 99px;
       }
@@ -585,15 +607,15 @@
     .pbar-mob {
       height: 7px;
       border-radius: 99px;
-      background: #ECFDF5;
-      border: 1px solid #A7F3D0;
+      background: #FFF2EA;
+      border: 1px solid #FFDEC9;
       margin-top: 12px;
       overflow: hidden;
 
       .pbar-fill {
         height: 100%;
         border-radius: 99px;
-        background: #10B981;
+        background: var(--orange);
       }
     }
 
@@ -606,7 +628,7 @@
       margin-top: auto;
       padding: 10px;
       border-radius: 12px;
-      background: #10B981;
+      background: var(--orange);
       color: #FFF;
       font-size: 13px;
       font-weight: 800;
@@ -620,7 +642,7 @@
     }
   }
 
-  /* 4. Delivery Status Card */
+  /* 4. Delivery Status Card (Brand Orange Accents) */
   .rcard-mob {
     .rhead {
       display: flex;
@@ -639,9 +661,9 @@
       .mini {
         font-size: 11px;
         font-weight: 800;
-        color: #10B981;
-        background: #ECFDF5;
-        border: 1px solid #A7F3D0;
+        color: var(--orange);
+        background: #FFF2EA;
+        border: 1px solid #FFDEC9;
         padding: 3px 8px;
         border-radius: 99px;
       }
@@ -656,8 +678,8 @@
         width: 36px;
         height: 36px;
         border-radius: 10px;
-        background: #ECFDF5;
-        border: 1px solid #A7F3D0;
+        background: #FFF2EA;
+        border: 1px solid #FFDEC9;
         display: grid;
         place-items: center;
         flex: none;
@@ -665,7 +687,7 @@
         ion-icon {
           width: 18px;
           height: 18px;
-          color: #10B981;
+          color: var(--orange);
         }
       }
 
@@ -696,8 +718,8 @@
           display: block;
           height: 24px;
           border-radius: 7px;
-          background: #ECFDF5;
-          border: 1px solid #A7F3D0;
+          background: #FFF2EA;
+          border: 1px solid #FFDEC9;
           margin-bottom: 4px;
           position: relative;
 
@@ -705,7 +727,7 @@
             content: "";
             position: absolute;
             inset: 0;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M3.5 8.4l2.9 2.8L12.5 5' stroke='%2310B981' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/11px no-repeat;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M3.5 8.4l2.9 2.8L12.5 5' stroke='%23FF7235' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/11px no-repeat;
           }
         }
 
