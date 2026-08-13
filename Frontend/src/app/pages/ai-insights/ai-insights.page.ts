@@ -8,6 +8,7 @@ import { AuthService } from '../../services/auth';
 import { OrderService, Order } from '../../services/order.service';
 import { WalletService } from '../../services/wallet.service';
 import { SubscriptionService, Subscription } from '../../services/subscription.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-ai-insights',
@@ -24,6 +25,41 @@ export class AiInsightsPage implements OnInit {
   isTyping: boolean = false;
   suggestions: string[] = [];
 
+  get userName(): string {
+    return this.auth.userName || 'MealMate_User';
+  }
+
+  get userInitials(): string {
+    return this.auth.userInitials;
+  }
+
+  get planName(): string {
+    return (this.activeSubscription && this.activeSubscription.planName) ? this.activeSubscription.planName : 'Healthy Mix Plan';
+  }
+
+  get activePlanPercent(): number {
+    if (!this.activeSubscription) return 0;
+    return Math.round((this.activeSubscription.currentDay / this.activeSubscription.totalDays) * 100);
+  }
+
+  get todaysMeal(): any {
+    return this.activeSubscription ? this.subscriptionService.getTodaysMeal(this.activeSubscription) : null;
+  }
+
+  get todaysMealName(): string {
+    return this.todaysMeal?.name || 'Lucknowi Galouti Kebab';
+  }
+
+  get todaysMealImage(): string {
+    if (!this.todaysMeal) return 'assets/onboarding/dal_makhani.png';
+    const found = this.mealService.getMeals().find(m => m.name.toLowerCase().includes(this.todaysMeal.name.toLowerCase().split(' ')[0]));
+    return found ? found.image : 'assets/onboarding/dal_makhani.png';
+  }
+
+  clearChat() {
+    this.setPersonalizedGreeting();
+  }
+
   /** Show only 2 suggestion cards to match the compact layout */
   get displayedSuggestions(): string[] {
     return this.suggestions.slice(0, 2);
@@ -31,7 +67,7 @@ export class AiInsightsPage implements OnInit {
 
   // Context data
   private orderHistory: Order[] = [];
-  private activeSubscription: Subscription | null = null;
+  activeSubscription: Subscription | null = null;
   private walletBalance: number = 0;
   private creditUsed: number = 0;
   private creditLimit: number = 0;
@@ -49,7 +85,8 @@ export class AiInsightsPage implements OnInit {
     private orderService: OrderService,
     private walletService: WalletService,
     private subscriptionService: SubscriptionService,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    public themeService: ThemeService
   ) { }
 
   async ngOnInit() {
@@ -263,11 +300,11 @@ export class AiInsightsPage implements OnInit {
     } catch (error: any) {
       console.error('Chat Error:', error);
       let errorMsg = "Sorry, I encountered an error. Please try again.";
-      
+
       if (error?.message?.includes('429') || error?.message?.includes('quota')) {
         errorMsg = "I'm a bit busy right now (limit exceeded). Please wait 5-10 seconds and try again! ⏳";
       }
-      
+
       this.messages.push({ role: 'model', content: errorMsg });
     } finally {
       this.isTyping = false;

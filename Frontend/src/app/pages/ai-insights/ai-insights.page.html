@@ -1,90 +1,222 @@
-<ion-header class="ion-no-border premium-header">
-  <div class="header-curve-bg"></div>
-  <ion-toolbar class="transparent-toolbar">
-    <ion-buttons slot="start">
-      <ion-button (click)="goBack()" class="back-btn-pill">
-        <ion-icon name="arrow-back-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-title class="page-title-text">MealMantra</ion-title>
-    <ion-buttons slot="end">
-      <ion-icon name="sparkles" style="color: #F5B74C; font-size: 1.5rem; margin-right: 14px;"></ion-icon>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<!-- ════════════════ MOBILE VIEW (Screens <= 1000px) ════════════════ -->
+<div class="mobile-only">
+  <ion-header class="ion-no-border premium-header">
+    <div class="header-curve-bg"></div>
+    <ion-toolbar class="transparent-toolbar">
+      <ion-buttons slot="start">
+        <ion-button (click)="goBack()" class="back-btn-pill">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-title class="page-title-text">MealMantra AI</ion-title>
+      <ion-buttons slot="end">
+        <ion-button (click)="clearChat()" style="color: #F5B74C;">
+          <ion-icon name="sparkles" style="font-size: 1.4rem;"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
 
-<ion-content #content class="chat-content">
-  <div class="messages-container">
-    <div *ngFor="let msg of messages" class="msg-row" [class.user]="msg.role === 'user'">
-      
-      <!-- Avatar for AI only -->
-      <div class="ai-avatar" *ngIf="msg.role !== 'user'">
-        <ion-icon name="sparkles"></ion-icon>
-      </div>
+  <ion-content #content class="chat-content">
+    <div class="messages-container">
+      <div *ngFor="let msg of messages" class="msg-row" [class.user]="msg.role === 'user'">
 
-      <div class="msg-content">
-        <div class="bubble">
-          <p [innerHTML]="msg.content"></p>
+        <!-- Avatar for AI only -->
+        <div class="ai-avatar" *ngIf="msg.role !== 'user'">
+          <ion-icon name="sparkles"></ion-icon>
         </div>
-        <div class="msg-meta">
-          <span class="time">{{ formatTime() }}</span>
-          <ion-icon name="checkmark-done" *ngIf="msg.role === 'user'" class="read-icon"></ion-icon>
-        </div>
-      </div>
-      
-    </div>
 
-    <!-- Typing Indicator -->
-    <div *ngIf="isTyping" class="msg-row">
-      <div class="ai-avatar">
-        <ion-icon name="sparkles"></ion-icon>
-      </div>
-      <div class="msg-content">
-        <div class="bubble typing-bubble">
-          <span class="dot"></span>
-          <span class="dot"></span>
-          <span class="dot"></span>
-        </div>
-      </div>
-    </div>
-  </div>
-</ion-content>
-
-<ion-footer class="premium-footer ion-no-border">
-  <!-- Try These Section -->
-  <div class="suggestions-wrapper" *ngIf="suggestions && suggestions.length > 0">
-    <h3 class="suggestions-title">Try these</h3>
-    <div class="suggestions-row">
-      <div *ngFor="let s of displayedSuggestions" class="sugg-card" (click)="sendMessage(s)">
-        <div class="sugg-left">
-          <div class="sugg-icon-wrap" [ngClass]="s.toLowerCase().includes('protein') || s.toLowerCase().includes('flash') ? 'icon-bolt' : 'icon-food'">
-            <ion-icon [name]="s.toLowerCase().includes('protein') || s.toLowerCase().includes('flash') ? 'flash' : (s.toLowerCase().includes('options') ? 'basket' : 'restaurant')"></ion-icon>
+        <div class="msg-content">
+          <div class="bubble">
+            <p [innerHTML]="msg.content"></p>
           </div>
-          <span class="sugg-text">{{s}}</span>
+          <div class="msg-meta">
+            <span class="time">{{ formatTime() }}</span>
+            <ion-icon name="checkmark-done" *ngIf="msg.role === 'user'" class="read-icon"></ion-icon>
+          </div>
         </div>
-        <ion-icon name="chevron-forward" class="sugg-chevron"></ion-icon>
+
+      </div>
+
+      <!-- Typing Indicator -->
+      <div *ngIf="isTyping" class="msg-row">
+        <div class="ai-avatar">
+          <ion-icon name="sparkles"></ion-icon>
+        </div>
+        <div class="msg-content">
+          <div class="bubble typing-bubble">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ion-content>
+
+  <ion-footer class="premium-footer ion-no-border">
+    <!-- Try These Section -->
+    <div class="suggestions-wrapper" *ngIf="suggestions && suggestions.length > 0">
+      <h3 class="suggestions-title">Try these</h3>
+      <div class="suggestions-row">
+        <div *ngFor="let s of displayedSuggestions" class="sugg-card" (click)="sendMessage(s)">
+          <div class="sugg-left">
+            <div class="sugg-icon-wrap"
+              [ngClass]="s.toLowerCase().includes('protein') || s.toLowerCase().includes('flash') ? 'icon-bolt' : 'icon-food'">
+              <ion-icon
+                [name]="s.toLowerCase().includes('protein') || s.toLowerCase().includes('flash') ? 'flash' : (s.toLowerCase().includes('options') ? 'basket' : 'restaurant')"></ion-icon>
+            </div>
+            <span class="sugg-text">{{s}}</span>
+          </div>
+          <ion-icon name="chevron-forward" class="sugg-chevron"></ion-icon>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="input-wrapper">
+      <div class="input-box">
+        <div class="plus-circle">
+          <ion-icon name="add"></ion-icon>
+        </div>
+
+        <ion-input class="chat-input" placeholder="Type your message..." [(ngModel)]="userInput"
+          (keyup.enter)="sendMessage()" inputmode="text">
+        </ion-input>
+
+        <div class="send-circle" (click)="sendMessage()">
+          <ion-icon name="send"></ion-icon>
+        </div>
+      </div>
+    </div>
+  </ion-footer>
+</div>
+
+<!-- ════════════════ DESKTOP WEB VIEW (Screens >= 1001px) ════════════════ -->
+<div class="web-app desktop-only" [class.sidebar-collapsed]="themeService.isSidebarCollapsed">
+  <!-- SIDEBAR -->
+  <aside class="side">
+    <div class="side-top">
+      <div class="logo">
+        <span class="glyph"><img src="assets/logo/chef_hat.png" alt="MealMate"></span>
+        <b class="brand-name">MealMate</b>
+      </div>
+      <button class="sidebar-toggle-btn" (click)="themeService.toggleSidebar()"
+        [title]="themeService.isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+        <ion-icon [name]="themeService.isSidebarCollapsed ? 'chevron-forward-outline' : 'chevron-back-outline'"></ion-icon>
+      </button>
+    </div>
+    <div class="navlabel">Menu</div>
+    <nav class="nav">
+      <button routerLink="/customer-home"><ion-icon name="home-outline"></ion-icon><span class="nav-text">Home</span></button>
+      <button routerLink="/my-orders"><ion-icon name="bag-outline"></ion-icon><span class="nav-text">Orders</span></button>
+      <button routerLink="/subscribe"><ion-icon name="calendar-outline"></ion-icon><span class="nav-text">Meal Plans</span></button>
+      <button routerLink="/health"><ion-icon name="heart-outline"></ion-icon><span class="nav-text">Health</span></button>
+      <button class="on" routerLink="/ai-concierge"><ion-icon name="chatbubbles-outline"></ion-icon><span class="nav-text">MealMantra AI</span></button>
+      <button routerLink="/wallet"><ion-icon name="shield-checkmark-outline"></ion-icon><span class="nav-text">Wallet</span></button>
+      <button routerLink="/profile"><ion-icon name="person-outline"></ion-icon><span class="nav-text">Profile</span></button>
+    </nav>
+    <div class="side-foot">
+      <div class="plan-mini" *ngIf="activeSubscription">
+        <div class="t">ACTIVE PLAN</div>
+        <div class="v">{{planName}}</div>
+        <div class="pbar"><i [style.width.%]="activePlanPercent"></i></div>
+        <div class="f"><span>Day {{activeSubscription.currentDay}} of {{activeSubscription.totalDays}}</span><span>{{activePlanPercent}}%</span></div>
+      </div>
+      <button class="me" routerLink="/profile" title="View Profile">
+        <span class="ava">{{userInitials}}</span>
+        <span class="me-text" style="text-align:left"><span class="n">{{userName}}</span><br><span class="s">Premium member</span></span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN VIEW -->
+  <div class="view-main">
+    <header class="top">
+      <button class="back" (click)="goBack()" title="Back">
+        <ion-icon name="arrow-back-outline"></ion-icon> Back
+      </button>
+      <div>
+        <h1>MealMantra AI</h1>
+        <div class="sub">Your food assistant · online</div>
+      </div>
+      <div class="top-r" style="margin-left: auto;">
+        <button class="iconbtn" (click)="clearChat()" title="Clear chat">
+          <ion-icon name="trash-outline"></ion-icon>
+        </button>
+      </div>
+    </header>
+
+    <div class="body" style="padding:0; display:block;">
+      <div class="chatwrap">
+        <div class="chatcol">
+          <div class="thread">
+            <div class="msg" *ngFor="let msg of messages" [class.me]="msg.role === 'user'">
+              <div class="av" *ngIf="msg.role !== 'user'">
+                <ion-icon name="sparkles" style="color: white; font-size: 1.1rem;"></ion-icon>
+              </div>
+              <div class="av user-av" *ngIf="msg.role === 'user'">{{userInitials}}</div>
+              <div class="msg-body">
+                <div class="bub" [innerHTML]="msg.content"></div>
+                <div class="stamp">{{formatTime()}}</div>
+              </div>
+            </div>
+
+            <div class="msg" *ngIf="isTyping">
+              <div class="av"><ion-icon name="sparkles" style="color: white; font-size: 1.1rem;"></ion-icon></div>
+              <div class="msg-body">
+                <div class="bub typing"><i></i><i></i><i></i></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="trythese" *ngIf="suggestions && suggestions.length > 0">
+            <div class="lb">Try these</div>
+            <div class="qrow">
+              <button class="qchip" *ngFor="let s of suggestions" (click)="sendMessage(s)">
+                <ion-icon [name]="s.toLowerCase().includes('protein') ? 'flash-outline' : (s.toLowerCase().includes('lunch') ? 'restaurant-outline' : 'sparkles-outline')"></ion-icon>
+                {{s}}
+              </button>
+            </div>
+          </div>
+
+          <div class="composer">
+            <button class="cplus" title="Attach"><ion-icon name="add-outline"></ion-icon></button>
+            <div class="cbox">
+              <textarea placeholder="Type your message…" [(ngModel)]="userInput" (keyup.enter)="sendMessage()"></textarea>
+              <button class="mic" title="Voice"><ion-icon name="mic-outline"></ion-icon></button>
+            </div>
+            <button class="send" (click)="sendMessage()" [disabled]="!userInput.trim()"><ion-icon name="send-outline"></ion-icon></button>
+          </div>
+        </div>
+
+        <aside class="chatside">
+          <div class="rcard">
+            <div class="rhead"><h3>Today's meal</h3><span class="mini">1:00 PM</span></div>
+            <div class="mdish" style="margin-top:8px">
+              <span class="ph"><img [src]="todaysMealImage" [alt]="todaysMealName" style="width:100%;height:100%;object-fit:cover;border-radius:12px;"></span>
+              <span style="min-width:0;flex:1"><span class="nm" style="display:block;font-weight:800;">{{todaysMealName}}</span><span class="mt" style="display:block;font-size:12px;color:#8E7C76;">Subscription meal · 540 kcal</span></span>
+            </div>
+            <button class="railbtn ghost" routerLink="/subscribe" style="margin-top:12px;"><ion-icon name="calendar-outline"></ion-icon> View meal plan</button>
+          </div>
+
+          <div class="rcard">
+            <div class="rhead"><h3>Mia can help with</h3></div>
+            <div class="aicap"><span class="ci"><ion-icon name="restaurant-outline"></ion-icon></span><div><div class="t">Meal recommendations</div><div class="s">Based on your goals and history</div></div></div>
+            <div class="aicap"><span class="ci"><ion-icon name="location-outline"></ion-icon></span><div><div class="t">Order tracking</div><div class="s">Live status and ETA</div></div></div>
+            <div class="aicap"><span class="ci"><ion-icon name="fast-food-outline"></ion-icon></span><div><div class="t">Custom dish requests</div><div class="s">Sent straight to a home-cook</div></div></div>
+            <div class="aicap"><span class="ci"><ion-icon name="sync-outline"></ion-icon></span><div><div class="t">Plan changes</div><div class="s">Pause, skip or swap a meal</div></div></div>
+          </div>
+
+          <div class="insight" style="margin-bottom:0">
+            <span class="sp"><ion-icon name="sparkles"></ion-icon></span>
+            <div>
+              <div class="k">Mia's Insight · AI Nutritionist</div>
+              <p>You're 18g short on protein today. Ask me for a high-protein add-on.</p>
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
   </div>
-
-  <!-- Input Area -->
-  <div class="input-wrapper">
-    <div class="input-box">
-      <div class="plus-circle">
-        <ion-icon name="add"></ion-icon>
-      </div>
-      
-      <ion-input 
-        class="chat-input"
-        placeholder="Type your message..." 
-        [(ngModel)]="userInput" 
-        (keyup.enter)="sendMessage()"
-        inputmode="text">
-      </ion-input>
-
-      <div class="send-circle" (click)="sendMessage()">
-        <ion-icon name="send"></ion-icon>
-      </div>
-    </div>
-  </div>
-</ion-footer>
+</div>
