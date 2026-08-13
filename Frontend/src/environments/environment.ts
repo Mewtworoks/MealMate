@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:5000/api',
+  apiUrl: 'https://mealmate-hokz.onrender.com/api',
   clerkPublishableKey: 'pk_test_YOUR_CLERK_KEY',
   geminiApiKey: 'YOUR_GEMINI_API_KEY',
   firebase: {
