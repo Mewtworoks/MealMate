@@ -6,6 +6,7 @@ import { OrderService } from '../../services/order.service';
 import { AuthService } from '../../services/auth';
 import { WalletService } from '../../services/wallet.service';
 import { SubscriptionService, Subscription } from '../../services/subscription.service';
+import { ThemeService } from '../../services/theme.service';
 
 export interface PlanOption {
   name: string;
@@ -88,8 +89,9 @@ export class SubscribePage implements OnInit {
     private auth: AuthService,
     private wallet: WalletService,
     private subscriptionService: SubscriptionService,
-    private actionSheetCtrl: ActionSheetController
-  ) {}
+    private actionSheetCtrl: ActionSheetController,
+    public themeService: ThemeService
+  ) { }
 
   async ngOnInit() {
     this.mealService.meals$.subscribe(m => {
@@ -99,12 +101,12 @@ export class SubscribePage implements OnInit {
 
   async ionViewWillEnter() {
     this.mealService.refreshMeals();
-    
+
     // Only show skeleton on first entry or when there is no plan loaded yet
     if (!this.activeSub) {
       this.isLoading = true;
     }
-    
+
     try {
       await this.checkActiveSubscription();
       this.buildWeekDays();
@@ -301,7 +303,7 @@ export class SubscribePage implements OnInit {
       // elapsedDays including today if past start date
       const totalElapsedMs = Math.max(0, todayLocal.getTime() - start.getTime());
       const elapsedDays = Math.floor(totalElapsedMs / (1000 * 60 * 60 * 24));
-      
+
       const todayIdx = elapsedDays % rotation.length;
       const todayMeal = rotation[todayIdx];
 
@@ -522,12 +524,12 @@ export class SubscribePage implements OnInit {
       try {
         const res = await this.subscriptionService.cancelSubscription(this.activeSub.id);
         const refundAmt = res.RefundAmount || res.refundAmount || 0;
-        
+
         const userId = this.auth.userId;
         if (userId) {
           await this.wallet.loadWallet(userId);
         }
-        
+
         this.activeSub = null;
         this.isCancelModalOpen = false;
         this.showToast(`Subscription cancelled. Refund of ₹${refundAmt.toLocaleString()} processed to wallet.`);
@@ -546,6 +548,48 @@ export class SubscribePage implements OnInit {
 
   contactSupport() {
     this.showToast('Our support team will reach you shortly! 💬');
+  }
+
+  get userName(): string {
+    return this.auth.userName || 'MealMate_User';
+  }
+
+  get userInitials(): string {
+    return this.auth.userInitials;
+  }
+
+  get planName(): string {
+    if (!this.activeSub) return '';
+    return `${this.activeSub.months} Month Plan`;
+  }
+
+  get activePlanPercent(): number {
+    return this.goalProgress;
+  }
+
+  get todayMeal() {
+    return this.todaysMeal;
+  }
+
+  get scheduleView() {
+    return this.rotationDisplay;
+  }
+
+  openRotationManager() {
+    this.manageRotation();
+  }
+
+  get todayDate() {
+    return new Date();
+  }
+
+  get goalRingOffset(): number {
+    const circumference = 2 * Math.PI * 42;
+    return circumference - (circumference * this.goalProgress) / 100;
+  }
+
+  get isSubPaused(): boolean {
+    return this.activeSub?.status === 'Paused';
   }
 
   async showToast(msg: string) {
