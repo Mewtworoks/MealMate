@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { SubscriptionService, Subscription } from '../../services/subscription.service';
 import { Gemini } from '../../services/gemini';
 import { PageLoaderService } from '../../services/page-loader.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-shop',
@@ -56,7 +57,9 @@ export class ShopPage implements OnInit {
 
   greeting = 'Good morning';
   userName = 'Foodie';
-  userInitials = 'F';
+  get userInitials(): string {
+    return this.auth.userInitials;
+  }
   userLocation = 'Fetching location...';
   weekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
@@ -108,7 +111,8 @@ export class ShopPage implements OnInit {
     private router: Router,
     private gemini: Gemini,
     private subscriptionService: SubscriptionService,
-    private pageLoader: PageLoaderService
+    private pageLoader: PageLoaderService,
+    public themeService: ThemeService
   ) { }
 
   ngOnInit() {
@@ -126,7 +130,6 @@ export class ShopPage implements OnInit {
 
     this.greeting = this.auth.greeting;
     this.userName = this.auth.userName || 'Foodie';
-    this.userInitials = this.userName.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();
     this.fetchLocation();
   }
 

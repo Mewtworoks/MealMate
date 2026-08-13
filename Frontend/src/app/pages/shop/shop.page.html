@@ -53,7 +53,8 @@
                 <ion-icon name="time-outline"></ion-icon>
               </div>
               <div>
-                <div class="v">{{activeSubscription ? getNextDeliveryText(activeSubscription) : 'Tomorrow, 1:00 PM'}}</div>
+                <div class="v">{{activeSubscription ? getNextDeliveryText(activeSubscription) : 'Tomorrow, 1:00 PM'}}
+                </div>
                 <div class="s">Next delivery · {{planName || 'Healthy Mix'}}</div>
               </div>
             </div>
@@ -139,7 +140,8 @@
                 <ion-icon name="time-outline"></ion-icon>
               </div>
               <div>
-                <div class="v">{{activeSubscription ? getNextDeliveryText(activeSubscription) : 'Tomorrow, 1:00 PM'}}</div>
+                <div class="v">{{activeSubscription ? getNextDeliveryText(activeSubscription) : 'Tomorrow, 1:00 PM'}}
+                </div>
                 <div class="s">Next delivery · {{planName || 'Healthy Mix'}}</div>
               </div>
             </div>
@@ -302,31 +304,42 @@
   <div class="web-app desktop-only" *ngIf="!isLoading">
     <!-- SIDEBAR -->
     <aside class="side">
-      <div class="logo">
-        <span class="glyph">
-          <img src="assets/logo/chef_hat.png" alt="MealMate">
-        </span>
-        <b>MealMate</b>
+      <div class="side-top">
+        <div class="logo">
+          <span class="glyph">
+            <img src="assets/logo/chef_hat.png" alt="MealMate">
+          </span>
+          <b class="brand-name">MealMate</b>
+        </div>
+        <button class="sidebar-toggle-btn" (click)="themeService.toggleSidebar()"
+          [title]="themeService.isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+          <ion-icon
+            [name]="themeService.isSidebarCollapsed ? 'chevron-forward-outline' : 'chevron-back-outline'"></ion-icon>
+        </button>
       </div>
       <div class="navlabel">Menu</div>
       <nav class="nav">
         <button class="on" routerLink="/customer-home">
-          <ion-icon name="home-outline"></ion-icon>Home
+          <ion-icon name="home-outline"></ion-icon><span class="nav-text">Home</span>
         </button>
         <button routerLink="/my-orders">
-          <ion-icon name="bag-outline"></ion-icon>Orders<span class="pip" *ngIf="orderCount > 0">{{orderCount}}</span>
+          <ion-icon name="bag-outline"></ion-icon><span class="nav-text">Orders</span><span class="pip"
+            *ngIf="orderCount > 0">{{orderCount}}</span>
         </button>
-        <button (click)="openSubscriptionModal()">
-          <ion-icon name="calendar-outline"></ion-icon>Meal Plans
+        <button routerLink="/subscribe">
+          <ion-icon name="calendar-outline"></ion-icon><span class="nav-text">Meal Plans</span>
         </button>
         <button routerLink="/health">
-          <ion-icon name="heart-outline"></ion-icon>Health
+          <ion-icon name="heart-outline"></ion-icon><span class="nav-text">Health</span>
         </button>
         <button (click)="createCustomMeal()">
-          <ion-icon name="chatbubbles-outline"></ion-icon>Concierge
+          <ion-icon name="chatbubbles-outline"></ion-icon><span class="nav-text">Concierge</span>
         </button>
         <button routerLink="/wallet">
-          <ion-icon name="shield-checkmark-outline"></ion-icon>Wallet
+          <ion-icon name="shield-checkmark-outline"></ion-icon><span class="nav-text">Wallet</span>
+        </button>
+        <button routerLink="/profile">
+          <ion-icon name="person-outline"></ion-icon><span class="nav-text">Profile</span>
         </button>
       </nav>
       <div class="side-foot">
@@ -334,11 +347,13 @@
           <div class="t">Your Meal Plan</div>
           <div class="v">{{planName}}</div>
           <div class="pbar"><i [style.width.%]="activePlanPercent"></i></div>
-          <div class="f"><span>{{activePlanPercent}}% complete</span><span>{{activeSubscription.currentDay}} / {{activeSubscription.totalDays}}</span></div>
+          <div class="f"><span>{{activePlanPercent}}% complete</span><span>{{activeSubscription.currentDay}} /
+              {{activeSubscription.totalDays}}</span></div>
         </div>
-        <button class="me" routerLink="/wallet">
+        <button class="me" routerLink="/profile" title="View Profile">
           <span class="ava">{{userInitials}}</span>
-          <span style="text-align:left"><span class="n">{{userName}}</span><br><span class="s">Premium member</span></span>
+          <span class="me-text" style="text-align:left"><span class="n">{{userName}}</span><br><span class="s">Premium
+              member</span></span>
         </button>
       </div>
     </aside>
@@ -352,12 +367,14 @@
         </div>
         <div class="search" style="margin-left:12px">
           <ion-icon name="search-outline" class="search-icon"></ion-icon>
-          <input type="text" placeholder="Search dishes, thalis, cuisines…" [(ngModel)]="searchQuery" (input)="onSearchInput($event)">
+          <input type="text" placeholder="Search dishes, thalis, cuisines…" [(ngModel)]="searchQuery"
+            (input)="onSearchInput($event)">
         </div>
         <div class="top-r">
           <button class="loc" (click)="openAddressModal()">
             <ion-icon name="location-outline"></ion-icon>
-            <span style="text-align:left"><span class="cap">Deliver to</span>{{selectedAddress ? selectedAddress.tag + ', ' + selectedAddress.street : 'Kalkaji, Delhi'}}</span>
+            <span style="text-align:left"><span class="cap">Deliver to</span>{{selectedAddress ? selectedAddress.tag +
+              ', ' + selectedAddress.street : 'Kalkaji, Delhi'}}</span>
             <ion-icon name="chevron-down-outline" style="width:13px;height:13px;margin-left:4px"></ion-icon>
           </button>
           <button class="iconbtn" (click)="openNotifications()" title="Notifications">
@@ -371,7 +388,8 @@
         <div class="main-col">
           <!-- Categories Bar -->
           <div class="cats">
-            <button *ngFor="let cat of categories" class="cat" [class.on]="selectedCategory === cat" (click)="selectedCategory = cat">
+            <button *ngFor="let cat of categories" class="cat" [class.on]="selectedCategory === cat"
+              (click)="selectedCategory = cat">
               <ion-icon [name]="getCategoryIcon(cat)"></ion-icon>
               <span>{{cat}}</span>
             </button>
@@ -384,7 +402,8 @@
                 <h2>MealMantra Picks ✨</h2>
                 <p>Curated for your taste and health goals</p>
               </div>
-              <a (click)="navigateToAi()" class="seelink" style="cursor:pointer">See all <ion-icon name="chevron-forward-outline"></ion-icon></a>
+              <a (click)="navigateToAi()" class="seelink" style="cursor:pointer">See all <ion-icon
+                  name="chevron-forward-outline"></ion-icon></a>
             </div>
             <div class="picks">
               <div class="pick" *ngFor="let pick of getPickMeals(); let i = index" (click)="goToMealDetail(pick.id)">
@@ -414,7 +433,8 @@
                 <h2>Popular Today 🔥</h2>
                 <p>What {{selectedAddress ? selectedAddress.tag : 'Kalkaji'}} is ordering right now</p>
               </div>
-              <span class="seelink" style="color:var(--ink-3);font-size:13.5px;font-weight:700">{{getFilteredMeals().length}} dishes</span>
+              <span class="seelink"
+                style="color:var(--ink-3);font-size:13.5px;font-weight:700">{{getFilteredMeals().length}} dishes</span>
             </div>
 
             <div class="grid">
@@ -422,7 +442,8 @@
                 <div class="dimg">
                   <img [src]="meal.image" [alt]="meal.name">
                   <div class="rate"><ion-icon name="star"></ion-icon>4.{{(meal.price % 5) + 5}}</div>
-                  <button class="fav" (click)="$event.stopPropagation()"><ion-icon name="heart-outline"></ion-icon></button>
+                  <button class="fav" (click)="$event.stopPropagation()"><ion-icon
+                      name="heart-outline"></ion-icon></button>
                   <div class="kcal">{{ getMealCalories(meal) }} kcal</div>
                 </div>
                 <div class="dbody">
@@ -430,10 +451,12 @@
                   <div class="ct">{{meal.category}}</div>
                   <div class="drow">
                     <div class="price">₹{{meal.price}}</div>
-                    <button class="add" *ngIf="cartService.getQuantity(meal.id) === 0" (click)="$event.stopPropagation(); addToCart(meal, $event)">
+                    <button class="add" *ngIf="cartService.getQuantity(meal.id) === 0"
+                      (click)="$event.stopPropagation(); addToCart(meal, $event)">
                       <ion-icon name="add"></ion-icon>
                     </button>
-                    <div class="stepper" *ngIf="cartService.getQuantity(meal.id) > 0" (click)="$event.stopPropagation()">
+                    <div class="stepper" *ngIf="cartService.getQuantity(meal.id) > 0"
+                      (click)="$event.stopPropagation()">
                       <button (click)="removeFromCart(meal.id, $event)"><ion-icon name="remove"></ion-icon></button>
                       <span class="q">{{cartService.getQuantity(meal.id)}}</span>
                       <button (click)="addToCart(meal, $event)"><ion-icon name="add"></ion-icon></button>
@@ -453,18 +476,32 @@
             <div class="wamt"><sup>₹</sup>{{wallet.balance | number:'1.0-0'}}</div>
             <div class="wsub">Available balance</div>
             <div class="wsplit">
-              <div class="wcell"><div class="k">Credit</div><div class="v">₹{{wallet.availableCredit}}</div></div>
-              <div class="wcell"><div class="k">Points</div><div class="v">{{credits}}</div></div>
+              <div class="wcell">
+                <div class="k">Credit</div>
+                <div class="v">₹{{wallet.availableCredit}}</div>
+              </div>
+              <div class="wcell">
+                <div class="k">Points</div>
+                <div class="v">{{credits}}</div>
+              </div>
             </div>
-            <button class="wbtn" routerLink="/wallet">View details <ion-icon name="arrow-forward-outline"></ion-icon></button>
+            <button class="wbtn" routerLink="/wallet">View details <ion-icon
+                name="arrow-forward-outline"></ion-icon></button>
           </div>
 
           <!-- Delivery Card -->
           <div class="rcard">
-            <div class="rhead"><h3>This week</h3><span class="mini">{{activeSubscription ? activeSubscription.currentDay : 7}} / 7 meals</span></div>
+            <div class="rhead">
+              <h3>This week</h3><span class="mini">{{activeSubscription ? activeSubscription.currentDay : 7}} / 7
+                meals</span>
+            </div>
             <div class="delivery">
               <div class="dtick"><ion-icon name="time-outline"></ion-icon></div>
-              <div><div class="v">{{activeSubscription ? getNextDeliveryText(activeSubscription) : 'Tomorrow, 1:00 PM'}}</div><div class="s">Next delivery · {{planName}}</div></div>
+              <div>
+                <div class="v">{{activeSubscription ? getNextDeliveryText(activeSubscription) : 'Tomorrow, 1:00 PM'}}
+                </div>
+                <div class="s">Next delivery · {{planName}}</div>
+              </div>
             </div>
             <div class="weekbar">
               <div class="wd"><i></i><span>M</span></div>
@@ -479,7 +516,9 @@
 
           <!-- Your Cart Card -->
           <div class="rcard">
-            <div class="rhead"><h3>Your cart</h3><span class="mini">{{cartCount}} items</span></div>
+            <div class="rhead">
+              <h3>Your cart</h3><span class="mini">{{cartCount}} items</span>
+            </div>
             <div class="cart-list" *ngIf="cartItems && cartItems.length > 0; else emptyCartMsg">
               <div class="citem" *ngFor="let item of cartItems">
                 <div class="cthumb">
@@ -493,10 +532,12 @@
               </div>
             </div>
             <ng-template #emptyCartMsg>
-              <div style="padding: 16px 0; text-align: center; color: var(--ink-3); font-size: 13px; font-weight: 500;">Your cart is empty</div>
+              <div style="padding: 16px 0; text-align: center; color: var(--ink-3); font-size: 13px; font-weight: 500;">
+                Your cart is empty</div>
             </ng-template>
             <div class="ctotal"><span class="k">Total</span><span class="v">₹{{cartTotal}}</span></div>
-            <button class="checkout" (click)="goToCart()">Checkout <ion-icon name="arrow-forward-outline"></ion-icon></button>
+            <button class="checkout" (click)="goToCart()">Checkout <ion-icon
+                name="arrow-forward-outline"></ion-icon></button>
           </div>
         </aside>
       </div>
