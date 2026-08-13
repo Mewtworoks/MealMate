@@ -6,6 +6,7 @@ import { AuthService } from '../../services/auth';
 import { SubscriptionService, Subscription, RotationMeal } from '../../services/subscription.service';
 
 import { MealService } from '../../services/meal.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-my-orders',
@@ -23,6 +24,7 @@ export class MyOrdersPage implements OnInit {
   selectedOrder: Order | null = null;
   searchQuery: string = '';
   statusFilter: string = 'all';
+  selectedSubscription: Subscription | null = null;
   viewingScheduleFor: string | null = null;
   scheduleView: any[] = [];
 
@@ -32,8 +34,17 @@ export class MyOrdersPage implements OnInit {
     private auth: AuthService,
     private router: Router,
     private navCtrl: NavController,
-    private subscriptionService: SubscriptionService
+    private subscriptionService: SubscriptionService,
+    public themeService: ThemeService
   ) { }
+
+  get userName(): string {
+    return this.auth.userName || 'MealMate User';
+  }
+
+  get userInitials(): string {
+    return this.auth.userInitials;
+  }
 
   async ngOnInit() {
     this.loadOrdersData();

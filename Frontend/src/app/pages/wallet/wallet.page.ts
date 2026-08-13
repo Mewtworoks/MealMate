@@ -4,6 +4,8 @@ import { AuthService } from '../../services/auth';
 import { NavController, AlertController, ToastController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
+import { ThemeService } from '../../services/theme.service';
+
 @Component({
   selector: 'app-wallet',
   templateUrl: './wallet.page.html',
@@ -19,6 +21,10 @@ export class WalletPage implements OnInit, OnDestroy {
   isLoading = true;
   isSettling = false;
   greeting = 'Good morning';
+  get userInitials(): string {
+    return this.auth.userInitials;
+  }
+
   userName = 'Foodie';
   userLocation = 'Fetching location...';
   selectedTopUp = 500;
@@ -58,8 +64,9 @@ export class WalletPage implements OnInit, OnDestroy {
     private auth: AuthService,
     private navCtrl: NavController,
     private alertCtrl: AlertController,
-    private toastCtrl: ToastController
-  ) {}
+    private toastCtrl: ToastController,
+    public themeService: ThemeService
+  ) { }
 
   async ngOnInit() {
     this.subs.push(
@@ -225,7 +232,7 @@ export class WalletPage implements OnInit, OnDestroy {
       message: `You owe ₹${this.creditUsed.toFixed(0)} this month. This will be deducted from your wallet balance (₹${this.walletBalance}). Continue?`,
       buttons: [
         { text: 'Cancel', role: 'cancel' },
-        { text: 'Pay Now', role: 'confirm', handler: () => {} }
+        { text: 'Pay Now', role: 'confirm', handler: () => { } }
       ]
     });
     await alert.present();

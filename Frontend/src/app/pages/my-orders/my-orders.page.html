@@ -26,7 +26,7 @@
   <!-- Tab Switcher -->
   <div class="tab-segment">
     <div class="tab-item" [class.active]="activeTab === 'active'" (click)="activeTab = 'active'">
-      <ion-icon name="bag-handle-outline" class="t-icon"></ion-icon> Active 
+      <ion-icon name="bag-handle-outline" class="t-icon"></ion-icon> Active
       <span class="t-badge" *ngIf="activeOrders.length > 0">{{activeOrders.length}}</span>
     </div>
     <div class="tab-divider"></div>
@@ -71,23 +71,24 @@
             <img [src]="getOrderImage(order, i)" alt="Meal">
           </div>
         </div>
-        
+
         <div class="oc2-right">
           <div class="oc2-header">
             <span class="oc2-title">Order {{order.displayId || '#' + order.id.substring(0,8)}}</span>
             <span class="oc2-price">₹{{order.total}}</span>
           </div>
-          
+
           <div class="oc2-date">{{order.date | date:'MMM d • h:mm a'}}</div>
-          
+
           <div class="oc2-status" [ngClass]="order.status.toLowerCase()">
-            <ion-icon [name]="order.status === 'OutForDelivery' ? 'bicycle' : 'time'"></ion-icon> {{getStatusLabel(order.status)}}
+            <ion-icon [name]="order.status === 'OutForDelivery' ? 'bicycle' : 'time'"></ion-icon>
+            {{getStatusLabel(order.status)}}
           </div>
-          
+
           <div class="oc2-bottom">
             <button class="oc2-details-btn">View details</button>
           </div>
-          
+
           <ion-icon name="chevron-forward-outline" class="oc2-chevron"></ion-icon>
         </div>
       </div>
@@ -101,31 +102,31 @@
         <p>Your order history will appear here.</p>
       </div>
 
-      <div class="order-card-v2" *ngFor="let order of pastOrders; let i = index"
-        (click)="onOrderClick(order)" [style.animation-delay]="i * 0.06 + 's'">
-        
+      <div class="order-card-v2" *ngFor="let order of pastOrders; let i = index" (click)="onOrderClick(order)"
+        [style.animation-delay]="i * 0.06 + 's'">
+
         <div class="oc2-left">
           <div class="oc2-img-bg">
             <img [src]="getOrderImage(order, i)" alt="Meal">
           </div>
         </div>
-        
+
         <div class="oc2-right">
           <div class="oc2-header">
             <span class="oc2-title">Order {{order.displayId || '#' + order.id.substring(0,8)}}</span>
             <span class="oc2-price">₹{{order.total}}</span>
           </div>
-          
+
           <div class="oc2-date">{{order.date | date:'MMM d • h:mm a'}}</div>
-          
+
           <div class="oc2-status" [ngClass]="order.status.toLowerCase()">
             <ion-icon [name]="order.status === 'Delivered' ? 'checkmark-circle' : 'time'"></ion-icon> {{order.status}}
           </div>
-          
+
           <div class="oc2-bottom">
             <button class="oc2-details-btn">View details</button>
           </div>
-          
+
           <ion-icon name="chevron-forward-outline" class="oc2-chevron"></ion-icon>
         </div>
       </div>
@@ -208,33 +209,50 @@
   <div class="web-app desktop-only" *ngIf="!isLoading">
     <!-- SIDEBAR -->
     <aside class="side">
-      <div class="logo">
-        <span class="glyph">
-          <img src="assets/logo/chef_hat.png" alt="MealMate">
-        </span>
-        <b>MealMate</b>
+      <div class="side-top">
+        <div class="logo">
+          <span class="glyph">
+            <img src="assets/logo/chef_hat.png" alt="MealMate">
+          </span>
+          <b class="brand-name">MealMate</b>
+        </div>
+        <button class="sidebar-toggle-btn" (click)="themeService.toggleSidebar()"
+          [title]="themeService.isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+          <ion-icon
+            [name]="themeService.isSidebarCollapsed ? 'chevron-forward-outline' : 'chevron-back-outline'"></ion-icon>
+        </button>
       </div>
       <div class="navlabel">Menu</div>
       <nav class="nav">
         <button routerLink="/customer-home">
-          <ion-icon name="home-outline"></ion-icon>Home
+          <ion-icon name="home-outline"></ion-icon><span class="nav-text">Home</span>
         </button>
         <button class="on" routerLink="/my-orders">
-          <ion-icon name="bag-outline"></ion-icon>Orders
+          <ion-icon name="bag-outline"></ion-icon><span class="nav-text">Orders</span>
         </button>
         <button routerLink="/subscribe">
-          <ion-icon name="calendar-outline"></ion-icon>Meal Plans
+          <ion-icon name="calendar-outline"></ion-icon><span class="nav-text">Meal Plans</span>
         </button>
         <button routerLink="/health">
-          <ion-icon name="heart-outline"></ion-icon>Health
+          <ion-icon name="heart-outline"></ion-icon><span class="nav-text">Health</span>
         </button>
         <button routerLink="/ai-concierge">
-          <ion-icon name="chatbubbles-outline"></ion-icon>Concierge
+          <ion-icon name="chatbubbles-outline"></ion-icon><span class="nav-text">Concierge</span>
         </button>
         <button routerLink="/wallet">
-          <ion-icon name="shield-checkmark-outline"></ion-icon>Wallet
+          <ion-icon name="shield-checkmark-outline"></ion-icon><span class="nav-text">Wallet</span>
+        </button>
+        <button routerLink="/profile">
+          <ion-icon name="person-outline"></ion-icon><span class="nav-text">Profile</span>
         </button>
       </nav>
+      <div class="side-foot">
+        <button class="me" routerLink="/profile" title="View Profile">
+          <span class="ava">{{userInitials}}</span>
+          <span class="me-text" style="text-align:left"><span class="n">{{userName}}</span><br><span class="s">Premium
+              member</span></span>
+        </button>
+      </div>
     </aside>
 
     <!-- MAIN VIEW -->
@@ -259,28 +277,32 @@
           <!-- Stats Grid -->
           <div class="stats">
             <div class="stat">
-              <div class="ic" style="background:var(--orange-soft)"><ion-icon name="bag-handle-outline" style="color:var(--orange)"></ion-icon></div>
+              <div class="ic" style="background:var(--orange-soft)"><ion-icon name="bag-handle-outline"
+                  style="color:var(--orange)"></ion-icon></div>
               <div>
                 <div class="v">{{activeOrders.length}}</div>
                 <div class="l">Active orders</div>
               </div>
             </div>
             <div class="stat">
-              <div class="ic" style="background:#EBF3FE"><ion-icon name="bicycle-outline" style="color:#2563EB"></ion-icon></div>
+              <div class="ic" style="background:#EBF3FE"><ion-icon name="bicycle-outline"
+                  style="color:#2563EB"></ion-icon></div>
               <div>
                 <div class="v">{{getOutForDeliveryCount()}}</div>
                 <div class="l">Out for delivery</div>
               </div>
             </div>
             <div class="stat">
-              <div class="ic" style="background:var(--green-soft)"><ion-icon name="checkmark-circle-outline" style="color:var(--green)"></ion-icon></div>
+              <div class="ic" style="background:var(--green-soft)"><ion-icon name="checkmark-circle-outline"
+                  style="color:var(--green)"></ion-icon></div>
               <div>
                 <div class="v">{{pastOrders.length}}</div>
                 <div class="l">Delivered</div>
               </div>
             </div>
             <div class="stat">
-              <div class="ic" style="background:#FDF3DC"><ion-icon name="wallet-outline" style="color:#B77A08"></ion-icon></div>
+              <div class="ic" style="background:#FDF3DC"><ion-icon name="wallet-outline"
+                  style="color:#B77A08"></ion-icon></div>
               <div>
                 <div class="v">₹{{getTotalSpent() | number:'1.0-0'}}</div>
                 <div class="l">Spent this month</div>
@@ -305,14 +327,18 @@
           <div *ngIf="activeTab === 'active'">
             <div class="filters">
               <button class="chip" [class.on]="statusFilter === 'all'" (click)="statusFilter = 'all'">All</button>
-              <button class="chip" [class.on]="statusFilter === 'waiting'" (click)="statusFilter = 'waiting'">Waiting</button>
-              <button class="chip" [class.on]="statusFilter === 'preparing'" (click)="statusFilter = 'preparing'">Preparing</button>
-              <button class="chip" [class.on]="statusFilter === 'ontheway'" (click)="statusFilter = 'ontheway'">On the way</button>
+              <button class="chip" [class.on]="statusFilter === 'waiting'"
+                (click)="statusFilter = 'waiting'">Waiting</button>
+              <button class="chip" [class.on]="statusFilter === 'preparing'"
+                (click)="statusFilter = 'preparing'">Preparing</button>
+              <button class="chip" [class.on]="statusFilter === 'ontheway'" (click)="statusFilter = 'ontheway'">On the
+                way</button>
               <span class="rt">Live updates on</span>
             </div>
 
             <div class="olist">
-              <div class="order-item" *ngFor="let o of getFilteredActiveOrders(); let i = index" [class.sel]="selectedOrder?.id === o.id" (click)="selectedOrder = o">
+              <div class="order-item" *ngFor="let o of getFilteredActiveOrders(); let i = index"
+                [class.sel]="selectedOrder?.id === o.id" (click)="selectedOrder = o">
                 <div class="othumb"><img [src]="getOrderImage(o, i)" [alt]="o.id"></div>
                 <div class="ocol">
                   <div class="oid">
@@ -322,7 +348,8 @@
                     </span>
                   </div>
                   <div class="oitems">{{getOrderItemNames(o)}}</div>
-                  <div class="ometa"><span>{{o.date | date:'h:mm a'}}</span> · <span>{{o.items?.length || 1}} item(s)</span></div>
+                  <div class="ometa"><span>{{o.date | date:'h:mm a'}}</span> · <span>{{o.items?.length || 1}}
+                      item(s)</span></div>
                 </div>
                 <div class="oright">
                   <div class="opricebig">₹{{o.total}}</div>
@@ -342,7 +369,8 @@
           <!-- Past Orders Tab -->
           <div *ngIf="activeTab === 'past'">
             <div class="olist">
-              <div class="order-item" *ngFor="let o of pastOrders; let i = index" [class.sel]="selectedOrder?.id === o.id" (click)="selectedOrder = o">
+              <div class="order-item" *ngFor="let o of pastOrders; let i = index"
+                [class.sel]="selectedOrder?.id === o.id" (click)="selectedOrder = o">
                 <div class="othumb"><img [src]="getOrderImage(o, i)" [alt]="o.id"></div>
                 <div class="ocol">
                   <div class="oid">
@@ -378,9 +406,12 @@
                   <span class="status-badge">{{sub.status}}</span>
                 </div>
                 <div class="daily-info-list" *ngIf="sub.status === 'Active'">
-                  <div class="info-row"><span class="lab">Today's meal</span><span class="val">🍲 {{getTodaysMeal(sub).name}}</span></div>
-                  <div class="info-row"><span class="lab">Next meal</span><span class="val">👉 {{getNextMeal(sub).name}}</span></div>
-                  <div class="info-row"><span class="lab">Days remaining</span><span class="val">⏳ {{getDaysRemaining(sub)}} days</span></div>
+                  <div class="info-row"><span class="lab">Today's meal</span><span class="val">🍲
+                      {{getTodaysMeal(sub).name}}</span></div>
+                  <div class="info-row"><span class="lab">Next meal</span><span class="val">👉
+                      {{getNextMeal(sub).name}}</span></div>
+                  <div class="info-row"><span class="lab">Days remaining</span><span class="val">⏳
+                      {{getDaysRemaining(sub)}} days</span></div>
                 </div>
                 <div class="sub-actions">
                   <button class="action-btn outline" (click)="togglePause(sub)">
@@ -412,16 +443,18 @@
               </span>
             </div>
             <div class="reta">Estimated arrival: <b>1:15 PM</b></div>
-            
+
             <div class="oitemrow" *ngFor="let item of (selectedOrder || activeOrders[0]).items || []">
               <span class="oq">{{item.quantity || 1}}x</span>
               <span class="nm">{{item.mealName || 'Homestyle Meal'}}</span>
               <span class="p">₹{{item.price}}</span>
             </div>
 
-            <div class="sumrow"><span>Subtotal</span><span>₹{{(selectedOrder || activeOrders[0]).total - 30}}</span></div>
+            <div class="sumrow"><span>Subtotal</span><span>₹{{(selectedOrder || activeOrders[0]).total - 30}}</span>
+            </div>
             <div class="sumrow"><span>Delivery</span><span>₹30</span></div>
-            <div class="sumrow tot"><span>Total Paid</span><span>₹{{(selectedOrder || activeOrders[0]).total}}</span></div>
+            <div class="sumrow tot"><span>Total Paid</span><span>₹{{(selectedOrder || activeOrders[0]).total}}</span>
+            </div>
 
             <button class="railbtn" (click)="onOrderClick(selectedOrder || activeOrders[0])">
               <ion-icon name="bicycle-outline"></ion-icon>Track Live Order
