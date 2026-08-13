@@ -5,12 +5,19 @@ import { Injectable } from '@angular/core';
 })
 export class ThemeService {
   private darkModeKey = 'mealmate_dark_mode';
+  private sidebarCollapsedKey = 'mealmate_sidebar_collapsed';
+
   isDarkMode = false;
+  isSidebarCollapsed = false;
 
   constructor() {
-    const saved = localStorage.getItem(this.darkModeKey);
-    this.isDarkMode = saved === 'true';
+    const savedDark = localStorage.getItem(this.darkModeKey);
+    this.isDarkMode = savedDark === 'true';
     this.applyTheme();
+
+    const savedSidebar = localStorage.getItem(this.sidebarCollapsedKey);
+    this.isSidebarCollapsed = savedSidebar === 'true';
+    this.applySidebarState();
   }
 
   toggleTheme() {
@@ -20,11 +27,26 @@ export class ThemeService {
     return this.isDarkMode;
   }
 
+  toggleSidebar() {
+    this.isSidebarCollapsed = !this.isSidebarCollapsed;
+    localStorage.setItem(this.sidebarCollapsedKey, String(this.isSidebarCollapsed));
+    this.applySidebarState();
+    return this.isSidebarCollapsed;
+  }
+
   private applyTheme() {
     if (this.isDarkMode) {
       document.body.classList.add('dark');
     } else {
       document.body.classList.remove('dark');
+    }
+  }
+
+  private applySidebarState() {
+    if (this.isSidebarCollapsed) {
+      document.body.classList.add('sidebar-collapsed');
+    } else {
+      document.body.classList.remove('sidebar-collapsed');
     }
   }
 }

@@ -13,7 +13,7 @@ export class AuthService {
   private _isAuthenticated = false;
   private _userId: string | null = null;
 
-  constructor(private http: HttpClient, private clerkAuth: ClerkAuthService) {}
+  constructor(private http: HttpClient, private clerkAuth: ClerkAuthService) { }
 
   async loginWithEmail(email: string, password: string, role: 'customer' | 'agent'): Promise<any> {
     const key = environment.clerkPublishableKey;
@@ -194,6 +194,16 @@ export class AuthService {
     const name = localStorage.getItem('mealmate_username');
     if (!name || name === 'null' || name === 'undefined') return null;
     return name;
+  }
+
+  get userInitials(): string {
+    const name = this.userName;
+    if (!name) return 'M';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
   }
 
   get userEmail(): string | null {

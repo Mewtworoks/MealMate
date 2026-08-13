@@ -280,8 +280,10 @@ $mm-font-xxl: 1.6rem;
    Global Scrollbar Hiding (Removes native black browser scrollbars completely)
    ========================================================================== */
 * {
-  scrollbar-width: none !important; /* Firefox */
-  -ms-overflow-style: none !important; /* IE / Edge */
+  scrollbar-width: none !important;
+  /* Firefox */
+  -ms-overflow-style: none !important;
+  /* IE / Edge */
 }
 
 ::-webkit-scrollbar {
@@ -300,6 +302,7 @@ $mm-font-xxl: 1.6rem;
 ion-content {
   &::part(scroll) {
     scrollbar-width: none !important;
+
     &::-webkit-scrollbar {
       display: none !important;
       width: 0 !important;
@@ -634,5 +637,224 @@ body.dark {
     color: $mm-text-dark;
     min-width: 14px;
     text-align: center;
+  }
+}
+
+/* ==========================================================================
+   Collapsible Web Sidebar System (< > Toggle Button & Collapsed Layout)
+   ========================================================================== */
+.side {
+  position: relative;
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), padding 0.25s ease;
+
+  .side-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 20px;
+    gap: 8px;
+  }
+
+  .sidebar-toggle-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #FBF8F6;
+    border: 1px solid var(--line, #EDE6E1);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    color: var(--ink-2, #5C524C);
+    transition: all 0.15s ease;
+    flex: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+
+    &:hover {
+      background: var(--orange-soft, #FFF1E8);
+      border-color: var(--orange-line, #FFDCC6);
+      color: var(--orange, #F26A21);
+      transform: scale(1.08);
+
+      ion-icon,
+      svg {
+        color: var(--orange, #F26A21);
+        stroke: var(--orange, #F26A21);
+      }
+    }
+
+    ion-icon,
+    svg {
+      font-size: 15px;
+      width: 15px;
+      height: 15px;
+      color: var(--ink-2, #5C524C);
+      stroke-width: 2.2;
+    }
+  }
+
+  .me {
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease;
+
+    &:hover {
+      background: #F7F3F0;
+      transform: translateY(-1px);
+    }
+  }
+}
+
+/* ════════════════ UNIFORM SIDEBAR FOOTER & AVATAR ════════════════ */
+.side-foot {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  width: 100%;
+
+  .me {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 12px;
+    background: none;
+    border: 0;
+    width: 100%;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: #F7F3F0;
+    }
+
+    .ava {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FF8A47, #F26A21) !important;
+      color: #ffffff !important;
+      font-weight: 800;
+      font-size: 13px;
+      display: grid;
+      place-items: center;
+      flex: none;
+      box-shadow: 0 3px 8px rgba(242, 106, 33, 0.25);
+    }
+
+    .me-text {
+      min-width: 0;
+      overflow: hidden;
+
+      .n {
+        font-size: 13.5px;
+        font-weight: 800;
+        color: var(--ink);
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        display: block;
+      }
+
+      .s {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: var(--ink-3);
+        white-space: nowrap;
+        display: block;
+      }
+    }
+  }
+}
+
+body.sidebar-collapsed {
+  .web-app {
+    grid-template-columns: 76px minmax(0, 1fr) !important;
+    transition: grid-template-columns 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .side {
+    width: 76px !important;
+    padding: 20px 8px !important;
+    align-items: center !important;
+
+    .side-top {
+      flex-direction: column-reverse;
+      gap: 12px;
+      justify-content: center;
+      padding-bottom: 12px;
+      width: 100%;
+
+      .logo {
+        padding: 0 !important;
+        justify-content: center !important;
+
+        b,
+        .brand-name {
+          display: none !important;
+        }
+      }
+
+      .sidebar-toggle-btn {
+        margin: 0 auto;
+      }
+    }
+
+    .navlabel {
+      display: none !important;
+    }
+
+    .nav {
+      width: 100%;
+
+      button {
+        justify-content: center !important;
+        padding: 12px 0 !important;
+        width: 100% !important;
+        text-align: center !important;
+
+        .nav-text,
+        span:not(.pip),
+        label {
+          display: none !important;
+        }
+
+        ion-icon,
+        svg {
+          margin: 0 !important;
+          font-size: 20px !important;
+          width: 20px !important;
+          height: 20px !important;
+        }
+      }
+    }
+
+    .side-foot {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      .plan-mini {
+        display: none !important;
+      }
+
+      .me {
+        justify-content: center !important;
+        padding: 8px 0 !important;
+        width: 44px !important;
+        height: 44px !important;
+        border-radius: 50% !important;
+        margin: 0 auto !important;
+
+        .me-text,
+        span:not(.ava) {
+          display: none !important;
+        }
+
+        .ava {
+          margin: 0 !important;
+        }
+      }
+    }
   }
 }
