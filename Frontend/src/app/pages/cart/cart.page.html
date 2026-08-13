@@ -1,238 +1,453 @@
-<ion-header class="ion-no-border premium-header">
-  <div class="header-curve-bg"></div>
-  <ion-toolbar class="transparent-toolbar">
-    <ion-buttons slot="start">
-      <ion-button (click)="goBack()" class="back-btn-pill">
-        <ion-icon name="arrow-back-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-title class="page-title-text">My Cart</ion-title>
-    <ion-buttons slot="end">
-      <ion-button class="items-badge" style="color: #FF7235;">
-        <ion-icon name="bag-handle-outline"></ion-icon>
-        <span class="badge-count">{{items.length}}</span>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<!-- ════════════════ MOBILE VIEW (Screens <= 1000px) ════════════════ -->
+<div class="mobile-only">
+  <ion-header class="ion-no-border premium-header">
+    <div class="header-curve-bg"></div>
+    <ion-toolbar class="transparent-toolbar">
+      <ion-buttons slot="start">
+        <ion-button (click)="goBack()" class="back-btn-pill">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-title class="page-title-text">My Cart</ion-title>
+      <ion-buttons slot="end">
+        <ion-button class="items-badge" style="color: #FF7235;">
+          <ion-icon name="bag-handle-outline"></ion-icon>
+          <span class="badge-count">{{items.length}}</span>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
 
-<ion-content [fullscreen]="true" class="cart-content">
+  <ion-content [fullscreen]="true" class="cart-content">
 
-  <!-- Empty Cart State -->
-  <div *ngIf="items.length === 0" class="empty-state animate-fade">
-    <div class="empty-icon-box">
-      <ion-icon name="cart-outline"></ion-icon>
+    <!-- Empty Cart State -->
+    <div *ngIf="items.length === 0" class="empty-state animate-fade">
+      <div class="empty-icon-box">
+        <ion-icon name="cart-outline"></ion-icon>
+      </div>
+      <h2>Your cart is empty</h2>
+      <p>Looks like you haven't added any meals yet. Browse our menu to find something delicious!</p>
+      <ion-button expand="block" shape="round" class="browse-btn" (click)="goBack()">
+        <ion-icon name="restaurant-outline" slot="start"></ion-icon>
+        Browse Meals
+      </ion-button>
     </div>
-    <h2>Your cart is empty</h2>
-    <p>Looks like you haven't added any meals yet. Browse our menu to find something delicious!</p>
-    <ion-button expand="block" shape="round" class="browse-btn" (click)="goBack()">
-      <ion-icon name="restaurant-outline" slot="start"></ion-icon>
-      Browse Meals
-    </ion-button>
-  </div>
 
-  <!-- Cart Items List -->
-  <div *ngIf="items.length > 0" class="content-wrapper">
+    <!-- Cart Items List -->
+    <div *ngIf="items.length > 0" class="content-wrapper">
 
-    <div class="section-label">YOUR ITEMS</div>
+      <div class="section-label">YOUR ITEMS</div>
 
-    <div class="item-list">
-      <div class="item-card" *ngFor="let item of items; let i = index" [style.animation-delay]="i * 0.08 + 's'">
-        <div class="thumb">
-          <img [src]="item.meal.image" [alt]="item.meal.name">
-        </div>
-        <div class="details">
-          <h3>{{item.meal.name}}</h3>
-          <span class="category-tag">{{item.meal.category}}</span>
-          <div class="price-qty-row">
-            <span class="price">₹{{item.meal.price * item.quantity}}</span>
-            <div class="qty-controls">
-              <button class="qty-btn" (click)="decreaseQty(item)">
-                <ion-icon [name]="item.quantity === 1 ? 'trash-outline' : 'remove'"></ion-icon>
-              </button>
-              <span class="qty-num">{{item.quantity}}</span>
-              <button class="qty-btn plus" (click)="increaseQty(item)">
-                <ion-icon name="add"></ion-icon>
-              </button>
+      <div class="item-list">
+        <div class="item-card" *ngFor="let item of items; let i = index" [style.animation-delay]="i * 0.08 + 's'">
+          <div class="thumb">
+            <img [src]="item.meal.image" [alt]="item.meal.name">
+          </div>
+          <div class="details">
+            <h3>{{item.meal.name}}</h3>
+            <span class="category-tag">{{item.meal.category}}</span>
+            <div class="price-qty-row">
+              <span class="price">₹{{item.meal.price * item.quantity}}</span>
+              <div class="qty-controls">
+                <button class="qty-btn" (click)="decreaseQty(item)">
+                  <ion-icon [name]="item.quantity === 1 ? 'trash-outline' : 'remove'"></ion-icon>
+                </button>
+                <span class="qty-num">{{item.quantity}}</span>
+                <button class="qty-btn plus" (click)="increaseQty(item)">
+                  <ion-icon name="add"></ion-icon>
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Wallet Info Card -->
-    <div class="wallet-info-card" *ngIf="paymentType === 'wallet'">
-      <div class="wallet-info-row">
-        <div class="wallet-stat">
-          <ion-icon name="wallet-outline"></ion-icon>
-          <div class="stat-detail">
-            <span class="stat-value">₹{{walletBalance}}</span>
-            <span class="stat-label">Balance</span>
+      <!-- Wallet Info Card -->
+      <div class="wallet-info-card" *ngIf="paymentType === 'wallet'">
+        <div class="wallet-info-row">
+          <div class="wallet-stat">
+            <ion-icon name="wallet-outline"></ion-icon>
+            <div class="stat-detail">
+              <span class="stat-value">₹{{walletBalance}}</span>
+              <span class="stat-label">Balance</span>
+            </div>
           </div>
-        </div>
-        <div class="wallet-stat-divider"></div>
-        <div class="wallet-stat">
-          <ion-icon name="shield-checkmark-outline"></ion-icon>
-          <div class="stat-detail">
-            <span class="stat-value">₹{{wallet.availableCredit}}</span>
-            <span class="stat-label">Credit Left</span>
+          <div class="wallet-stat-divider"></div>
+          <div class="wallet-stat">
+            <ion-icon name="shield-checkmark-outline"></ion-icon>
+            <div class="stat-detail">
+              <span class="stat-value">₹{{wallet.availableCredit}}</span>
+              <span class="stat-label">Credit Left</span>
+            </div>
           </div>
-        </div>
-        <div class="wallet-stat-divider"></div>
-        <div class="wallet-stat">
-          <ion-icon name="star-outline"></ion-icon>
-          <div class="stat-detail">
-            <span class="stat-value">{{credits}}</span>
-            <span class="stat-label">Points</span>
+          <div class="wallet-stat-divider"></div>
+          <div class="wallet-stat">
+            <ion-icon name="star-outline"></ion-icon>
+            <div class="stat-detail">
+              <span class="stat-value">{{credits}}</span>
+              <span class="stat-label">Points</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Redeem Points Section -->
-    <div class="redeem-section" *ngIf="credits > 0 && paymentType === 'wallet'">
-      <div class="redeem-card" [class.active]="redeemPoints" (click)="toggleRedeemPoints()">
-        <div class="redeem-left">
-          <div class="redeem-icon">
-            <ion-icon name="gift-outline"></ion-icon>
+      <!-- Redeem Points Section -->
+      <div class="redeem-section" *ngIf="credits > 0 && paymentType === 'wallet'">
+        <div class="redeem-card" [class.active]="redeemPoints" (click)="toggleRedeemPoints()">
+          <div class="redeem-left">
+            <div class="redeem-icon">
+              <ion-icon name="gift-outline"></ion-icon>
+            </div>
+            <div class="redeem-info">
+              <span class="redeem-title">Redeem Loyalty Points</span>
+              <span class="redeem-desc">
+                Use up to {{getMaxRedeemable()}} pts · Save ₹{{getMaxRedeemable()}}
+              </span>
+            </div>
           </div>
-          <div class="redeem-info">
-            <span class="redeem-title">Redeem Loyalty Points</span>
-            <span class="redeem-desc">
-              Use up to {{getMaxRedeemable()}} pts · Save ₹{{getMaxRedeemable()}}
+          <div class="toggle-circle" [class.toggled]="redeemPoints">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+        <div class="redeem-savings" *ngIf="redeemPoints">
+          <ion-icon name="checkmark-circle"></ion-icon>
+          <span>{{pointsSavings}} points applied · You save ₹{{pointsSavings}}</span>
+        </div>
+      </div>
+
+      <!-- Payment Type Section -->
+      <div class="payment-type-section">
+        <div class="section-label">CHOOSE PAYMENT TYPE</div>
+        <div class="payment-options">
+
+          <div class="pay-option" [class.selected]="paymentType === 'wallet'"
+            (click)="paymentType = 'wallet'; calculateBill()">
+            <div class="option-left">
+              <div class="option-icon wallet-icon">
+                <ion-icon name="wallet-outline"></ion-icon>
+              </div>
+              <div class="option-info">
+                <span class="option-title">Pay via Wallet</span>
+                <span class="option-desc">₹{{walletBalance}} balance + ₹{{wallet.availableCredit}} credit</span>
+              </div>
+            </div>
+            <div class="radio-circle" [class.checked]="paymentType === 'wallet'">
+              <div class="radio-dot"></div>
+            </div>
+          </div>
+
+          <div class="pay-option" [class.selected]="paymentType === 'cod'"
+            (click)="paymentType = 'cod'; redeemPoints = false; calculateBill()">
+            <div class="option-left">
+              <div class="option-icon cod-icon">
+                <ion-icon name="cash-outline"></ion-icon>
+              </div>
+              <div class="option-info">
+                <span class="option-title">Cash on Delivery</span>
+                <span class="option-desc">Pay when your meal arrives</span>
+              </div>
+            </div>
+            <div class="radio-circle" [class.checked]="paymentType === 'cod'">
+              <div class="radio-dot"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Bill Details -->
+      <div class="bill-section">
+        <div class="section-label">BILL DETAILS</div>
+        <div class="bill-card">
+          <div class="bill-row">
+            <span>Item Total</span>
+            <span>₹{{subTotal}}</span>
+          </div>
+          <div class="bill-row">
+            <span>Delivery Fee</span>
+            <span>₹{{deliveryFee}}</span>
+          </div>
+          <div class="bill-row promo" *ngIf="redeemPoints && pointsSavings > 0">
+            <span>
+              <ion-icon name="star" class="inline-icon"></ion-icon>
+              Points Redeemed
             </span>
+            <span class="save">-₹{{pointsSavings}}</span>
+          </div>
+
+          <div class="bill-divider"></div>
+
+          <div class="bill-row total">
+            <span>To Pay</span>
+            <span>₹{{getFinalTotal()}}</span>
+          </div>
+
+          <!-- Credit usage breakdown when wallet payment -->
+          <div *ngIf="paymentType === 'wallet' && needsCredit()" class="credit-breakdown">
+            <div class="credit-row">
+              <span>From Wallet</span>
+              <span>₹{{walletBalance}}</span>
+            </div>
+            <div class="credit-row highlight">
+              <ion-icon name="shield-checkmark"></ion-icon>
+              <span>From Credit Limit</span>
+              <span>₹{{getCreditNeeded()}}</span>
+            </div>
+          </div>
+
+          <!-- Points earned preview -->
+          <div class="points-earned-preview">
+            <ion-icon name="sparkles"></ion-icon>
+            <span>You'll earn <strong>{{(subTotal / 10) | number:'1.0-0'}} points</strong> on this order</span>
           </div>
         </div>
-        <div class="toggle-circle" [class.toggled]="redeemPoints">
-          <div class="toggle-knob"></div>
-        </div>
       </div>
-      <div class="redeem-savings" *ngIf="redeemPoints">
-        <ion-icon name="checkmark-circle"></ion-icon>
-        <span>{{pointsSavings}} points applied · You save ₹{{pointsSavings}}</span>
+
+      <!-- Wallet Insufficient Warning -->
+      <div class="wallet-warn" *ngIf="paymentType === 'wallet' && !canPlaceOrder() && items.length > 0">
+        <ion-icon name="alert-circle"></ion-icon>
+        <span>Insufficient funds. You need ₹{{getDeficitAmount() | number:'1.0-0'}} more. Top up your wallet or switch to
+          COD.</span>
       </div>
+
+      <!-- Credit Usage Info -->
+      <div class="credit-info" *ngIf="paymentType === 'wallet' && needsCredit()">
+        <ion-icon name="information-circle"></ion-icon>
+        <span>₹{{getCreditNeeded() | number:'1.0-0'}} will be borrowed from your credit limit (₹{{creditLimit}} total).
+          Settle at month-end.</span>
+      </div>
+
+      <!-- Spacer for footer -->
+      <div style="height: 100px;"></div>
+
     </div>
 
-    <!-- Payment Type Section -->
-    <div class="payment-type-section">
-      <div class="section-label">CHOOSE PAYMENT TYPE</div>
-      <div class="payment-options">
+  </ion-content>
 
-        <div class="pay-option" [class.selected]="paymentType === 'wallet'"
-          (click)="paymentType = 'wallet'; calculateBill()">
-          <div class="option-left">
-            <div class="option-icon wallet-icon">
-              <ion-icon name="wallet-outline"></ion-icon>
-            </div>
-            <div class="option-info">
-              <span class="option-title">Pay via Wallet</span>
-              <span class="option-desc">₹{{walletBalance}} balance + ₹{{wallet.availableCredit}} credit</span>
-            </div>
-          </div>
-          <div class="radio-circle" [class.checked]="paymentType === 'wallet'">
-            <div class="radio-dot"></div>
-          </div>
-        </div>
-
-        <div class="pay-option" [class.selected]="paymentType === 'cod'"
-          (click)="paymentType = 'cod'; redeemPoints = false; calculateBill()">
-          <div class="option-left">
-            <div class="option-icon cod-icon">
-              <ion-icon name="cash-outline"></ion-icon>
-            </div>
-            <div class="option-info">
-              <span class="option-title">Cash on Delivery</span>
-              <span class="option-desc">Pay when your meal arrives</span>
-            </div>
-          </div>
-          <div class="radio-circle" [class.checked]="paymentType === 'cod'">
-            <div class="radio-dot"></div>
-          </div>
-        </div>
-
+  <ion-footer class="ion-no-border" *ngIf="items.length > 0">
+    <div class="checkout-footer">
+      <div class="price-summary">
+        <span class="final-price">₹{{getFinalTotal()}}</span>
+        <span class="pay-type-label">{{getPaymentLabel()}}</span>
       </div>
+      <button class="place-order-btn" (click)="placeOrder()" [disabled]="!canPlaceOrder()"
+        [class.loading]="isPlacingOrder">
+        <span *ngIf="!isPlacingOrder">Place Order</span>
+        <ion-spinner *ngIf="isPlacingOrder" name="crescent" color="light"></ion-spinner>
+        <ion-icon *ngIf="!isPlacingOrder" name="arrow-forward-outline"></ion-icon>
+      </button>
     </div>
+  </ion-footer>
+</div>
 
-    <!-- Bill Details -->
-    <div class="bill-section">
-      <div class="section-label">BILL DETAILS</div>
-      <div class="bill-card">
-        <div class="bill-row">
-          <span>Item Total</span>
-          <span>₹{{subTotal}}</span>
-        </div>
-        <div class="bill-row">
-          <span>Delivery Fee</span>
-          <span>₹{{deliveryFee}}</span>
-        </div>
-        <div class="bill-row promo" *ngIf="redeemPoints && pointsSavings > 0">
-          <span>
-            <ion-icon name="star" class="inline-icon"></ion-icon>
-            Points Redeemed
+<!-- ════════════════ DESKTOP WEB VIEW (Screens >= 1001px) ════════════════ -->
+<div class="web-app desktop-only" [class.sidebar-collapsed]="themeService.isSidebarCollapsed">
+  <!-- SIDEBAR -->
+  <aside class="side">
+    <div class="side-top">
+      <div class="logo">
+        <span class="glyph"><img src="assets/logo/chef_hat.png" alt="MealMate"></span>
+        <b class="brand-name">MealMate</b>
+      </div>
+      <button class="sidebar-toggle-btn" (click)="themeService.toggleSidebar()"
+        [title]="themeService.isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+        <ion-icon [name]="themeService.isSidebarCollapsed ? 'chevron-forward-outline' : 'chevron-back-outline'"></ion-icon>
+      </button>
+    </div>
+    <div class="navlabel">Menu</div>
+    <nav class="nav">
+      <button routerLink="/customer-home"><ion-icon name="home-outline"></ion-icon><span class="nav-text">Home</span></button>
+      <button routerLink="/my-orders"><ion-icon name="bag-outline"></ion-icon><span class="nav-text">Orders</span></button>
+      <button routerLink="/subscribe"><ion-icon name="calendar-outline"></ion-icon><span class="nav-text">Meal Plans</span></button>
+      <button routerLink="/health"><ion-icon name="heart-outline"></ion-icon><span class="nav-text">Health</span></button>
+      <button routerLink="/ai-concierge"><ion-icon name="sparkles-outline"></ion-icon><span class="nav-text">MealMantra AI</span></button>
+      <button routerLink="/wallet"><ion-icon name="wallet-outline"></ion-icon><span class="nav-text">Wallet</span></button>
+      <button routerLink="/profile"><ion-icon name="person-outline"></ion-icon><span class="nav-text">Profile</span></button>
+    </nav>
+    <div class="side-foot">
+      <div class="plan-mini" *ngIf="activeSubscription">
+        <div class="t">YOUR MEAL PLAN</div>
+        <div class="v">{{planName}}</div>
+        <div class="pbar"><i [style.width.%]="activePlanPercent"></i></div>
+        <div class="f"><span>Day {{activeSubscription.currentDay}} of {{activeSubscription.totalDays}}</span><span>{{activePlanPercent}}%</span></div>
+      </div>
+      <button class="me" routerLink="/profile" title="View Profile">
+        <span class="ava">{{userInitials}}</span>
+        <span class="me-text" style="text-align:left"><span class="n">{{userName}}</span><br><span class="s">Premium member</span></span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN VIEW -->
+  <div class="view-main">
+    <header class="top">
+      <button class="back" (click)="goBack()" title="Back">
+        <ion-icon name="arrow-back-outline"></ion-icon> Back
+      </button>
+      <div>
+        <h1>My Cart</h1>
+        <div class="sub">{{items.length === 1 ? '1 item' : items.length + ' items'}}</div>
+      </div>
+      <div class="top-r" style="margin-left: auto;">
+        <button class="iconbtn" (click)="clearCart()" title="Clear cart" *ngIf="items.length > 0">
+          <ion-icon name="trash-outline"></ion-icon>
+        </button>
+      </div>
+    </header>
+
+    <div class="body">
+      <div>
+        <div class="blkhead" style="margin-bottom: 12px;">
+          <h2>Your items</h2>
+          <span class="mini" style="font-size:12.5px;font-weight:700;color:var(--ink-3)">
+            {{items.length === 1 ? '1 item' : items.length + ' items'}}
           </span>
-          <span class="save">-₹{{pointsSavings}}</span>
         </div>
 
-        <div class="bill-divider"></div>
-
-        <div class="bill-row total">
-          <span>To Pay</span>
-          <span>₹{{getFinalTotal()}}</span>
+        <!-- Empty Cart Desktop -->
+        <div *ngIf="items.length === 0" class="empty-cart-desktop">
+          <div class="ic"><ion-icon name="cart-outline"></ion-icon></div>
+          <h3>Your cart is empty</h3>
+          <p>Browse today's menu and add a meal.</p>
+          <button class="swapbtn" (click)="goBack()">Browse menu</button>
         </div>
 
-        <!-- Credit usage breakdown when wallet payment -->
-        <div *ngIf="paymentType === 'wallet' && needsCredit()" class="credit-breakdown">
-          <div class="credit-row">
-            <span>From Wallet</span>
-            <span>₹{{walletBalance}}</span>
+        <div *ngIf="items.length > 0">
+          <div class="cart-rows-container">
+            <div class="crow" *ngFor="let item of items">
+              <span class="ph photo sm tile">
+                <img [src]="item.meal.image" [alt]="item.meal.name">
+              </span>
+              <span style="min-width:0;flex:1">
+                <span class="nm" style="display:block">{{item.meal.name}}</span>
+                <span class="cat2" style="display:block">{{item.meal.category}}</span>
+              </span>
+              <span class="pr">₹{{item.meal.price * item.quantity}}</span>
+              <span class="qty">
+                <button [class.trash]="item.quantity === 1" (click)="decreaseQty(item)">
+                  <ion-icon [name]="item.quantity === 1 ? 'trash-outline' : 'remove'"></ion-icon>
+                </button>
+                <span class="n">{{item.quantity}}</span>
+                <button (click)="increaseQty(item)">
+                  <ion-icon name="add"></ion-icon>
+                </button>
+              </span>
+            </div>
           </div>
-          <div class="credit-row highlight">
-            <ion-icon name="shield-checkmark"></ion-icon>
-            <span>From Credit Limit</span>
-            <span>₹{{getCreditNeeded()}}</span>
-          </div>
-        </div>
 
-        <!-- Points earned preview -->
-        <div class="points-earned-preview">
-          <ion-icon name="sparkles"></ion-icon>
-          <span>You'll earn <strong>{{(subTotal / 10) | number:'1.0-0'}} points</strong> on this order</span>
+          <!-- Wallet Balance Strip -->
+          <section class="wstrip" *ngIf="paymentType === 'wallet'">
+            <div class="wcell">
+              <ion-icon name="wallet-outline"></ion-icon>
+              <div><div class="v">₹{{walletBalance}}</div><div class="l">Balance</div></div>
+            </div>
+            <div class="wcell">
+              <ion-icon name="shield-checkmark-outline"></ion-icon>
+              <div><div class="v">₹{{wallet.availableCredit}}</div><div class="l">Credit left</div></div>
+            </div>
+            <div class="wcell">
+              <ion-icon name="star-outline"></ion-icon>
+              <div><div class="v">{{credits}}</div><div class="l">Points</div></div>
+            </div>
+          </section>
+
+          <!-- Redeem loyalty points -->
+          <div class="loyal" *ngIf="credits > 0 && paymentType === 'wallet'">
+            <span class="gi"><ion-icon name="gift-outline"></ion-icon></span>
+            <div>
+              <div class="t">Redeem loyalty points</div>
+              <div class="s">
+                {{getMaxRedeemable() ? ('Use up to ' + getMaxRedeemable() + ' pts · Save ₹' + getMaxRedeemable()) : 'Add items to redeem points'}}
+              </div>
+            </div>
+            <button class="sw" [class.on]="redeemPoints" (click)="toggleRedeemPoints()" aria-label="Redeem points"></button>
+          </div>
+
+          <!-- Payment type -->
+          <div class="blkhead" style="margin-bottom:12px; margin-top:20px;"><h2>Payment</h2></div>
+          <div class="paylist">
+            <button class="pay" [class.on]="paymentType === 'wallet'" (click)="paymentType = 'wallet'; calculateBill()">
+              <span class="pi" style="background:var(--green-soft)">
+                <ion-icon name="wallet-outline" style="color:var(--green)"></ion-icon>
+              </span>
+              <span>
+                <span class="t" style="display:block">Pay via Wallet</span>
+                <span class="s" style="display:block">₹{{walletBalance}} balance + ₹{{wallet.availableCredit}} credit</span>
+              </span>
+              <span class="radio"></span>
+            </button>
+
+            <button class="pay" [class.on]="paymentType === 'cod'" (click)="paymentType = 'cod'; redeemPoints = false; calculateBill()">
+              <span class="pi" style="background:var(--orange-soft)">
+                <ion-icon name="cash-outline" style="color:var(--orange)"></ion-icon>
+              </span>
+              <span>
+                <span class="t" style="display:block">Cash on Delivery</span>
+                <span class="s" style="display:block">Pay when your meal arrives</span>
+              </span>
+              <span class="radio"></span>
+            </button>
+          </div>
+
+          <!-- Warnings / Banners -->
+          <div class="wallet-warn" *ngIf="paymentType === 'wallet' && !canPlaceOrder()">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+            <span>Insufficient funds. You need ₹{{getDeficitAmount() | number:'1.0-0'}} more. Top up your wallet or switch to COD.</span>
+          </div>
+
+          <div class="credit-info" *ngIf="paymentType === 'wallet' && needsCredit()">
+            <ion-icon name="information-circle-outline"></ion-icon>
+            <span>₹{{getCreditNeeded() | number:'1.0-0'}} will be borrowed from your credit limit (₹{{creditLimit}} total). Settle at month-end.</span>
+          </div>
+
+          <!-- Place order bar -->
+          <div class="cartbar">
+            <div class="tot">
+              <div class="v">₹{{getFinalTotal()}}</div>
+              <div class="l">{{getPaymentLabel().toLowerCase()}}</div>
+            </div>
+            <button class="placebtn" (click)="placeOrder()" [disabled]="!canPlaceOrder()" [class.loading]="isPlacingOrder">
+              <span *ngIf="!isPlacingOrder">Place order</span>
+              <ion-spinner *ngIf="isPlacingOrder" name="crescent" color="light"></ion-spinner>
+              <ion-icon *ngIf="!isPlacingOrder" name="arrow-forward-outline"></ion-icon>
+            </button>
+          </div>
         </div>
       </div>
+
+      <!-- Right column / Rail -->
+      <aside class="rail">
+        <div class="rcard">
+          <div class="rhead"><h3>Bill details</h3></div>
+          <div class="billrow">Item total <b>₹{{subTotal}}</b></div>
+          <div class="billrow free">Delivery <b>{{subTotal >= 199 || subTotal === 0 ? 'Free' : '₹' + deliveryFee}}</b></div>
+          <div class="billrow">Taxes &amp; charges <b>₹{{taxAmount}}</b></div>
+          <div class="billrow save" *ngIf="redeemPoints && pointsSavings > 0">
+            Points redeemed <b>−₹{{pointsSavings}}</b>
+          </div>
+          <div class="billrow grand">To pay <b>₹{{getFinalTotal()}}</b></div>
+        </div>
+
+        <div class="rcard">
+          <div class="rhead"><h3>Delivery</h3><span class="mini">30–40 min</span></div>
+          <div class="delivery">
+            <span class="dtick"><ion-icon name="location-outline"></ion-icon></span>
+            <div>
+              <div class="v">Kalkaji, Delhi</div>
+              <div class="s">House 42, Block B · 110019</div>
+            </div>
+          </div>
+          <button class="railbtn ghost" (click)="goBack()">Change address</button>
+        </div>
+
+        <div class="insight" style="margin-bottom:0">
+          <span class="sp"><ion-icon name="sparkles" style="color:var(--green); font-size: 1.2rem;"></ion-icon></span>
+          <div>
+            <div class="k">Mia's Insight · AI Nutritionist</div>
+            <p>Add a raita or salad and this order covers your full fibre target for the day.</p>
+          </div>
+        </div>
+      </aside>
     </div>
-
-    <!-- Wallet Insufficient Warning -->
-    <div class="wallet-warn" *ngIf="paymentType === 'wallet' && !canPlaceOrder() && items.length > 0">
-      <ion-icon name="alert-circle"></ion-icon>
-      <span>Insufficient funds. You need ₹{{getDeficitAmount() | number:'1.0-0'}} more. Top up your wallet or switch to
-        COD.</span>
-    </div>
-
-    <!-- Credit Usage Info -->
-    <div class="credit-info" *ngIf="paymentType === 'wallet' && needsCredit()">
-      <ion-icon name="information-circle"></ion-icon>
-      <span>₹{{getCreditNeeded() | number:'1.0-0'}} will be borrowed from your credit limit (₹{{creditLimit}} total).
-        Settle at month-end.</span>
-    </div>
-
-    <!-- Spacer for footer -->
-    <div style="height: 100px;"></div>
-
   </div>
-
-</ion-content>
-
-<ion-footer class="ion-no-border" *ngIf="items.length > 0">
-  <div class="checkout-footer">
-    <div class="price-summary">
-      <span class="final-price">₹{{getFinalTotal()}}</span>
-      <span class="pay-type-label">{{getPaymentLabel()}}</span>
-    </div>
-    <button class="place-order-btn" (click)="placeOrder()" [disabled]="!canPlaceOrder()"
-      [class.loading]="isPlacingOrder">
-      <span *ngIf="!isPlacingOrder">Place Order</span>
-      <ion-spinner *ngIf="isPlacingOrder" name="crescent" color="light"></ion-spinner>
-      <ion-icon *ngIf="!isPlacingOrder" name="arrow-forward-outline"></ion-icon>
-    </button>
-  </div>
-</ion-footer>
+</div>
