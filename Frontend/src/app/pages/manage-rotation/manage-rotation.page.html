@@ -1,405 +1,665 @@
 <!-- Page Loader -->
 <app-page-loader [isLoading]="isLoading"></app-page-loader>
 
-<ion-header class="ion-no-border sub-page-header" *ngIf="!isLoading">
-  <div class="header-curve-bg"></div>
-  <ion-toolbar class="transparent-toolbar" style="--padding-top: 5px;">
-    <div class="header-content">
-      <ion-button (click)="goBack()" class="back-btn-pill">
-        <ion-icon name="arrow-back-outline"></ion-icon>
-      </ion-button>
-      <div class="title-group">
-        <h1 class="page-title">Manage Rotation</h1>
-        <p class="subtitle" *ngIf="activeSub">{{activeSub.rotationMeals.length}} meals in rotation</p>
+<!-- ════════════════ MOBILE VIEW (Screens <= 1000px) ════════════════ -->
+<div class="mobile-only">
+  <ion-header class="ion-no-border sub-page-header" *ngIf="!isLoading">
+    <div class="header-curve-bg"></div>
+    <ion-toolbar class="transparent-toolbar" style="--padding-top: 5px;">
+      <div class="header-content">
+        <ion-button (click)="goBack()" class="back-btn-pill">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </ion-button>
+        <div class="title-group">
+          <h1 class="page-title">Manage Rotation</h1>
+          <p class="subtitle" *ngIf="activeSub">{{activeSub.rotationMeals.length}} meals in rotation</p>
+        </div>
+        <div class="header-actions" *ngIf="activeSub">
+          <button class="mr-meal-badge">
+            <ion-icon name="restaurant-outline"></ion-icon>
+            <span>{{activeSub.rotationMeals.length}} Meals</span>
+          </button>
+        </div>
       </div>
-      <div class="header-actions" *ngIf="activeSub">
-        <button class="mr-meal-badge">
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content [fullscreen]="true" class="mr-content" *ngIf="!isLoading">
+    <div class="mr-body">
+
+      <!-- No active sub fallback -->
+      <div class="mr-empty" *ngIf="!activeSub">
+        <div class="mr-empty-icon-wrap">
           <ion-icon name="restaurant-outline"></ion-icon>
-          <span>{{activeSub.rotationMeals.length}} Meals</span>
-        </button>
-      </div>
-    </div>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content [fullscreen]="true" class="mr-content" *ngIf="!isLoading">
-  <div class="mr-body">
-
-    <!-- No active sub fallback -->
-    <div class="mr-empty" *ngIf="!activeSub">
-      <div class="mr-empty-icon-wrap">
-        <ion-icon name="restaurant-outline"></ion-icon>
-      </div>
-      <h3>No Active Plan</h3>
-      <p>Subscribe to a meal plan first to manage your rotation.</p>
-      <button class="mr-empty-cta" (click)="goBack()">
-        <ion-icon name="arrow-back-outline"></ion-icon>
-        Go to Meal Plans
-      </button>
-    </div>
-
-    <ng-container *ngIf="activeSub">
-
-      <!-- ── Segment Tabs ── -->
-      <div class="mr-segments">
-        <button class="mr-seg" [class.active]="activeTab === 'rotation'" (click)="setTab('rotation')">
-          <ion-icon name="time-outline"></ion-icon>
-          <span class="mr-seg-title">Rotation</span>
-          <span class="mr-seg-sub">Reorder meals</span>
-        </button>
-        <button class="mr-seg" [class.active]="activeTab === 'swap'" (click)="setTab('swap')">
-          <ion-icon name="swap-horizontal-outline"></ion-icon>
-          <span class="mr-seg-title">Swap / Add</span>
-          <span class="mr-seg-sub">Change meals</span>
-        </button>
-        <button class="mr-seg" [class.active]="activeTab === 'schedule'" (click)="setTab('schedule')">
-          <ion-icon name="calendar-outline"></ion-icon>
-          <span class="mr-seg-title">Schedule</span>
-          <span class="mr-seg-sub">View calendar</span>
+        </div>
+        <h3>No Active Plan</h3>
+        <p>Subscribe to a meal plan first to manage your rotation.</p>
+        <button class="mr-empty-cta" (click)="goBack()">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+          Go to Meal Plans
         </button>
       </div>
 
-      <!-- ═══════════════════════════════════════════════
-           TAB 1: CURRENT ROTATION — Reorder
-           ═══════════════════════════════════════════════ -->
-      <div class="mr-tab-content" *ngIf="activeTab === 'rotation'">
+      <ng-container *ngIf="activeSub">
 
-        <!-- Rotation Preview Banner -->
-        <div class="mr-preview-banner">
-          <div class="mr-preview-avatars">
-            <div class="mr-preview-avatar" *ngFor="let rm of editableRotation; let i = index"
-              [style.z-index]="editableRotation.length - i">
-              <img [src]="rm.image" [alt]="rm.name">
-            </div>
-          </div>
-          <div class="mr-preview-text">
-            <span class="mr-preview-title">Your {{editableRotation.length}}-Meal Cycle</span>
-            <span class="mr-preview-sub">Repeats every {{editableRotation.length}} days</span>
-          </div>
-          <ion-icon name="repeat-outline" class="mr-preview-icon"></ion-icon>
+        <!-- ── Segment Tabs ── -->
+        <div class="mr-segments">
+          <button class="mr-seg" [class.active]="activeTab === 'rotation'" (click)="setTab('rotation')">
+            <ion-icon name="time-outline"></ion-icon>
+            <span class="mr-seg-title">Rotation</span>
+            <span class="mr-seg-sub">Reorder meals</span>
+          </button>
+          <button class="mr-seg" [class.active]="activeTab === 'swap'" (click)="setTab('swap')">
+            <ion-icon name="swap-horizontal-outline"></ion-icon>
+            <span class="mr-seg-title">Swap / Add</span>
+            <span class="mr-seg-sub">Change meals</span>
+          </button>
+          <button class="mr-seg" [class.active]="activeTab === 'schedule'" (click)="setTab('schedule')">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <span class="mr-seg-title">Schedule</span>
+            <span class="mr-seg-sub">View calendar</span>
+          </button>
         </div>
 
-        <!-- Tip Box Card -->
-        <div class="mr-tip-box">
-          <div class="mr-tip-icon-wrap">
-            <ion-icon name="bulb"></ion-icon>
-          </div>
-          <div class="mr-tip-text">
-            <h4>Reorder your meals</h4>
-            <p>Use arrows to change the order of meals. Changes apply from tomorrow.</p>
-          </div>
-          <div class="mr-tip-img">
-            <img src="assets/onboarding/salad_bowl_checked.png" alt="Salad bowl">
-          </div>
-        </div>
+        <!-- TAB 1: CURRENT ROTATION -->
+        <div class="mr-tab-content" *ngIf="activeTab === 'rotation'">
 
-        <!-- Rotation Cards with Connector Arrows -->
-        <div class="mr-reorder-list">
-          <div class="mr-reorder-card-wrapper" *ngFor="let rm of editableRotation; let i = index">
-            <div class="mr-reorder-card"
-              [class.dragging]="dragFromIndex === i"
-              draggable="true"
-              (dragstart)="onDragStart(i)"
-              (dragover)="onDragOver($event)"
-              (drop)="onDrop(i)">
-
-              <!-- Drag Handle Icon SVG -->
-              <div class="mr-drag-handle">
-                <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="2" cy="2" r="1.5" fill="#C5BEB8"/>
-                  <circle cx="2" cy="8" r="1.5" fill="#C5BEB8"/>
-                  <circle cx="2" cy="14" r="1.5" fill="#C5BEB8"/>
-                  <circle cx="8" cy="2" r="1.5" fill="#C5BEB8"/>
-                  <circle cx="8" cy="8" r="1.5" fill="#C5BEB8"/>
-                  <circle cx="8" cy="14" r="1.5" fill="#C5BEB8"/>
-                </svg>
-              </div>
-
-              <!-- Day Number -->
-              <div class="mr-day-num">
-                <span>{{i + 1}}</span>
-              </div>
-
-              <!-- Meal Image -->
-              <div class="mr-meal-thumb">
+          <div class="mr-preview-banner">
+            <div class="mr-preview-avatars">
+              <div class="mr-preview-avatar" *ngFor="let rm of editableRotation; let i = index"
+                [style.z-index]="editableRotation.length - i">
                 <img [src]="rm.image" [alt]="rm.name">
               </div>
-
-              <!-- Meal Info -->
-              <div class="mr-meal-info">
-                <span class="mr-day-label">{{rm.dayLabel}}</span>
-                <h4>{{rm.name}}</h4>
-                <span class="mr-meal-price">₹{{rm.price}}/day · {{rm.calories}} kcal</span>
-              </div>
-
-              <!-- Actions (Up & Down arrows) -->
-              <div class="mr-reorder-actions">
-                <button class="mr-move-btn" (click)="moveMealUp(i)" [disabled]="i === 0" title="Move up">
-                  <ion-icon name="chevron-up-outline"></ion-icon>
-                </button>
-                <button class="mr-move-btn" (click)="moveMealDown(i)" [disabled]="i === editableRotation.length - 1" title="Move down">
-                  <ion-icon name="chevron-down-outline"></ion-icon>
-                </button>
-              </div>
-
-              <!-- Remove -->
-              <button class="mr-remove-btn" (click)="removeFromPool(i)" *ngIf="editableRotation.length > 3" title="Remove from rotation">
-                <ion-icon name="close-outline"></ion-icon>
-              </button>
             </div>
+            <div class="mr-preview-text">
+              <span class="mr-preview-title">Your {{editableRotation.length}}-Meal Cycle</span>
+              <span class="mr-preview-sub">Repeats every {{editableRotation.length}} days</span>
+            </div>
+            <ion-icon name="repeat-outline" class="mr-preview-icon"></ion-icon>
+          </div>
 
-            <!-- Dotted Connector Arrow -->
-            <div class="mr-connector-arrow" *ngIf="i < editableRotation.length - 1">
-              <div class="dot-line"></div>
-              <div class="arrow-head"></div>
+          <div class="mr-tip-box">
+            <div class="mr-tip-icon-wrap">
+              <ion-icon name="bulb"></ion-icon>
+            </div>
+            <div class="mr-tip-text">
+              <h4>Reorder your meals</h4>
+              <p>Use arrows to change the order of meals. Changes apply from tomorrow.</p>
+            </div>
+            <div class="mr-tip-img">
+              <img src="assets/onboarding/salad_bowl_checked.png" alt="Salad bowl">
             </div>
           </div>
-        </div>
 
-        <!-- Rotation Summary Card -->
-        <div class="mr-summary-box">
-          <div class="mr-summary-icon">
-            <div class="mr-circle-check">
-              <ion-icon name="checkmark"></ion-icon>
-            </div>
-          </div>
-          <div class="mr-summary-text">
-            <h4>Rotation Summary</h4>
-            <p>{{editableRotation.length}} meals • Repeats every {{editableRotation.length}} days</p>
-            <p class="mr-summary-sub">Next cycle starts after Day {{editableRotation.length}}</p>
-          </div>
-        </div>
+          <div class="mr-reorder-list">
+            <div class="mr-reorder-card-wrapper" *ngFor="let rm of editableRotation; let i = index">
+              <div class="mr-reorder-card"
+                [class.dragging]="dragFromIndex === i"
+                draggable="true"
+                (dragstart)="onDragStart(i)"
+                (dragover)="onDragOver($event)"
+                (drop)="onDrop(i)">
 
-      </div>
-
-      <!-- ═══════════════════════════════════════════════
-           TAB 2: SWAP / ADD
-           ═══════════════════════════════════════════════ -->
-      <div class="mr-tab-content" *ngIf="activeTab === 'swap'">
-
-        <!-- Current Meals (Not in swap mode) -->
-        <div *ngIf="!swappingMealId">
-          <div class="mr-section-label">
-            <h2>Current Rotation</h2>
-            <p>Tap "Swap" on any meal to replace it with another from the menu.</p>
-          </div>
-
-          <div class="mr-swap-list">
-            <div class="mr-swap-card-wrapper" *ngFor="let rm of editableRotation; let i = index">
-              <div class="mr-swap-card">
-                <div class="mr-swap-rank">{{i + 1}}</div>
-                <div class="mr-swap-thumb">
-                  <img [src]="rm.image" [alt]="rm.name">
+                <div class="mr-drag-handle">
+                  <svg width="10" height="16" viewBox="0 0 10 16" fill="none">
+                    <circle cx="2" cy="2" r="1.5" fill="#C5BEB8"/>
+                    <circle cx="2" cy="8" r="1.5" fill="#C5BEB8"/>
+                    <circle cx="2" cy="14" r="1.5" fill="#C5BEB8"/>
+                    <circle cx="8" cy="2" r="1.5" fill="#C5BEB8"/>
+                    <circle cx="8" cy="8" r="1.5" fill="#C5BEB8"/>
+                    <circle cx="8" cy="14" r="1.5" fill="#C5BEB8"/>
+                  </svg>
                 </div>
-                <div class="mr-swap-info">
+
+                <div class="mr-day-num"><span>{{i + 1}}</span></div>
+                <div class="mr-meal-thumb"><img [src]="rm.image" [alt]="rm.name"></div>
+
+                <div class="mr-meal-info">
+                  <span class="mr-day-label">{{rm.dayLabel}}</span>
                   <h4>{{rm.name}}</h4>
-                  <span class="mr-swap-meta">
-                    <ion-icon name="pricetag-outline"></ion-icon>
-                    ₹{{rm.price}}/day · {{rm.dayLabel}}
-                  </span>
+                  <span class="mr-meal-price">₹{{rm.price}}/day · {{rm.calories}} kcal</span>
                 </div>
-                <button class="mr-swap-action" (click)="startSwap(rm.mealId, rm.name)">
-                  <ion-icon name="swap-horizontal-outline"></ion-icon>
-                  Swap
+
+                <div class="mr-reorder-actions">
+                  <button class="mr-move-btn" (click)="moveMealUp(i)" [disabled]="i === 0" title="Move up">
+                    <ion-icon name="chevron-up-outline"></ion-icon>
+                  </button>
+                  <button class="mr-move-btn" (click)="moveMealDown(i)" [disabled]="i === editableRotation.length - 1" title="Move down">
+                    <ion-icon name="chevron-down-outline"></ion-icon>
+                  </button>
+                </div>
+
+                <button class="mr-remove-btn" (click)="removeFromPool(i)" *ngIf="editableRotation.length > 3" title="Remove from rotation">
+                  <ion-icon name="close-outline"></ion-icon>
                 </button>
               </div>
 
-              <!-- Dotted Connector Arrow -->
-              <div class="mr-connector-arrow swap-connector" *ngIf="i < editableRotation.length - 1">
+              <div class="mr-connector-arrow" *ngIf="i < editableRotation.length - 1">
                 <div class="dot-line"></div>
                 <div class="arrow-head"></div>
               </div>
             </div>
           </div>
 
-          <!-- Add More Variety -->
-          <div class="mr-add-section" *ngIf="availableMealsForSwap.length > 0">
-            <div class="mr-divider-label">
-              <div class="mr-divider-line"></div>
-              <span>
-                <ion-icon name="add-circle-outline"></ion-icon>
-                Add More Variety
-              </span>
-              <div class="mr-divider-line"></div>
+          <div class="mr-summary-box">
+            <div class="mr-summary-icon">
+              <div class="mr-circle-check"><ion-icon name="checkmark"></ion-icon></div>
             </div>
-            <p class="mr-add-hint">Add meals to your pool. The system rotates through all meals in your pool.</p>
-
-            <div class="mr-add-grid">
-              <div class="mr-add-card" *ngFor="let meal of availableMealsForSwap" (click)="addToPool(meal)">
-                <div class="mr-add-img-wrap">
-                  <img [src]="meal.image" [alt]="meal.name">
-                  <div class="mr-add-overlay">
-                    <ion-icon name="add"></ion-icon>
-                  </div>
-                </div>
-                <span class="mr-add-name">{{meal.name}}</span>
-                <span class="mr-add-price">₹{{meal.price}}/day</span>
-                <span class="mr-add-type" [class.veg]="meal.type === 'Veg'" [class.nonveg]="meal.type === 'Non-Veg'">
-                  <span class="mr-type-dot"></span>
-                  {{meal.type}}
-                </span>
-              </div>
+            <div class="mr-summary-text">
+              <h4>Rotation Summary</h4>
+              <p>{{editableRotation.length}} meals • Repeats every {{editableRotation.length}} days</p>
+              <p class="mr-summary-sub">Next cycle starts after Day {{editableRotation.length}}</p>
             </div>
           </div>
+
         </div>
 
-        <!-- Meal Picker (Swap Mode) -->
-        <div *ngIf="swappingMealId" class="mr-picker-view">
-          <div class="mr-picker-header">
-            <div class="mr-picker-badge">
-              <ion-icon name="swap-horizontal"></ion-icon>
-              SWAP MODE
+        <!-- TAB 2: SWAP / ADD -->
+        <div class="mr-tab-content" *ngIf="activeTab === 'swap'">
+
+          <div *ngIf="!swappingMealId">
+            <div class="mr-section-label">
+              <h2>Current Rotation</h2>
+              <p>Tap "Swap" on any meal to replace it with another from the menu.</p>
             </div>
-            <button class="mr-picker-close" (click)="cancelSwap()">
-              <ion-icon name="close-outline"></ion-icon>
-              Cancel
-            </button>
-          </div>
 
-          <div class="mr-picker-replacing">
-            <span>Replacing</span>
-            <strong>"{{swappingMealName}}"</strong>
-            <span>with:</span>
-          </div>
+            <div class="mr-swap-list">
+              <div class="mr-swap-card-wrapper" *ngFor="let rm of editableRotation; let i = index">
+                <div class="mr-swap-card">
+                  <div class="mr-swap-rank">{{i + 1}}</div>
+                  <div class="mr-swap-thumb"><img [src]="rm.image" [alt]="rm.name"></div>
+                  <div class="mr-swap-info">
+                    <h4>{{rm.name}}</h4>
+                    <span class="mr-swap-meta">
+                      <ion-icon name="pricetag-outline"></ion-icon>
+                      ₹{{rm.price}}/day · {{rm.dayLabel}}
+                    </span>
+                  </div>
+                  <button class="mr-swap-action" (click)="startSwap(rm.mealId, rm.name)">
+                    <ion-icon name="swap-horizontal-outline"></ion-icon> Swap
+                  </button>
+                </div>
 
-          <div class="mr-picker-grid">
-            <div class="mr-picker-card" *ngFor="let meal of availableMealsForSwap" (click)="confirmSwap(meal)">
-              <div class="mr-picker-thumb">
-                <img [src]="meal.image" [alt]="meal.name">
+                <div class="mr-connector-arrow swap-connector" *ngIf="i < editableRotation.length - 1">
+                  <div class="dot-line"></div>
+                  <div class="arrow-head"></div>
+                </div>
               </div>
-              <div class="mr-picker-info">
-                <h4>{{meal.name}}</h4>
-                <div class="mr-picker-meta">
-                  <span class="mr-picker-price">₹{{meal.price}}/day</span>
-                  <span class="mr-picker-type" [class.veg]="meal.type === 'Veg'" [class.nonveg]="meal.type === 'Non-Veg'">
-                    <span class="mr-type-dot"></span>
-                    {{meal.type}}
+            </div>
+
+            <div class="mr-add-section" *ngIf="availableMealsForSwap.length > 0">
+              <div class="mr-divider-label">
+                <div class="mr-divider-line"></div>
+                <span><ion-icon name="add-circle-outline"></ion-icon> Add More Variety</span>
+                <div class="mr-divider-line"></div>
+              </div>
+              <p class="mr-add-hint">Add meals to your pool. The system rotates through all meals in your pool.</p>
+
+              <div class="mr-add-grid">
+                <div class="mr-add-card" *ngFor="let meal of availableMealsForSwap" (click)="addToPool(meal)">
+                  <div class="mr-add-img-wrap">
+                    <img [src]="meal.image" [alt]="meal.name">
+                    <div class="mr-add-overlay"><ion-icon name="add"></ion-icon></div>
+                  </div>
+                  <span class="mr-add-name">{{meal.name}}</span>
+                  <span class="mr-add-price">₹{{meal.price}}/day</span>
+                  <span class="mr-add-type" [class.veg]="meal.type === 'Veg'" [class.nonveg]="meal.type === 'Non-Veg'">
+                    <span class="mr-type-dot"></span> {{meal.type}}
                   </span>
                 </div>
               </div>
-              <div class="mr-picker-select">
-                <ion-icon name="arrow-forward-outline"></ion-icon>
+            </div>
+          </div>
+
+          <div *ngIf="swappingMealId" class="mr-picker-view">
+            <div class="mr-picker-header">
+              <div class="mr-picker-badge"><ion-icon name="swap-horizontal"></ion-icon> SWAP MODE</div>
+              <button class="mr-picker-close" (click)="cancelSwap()"><ion-icon name="close-outline"></ion-icon> Cancel</button>
+            </div>
+
+            <div class="mr-picker-replacing">
+              <span>Replacing</span> <strong>"{{swappingMealName}}"</strong> <span>with:</span>
+            </div>
+
+            <div class="mr-picker-grid">
+              <div class="mr-picker-card" *ngFor="let meal of availableMealsForSwap" (click)="confirmSwap(meal)">
+                <div class="mr-picker-thumb"><img [src]="meal.image" [alt]="meal.name"></div>
+                <div class="mr-picker-info">
+                  <h4>{{meal.name}}</h4>
+                  <div class="mr-picker-meta">
+                    <span class="mr-picker-price">₹{{meal.price}}/day</span>
+                    <span class="mr-picker-type" [class.veg]="meal.type === 'Veg'" [class.nonveg]="meal.type === 'Non-Veg'">
+                      <span class="mr-type-dot"></span> {{meal.type}}
+                    </span>
+                  </div>
+                </div>
+                <div class="mr-picker-select"><ion-icon name="arrow-forward-outline"></ion-icon></div>
+              </div>
+            </div>
+
+            <p class="mr-picker-empty" *ngIf="availableMealsForSwap.length === 0">
+              <ion-icon name="restaurant-outline"></ion-icon> No other meals available to swap right now.
+            </p>
+          </div>
+        </div>
+
+        <!-- TAB 3: SCHEDULE -->
+        <div class="mr-tab-content" *ngIf="activeTab === 'schedule'">
+
+          <div class="mr-section-label">
+            <h2>Upcoming 7 Days</h2>
+            <p>Skip a meal or pause a day. Your plan extends automatically.</p>
+          </div>
+
+          <div class="mr-schedule-list">
+            <div class="mr-schedule-card" *ngFor="let day of upcomingSchedule"
+              [class.today]="day.isToday"
+              [class.skipped]="day.isSkipped"
+              [class.paused]="day.isPaused">
+
+              <div class="mr-sched-date-col">
+                <span class="mr-sched-weekday">{{day.dayName}}</span>
+                <span class="mr-sched-daynum">{{day.dayNum}}</span>
+                <span class="mr-sched-month">{{day.monthStr}}</span>
+              </div>
+
+              <div class="mr-sched-connector">
+                <div class="mr-connector-dot" [class.today]="day.isToday" [class.inactive]="day.isSkipped || day.isPaused"></div>
+                <div class="mr-connector-line"></div>
+              </div>
+
+              <div class="mr-sched-meal-card">
+                <div class="mr-sched-meal-img">
+                  <img [src]="day.meal.image" [alt]="day.meal.name">
+                  <div class="mr-sched-live-dot" *ngIf="day.isToday"></div>
+                </div>
+                <div class="mr-sched-meal-info">
+                  <h4 [class.strikethrough]="day.isSkipped || day.isPaused">{{day.meal.name}}</h4>
+                  <span class="mr-sched-price">₹{{day.meal.price}}</span>
+                  <span class="mr-status-badge today" *ngIf="day.isToday"><span class="mr-status-dot live"></span> Today — Locked</span>
+                  <span class="mr-status-badge skipped" *ngIf="day.isSkipped"><ion-icon name="play-skip-forward-outline"></ion-icon> Skipped</span>
+                  <span class="mr-status-badge paused-badge" *ngIf="day.isPaused"><ion-icon name="pause-outline"></ion-icon> Paused</span>
+                </div>
+
+                <div class="mr-sched-actions" *ngIf="!day.isToday">
+                  <button class="mr-sched-action-btn skip" [class.active]="day.isSkipped" (click)="toggleSkipDay(day.dateStr)">
+                    <ion-icon [name]="day.isSkipped ? 'arrow-undo-outline' : 'play-skip-forward-outline'"></ion-icon>
+                    <span>{{day.isSkipped ? 'Undo' : 'Skip'}}</span>
+                  </button>
+                  <button class="mr-sched-action-btn pause" [class.active]="day.isPaused" (click)="togglePauseDay(day.dateStr)">
+                    <ion-icon [name]="day.isPaused ? 'play-outline' : 'pause-outline'"></ion-icon>
+                    <span>{{day.isPaused ? 'Resume' : 'Pause'}}</span>
+                  </button>
+                </div>
+
+                <div class="mr-sched-lock" *ngIf="day.isToday"><ion-icon name="lock-closed-outline"></ion-icon></div>
               </div>
             </div>
           </div>
 
-          <p class="mr-picker-empty" *ngIf="availableMealsForSwap.length === 0">
-            <ion-icon name="restaurant-outline"></ion-icon>
-            No other meals available to swap right now.
-          </p>
+          <div class="mr-info-note">
+            <div class="mr-info-icon-wrap"><ion-icon name="information-circle"></ion-icon></div>
+            <div class="mr-info-text">
+              <strong>How it works</strong>
+              <span>Today's meal is locked and cannot be changed. Each skipped or paused day automatically extends your plan end date by 1 day.</span>
+            </div>
+          </div>
         </div>
+
+      </ng-container>
+    </div>
+  </ion-content>
+
+  <ion-footer class="ion-no-border mr-footer" *ngIf="!isLoading && activeSub && activeTab !== 'schedule'">
+    <div class="mr-save-section" *ngIf="activeTab === 'rotation'">
+      <button class="mr-primary-btn" (click)="saveRotationOrder()">
+        <ion-icon name="checkmark-circle-outline"></ion-icon> Save Rotation Order
+      </button>
+      <div class="mr-save-note">
+        <ion-icon name="shield-checkmark-outline"></ion-icon> <span>Changes will apply from tomorrow.</span>
+      </div>
+    </div>
+
+    <div class="mr-save-section" *ngIf="activeTab === 'swap' && !swappingMealId">
+      <button class="mr-primary-btn" (click)="saveAllChanges()">
+        <ion-icon name="save-outline"></ion-icon> Save All Changes
+      </button>
+      <div class="mr-save-note">
+        <ion-icon name="shield-checkmark-outline"></ion-icon> <span>Changes will apply from tomorrow.</span>
+      </div>
+    </div>
+  </ion-footer>
+</div>
+
+<!-- ════════════════ DESKTOP WEB VIEW (Screens >= 1001px) ════════════════ -->
+<div class="web-app desktop-only" [class.sidebar-collapsed]="themeService.isSidebarCollapsed" *ngIf="!isLoading">
+  <!-- SIDEBAR -->
+  <aside class="side">
+    <div class="side-top">
+      <div class="logo">
+        <span class="glyph">
+          <img src="assets/logo/chef_hat.png" alt="MealMate">
+        </span>
+        <b class="brand-name">MealMate</b>
+      </div>
+      <button class="sidebar-toggle-btn" (click)="themeService.toggleSidebar()"
+        [title]="themeService.isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+        <ion-icon [name]="themeService.isSidebarCollapsed ? 'chevron-forward-outline' : 'chevron-back-outline'"></ion-icon>
+      </button>
+    </div>
+    <div class="navlabel">Menu</div>
+    <nav class="nav">
+      <button routerLink="/customer-home">
+        <ion-icon name="home-outline"></ion-icon><span class="nav-text">Home</span>
+      </button>
+      <button routerLink="/my-orders">
+        <ion-icon name="bag-outline"></ion-icon><span class="nav-text">Orders</span>
+      </button>
+      <button class="on" routerLink="/subscribe">
+        <ion-icon name="calendar-outline"></ion-icon><span class="nav-text">Meal Plans</span>
+      </button>
+      <button routerLink="/health">
+        <ion-icon name="heart-outline"></ion-icon><span class="nav-text">Health</span>
+      </button>
+      <button routerLink="/ai-concierge">
+        <ion-icon name="chatbubbles-outline"></ion-icon><span class="nav-text">MealMantra AI</span>
+      </button>
+      <button routerLink="/wallet">
+        <ion-icon name="shield-checkmark-outline"></ion-icon><span class="nav-text">Wallet</span>
+      </button>
+      <button routerLink="/profile">
+        <ion-icon name="person-outline"></ion-icon><span class="nav-text">Profile</span>
+      </button>
+    </nav>
+    <div class="side-foot">
+      <div class="plan-mini" *ngIf="activeSub">
+        <div class="t">ACTIVE PLAN</div>
+        <div class="v">{{planName}}</div>
+        <div class="pbar"><i [style.width.%]="activePlanPercent"></i></div>
+        <div class="f"><span>Day {{activeSub.currentDay}} of {{activeSub.totalDays}}</span><span>{{activePlanPercent}}%</span></div>
+      </div>
+      <button class="me" routerLink="/profile" title="View Profile">
+        <span class="ava">{{userInitials}}</span>
+        <span class="me-text" style="text-align:left"><span class="n">{{userName}}</span><br><span class="s">Premium member</span></span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN VIEW -->
+  <div class="view-main">
+    <header class="top">
+      <button class="back" (click)="goBack()" title="Back">
+        <ion-icon name="arrow-back-outline"></ion-icon> Back
+      </button>
+      <div>
+        <h1>Manage Rotation</h1>
+        <div class="sub" *ngIf="activeSub">{{activeSub.rotationMeals.length}} meals in rotation cycle</div>
+      </div>
+    </header>
+
+    <div class="body" style="grid-template-columns: 1fr; max-width: 1100px; margin: 0 auto; padding: 26px 32px 48px;">
+      <!-- No active sub fallback -->
+      <div class="mr-empty" *ngIf="!activeSub">
+        <div class="mr-empty-icon-wrap">
+          <ion-icon name="restaurant-outline"></ion-icon>
+        </div>
+        <h3>No Active Plan</h3>
+        <p>Subscribe to a meal plan first to manage your rotation.</p>
+        <button class="mr-empty-cta" (click)="goBack()">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+          Go to Meal Plans
+        </button>
       </div>
 
-      <!-- ═══════════════════════════════════════════════
-           TAB 3: SCHEDULE (Skip & Pause)
-           ═══════════════════════════════════════════════ -->
-      <div class="mr-tab-content" *ngIf="activeTab === 'schedule'">
-
-        <div class="mr-section-label">
-          <h2>Upcoming 7 Days</h2>
-          <p>Skip a meal or pause a day. Your plan extends automatically.</p>
+      <ng-container *ngIf="activeSub">
+        <!-- Segment Tabs -->
+        <div class="mr-segments" style="max-width: 600px; margin-bottom: 24px;">
+          <button class="mr-seg" [class.active]="activeTab === 'rotation'" (click)="setTab('rotation')">
+            <ion-icon name="time-outline"></ion-icon>
+            <span class="mr-seg-title">Rotation</span>
+            <span class="mr-seg-sub">Reorder meals</span>
+          </button>
+          <button class="mr-seg" [class.active]="activeTab === 'swap'" (click)="setTab('swap')">
+            <ion-icon name="swap-horizontal-outline"></ion-icon>
+            <span class="mr-seg-title">Swap / Add</span>
+            <span class="mr-seg-sub">Change meals</span>
+          </button>
+          <button class="mr-seg" [class.active]="activeTab === 'schedule'" (click)="setTab('schedule')">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <span class="mr-seg-title">Schedule</span>
+            <span class="mr-seg-sub">View calendar</span>
+          </button>
         </div>
 
-        <!-- Schedule List -->
-        <div class="mr-schedule-list">
-          <div class="mr-schedule-card" *ngFor="let day of upcomingSchedule"
-            [class.today]="day.isToday"
-            [class.skipped]="day.isSkipped"
-            [class.paused]="day.isPaused">
-
-            <!-- Date Column -->
-            <div class="mr-sched-date-col">
-              <span class="mr-sched-weekday">{{day.dayName}}</span>
-              <span class="mr-sched-daynum">{{day.dayNum}}</span>
-              <span class="mr-sched-month">{{day.monthStr}}</span>
-            </div>
-
-            <!-- Connector -->
-            <div class="mr-sched-connector">
-              <div class="mr-connector-dot" [class.today]="day.isToday" [class.inactive]="day.isSkipped || day.isPaused"></div>
-              <div class="mr-connector-line"></div>
-            </div>
-
-            <!-- Meal Card -->
-            <div class="mr-sched-meal-card">
-              <div class="mr-sched-meal-img">
-                <img [src]="day.meal.image" [alt]="day.meal.name">
-                <div class="mr-sched-live-dot" *ngIf="day.isToday"></div>
+        <!-- TAB 1: CURRENT ROTATION -->
+        <div class="mr-tab-content" *ngIf="activeTab === 'rotation'">
+          <div class="mr-preview-banner">
+            <div class="mr-preview-avatars">
+              <div class="mr-preview-avatar" *ngFor="let rm of editableRotation; let i = index" [style.z-index]="editableRotation.length - i">
+                <img [src]="rm.image" [alt]="rm.name">
               </div>
-              <div class="mr-sched-meal-info">
-                <h4 [class.strikethrough]="day.isSkipped || day.isPaused">{{day.meal.name}}</h4>
-                <span class="mr-sched-price">₹{{day.meal.price}}</span>
-                <!-- Status Badges -->
-                <span class="mr-status-badge today" *ngIf="day.isToday">
-                  <span class="mr-status-dot live"></span> Today — Locked
-                </span>
-                <span class="mr-status-badge skipped" *ngIf="day.isSkipped">
-                  <ion-icon name="play-skip-forward-outline"></ion-icon> Skipped
-                </span>
-                <span class="mr-status-badge paused-badge" *ngIf="day.isPaused">
-                  <ion-icon name="pause-outline"></ion-icon> Paused
-                </span>
-              </div>
+            </div>
+            <div class="mr-preview-text">
+              <span class="mr-preview-title">Your {{editableRotation.length}}-Meal Cycle</span>
+              <span class="mr-preview-sub">Repeats every {{editableRotation.length}} days</span>
+            </div>
+            <ion-icon name="repeat-outline" class="mr-preview-icon"></ion-icon>
+          </div>
 
-              <!-- Action Buttons -->
-              <div class="mr-sched-actions" *ngIf="!day.isToday">
-                <button class="mr-sched-action-btn skip" [class.active]="day.isSkipped" (click)="toggleSkipDay(day.dateStr)">
-                  <ion-icon [name]="day.isSkipped ? 'arrow-undo-outline' : 'play-skip-forward-outline'"></ion-icon>
-                  <span>{{day.isSkipped ? 'Undo' : 'Skip'}}</span>
+          <div class="mr-tip-box">
+            <div class="mr-tip-icon-wrap">
+              <ion-icon name="bulb"></ion-icon>
+            </div>
+            <div class="mr-tip-text">
+              <h4>Reorder your meals</h4>
+              <p>Use arrows to change the order of meals. Changes apply from tomorrow.</p>
+            </div>
+            <div class="mr-tip-img">
+              <img src="assets/onboarding/salad_bowl_checked.png" alt="Salad bowl">
+            </div>
+          </div>
+
+          <div class="mr-reorder-list">
+            <div class="mr-reorder-card-wrapper" *ngFor="let rm of editableRotation; let i = index">
+              <div class="mr-reorder-card" [class.dragging]="dragFromIndex === i" draggable="true" (dragstart)="onDragStart(i)" (dragover)="onDragOver($event)" (drop)="onDrop(i)">
+                <div class="mr-drag-handle">
+                  <svg width="10" height="16" viewBox="0 0 10 16" fill="none">
+                    <circle cx="2" cy="2" r="1.5" fill="#C5BEB8"/>
+                    <circle cx="2" cy="8" r="1.5" fill="#C5BEB8"/>
+                    <circle cx="2" cy="14" r="1.5" fill="#C5BEB8"/>
+                    <circle cx="8" cy="2" r="1.5" fill="#C5BEB8"/>
+                    <circle cx="8" cy="8" r="1.5" fill="#C5BEB8"/>
+                    <circle cx="8" cy="14" r="1.5" fill="#C5BEB8"/>
+                  </svg>
+                </div>
+                <div class="mr-day-num"><span>{{i + 1}}</span></div>
+                <div class="mr-meal-thumb"><img [src]="rm.image" [alt]="rm.name"></div>
+                <div class="mr-meal-info">
+                  <span class="mr-day-label">{{rm.dayLabel}}</span>
+                  <h4>{{rm.name}}</h4>
+                  <span class="mr-meal-price">₹{{rm.price}}/day · {{rm.calories}} kcal</span>
+                </div>
+                <div class="mr-reorder-actions">
+                  <button class="mr-move-btn" (click)="moveMealUp(i)" [disabled]="i === 0" title="Move up">
+                    <ion-icon name="chevron-up-outline"></ion-icon>
+                  </button>
+                  <button class="mr-move-btn" (click)="moveMealDown(i)" [disabled]="i === editableRotation.length - 1" title="Move down">
+                    <ion-icon name="chevron-down-outline"></ion-icon>
+                  </button>
+                </div>
+                <button class="mr-remove-btn" (click)="removeFromPool(i)" *ngIf="editableRotation.length > 3" title="Remove from rotation">
+                  <ion-icon name="close-outline"></ion-icon>
                 </button>
-                <button class="mr-sched-action-btn pause" [class.active]="day.isPaused" (click)="togglePauseDay(day.dateStr)">
-                  <ion-icon [name]="day.isPaused ? 'play-outline' : 'pause-outline'"></ion-icon>
-                  <span>{{day.isPaused ? 'Resume' : 'Pause'}}</span>
-                </button>
               </div>
+              <div class="mr-connector-arrow" *ngIf="i < editableRotation.length - 1">
+                <div class="dot-line"></div>
+                <div class="arrow-head"></div>
+              </div>
+            </div>
+          </div>
 
-              <!-- Today Lock -->
-              <div class="mr-sched-lock" *ngIf="day.isToday">
-                <ion-icon name="lock-closed-outline"></ion-icon>
+          <div class="mr-summary-box">
+            <div class="mr-summary-icon">
+              <div class="mr-circle-check"><ion-icon name="checkmark"></ion-icon></div>
+            </div>
+            <div class="mr-summary-text">
+              <h4>Rotation Summary</h4>
+              <p>{{editableRotation.length}} meals • Repeats every {{editableRotation.length}} days</p>
+              <p class="mr-summary-sub">Next cycle starts after Day {{editableRotation.length}}</p>
+            </div>
+          </div>
+
+          <div class="mr-save-section" style="max-width: 400px; margin: 24px 0 0;">
+            <button class="mr-primary-btn" (click)="saveRotationOrder()">
+              <ion-icon name="checkmark-circle-outline"></ion-icon> Save Rotation Order
+            </button>
+            <div class="mr-save-note">
+              <ion-icon name="shield-checkmark-outline"></ion-icon> <span>Changes will apply from tomorrow.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: SWAP / ADD -->
+        <div class="mr-tab-content" *ngIf="activeTab === 'swap'">
+          <div *ngIf="!swappingMealId">
+            <div class="mr-section-label">
+              <h2>Current Rotation</h2>
+              <p>Tap "Swap" on any meal to replace it with another from the menu.</p>
+            </div>
+
+            <div class="mr-swap-list">
+              <div class="mr-swap-card-wrapper" *ngFor="let rm of editableRotation; let i = index">
+                <div class="mr-swap-card">
+                  <div class="mr-swap-rank">{{i + 1}}</div>
+                  <div class="mr-swap-thumb"><img [src]="rm.image" [alt]="rm.name"></div>
+                  <div class="mr-swap-info">
+                    <h4>{{rm.name}}</h4>
+                    <span class="mr-swap-meta"><ion-icon name="pricetag-outline"></ion-icon> ₹{{rm.price}}/day · {{rm.dayLabel}}</span>
+                  </div>
+                  <button class="mr-swap-action" (click)="startSwap(rm.mealId, rm.name)">
+                    <ion-icon name="swap-horizontal-outline"></ion-icon> Swap
+                  </button>
+                </div>
+                <div class="mr-connector-arrow swap-connector" *ngIf="i < editableRotation.length - 1">
+                  <div class="dot-line"></div>
+                  <div class="arrow-head"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mr-add-section" *ngIf="availableMealsForSwap.length > 0">
+              <div class="mr-divider-label">
+                <div class="mr-divider-line"></div>
+                <span><ion-icon name="add-circle-outline"></ion-icon> Add More Variety</span>
+                <div class="mr-divider-line"></div>
+              </div>
+              <p class="mr-add-hint">Add meals to your pool. The system rotates through all meals in your pool.</p>
+
+              <div class="mr-add-grid" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));">
+                <div class="mr-add-card" *ngFor="let meal of availableMealsForSwap" (click)="addToPool(meal)">
+                  <div class="mr-add-img-wrap">
+                    <img [src]="meal.image" [alt]="meal.name">
+                    <div class="mr-add-overlay"><ion-icon name="add"></ion-icon></div>
+                  </div>
+                  <span class="mr-add-name">{{meal.name}}</span>
+                  <span class="mr-add-price">₹{{meal.price}}/day</span>
+                  <span class="mr-add-type" [class.veg]="meal.type === 'Veg'" [class.nonveg]="meal.type === 'Non-Veg'">
+                    <span class="mr-type-dot"></span> {{meal.type}}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mr-save-section" style="max-width: 400px; margin: 24px 0 0;">
+              <button class="mr-primary-btn" (click)="saveAllChanges()">
+                <ion-icon name="save-outline"></ion-icon> Save All Changes
+              </button>
+              <div class="mr-save-note">
+                <ion-icon name="shield-checkmark-outline"></ion-icon> <span>Changes will apply from tomorrow.</span>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="swappingMealId" class="mr-picker-view">
+            <div class="mr-picker-header">
+              <div class="mr-picker-badge"><ion-icon name="swap-horizontal"></ion-icon> SWAP MODE</div>
+              <button class="mr-picker-close" (click)="cancelSwap()"><ion-icon name="close-outline"></ion-icon> Cancel</button>
+            </div>
+            <div class="mr-picker-replacing">
+              <span>Replacing</span> <strong>"{{swappingMealName}}"</strong> <span>with:</span>
+            </div>
+            <div class="mr-picker-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px;">
+              <div class="mr-picker-card" *ngFor="let meal of availableMealsForSwap" (click)="confirmSwap(meal)">
+                <div class="mr-picker-thumb"><img [src]="meal.image" [alt]="meal.name"></div>
+                <div class="mr-picker-info">
+                  <h4>{{meal.name}}</h4>
+                  <div class="mr-picker-meta">
+                    <span class="mr-picker-price">₹{{meal.price}}/day</span>
+                    <span class="mr-picker-type" [class.veg]="meal.type === 'Veg'" [class.nonveg]="meal.type === 'Non-Veg'">
+                      <span class="mr-type-dot"></span> {{meal.type}}
+                    </span>
+                  </div>
+                </div>
+                <div class="mr-picker-select"><ion-icon name="arrow-forward-outline"></ion-icon></div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Info Note -->
-        <div class="mr-info-note">
-          <div class="mr-info-icon-wrap">
-            <ion-icon name="information-circle"></ion-icon>
+        <!-- TAB 3: SCHEDULE -->
+        <div class="mr-tab-content" *ngIf="activeTab === 'schedule'">
+          <div class="mr-section-label">
+            <h2>Upcoming 7 Days</h2>
+            <p>Skip a meal or pause a day. Your plan extends automatically.</p>
           </div>
-          <div class="mr-info-text">
-            <strong>How it works</strong>
-            <span>Today's meal is locked and cannot be changed. Each skipped or paused day automatically extends your plan end date by 1 day.</span>
+
+          <div class="mr-schedule-list">
+            <div class="mr-schedule-card" *ngFor="let day of upcomingSchedule" [class.today]="day.isToday" [class.skipped]="day.isSkipped" [class.paused]="day.isPaused">
+              <div class="mr-sched-date-col">
+                <span class="mr-sched-weekday">{{day.dayName}}</span>
+                <span class="mr-sched-daynum">{{day.dayNum}}</span>
+                <span class="mr-sched-month">{{day.monthStr}}</span>
+              </div>
+              <div class="mr-sched-connector">
+                <div class="mr-connector-dot" [class.today]="day.isToday" [class.inactive]="day.isSkipped || day.isPaused"></div>
+                <div class="mr-connector-line"></div>
+              </div>
+              <div class="mr-sched-meal-card">
+                <div class="mr-sched-meal-img">
+                  <img [src]="day.meal.image" [alt]="day.meal.name">
+                  <div class="mr-sched-live-dot" *ngIf="day.isToday"></div>
+                </div>
+                <div class="mr-sched-meal-info">
+                  <h4 [class.strikethrough]="day.isSkipped || day.isPaused">{{day.meal.name}}</h4>
+                  <span class="mr-sched-price">₹{{day.meal.price}}</span>
+                  <span class="mr-status-badge today" *ngIf="day.isToday"><span class="mr-status-dot live"></span> Today — Locked</span>
+                  <span class="mr-status-badge skipped" *ngIf="day.isSkipped"><ion-icon name="play-skip-forward-outline"></ion-icon> Skipped</span>
+                  <span class="mr-status-badge paused-badge" *ngIf="day.isPaused"><ion-icon name="pause-outline"></ion-icon> Paused</span>
+                </div>
+                <div class="mr-sched-actions" *ngIf="!day.isToday">
+                  <button class="mr-sched-action-btn skip" [class.active]="day.isSkipped" (click)="toggleSkipDay(day.dateStr)">
+                    <ion-icon [name]="day.isSkipped ? 'arrow-undo-outline' : 'play-skip-forward-outline'"></ion-icon>
+                    <span>{{day.isSkipped ? 'Undo' : 'Skip'}}</span>
+                  </button>
+                  <button class="mr-sched-action-btn pause" [class.active]="day.isPaused" (click)="togglePauseDay(day.dateStr)">
+                    <ion-icon [name]="day.isPaused ? 'play-outline' : 'pause-outline'"></ion-icon>
+                    <span>{{day.isPaused ? 'Resume' : 'Pause'}}</span>
+                  </button>
+                </div>
+                <div class="mr-sched-lock" *ngIf="day.isToday"><ion-icon name="lock-closed-outline"></ion-icon></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mr-info-note" style="margin-top: 20px;">
+            <div class="mr-info-icon-wrap"><ion-icon name="information-circle"></ion-icon></div>
+            <div class="mr-info-text">
+              <strong>How it works</strong>
+              <span>Today's meal is locked and cannot be changed. Each skipped or paused day automatically extends your plan end date by 1 day.</span>
+            </div>
           </div>
         </div>
-      </div>
-
-    </ng-container>
-  </div>
-</ion-content>
-
-<!-- ── Sticky Footer CTA ── -->
-<ion-footer class="ion-no-border mr-footer" *ngIf="!isLoading && activeSub && activeTab !== 'schedule'">
-  <!-- Tab 1 Save Button -->
-  <div class="mr-save-section" *ngIf="activeTab === 'rotation'">
-    <button class="mr-primary-btn" (click)="saveRotationOrder()">
-      <ion-icon name="checkmark-circle-outline"></ion-icon>
-      Save Rotation Order
-    </button>
-    <div class="mr-save-note">
-      <ion-icon name="shield-checkmark-outline"></ion-icon>
-      <span>Changes will apply from tomorrow.</span>
+      </ng-container>
     </div>
   </div>
-
-  <!-- Tab 2 Save Button -->
-  <div class="mr-save-section" *ngIf="activeTab === 'swap' && !swappingMealId">
-    <button class="mr-primary-btn" (click)="saveAllChanges()">
-      <ion-icon name="save-outline"></ion-icon>
-      Save All Changes
-    </button>
-    <div class="mr-save-note">
-      <ion-icon name="shield-checkmark-outline"></ion-icon>
-      <span>Changes will apply from tomorrow.</span>
-    </div>
-  </div>
-</ion-footer>
+</div>

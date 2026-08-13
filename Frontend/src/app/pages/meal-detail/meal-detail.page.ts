@@ -6,6 +6,7 @@ import { AuthService } from '../../services/auth';
 import { SubscriptionService, Subscription } from '../../services/subscription.service';
 import { PageLoaderService } from '../../services/page-loader.service';
 import { NavController, ToastController } from '@ionic/angular';
+import { ThemeService } from '../../services/theme.service';
 
 interface Review {
   name: string;
@@ -32,6 +33,14 @@ export class MealDetailPage implements OnInit {
 
   get isFavorite(): boolean {
     return this.isFavorited;
+  }
+
+  get userName(): string {
+    return this.auth.userName || 'MealMate User';
+  }
+
+  get userInitials(): string {
+    return this.auth.userInitials;
   }
 
   shareMeal() {
@@ -67,8 +76,9 @@ export class MealDetailPage implements OnInit {
     private subscriptionService: SubscriptionService,
     private pageLoader: PageLoaderService,
     private navCtrl: NavController,
-    private toastCtrl: ToastController
-  ) {}
+    private toastCtrl: ToastController,
+    public themeService: ThemeService
+  ) { }
 
   ngOnInit() {
     const mealId = this.route.snapshot.paramMap.get('id');
@@ -264,7 +274,7 @@ export class MealDetailPage implements OnInit {
     for (let i = 0; i < this.quantity; i++) {
       this.cartService.addToCart(this.meal);
     }
-    
+
     const toast = await this.toastCtrl.create({
       message: `${this.quantity}x ${this.meal.name} added to cart!`,
       duration: 2000,
@@ -273,7 +283,7 @@ export class MealDetailPage implements OnInit {
       icon: 'checkmark-circle'
     });
     await toast.present();
-    
+
     this.navCtrl.back();
   }
 
@@ -284,7 +294,7 @@ export class MealDetailPage implements OnInit {
       name: this.meal.name,
       price: this.meal.price
     });
-    
+
     const toast = await this.toastCtrl.create({
       message: `${this.meal.name} added to your rotation! 🔄`,
       duration: 2500,
