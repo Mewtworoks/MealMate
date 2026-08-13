@@ -1,136 +1,599 @@
-<ion-header class="ion-no-border premium-header">
-  <div class="header-curve-bg"></div>
+<!-- ═══════════════════════════════════════════════════
+     MOBILE HEADER (Screens < 1001px)
+     ═══════════════════════════════════════════════════ -->
+<ion-header class="ion-no-border sub-page-header mobile-only">
   <ion-toolbar class="transparent-toolbar">
-    <ion-buttons slot="start">
-    </ion-buttons>
-    <ion-title>Your Profile</ion-title>
-    <ion-buttons slot="end">
-      <ion-button fill="clear">
-        <ion-icon name="share-social-outline" slot="icon-only"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-
-  <div class="profile-hero">
-    <div class="avatar-container">
-      <div class="avatar-ring"></div>
-      <div class="avatar-inner">{{userProfile.avatar}}</div>
-      <div class="edit-badge"><ion-icon name="camera"></ion-icon></div>
+    <div class="title-group">
+      <h1 class="page-title">Your Profile</h1>
+      <div class="page-sub">Account, preferences and support</div>
     </div>
-    <h1 class="user-name">{{userProfile.name}}</h1>
-    <p class="user-email">{{userProfile.email}}</p>
-    <div class="role-badge" [class.agent]="userRole === 'agent'">{{userRole | uppercase}}</div>
-  </div>
+    <div class="header-actions" slot="end">
+      <button class="iconbtn" title="Share" (click)="shareInvite()">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 15V3" />
+          <path d="m8 7 4-4 4 4" />
+          <path d="M4 14v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5" />
+        </svg>
+      </button>
+    </div>
+  </ion-toolbar>
 </ion-header>
 
-<ion-content class="premium-content">
-  <div class="content-wrapper">
-    <!-- Role Specific Stats -->
-    <div class="stats-card">
-      <ng-container *ngIf="userRole === 'customer'">
-        <div class="stat-item">
-          <span class="val">{{userProfile.credits}}</span>
-          <span class="lab">Credits</span>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-          <span class="val">{{userProfile.orders}}</span>
-          <span class="lab">Orders</span>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-          <span class="val">{{ (userProfile.loyaltyLevel || 'Silver').split(' ')[0] }}</span>
-          <span class="lab">Level</span>
-        </div>
-      </ng-container>
+<ion-content class="profile-content" [fullscreen]="true">
 
-      <ng-container *ngIf="userRole === 'agent'">
-        <div class="stat-item">
-          <span class="val">{{userProfile.rating}}</span>
-          <span class="lab">Rating</span>
+  <!-- ═══════════════════════════════════════════════════
+       MOBILE APP VIEW (Screens < 1001px)
+       ═══════════════════════════════════════════════════ -->
+  <div class="content-wrapper mobile-only">
+    <div class="body">
+      <main class="main-column">
+        <!-- USER PROFILE CARD -->
+        <section class="pcard">
+          <div class="pav">
+            <div class="ring">{{ userInitials }}</div>
+            <button class="cam" title="Change photo" (click)="openEditProfile()">
+              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 8.5h3l1.5-2h7L17 8.5h3v11H4z" />
+                <circle cx="12" cy="14" r="3.2" />
+              </svg>
+            </button>
+          </div>
+          <div class="pinfo">
+            <h2>{{ userProfile.name }}</h2>
+            <div class="em">{{ userProfile.email }} · {{ userProfile.phone || '+91 98••• ••210' }}</div>
+            <div class="prow">
+              <span class="prole" [class.agent]="userRole === 'agent'">{{ userRole | uppercase }}</span>
+              <span class="ptier">
+                <svg viewBox="0 0 24 24">
+                  <path d="m12 2 3 6.3 6.8 1-4.9 4.8 1.2 6.9L12 17.8 5.9 21l1.2-6.9L2.2 9.3l6.8-1z" />
+                </svg>
+                {{ userProfile.loyaltyLevel || 'Silver member' }}
+              </span>
+            </div>
+          </div>
+          <button class="pedit" (click)="openEditProfile()">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 20h4L19 9l-4-4L4 16z" />
+            </svg>
+            Edit profile
+          </button>
+        </section>
+
+        <!-- STATS GRID -->
+        <div class="pstats">
+          <div class="pstat">
+            <div class="v">{{ userProfile.orders }}</div>
+            <div class="l">Total orders</div>
+          </div>
+          <div class="pstat">
+            <div class="v">{{ userProfile.lifetimeSpend }}</div>
+            <div class="l">Lifetime spend</div>
+          </div>
+          <div class="pstat">
+            <div class="v">{{ userProfile.loyaltyPoints | number }}</div>
+            <div class="l">Loyalty points</div>
+          </div>
+          <div class="pstat">
+            <div class="v">{{ userProfile.memberSince }}</div>
+            <div class="l">Member since</div>
+          </div>
         </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-          <span class="val">{{userProfile.ordersCompleted}}</span>
-          <span class="lab">Total Jobs</span>
+
+        <!-- ACCOUNT SETTINGS GROUP -->
+        <div class="setgroup">
+          <div class="gh">Account</div>
+          <button class="srow" (click)="navigateToAddresses()">
+            <span class="si orange-soft">
+              <svg viewBox="0 0 24 24" stroke="#F26A21" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z" />
+                <circle cx="12" cy="10" r="2.5" />
+              </svg>
+            </span>
+            <span class="stext">
+              <span class="nm">Delivery addresses</span>
+              <span class="sb">3 saved · Kalkaji is default</span>
+            </span>
+            <span class="ch">
+              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m9 5 7 7-7 7" />
+              </svg>
+            </span>
+          </button>
+
+          <button class="srow" (click)="navigateToWallet()">
+            <span class="si green-soft">
+              <svg viewBox="0 0 24 24" stroke="#2E7D52" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2.5" y="5.5" width="19" height="13" rx="3" />
+                <path d="M2.5 10h19M17 14.5h2" />
+              </svg>
+            </span>
+            <span class="stext">
+              <span class="nm">Payments &amp; wallet</span>
+              <span class="sb">₹{{ userProfile.credits | number }} balance · UPI default</span>
+            </span>
+            <span class="ch">
+              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m9 5 7 7-7 7" />
+              </svg>
+            </span>
+          </button>
+
+          <button class="srow" (click)="navigateToHealth()">
+            <span class="si blue-soft">
+              <svg viewBox="0 0 24 24" stroke="#2F6FD0" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 4c0 9-5.5 14-13 14C7 9 12.5 4 20 4z" />
+                <path d="M4 20c2-4 5-7 9-9" />
+              </svg>
+            </span>
+            <span class="stext">
+              <span class="nm">Dietary preferences</span>
+              <span class="sb">Vegetarian · Medium spice</span>
+            </span>
+            <span class="ch">
+              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m9 5 7 7-7 7" />
+              </svg>
+            </span>
+          </button>
         </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-          <span class="val">{{userProfile.earnings}}</span>
-          <span class="lab">Earnings</span>
+
+        <!-- PREFERENCES GROUP -->
+        <div class="setgroup">
+          <div class="gh">Preferences</div>
+          <div class="srow" (click)="toggleDarkMode()" style="cursor: pointer;">
+            <span class="si purple-soft">
+              <svg viewBox="0 0 24 24" stroke="#6B4FC4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z" />
+              </svg>
+            </span>
+            <span class="stext">
+              <span class="nm">Dark mode</span>
+              <span class="sb">Switch between light and dark themes</span>
+            </span>
+            <button class="tgl" [class.on]="isDarkMode"></button>
+          </div>
+
+          <div class="srow" (click)="notifications.orders = !notifications.orders" style="cursor: pointer;">
+            <span class="si amber-soft">
+              <svg viewBox="0 0 24 24" stroke="#D97706" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8.5a6 6 0 1 0-12 0c0 6-2.5 7.5-2.5 7.5h17S18 14.5 18 8.5z" />
+                <path d="M13.7 20a2 2 0 0 1-3.4 0" />
+              </svg>
+            </span>
+            <span class="stext">
+              <span class="nm">Order notifications</span>
+              <span class="sb">Delivery updates and offers</span>
+            </span>
+            <button class="tgl" [class.on]="notifications.orders"></button>
+          </div>
+
+          <button class="srow" (click)="isNotifModalOpen = true">
+            <span class="si blue-soft">
+              <svg viewBox="0 0 24 24" stroke="#2F6FD0" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9S14.5 18.4 12 21c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z" />
+              </svg>
+            </span>
+            <span class="stext">
+              <span class="nm">Language</span>
+              <span class="sb">App display language</span>
+            </span>
+            <span class="val">
+              English
+              <svg viewBox="0 0 24 24" stroke="#8E7C76" stroke-width="2.2" fill="none" stroke-linecap="round"
+                style="width:16px;height:16px">
+                <path d="m9 5 7 7-7 7" />
+              </svg>
+            </span>
+          </button>
         </div>
-      </ng-container>
+
+        <!-- SUPPORT GROUP -->
+        <div class="setgroup">
+          <div class="gh">Support &amp; more</div>
+          <button class="srow" (click)="isHelpModalOpen = true">
+            <span class="si blue-soft">
+              <svg viewBox="0 0 24 24" stroke="#2F6FD0" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M9.5 9.5a2.5 2.5 0 1 1 3.6 2.3c-.7.4-1.1 1-1.1 1.7v.3M12 17h.01" />
+              </svg>
+            </span>
+            <span class="stext">
+              <span class="nm">Help centre</span>
+              <span class="sb">FAQs and contact support</span>
+            </span>
+            <span class="ch">
+              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m9 5 7 7-7 7" />
+              </svg>
+            </span>
+          </button>
+
+          <button class="srow" (click)="showAbout()">
+            <span class="si orange-soft">
+              <svg viewBox="0 0 24 24" stroke="#F26A21" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 11v6M12 7.5h.01" />
+              </svg>
+            </span>
+            <span class="stext">
+              <span class="nm">About MealMate</span>
+              <span class="sb">Version 2.4.0</span>
+            </span>
+            <span class="ch">
+              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m9 5 7 7-7 7" />
+              </svg>
+            </span>
+          </button>
+        </div>
+
+        <!-- LOGOUT BUTTON -->
+        <button class="logout" (click)="logout()">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3" />
+            <path d="M10 8 6 12l4 4M6 12h9" />
+          </svg>
+          Log out of app
+        </button>
+      </main>
+
+      <aside class="rail">
+        <!-- LOYALTY CARD -->
+        <div class="hcard mint">
+          <span class="pill">Silver</span>
+          <span class="k">Loyalty tier</span>
+          <span class="h">{{ userProfile.loyaltyPoints | number }} points</span>
+          <span class="d">868 points to Gold — unlocks 5% cashback.</span>
+          <span class="hbar"><i style="width:57%"></i></span>
+        </div>
+
+        <!-- REFER A FRIEND CARD -->
+        <div class="rcard">
+          <div class="rhead">
+            <h3>Refer a friend</h3>
+          </div>
+          <p class="rcard-sub">Both of you get ₹200 wallet credit on their first order.</p>
+          <div class="coupon-box">
+            <span class="code">{{ referralCode }}</span>
+            <button class="copy-btn" (click)="copyReferralCode()">Copy</button>
+          </div>
+          <button class="railbtn" (click)="shareInvite()">Share invite</button>
+        </div>
+
+        <!-- ACCOUNT METRICS CARD -->
+        <div class="rcard">
+          <div class="rhead">
+            <h3>Account</h3>
+          </div>
+          <div class="sumrow"><span>Plan</span><span class="val-dark">1 Month</span></div>
+          <div class="sumrow"><span>Verified</span><span class="val-green">Phone &amp; email</span></div>
+          <div class="sumrow"><span>Last login</span><span class="val-dark">Today</span></div>
+          <button class="railbtn ghost" (click)="downloadData()">Download my data</button>
+        </div>
+      </aside>
     </div>
-
-    <!-- Actions List -->
-    <div class="actions-group">
-      <h3 class="group-title">Account Settings</h3>
-      <div class="action-card">
-        <div class="action-row" (click)="openEditProfile()">
-          <div class="icon-box"><ion-icon name="person-outline"></ion-icon></div>
-          <div class="text">
-            <h4>Edit Personal Information</h4>
-            <p>Update your name, email and phone</p>
-          </div>
-          <ion-icon name="chevron-forward-outline" class="chev"></ion-icon>
-        </div>
-        <div class="action-row" (click)="isNotifModalOpen = true">
-          <div class="icon-box"><ion-icon name="notifications-outline"></ion-icon></div>
-          <div class="text">
-            <h4>Notifications</h4>
-            <p>Preferences and alerts</p>
-          </div>
-          <ion-icon name="chevron-forward-outline" class="chev"></ion-icon>
-        </div>
-        <div class="action-row" (click)="showSecurity()">
-          <div class="icon-box"><ion-icon name="shield-checkmark-outline"></ion-icon></div>
-          <div class="text">
-            <h4>Security & Privacy</h4>
-            <p>Password and data storage</p>
-          </div>
-          <ion-icon name="chevron-forward-outline" class="chev"></ion-icon>
-        </div>
-        <div class="action-row" (click)="toggleDarkMode()" style="cursor: pointer;">
-          <div class="icon-box purple"><ion-icon name="moon-outline"></ion-icon></div>
-          <div class="text">
-            <h4>Dark Mode</h4>
-            <p>Switch between light and dark themes</p>
-          </div>
-          <ion-toggle [checked]="isDarkMode" style="pointer-events: none;" color="success" mode="ios"></ion-toggle>
-        </div>
-      </div>
-    </div>
-
-    <div class="actions-group">
-      <h3 class="group-title">Support & More</h3>
-      <div class="action-card">
-        <div class="action-row" (click)="isHelpModalOpen = true">
-          <div class="icon-box blue"><ion-icon name="help-circle-outline"></ion-icon></div>
-          <div class="text">
-            <h4>Help Center</h4>
-            <p>FAQs and contact support</p>
-          </div>
-          <ion-icon name="chevron-forward-outline" class="chev"></ion-icon>
-        </div>
-        <div class="action-row" (click)="showAbout()">
-          <div class="icon-box orange"><ion-icon name="information-circle-outline"></ion-icon></div>
-          <div class="text">
-            <h4>About MealMate</h4>
-            <p>Version 2.4.0</p>
-          </div>
-          <ion-icon name="chevron-forward-outline" class="chev"></ion-icon>
-        </div>
-      </div>
-    </div>
-
-    <!-- Logout -->
-    <button class="logout-btn" (click)="logout()">
-      <ion-icon name="log-out-outline" class="logout-icon"></ion-icon>
-      Log Out of App
-    </button>
   </div>
 
-  <!-- Edit Profile Modal -->
+  <!-- ═══════════════════════════════════════════════════
+       DESKTOP WEB VIEW (Screens >= 1001px)
+       ═══════════════════════════════════════════════════ -->
+  <div class="web-app desktop-only">
+    <!-- LEFT SIDEBAR -->
+    <aside class="side">
+      <div class="side-top">
+        <div class="logo">
+          <span class="glyph">
+            <img src="assets/logo/chef_hat.png" alt="MealMate">
+          </span>
+          <b class="brand-name">MealMate</b>
+        </div>
+        <button class="sidebar-toggle-btn" (click)="themeService.toggleSidebar()"
+          [title]="themeService.isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+          <ion-icon
+            [name]="themeService.isSidebarCollapsed ? 'chevron-forward-outline' : 'chevron-back-outline'"></ion-icon>
+        </button>
+      </div>
+      <div class="navlabel">Menu</div>
+      <nav class="nav">
+        <button routerLink="/customer-home">
+          <ion-icon name="home-outline"></ion-icon><span class="nav-text">Home</span>
+        </button>
+        <button routerLink="/my-orders">
+          <ion-icon name="bag-outline"></ion-icon><span class="nav-text">Orders</span>
+        </button>
+        <button routerLink="/subscribe">
+          <ion-icon name="calendar-outline"></ion-icon><span class="nav-text">Meal Plans</span>
+        </button>
+        <button routerLink="/health">
+          <ion-icon name="heart-outline"></ion-icon><span class="nav-text">Health</span>
+        </button>
+        <button routerLink="/ai-concierge">
+          <ion-icon name="chatbubbles-outline"></ion-icon><span class="nav-text">Concierge</span>
+        </button>
+        <button routerLink="/wallet">
+          <ion-icon name="shield-checkmark-outline"></ion-icon><span class="nav-text">Wallet</span>
+        </button>
+        <button class="on" routerLink="/profile">
+          <ion-icon name="person-outline"></ion-icon><span class="nav-text">Profile</span>
+        </button>
+      </nav>
+      <div class="side-foot">
+        <button class="me" routerLink="/profile" title="View Profile">
+          <span class="ava">{{ userInitials }}</span>
+          <span class="me-text" style="text-align:left"><span class="n">{{ userProfile.name }}</span><br><span
+              class="s">Premium member</span></span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN VIEW -->
+    <div class="view-main">
+      <header class="top">
+        <div>
+          <h1>Your Profile</h1>
+          <div class="sub">Account, preferences and support</div>
+        </div>
+        <div class="top-r">
+          <button class="iconbtn" title="Share" (click)="shareInvite()">
+            <ion-icon name="share-social-outline"></ion-icon>
+          </button>
+        </div>
+      </header>
+
+      <div class="body">
+        <main class="main-column">
+          <!-- USER PROFILE CARD -->
+          <section class="pcard">
+            <div class="pav">
+              <div class="ring">{{ userInitials }}</div>
+              <button class="cam" title="Change photo" (click)="openEditProfile()">
+                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 8.5h3l1.5-2h7L17 8.5h3v11H4z" />
+                  <circle cx="12" cy="14" r="3.2" />
+                </svg>
+              </button>
+            </div>
+            <div class="pinfo">
+              <h2>{{ userProfile.name }}</h2>
+              <div class="em">{{ userProfile.email }} · {{ userProfile.phone || '+91 98••• ••210' }}</div>
+              <div class="prow">
+                <span class="prole" [class.agent]="userRole === 'agent'">{{ userRole | uppercase }}</span>
+                <span class="ptier">
+                  <svg viewBox="0 0 24 24">
+                    <path d="m12 2 3 6.3 6.8 1-4.9 4.8 1.2 6.9L12 17.8 5.9 21l1.2-6.9L2.2 9.3l6.8-1z" />
+                  </svg>
+                  {{ userProfile.loyaltyLevel || 'Silver member' }}
+                </span>
+              </div>
+            </div>
+            <button class="pedit" (click)="openEditProfile()">
+              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 20h4L19 9l-4-4L4 16z" />
+              </svg>
+              Edit profile
+            </button>
+          </section>
+
+          <!-- STATS GRID -->
+          <div class="pstats">
+            <div class="pstat">
+              <div class="v">{{ userProfile.orders }}</div>
+              <div class="l">Total orders</div>
+            </div>
+            <div class="pstat">
+              <div class="v">{{ userProfile.lifetimeSpend }}</div>
+              <div class="l">Lifetime spend</div>
+            </div>
+            <div class="pstat">
+              <div class="v">{{ userProfile.loyaltyPoints | number }}</div>
+              <div class="l">Loyalty points</div>
+            </div>
+            <div class="pstat">
+              <div class="v">{{ userProfile.memberSince }}</div>
+              <div class="l">Member since</div>
+            </div>
+          </div>
+
+          <!-- ACCOUNT SETTINGS GROUP -->
+          <div class="setgroup">
+            <div class="gh">Account</div>
+            <button class="srow" (click)="navigateToAddresses()">
+              <span class="si orange-soft">
+                <svg viewBox="0 0 24 24" stroke="#F26A21" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z" />
+                  <circle cx="12" cy="10" r="2.5" />
+                </svg>
+              </span>
+              <span class="stext">
+                <span class="nm">Delivery addresses</span>
+                <span class="sb">3 saved · Kalkaji is default</span>
+              </span>
+              <span class="ch">
+                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m9 5 7 7-7 7" />
+                </svg>
+              </span>
+            </button>
+
+            <button class="srow" (click)="navigateToWallet()">
+              <span class="si green-soft">
+                <svg viewBox="0 0 24 24" stroke="#2E7D52" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2.5" y="5.5" width="19" height="13" rx="3" />
+                  <path d="M2.5 10h19M17 14.5h2" />
+                </svg>
+              </span>
+              <span class="stext">
+                <span class="nm">Payments &amp; wallet</span>
+                <span class="sb">₹{{ userProfile.credits | number }} balance · UPI default</span>
+              </span>
+              <span class="ch">
+                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m9 5 7 7-7 7" />
+                </svg>
+              </span>
+            </button>
+
+            <button class="srow" (click)="navigateToHealth()">
+              <span class="si blue-soft">
+                <svg viewBox="0 0 24 24" stroke="#2F6FD0" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 4c0 9-5.5 14-13 14C7 9 12.5 4 20 4z" />
+                  <path d="M4 20c2-4 5-7 9-9" />
+                </svg>
+              </span>
+              <span class="stext">
+                <span class="nm">Dietary preferences</span>
+                <span class="sb">Vegetarian · Medium spice</span>
+              </span>
+              <span class="ch">
+                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m9 5 7 7-7 7" />
+                </svg>
+              </span>
+            </button>
+          </div>
+
+          <!-- PREFERENCES GROUP -->
+          <div class="setgroup">
+            <div class="gh">Preferences</div>
+            <div class="srow" (click)="toggleDarkMode()" style="cursor: pointer;">
+              <span class="si purple-soft">
+                <svg viewBox="0 0 24 24" stroke="#6B4FC4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z" />
+                </svg>
+              </span>
+              <span class="stext">
+                <span class="nm">Dark mode</span>
+                <span class="sb">Switch between light and dark themes</span>
+              </span>
+              <button class="tgl" [class.on]="isDarkMode"></button>
+            </div>
+
+            <div class="srow" (click)="notifications.orders = !notifications.orders" style="cursor: pointer;">
+              <span class="si amber-soft">
+                <svg viewBox="0 0 24 24" stroke="#D97706" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 8.5a6 6 0 1 0-12 0c0 6-2.5 7.5-2.5 7.5h17S18 14.5 18 8.5z" />
+                  <path d="M13.7 20a2 2 0 0 1-3.4 0" />
+                </svg>
+              </span>
+              <span class="stext">
+                <span class="nm">Order notifications</span>
+                <span class="sb">Delivery updates and offers</span>
+              </span>
+              <button class="tgl" [class.on]="notifications.orders"></button>
+            </div>
+
+            <button class="srow" (click)="isNotifModalOpen = true">
+              <span class="si blue-soft">
+                <svg viewBox="0 0 24 24" stroke="#2F6FD0" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9S14.5 18.4 12 21c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z" />
+                </svg>
+              </span>
+              <span class="stext">
+                <span class="nm">Language</span>
+                <span class="sb">App display language</span>
+              </span>
+              <span class="val">
+                English
+                <svg viewBox="0 0 24 24" stroke="#8E7C76" stroke-width="2.2" fill="none" stroke-linecap="round"
+                  style="width:16px;height:16px">
+                  <path d="m9 5 7 7-7 7" />
+                </svg>
+              </span>
+            </button>
+          </div>
+
+          <!-- SUPPORT GROUP -->
+          <div class="setgroup">
+            <div class="gh">Support &amp; more</div>
+            <button class="srow" (click)="isHelpModalOpen = true">
+              <span class="si blue-soft">
+                <svg viewBox="0 0 24 24" stroke="#2F6FD0" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M9.5 9.5a2.5 2.5 0 1 1 3.6 2.3c-.7.4-1.1 1-1.1 1.7v.3M12 17h.01" />
+                </svg>
+              </span>
+              <span class="stext">
+                <span class="nm">Help centre</span>
+                <span class="sb">FAQs and contact support</span>
+              </span>
+              <span class="ch">
+                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m9 5 7 7-7 7" />
+                </svg>
+              </span>
+            </button>
+
+            <button class="srow" (click)="showAbout()">
+              <span class="si orange-soft">
+                <svg viewBox="0 0 24 24" stroke="#F26A21" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 11v6M12 7.5h.01" />
+                </svg>
+              </span>
+              <span class="stext">
+                <span class="nm">About MealMate</span>
+                <span class="sb">Version 2.4.0</span>
+              </span>
+              <span class="ch">
+                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m9 5 7 7-7 7" />
+                </svg>
+              </span>
+            </button>
+          </div>
+
+          <!-- LOGOUT BUTTON -->
+          <button class="logout" (click)="logout()">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3" />
+              <path d="M10 8 6 12l4 4M6 12h9" />
+            </svg>
+            Log out of app
+          </button>
+        </main>
+
+        <!-- RIGHT RAIL SIDEBAR -->
+        <aside class="rail">
+          <!-- LOYALTY CARD -->
+          <div class="hcard mint">
+            <span class="pill">Silver</span>
+            <span class="k">Loyalty tier</span>
+            <span class="h">{{ userProfile.loyaltyPoints | number }} points</span>
+            <span class="d">868 points to Gold — unlocks 5% cashback.</span>
+            <span class="hbar"><i style="width:57%"></i></span>
+          </div>
+
+          <!-- REFER A FRIEND CARD -->
+          <div class="rcard">
+            <div class="rhead">
+              <h3>Refer a friend</h3>
+            </div>
+            <p class="rcard-sub">Both of you get ₹200 wallet credit on their first order.</p>
+            <div class="coupon-box">
+              <span class="code">{{ referralCode }}</span>
+              <button class="copy-btn" (click)="copyReferralCode()">Copy</button>
+            </div>
+            <button class="railbtn" (click)="shareInvite()">Share invite</button>
+          </div>
+
+          <!-- ACCOUNT METRICS CARD -->
+          <div class="rcard">
+            <div class="rhead">
+              <h3>Account</h3>
+            </div>
+            <div class="sumrow"><span>Plan</span><span class="val-dark">1 Month</span></div>
+            <div class="sumrow"><span>Verified</span><span class="val-green">Phone &amp; email</span></div>
+            <div class="sumrow"><span>Last login</span><span class="val-dark">Today</span></div>
+            <button class="railbtn ghost" (click)="downloadData()">Download my data</button>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT PROFILE MODAL -->
   <ion-modal [isOpen]="isEditModalOpen" (didDismiss)="isEditModalOpen = false" [initialBreakpoint]="0.75"
     [breakpoints]="[0, 0.75, 1]" class="premium-modal edit-modal">
     <ng-template>
@@ -157,14 +620,21 @@
             <input type="email" [(ngModel)]="editData.email" placeholder="Email Address">
           </div>
         </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <div class="input-wrap">
+            <ion-icon name="call-outline"></ion-icon>
+            <input type="text" [(ngModel)]="editData.phone" placeholder="Phone Number">
+          </div>
+        </div>
         <button class="save-btn" (click)="saveProfile()">Save Changes</button>
       </ion-content>
     </ng-template>
   </ion-modal>
 
-  <!-- Notifications Modal -->
-  <ion-modal [isOpen]="isNotifModalOpen" (didDismiss)="isNotifModalOpen = false" [initialBreakpoint]="0.5"
-    [breakpoints]="[0, 0.5]" class="premium-modal">
+  <!-- NOTIFICATIONS MODAL -->
+  <ion-modal [isOpen]="isNotifModalOpen" (didDismiss)="isNotifModalOpen = false" [initialBreakpoint]="0.55"
+    [breakpoints]="[0, 0.55, 1]" class="premium-modal">
     <ng-template>
       <ion-header class="ion-no-border">
         <ion-toolbar>
@@ -197,13 +667,13 @@
     </ng-template>
   </ion-modal>
 
-  <!-- Help Center Modal -->
+  <!-- HELP CENTER MODAL -->
   <ion-modal [isOpen]="isHelpModalOpen" (didDismiss)="isHelpModalOpen = false" [initialBreakpoint]="0.5"
     [breakpoints]="[0, 0.5]" class="premium-modal">
     <ng-template>
       <ion-header class="ion-no-border">
         <ion-toolbar>
-          <ion-title>Help & Support</ion-title>
+          <ion-title>Help &amp; Support</ion-title>
         </ion-toolbar>
       </ion-header>
       <ion-content class="ion-padding">
@@ -222,5 +692,4 @@
       </ion-content>
     </ng-template>
   </ion-modal>
-
 </ion-content>

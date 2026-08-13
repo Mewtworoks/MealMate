@@ -13,12 +13,19 @@ import { ThemeService } from '../../services/theme.service';
 export class ProfilePage implements OnInit {
   userRole: 'agent' | 'customer' = 'customer';
   userProfile: any = {
-    name: 'Alex Johnson',
-    email: 'alex.j@mealmate.com',
+    name: 'MealMate_User',
+    email: 'abcd@gmail.com',
+    phone: '+91 98••• ••210',
     avatar: '🙋‍♂️',
-    credits: 450,
-    orders: 12
+    credits: 3180,
+    orders: 151,
+    lifetimeSpend: '₹28,450',
+    loyaltyPoints: 1132,
+    loyaltyLevel: 'Silver member',
+    memberSince: 'Aug 2024'
   };
+
+  referralCode = 'MEAL200';
 
   // Modal State Flags
   isEditModalOpen = false;
@@ -26,13 +33,13 @@ export class ProfilePage implements OnInit {
   isHelpModalOpen = false;
 
   // Edit Temp Object
-  editData = { name: '', email: '' };
+  editData = { name: '', email: '', phone: '' };
 
   // Notification Settings
   notifications = {
     orders: true,
-    promos: false,
-    updates: true
+    promos: true,
+    updates: false
   };
 
   constructor(
@@ -41,11 +48,22 @@ export class ProfilePage implements OnInit {
     private toastCtrl: ToastController,
     private alertCtrl: AlertController,
     private auth: AuthService,
-    private themeService: ThemeService
+    public themeService: ThemeService
   ) { }
 
   get isDarkMode(): boolean {
     return this.themeService.isDarkMode;
+  }
+
+  get userInitials(): string {
+    if (this.userProfile?.name) {
+      const parts = this.userProfile.name.trim().split(' ');
+      if (parts.length >= 2) {
+        return (parts[0][0] + parts[1][0]).toUpperCase();
+      }
+      return this.userProfile.name.substring(0, 2).toUpperCase();
+    }
+    return this.auth.userInitials;
   }
 
   toggleDarkMode() {
@@ -67,33 +85,110 @@ export class ProfilePage implements OnInit {
       this.userProfile = {
         name: authName || "Usha's Kitchen",
         email: authEmail || 'usha.chef@mealmate.com',
+        phone: '+91 98••• ••210',
         avatar: '👩‍🍳',
         rating: 4.8,
         earnings: '₹12,450',
-        ordersCompleted: 156
+        ordersCompleted: 156,
+        credits: 12450,
+        orders: 156,
+        lifetimeSpend: '₹1,45,800',
+        loyaltyPoints: 3420,
+        loyaltyLevel: 'Gold Partner',
+        memberSince: 'Jan 2024'
       };
     } else {
       this.userProfile = {
-        name: authName || 'Alex Johnson',
-        email: authEmail || 'alex.j@mealmate.com',
+        name: authName || 'MealMate_User',
+        email: authEmail || 'abcd@gmail.com',
+        phone: '+91 98••• ••210',
         avatar: '🙋‍♂️',
-        credits: 450,
-        orders: 12,
-        loyaltyLevel: 'Silver Member'
+        credits: 3180,
+        orders: 151,
+        lifetimeSpend: '₹28,450',
+        loyaltyPoints: 1132,
+        loyaltyLevel: 'Silver member',
+        memberSince: 'Aug 2024'
       };
     }
+  }
+
+  // --- Navigation Helpers ---
+
+  navigateToWallet() {
+    this.router.navigate(['/wallet']);
+  }
+
+  navigateToHealth() {
+    this.router.navigate(['/health']);
+  }
+
+  navigateToAddresses() {
+    this.showAddressToast();
+  }
+
+  async showAddressToast() {
+    const toast = await this.toastCtrl.create({
+      message: 'Delivery Addresses: Kalkaji (Default), Hauz Khas, Saket',
+      duration: 2500,
+      position: 'top',
+      mode: 'ios'
+    });
+    toast.present();
+  }
+
+  async copyReferralCode() {
+    navigator.clipboard?.writeText(this.referralCode);
+    const toast = await this.toastCtrl.create({
+      message: 'Referral code MEAL200 copied to clipboard!',
+      duration: 2000,
+      color: 'success',
+      position: 'top',
+      mode: 'ios'
+    });
+    toast.present();
+  }
+
+  async shareInvite() {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'MealMate Invite',
+          text: 'Use my code MEAL200 to get ₹200 wallet credit on MealMate!',
+          url: window.location.origin
+        });
+      } catch (e) { }
+    } else {
+      this.copyReferralCode();
+    }
+  }
+
+  async downloadData() {
+    const toast = await this.toastCtrl.create({
+      message: 'Preparing your account data dump. Check your email shortly!',
+      duration: 2500,
+      color: 'dark',
+      position: 'top',
+      mode: 'ios'
+    });
+    toast.present();
   }
 
   // --- Actions ---
 
   openEditProfile() {
-    this.editData = { ...this.userProfile };
+    this.editData = {
+      name: this.userProfile.name,
+      email: this.userProfile.email,
+      phone: this.userProfile.phone || '+91 98••• ••210'
+    };
     this.isEditModalOpen = true;
   }
 
   async saveProfile() {
     this.userProfile.name = this.editData.name;
     this.userProfile.email = this.editData.email;
+    this.userProfile.phone = this.editData.phone;
     this.isEditModalOpen = false;
 
     const toast = await this.toastCtrl.create({
@@ -109,7 +204,7 @@ export class ProfilePage implements OnInit {
   async showSecurity() {
     const alert = await this.alertCtrl.create({
       header: 'Security & Privacy',
-      message: 'Biometric login and end-to-end encryption are enabled. Manage your password in the next update!',
+      message: 'Biometric login and end-to-end encryption are enabled. Manage your password and active sessions.',
       buttons: ['OK'],
       cssClass: 'premium-alert'
     });
@@ -119,9 +214,8 @@ export class ProfilePage implements OnInit {
   async showAbout() {
     const alert = await this.alertCtrl.create({
       header: 'About MealMate',
-      message: 'MealMate v2.4.0\nBridging the gap between home chefs and foodies.\n\nDeveloped with ❤️ by Nikunj.',
+      message: 'MealMate v2.4.0\nBridging home-cooked meals with smart daily delivery.\n\nDeveloped with ❤️ by Nikunj.',
       buttons: ['Close'],
-
       cssClass: 'premium-alert'
     });
     await alert.present();
