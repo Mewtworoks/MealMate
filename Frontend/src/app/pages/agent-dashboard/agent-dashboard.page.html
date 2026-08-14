@@ -1,22 +1,23 @@
-<ion-header class="ion-no-border sub-page-header">
+<!-- ═══════════════════════════════════════════════════
+     MOBILE HEADER (Screens < 1001px)
+     ═══════════════════════════════════════════════════ -->
+<ion-header class="ion-no-border sub-page-header mobile-only">
   <div class="header-curve-bg"></div>
   <ion-toolbar class="transparent-toolbar">
     <div class="header-content" style="padding: 0 16px;">
       <div class="title-group" style="flex: 1;">
         <p class="subtitle">{{greeting}},</p>
-        <h2 class="page-title">{{chefName}} 🧑‍🍳</h2>
+        <h1 class="page-title" style="margin:0; font-size: 1.35rem; font-weight: 800; color: #1E1815;">{{chefName}} 🧑‍🍳</h1>
       </div>
-      <div class="header-actions" style="display: flex; gap: 8px; align-items: center;">
-        <button type="button" (click)="openLocationModal()" style="background: rgba(255, 114, 53, 0.12); color: #ff7235; border: 1px solid rgba(255, 114, 53, 0.3); border-radius: 20px; padding: 6px 12px; font-weight: 700; font-size: 0.78rem; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+      <div class="header-actions" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+        <button type="button" (click)="openLocationModal()" class="kitchip">
           <ion-icon name="location-sharp"></ion-icon>
-          <span>{{ hasKitchenConfigured ? kitchenName : 'Add Kitchen Location' }}</span>
-          <ion-icon [name]="hasKitchenConfigured ? 'create-outline' : 'add-outline'" style="font-size: 0.85rem; opacity: 0.8;"></ion-icon>
+          <span>{{ hasKitchenConfigured ? kitchenName : 'Add Location' }}</span>
         </button>
 
-        <div class="status-indicator-pill" [class.offline]="!isOnline" (click)="toggleOnlineStatus()">
-          <span class="status-dot"></span>
-          <span class="status-label">{{ isOnline ? 'Online' : 'Offline' }}</span>
-          <ion-icon name="chevron-down-outline" class="chevron-icon"></ion-icon>
+        <div class="onlinechip" [class.offline]="!isOnline" (click)="toggleOnlineStatus()" style="cursor: pointer;">
+          <i></i>
+          <span>{{ isOnline ? 'Online' : 'Offline' }}</span>
         </div>
       </div>
     </div>
@@ -24,38 +25,322 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="premium-content">
-  <div class="content-wrapper">
-    <!-- Quick Stats Cards Row -->
+
+  <!-- ═══════════════════════════════════════════════════
+       DESKTOP WEB VIEW (Screens >= 1001px)
+       ═══════════════════════════════════════════════════ -->
+  <div class="web-app desktop-only" [class.sidebar-collapsed]="themeService.isSidebarCollapsed">
+    <!-- LEFT SIDEBAR NAV -->
+    <aside class="side">
+      <div class="side-top">
+        <div class="logo">
+          <span class="glyph">
+            <img src="assets/logo/chef_hat.png" alt="MealMate">
+          </span>
+          <b class="brand-name">MealMate</b>
+        </div>
+        <button class="sidebar-toggle-btn" (click)="themeService.toggleSidebar()"
+          [title]="themeService.isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+          <ion-icon [name]="themeService.isSidebarCollapsed ? 'chevron-forward-outline' : 'chevron-back-outline'"></ion-icon>
+        </button>
+      </div>
+
+      <div class="navlabel">Chef Menu</div>
+      <nav class="nav">
+        <button class="on" routerLink="/agent-home">
+          <ion-icon name="home-outline"></ion-icon><span class="nav-text">Dashboard</span>
+        </button>
+        <button routerLink="/manage-menu">
+          <ion-icon name="restaurant-outline"></ion-icon><span class="nav-text">Manage Menu</span>
+        </button>
+        <button routerLink="/manage-rotation">
+          <ion-icon name="calendar-outline"></ion-icon><span class="nav-text">Meal Rotation</span>
+        </button>
+        <button routerLink="/agent-earnings">
+          <ion-icon name="wallet-outline"></ion-icon><span class="nav-text">Earnings</span>
+        </button>
+        <button routerLink="/profile" [queryParams]="{role: 'agent'}">
+          <ion-icon name="person-outline"></ion-icon><span class="nav-text">Chef Profile</span>
+        </button>
+      </nav>
+
+      <div class="side-foot">
+        <button class="me" routerLink="/profile" [queryParams]="{role: 'agent'}" title="View Profile">
+          <span class="ava">🧑‍🍳</span>
+          <span class="me-text" style="text-align:left">
+            <span class="n">{{chefName || 'Chef'}}</span><br>
+            <span class="s">Partner Kitchen</span>
+          </span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN DASHBOARD CONTENT AREA -->
+    <div class="view-main">
+      <header class="top">
+        <div class="hello">
+          <div class="k">{{greeting}},</div>
+          <div class="v">{{chefName}} 🧑‍🍳</div>
+        </div>
+        <div class="top-r" style="margin-left: auto; display: flex; gap: 10px; align-items: center;">
+          <button type="button" (click)="openLocationModal()" class="kitchip">
+            <ion-icon name="location-sharp"></ion-icon>
+            <span>{{ hasKitchenConfigured ? kitchenName : 'Add Kitchen Location' }}</span>
+            <ion-icon [name]="hasKitchenConfigured ? 'create-outline' : 'add-outline'" style="font-size: 0.85rem; opacity: 0.8;"></ion-icon>
+          </button>
+
+          <button type="button" [routerLink]="['/manage-menu']" class="kitchip">
+            <ion-icon name="restaurant-outline"></ion-icon>
+            <span>Manage Menu</span>
+          </button>
+
+          <div class="onlinechip" [class.offline]="!isOnline" (click)="toggleOnlineStatus()" style="cursor: pointer;">
+            <i></i>
+            <span>{{ isOnline ? 'Online' : 'Offline' }}</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="body" style="padding: 24px;">
+        <div class="desktop-body-grid">
+          <!-- Main Left Column -->
+          <div class="main-column">
+            <!-- Quick Stats Cards Row -->
+            <div class="quick-stats-row">
+              <div class="stat-card orange-stat">
+                <div class="stat-icon-container">
+                  <ion-icon name="cube-sharp"></ion-icon>
+                </div>
+                <div class="stat-main-val">{{ pendingOrders.length }}</div>
+                <div class="stat-label-text">New Orders</div>
+                <div class="stat-trend-text"><ion-icon name="arrow-up-outline"></ion-icon> 2 from last hour</div>
+              </div>
+
+              <div class="stat-card green-stat">
+                <div class="stat-icon-container">
+                  <ion-icon name="checkbox-sharp"></ion-icon>
+                </div>
+                <div class="stat-main-val">{{ activeOrders.length }}</div>
+                <div class="stat-label-text">Active Orders</div>
+                <div class="stat-trend-text text-green">● Preparing</div>
+              </div>
+
+              <div class="stat-card purple-stat">
+                <div class="stat-icon-container">
+                  <ion-icon name="wallet-sharp"></ion-icon>
+                </div>
+                <div class="stat-main-val">₹{{ earnings | number:'1.0-0' }}</div>
+                <div class="stat-label-text">Today's Earnings</div>
+                <div class="stat-trend-text"><ion-icon name="arrow-up-outline"></ion-icon> ₹650 from yesterday</div>
+              </div>
+            </div>
+
+            <!-- Rounded Order Status Tabs Segment -->
+            <div class="tabs-segment-container">
+              <div class="premium-tabs-bar">
+                <button class="tab-item-btn" [class.active]="activeSegment === 'requests'" (click)="activeSegment = 'requests'">
+                  <ion-icon name="cube-outline"></ion-icon>
+                  <span>New ({{ pendingOrders.length }})</span>
+                </button>
+                <button class="tab-item-btn" [class.active]="activeSegment === 'active'" (click)="activeSegment = 'active'">
+                  <ion-icon name="restaurant-outline"></ion-icon>
+                  <span>Preparing ({{ activeOrders.length }})</span>
+                </button>
+                <button class="tab-item-btn" [class.active]="activeSegment === 'history'" (click)="activeSegment = 'history'">
+                  <ion-icon name="checkmark-circle-outline"></ion-icon>
+                  <span>Completed</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Active Segment Views -->
+            <div [ngSwitch]="activeSegment" class="segment-views-wrapper">
+              <!-- NEW ORDERS -->
+              <div *ngSwitchCase="'requests'" class="animate-fade">
+                <div class="empty-state" *ngIf="pendingOrders.length === 0">
+                  <div class="empty-icon"><ion-icon name="fast-food-outline"></ion-icon></div>
+                  <h3>No New Requests</h3>
+                  <p>You'll see incoming meal requests here as customers order.</p>
+                </div>
+
+                <div class="dashboard-order-card is-new" *ngFor="let order of pendingOrders">
+                  <div class="order-badge-ribbon">NEW</div>
+                  <div class="order-card-body">
+                    <div class="order-meal-image-container">
+                      <img [src]="order.items[0]?.image || 'assets/onboarding/dal_chawal.png'" alt="Meal Thumbnail">
+                    </div>
+                    <div class="order-meal-details">
+                      <div class="order-header-line">
+                        <h2 class="meal-name-title" *ngIf="!order.isCustomMeal">{{ order.items[0]?.name || 'Sarson Ka Saag & Makki Roti' }}</h2>
+                        <h2 class="meal-name-title" *ngIf="order.isCustomMeal">Custom Request</h2>
+                        <span class="type-dot-indicator veg"></span>
+                      </div>
+                      <p class="customer-info-line" *ngIf="order.isCustomMeal">Details: <strong>{{ order.customMealDetails ? order.customMealDetails.split(' | ')[0] : 'See description' }}</strong></p>
+                      <p class="customer-info-line">Customer: <strong>{{ order.customerName || 'Mewtworoks' }}</strong></p>
+                      <div class="order-meta-info-row">
+                        <span class="meta-item">{{ order.items?.length || 1 }} {{ (order.items?.length || 1) === 1 ? 'item' : 'items' }}</span>
+                        <span class="meta-divider">•</span>
+                        <span class="meta-item">{{ order.distanceKm || 3.9 }} km away</span>
+                        <span class="meta-divider">•</span>
+                        <span class="diet-chip-badge" [class.nonveg]="order.items[0]?.type === 'Non-Veg'">
+                          <span class="diet-box-icon"><span class="diet-inner-dot"></span></span>
+                          <span>{{ order.items[0]?.type || 'Veg' }}</span>
+                        </span>
+                      </div>
+                    </div>
+                    <div class="order-right-details">
+                      <div class="top-info-stack">
+                        <div class="time-remaining-countdown">
+                          <ion-icon name="time-outline"></ion-icon>
+                          <span class="time-text">03:55 left</span>
+                        </div>
+                        <div class="earnings-display-text">₹{{ order.total }} earnings</div>
+                      </div>
+                      <div class="order-actions-inline-group">
+                        <button class="order-action-btn reject" (click)="rejectOrder(order.id)">Reject</button>
+                        <button class="order-action-btn accept" (click)="acceptOrder(order.id)">
+                          <ion-icon name="checkmark-outline"></ion-icon>
+                          <span>Accept</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PREPARING / ACTIVE ORDERS -->
+              <div *ngSwitchCase="'active'" class="animate-fade">
+                <div class="empty-state" *ngIf="activeOrders.length === 0">
+                  <div class="empty-icon"><ion-icon name="bicycle-outline"></ion-icon></div>
+                  <h3>No Active Deliveries</h3>
+                  <p>Accept an order to start preparing in your kitchen.</p>
+                </div>
+
+                <div class="dashboard-order-card" *ngFor="let order of activeOrders">
+                  <div class="order-card-body">
+                    <div class="order-meal-image-container">
+                      <img [src]="order.items[0]?.image || 'assets/onboarding/dal_chawal.png'" alt="Meal Thumbnail">
+                    </div>
+                    <div class="order-meal-details">
+                      <div class="order-header-line">
+                        <h2 class="meal-name-title" *ngIf="!order.isCustomMeal">{{ order.items[0]?.name || 'Thali' }}</h2>
+                        <h2 class="meal-name-title" *ngIf="order.isCustomMeal">Custom Request</h2>
+                      </div>
+                      <p class="customer-info-line">Customer: <strong>{{ order.customerName || 'Guest' }}</strong></p>
+                      <div class="order-tag-badges-row">
+                        <span class="status-display-badge">{{ order.status }}</span>
+                      </div>
+                    </div>
+                    <div class="order-right-details">
+                      <div class="earnings-display-text">₹{{ order.total }} Earnings</div>
+                    </div>
+                  </div>
+                  <div class="order-actions-button-bar">
+                    <button *ngIf="order.status === 'Accepted'" class="order-action-btn-solid prepare" (click)="updateOrderStatus(order.id, 'Preparing')">
+                      <ion-icon name="flame-outline"></ion-icon> Start Preparing
+                    </button>
+                    <button *ngIf="order.status === 'Preparing'" class="order-action-btn-solid delivery" (click)="updateOrderStatus(order.id, 'OutForDelivery')">
+                      <ion-icon name="bicycle-outline"></ion-icon> Out for Delivery
+                    </button>
+                    <button *ngIf="order.status === 'OutForDelivery'" class="order-action-btn-solid success" (click)="updateOrderStatus(order.id, 'Delivered')">
+                      <ion-icon name="checkmark-circle-outline"></ion-icon> Mark Delivered
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- COMPLETED ORDERS -->
+              <div *ngSwitchCase="'history'" class="animate-fade">
+                <div class="empty-state" *ngIf="completedOrders.length === 0">
+                  <div class="empty-icon"><ion-icon name="time-outline"></ion-icon></div>
+                  <h3>No Past Orders</h3>
+                  <p>Your history will appear here once you deliver orders.</p>
+                </div>
+
+                <div class="dashboard-order-card completed" *ngFor="let order of completedOrders">
+                  <div class="order-card-body">
+                    <div class="order-meal-image-container">
+                      <img [src]="order.items[0]?.image || 'assets/onboarding/dal_chawal.png'" alt="Meal Thumbnail">
+                    </div>
+                    <div class="order-meal-details">
+                      <h2 class="meal-name-title">{{ order.items[0]?.name || 'Quinoa Bowl' }}</h2>
+                      <p class="customer-info-line">Customer: <strong>{{ order.customerName || 'Guest' }}</strong></p>
+                    </div>
+                    <div class="order-right-details justify-center">
+                      <div class="earnings-bold-text">₹{{ order.total }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column Side Rail -->
+          <aside class="desktop-rail">
+            <div class="delivcard" *ngIf="currentDelivery">
+              <span class="mp"><ion-icon name="bicycle-outline"></ion-icon></span>
+              <div style="min-width:0">
+                <div class="k">Current delivery</div>
+                <div class="v">Order #{{ currentDelivery.id | slice:0:8 }}</div>
+                <div class="s"><ion-icon name="location-sharp"></ion-icon> {{ currentDelivery.customerName || 'Guest' }} · {{ currentDelivery.distanceKm || 2.9 }} km</div>
+              </div>
+              <span class="mins"><span class="n">12</span><span class="l">mins away</span></span>
+            </div>
+
+            <div class="rcard">
+              <div class="rhead">
+                <h3>Kitchen Today</h3>
+                <span class="mini">Since 8:00 AM</span>
+              </div>
+              <div class="sumrow"><span>Orders completed</span><span class="val-bold">{{ completedOrders.length || 6 }}</span></div>
+              <div class="sumrow"><span>Avg prep time</span><span class="val-bold">18 min</span></div>
+              <div class="sumrow"><span>Accept rate</span><span class="val-green">96%</span></div>
+              <div class="sumrow"><span>Rating</span><span class="val-bold">4.9 ★</span></div>
+              <div class="sumrow tot"><span>Payout tonight</span><span>₹{{ (earnings || 1850) | number:'1.0-0' }}</span></div>
+            </div>
+
+            <div class="rcard">
+              <div class="rhead">
+                <h3>Prep Queue</h3>
+                <span class="mini">{{ activeOrders.length }} in kitchen</span>
+              </div>
+              <div class="prep-queue-list" *ngIf="activeOrders.length > 0">
+                <div class="queue-item-row" *ngFor="let ord of activeOrders">
+                  <span class="oq">{{ ord.items.length }}</span>
+                  <span class="nm">{{ ord.items[0]?.name || 'Meal Combo' }}</span>
+                  <span class="p-status">{{ ord.status }}</span>
+                </div>
+              </div>
+              <p class="empty-queue-note" *ngIf="activeOrders.length === 0">Kitchen queue is clear.</p>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       MOBILE VIEW (Screens < 1001px)
+       ═══════════════════════════════════════════════════ -->
+  <div class="content-wrapper mobile-only">
     <div class="quick-stats-row">
       <div class="stat-card orange-stat">
-        <div class="stat-icon-container">
-          <ion-icon name="cube-sharp"></ion-icon>
-        </div>
+        <div class="stat-icon-container"><ion-icon name="cube-sharp"></ion-icon></div>
         <div class="stat-main-val">{{ pendingOrders.length }}</div>
-        <div class="stat-label-text">New Orders</div>
-        <div class="stat-trend-text"><ion-icon name="arrow-up-outline"></ion-icon> 2 from last hour</div>
+        <div class="stat-label-text">New</div>
       </div>
-
       <div class="stat-card green-stat">
-        <div class="stat-icon-container">
-          <ion-icon name="checkbox-sharp"></ion-icon>
-        </div>
+        <div class="stat-icon-container"><ion-icon name="checkbox-sharp"></ion-icon></div>
         <div class="stat-main-val">{{ activeOrders.length }}</div>
-        <div class="stat-label-text">Active Orders</div>
-        <div class="stat-trend-text text-green">● Preparing</div>
+        <div class="stat-label-text">Active</div>
       </div>
-
       <div class="stat-card purple-stat">
-        <div class="stat-icon-container">
-          <ion-icon name="wallet-sharp"></ion-icon>
-        </div>
+        <div class="stat-icon-container"><ion-icon name="wallet-sharp"></ion-icon></div>
         <div class="stat-main-val">₹{{ earnings | number:'1.0-0' }}</div>
-        <div class="stat-label-text">Today's Earnings</div>
-        <div class="stat-trend-text"><ion-icon name="arrow-up-outline"></ion-icon> ₹650 from yesterday</div>
+        <div class="stat-label-text">Earnings</div>
       </div>
     </div>
 
-    <!-- Rounded Order Status Tabs Segment -->
     <div class="tabs-segment-container">
       <div class="premium-tabs-bar">
         <button class="tab-item-btn" [class.active]="activeSegment === 'requests'" (click)="activeSegment = 'requests'">
@@ -73,224 +358,94 @@
       </div>
     </div>
 
-    <!-- Active Segment Views -->
-    <div [ngSwitch]="activeSegment" class="segment-views-wrapper">
-
-      <!-- NEW ORDERS -->
-      <div *ngSwitchCase="'requests'" class="animate-fade">
+    <!-- Active Segment Views (Mobile) -->
+    <div [ngSwitch]="activeSegment">
+      <div *ngSwitchCase="'requests'">
         <div class="empty-state" *ngIf="pendingOrders.length === 0">
-          <div class="empty-icon"><ion-icon name="fast-food-outline"></ion-icon></div>
           <h3>No New Requests</h3>
-          <p>You'll see incoming meal requests here.</p>
         </div>
-
-        <!-- Loop Order Cards -->
         <div class="dashboard-order-card is-new" *ngFor="let order of pendingOrders">
-          <!-- Orange "NEW" Ribbon -->
           <div class="order-badge-ribbon">NEW</div>
-
           <div class="order-card-body">
-            <!-- Meal Image -->
             <div class="order-meal-image-container">
               <img [src]="order.items[0]?.image || 'assets/onboarding/dal_chawal.png'" alt="Meal Thumbnail">
             </div>
-
-            <!-- Details -->
             <div class="order-meal-details">
               <div class="order-header-line">
-                <h2 class="meal-name-title" *ngIf="!order.isCustomMeal">{{ order.items[0]?.name || 'Meal Combo' }}</h2>
+                <h2 class="meal-name-title" *ngIf="!order.isCustomMeal">{{ order.items[0]?.name || 'Sarson Ka Saag & Makki Roti' }}</h2>
                 <h2 class="meal-name-title" *ngIf="order.isCustomMeal">Custom Request</h2>
                 <span class="type-dot-indicator veg"></span>
               </div>
-              <p class="customer-info-line" *ngIf="order.isCustomMeal">Details: <strong>{{ order.customMealDetails ? order.customMealDetails.split(' | ')[0] : 'See description' }}</strong></p>
-              <p class="customer-info-line">Customer: <strong>{{ order.customerName || 'Guest' }}</strong>
-              </p>
+              <p class="customer-info-line">Customer: <strong>{{ order.customerName || 'Mewtworoks' }}</strong></p>
               <div class="order-meta-info-row">
-                <span class="meta-item"><ion-icon name="cube-outline"></ion-icon> {{ order.items.length }} {{ order.items.length === 1 ? 'item' : 'items' }}</span>
+                <span class="meta-item">{{ order.items?.length || 1 }} {{ (order.items?.length || 1) === 1 ? 'item' : 'items' }}</span>
                 <span class="meta-divider">•</span>
-                <span class="meta-item"><ion-icon name="location-outline"></ion-icon> {{ order.distanceKm }} km away</span>
-              </div>
-              <div class="order-tag-badges-row">
-                <span class="tag-badge-item green"><ion-icon name="leaf-outline"></ion-icon> Veg</span>
-                <span class="tag-badge-item orange" *ngIf="order.isCustomMeal"><ion-icon
-                    name="flash-outline"></ion-icon> Custom</span>
+                <span class="meta-item">{{ order.distanceKm || 3.9 }} km away</span>
+                <span class="meta-divider">•</span>
+                <span class="diet-chip-badge" [class.nonveg]="order.items[0]?.type === 'Non-Veg'">
+                  <span class="diet-box-icon"><span class="diet-inner-dot"></span></span>
+                  <span>{{ order.items[0]?.type || 'Veg' }}</span>
+                </span>
               </div>
             </div>
-
-            <!-- Right Column Info -->
             <div class="order-right-details">
-              <div class="time-remaining-countdown">
-                <ion-icon name="time-outline"></ion-icon>
-                <span class="time-text">03:58</span>
-                <span class="mins-label">mins left</span>
+              <div class="top-info-stack">
+                <div class="time-remaining-countdown">
+                  <ion-icon name="time-outline"></ion-icon>
+                  <span class="time-text">03:55 left</span>
+                </div>
+                <div class="earnings-display-text">₹{{ order.total }} earnings</div>
               </div>
-              <div class="earnings-display-text">₹{{ order.total }} Earnings</div>
+              <div class="order-actions-inline-group">
+                <button class="order-action-btn reject" (click)="rejectOrder(order.id)">Reject</button>
+                <button class="order-action-btn accept" (click)="acceptOrder(order.id)">
+                  <ion-icon name="checkmark-outline"></ion-icon>
+                  <span>Accept</span>
+                </button>
+              </div>
             </div>
-          </div>
-
-          <!-- Bottom Button Bar -->
-          <div class="order-actions-button-bar">
-            <button class="order-action-btn reject" (click)="rejectOrder(order.id)">Reject</button>
-            <button class="order-action-btn accept" (click)="acceptOrder(order.id)">Accept Order</button>
           </div>
         </div>
       </div>
 
-      <!-- PREPARING / ACTIVE ORDERS -->
-      <div *ngSwitchCase="'active'" class="animate-fade">
-        <div class="empty-state" *ngIf="activeOrders.length === 0">
-          <div class="empty-icon"><ion-icon name="bicycle-outline"></ion-icon></div>
-          <h3>No Active Deliveries</h3>
-          <p>Accept an order to get started processing.</p>
-        </div>
-
+      <div *ngSwitchCase="'active'">
         <div class="dashboard-order-card" *ngFor="let order of activeOrders">
           <div class="order-card-body">
-            <div class="order-meal-image-container">
-              <img [src]="order.items[0]?.image || 'assets/onboarding/dal_chawal.png'" alt="Meal Thumbnail">
-            </div>
-
             <div class="order-meal-details">
-              <div class="order-header-line">
-                <h2 class="meal-name-title" *ngIf="!order.isCustomMeal">{{ order.items[0]?.name || 'Thali' }}</h2>
-                <h2 class="meal-name-title" *ngIf="order.isCustomMeal">Custom Request</h2>
-                <span class="type-dot-indicator" [class.preparing]="order.status === 'Preparing'"
-                  [class.accepted]="order.status === 'Accepted'"
-                  [class.delivery]="order.status === 'OutForDelivery'"></span>
-              </div>
-              <p class="customer-info-line" *ngIf="order.isCustomMeal">Details: <strong>{{ order.customMealDetails ? order.customMealDetails.split(' | ')[0] : 'See description' }}</strong></p>
-              <p class="customer-info-line">Customer: <strong>{{ order.customerName || 'Guest' }}</strong>
-              </p>
-              <div class="order-meta-info-row">
-                <span class="meta-item"><ion-icon name="cube-outline"></ion-icon> {{ order.items.length }} {{ order.items.length === 1 ? 'item' : 'items' }}</span>
-                <span class="meta-divider">•</span>
-                <span class="meta-item"><ion-icon name="location-outline"></ion-icon> {{ order.distanceKm || 2.4 }} km away</span>
-              </div>
-              <div class="order-tag-badges-row">
-                <span class="tag-badge-item yellow"><ion-icon name="flash-outline"></ion-icon> High Protein</span>
-                <span class="status-display-badge">{{ order.status }}</span>
-              </div>
-            </div>
-
-            <div class="order-right-details">
-              <div class="time-remaining-countdown">
-                <ion-icon name="time-outline"></ion-icon>
-                <span class="time-text">06:25</span>
-                <span class="mins-label">mins left</span>
-              </div>
-              <div class="earnings-display-text">₹{{ order.total }} Earnings</div>
+              <h2 class="meal-name-title">{{ order.items[0]?.name || 'Thali' }}</h2>
+              <span class="status-display-badge">{{ order.status }}</span>
             </div>
           </div>
-
           <div class="order-actions-button-bar">
-            <button *ngIf="order.status === 'Accepted'" class="order-action-btn-solid prepare"
-              (click)="updateOrderStatus(order.id, 'Preparing')">
-              <ion-icon name="flame-outline"></ion-icon> Start Preparing
-            </button>
-            <button *ngIf="order.status === 'Preparing'" class="order-action-btn-solid delivery"
-              (click)="updateOrderStatus(order.id, 'OutForDelivery')">
-              <ion-icon name="bicycle-outline"></ion-icon> Out for Delivery
-            </button>
-            <button *ngIf="order.status === 'OutForDelivery'" class="order-action-btn-solid success"
-              (click)="updateOrderStatus(order.id, 'Delivered')">
-              <ion-icon name="checkmark-circle-outline"></ion-icon> Mark Delivered
-            </button>
+            <button *ngIf="order.status === 'Accepted'" class="order-action-btn-solid prepare" (click)="updateOrderStatus(order.id, 'Preparing')">Start Preparing</button>
+            <button *ngIf="order.status === 'Preparing'" class="order-action-btn-solid delivery" (click)="updateOrderStatus(order.id, 'OutForDelivery')">Out for Delivery</button>
+            <button *ngIf="order.status === 'OutForDelivery'" class="order-action-btn-solid success" (click)="updateOrderStatus(order.id, 'Delivered')">Mark Delivered</button>
           </div>
         </div>
       </div>
 
-      <!-- COMPLETED ORDERS -->
-      <div *ngSwitchCase="'history'" class="animate-fade">
-        <div class="empty-state" *ngIf="completedOrders.length === 0">
-          <div class="empty-icon"><ion-icon name="time-outline"></ion-icon></div>
-          <h3>No Past Orders</h3>
-          <p>Your history will appear here once you deliver.</p>
-        </div>
-
+      <div *ngSwitchCase="'history'">
         <div class="dashboard-order-card completed" *ngFor="let order of completedOrders">
           <div class="order-card-body">
-            <div class="order-meal-image-container">
-              <img [src]="order.items[0]?.image || 'assets/onboarding/dal_chawal.png'" alt="Meal Thumbnail">
-            </div>
-
             <div class="order-meal-details">
-              <div class="order-header-line">
-                <h2 class="meal-name-title" *ngIf="!order.isCustomMeal">{{ order.items[0]?.name || 'Quinoa Power Bowl' }}</h2>
-                <h2 class="meal-name-title" *ngIf="order.isCustomMeal">Custom Request</h2>
-              </div>
-              <p class="customer-info-line" *ngIf="order.isCustomMeal">Details: <strong>{{ order.customMealDetails ? order.customMealDetails.split(' | ')[0] : 'See description' }}</strong></p>
-              <p class="customer-info-line">Customer: <strong>{{ order.customerName || 'Guest' }}</strong>
-              </p>
-              <div class="order-meta-info-row">
-                <span class="meta-item"><ion-icon name="calendar-outline"></ion-icon> {{ order.date | date:'MMM d, h:mm
-                  a' }}</span>
-              </div>
-              <div class="order-tag-badges-row">
-                <span class="tag-badge-item completed"><ion-icon name="checkmark-done-outline"></ion-icon>
-                  Delivered</span>
-              </div>
+              <h2 class="meal-name-title">{{ order.items[0]?.name || 'Meal Combo' }}</h2>
             </div>
-
-            <div class="order-right-details justify-center">
-              <div class="earnings-bold-text">₹{{ order.total }}</div>
-              <div class="earnings-sub-text">Earnings</div>
-            </div>
+            <div class="earnings-bold-text">₹{{ order.total }}</div>
           </div>
         </div>
       </div>
-
     </div>
 
-    <!-- Bottom Map Delivery Widget (Only visible when there's an active/out-for-delivery order) -->
-    <div class="current-delivery-map-card" *ngIf="currentDelivery">
+    <!-- Floating Map Delivery Widget for Mobile -->
+    <div class="current-delivery-map-card mobile-only" *ngIf="currentDelivery">
       <div class="map-card-inner">
-        <!-- SVG Map Container -->
-        <div class="mini-map-box">
-          <div class="map-roads-container">
-            <svg viewBox="0 0 200 100" class="mini-map-svg" preserveAspectRatio="none">
-              <!-- Road Paths -->
-              <path d="M 15 80 C 60 75, 80 40, 110 50 S 160 30, 185 25" stroke="#EAEFF4" stroke-width="8" fill="none"
-                stroke-linecap="round" />
-              <path d="M 50 15 L 50 90" stroke="#EAEFF4" stroke-width="5" fill="none" stroke-linecap="round" />
-              <path d="M 145 10 L 145 90" stroke="#EAEFF4" stroke-width="5" fill="none" stroke-linecap="round" />
-              <!-- Dotted Route -->
-              <path d="M 25 76 C 60 75, 80 40, 110 50 S 160 30, 175 28" stroke="#FF7235" stroke-width="2.5"
-                stroke-dasharray="5 4" fill="none" stroke-linecap="round" />
-            </svg>
-
-            <!-- Map Pin Start (Chef Hat) -->
-            <div class="map-pin pin-start" style="left: 12%; top: 76%;">
-              <div class="icon-circle orange">
-                <ion-icon name="restaurant"></ion-icon>
-              </div>
-            </div>
-
-            <!-- Map Driver Location (Blue dot with pulse) -->
-            <div class="map-driver-dot" style="left: 46%; top: 54%;">
-              <div class="blue-dot"></div>
-              <div class="blue-pulse-ring"></div>
-            </div>
-
-            <!-- Map Pin Destination (Home) -->
-            <div class="map-pin pin-end" style="left: 82%; top: 25%;">
-              <div class="icon-circle home-orange">
-                <ion-icon name="home"></ion-icon>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Details Column -->
         <div class="delivery-details-box">
           <div class="delivery-card-header">
             <span class="delivery-badge-text">Current Delivery</span>
             <span class="order-id-label">Order #{{ currentDelivery.id | slice:0:8 }}</span>
           </div>
           <h3 class="delivering-to-title">Delivering to <strong>{{ currentDelivery.customerName || 'Guest' }}</strong></h3>
-          <p class="distance-text-label"><ion-icon name="location-sharp"></ion-icon> {{ currentDelivery.distanceKm || 1.8 }} km away</p>
         </div>
-
-        <!-- Time & Action Column -->
         <div class="delivery-time-action-box">
           <div class="delivery-eta-badge">
             <span class="eta-number-bold">12</span>
@@ -298,13 +453,12 @@
           </div>
           <button class="view-details-orange-btn" [routerLink]="['/gps-tracking']">
             <span>View Details</span>
-            <ion-icon name="chevron-forward-outline"></ion-icon>
           </button>
         </div>
       </div>
     </div>
-
   </div>
+
 </ion-content>
 
 <!-- Kitchen Location & Service Radius Modal -->
@@ -328,22 +482,19 @@
 
     <ion-content class="location-modal-content">
       <div class="location-card-container">
-        
-        <!-- Info Banner -->
         <div class="location-info-banner">
           <div class="info-icon-badge">
             <ion-icon [name]="hasKitchenConfigured ? 'checkmark-circle-outline' : 'information-circle-outline'"></ion-icon>
           </div>
           <p class="info-text" *ngIf="hasKitchenConfigured">
-            Your kitchen <strong>{{kitchenName}}</strong> is active! Customers within your <strong>{{kitchenRadiusKm}} km delivery radius</strong> see your profile. Edit details below to update.
+            Your kitchen <strong>{{kitchenName}}</strong> is active! Customers within your <strong>{{kitchenRadiusKm}} km delivery radius</strong> see your profile.
           </p>
           <p class="info-text" *ngIf="!hasKitchenConfigured">
-            Set your kitchen's exact location. Customers within your <strong>{{kitchenRadiusKm}} km delivery radius</strong> will see your chef profile and be able to order custom meals!
+            Set your kitchen's exact location. Customers within your <strong>{{kitchenRadiusKm}} km delivery radius</strong> will see your chef profile!
           </p>
         </div>
 
         <div class="location-form-group">
-          <!-- Kitchen / Brand Name -->
           <div class="field-item">
             <label class="field-label">Kitchen / Brand Name</label>
             <div class="input-input-wrap">
@@ -352,7 +503,6 @@
             </div>
           </div>
 
-          <!-- Kitchen Address -->
           <div class="field-item">
             <label class="field-label">Kitchen Address</label>
             <div class="input-input-wrap">
@@ -361,7 +511,6 @@
             </div>
           </div>
 
-          <!-- Latitude & Longitude Row -->
           <div class="coords-row">
             <div class="field-item flex-1">
               <label class="field-label">Latitude</label>
@@ -379,33 +528,24 @@
             </div>
           </div>
 
-          <!-- Detect GPS Location Button -->
           <button type="button" class="gps-detect-btn" (click)="useCurrentGpsLocation()" [disabled]="isDetectingGps">
             <ion-icon [name]="isDetectingGps ? 'sync-outline' : 'navigate-outline'" [class.spin-icon]="isDetectingGps"></ion-icon>
             <span>{{ isDetectingGps ? 'Auto-Fetching Location & Address...' : 'Detect My Kitchen GPS Location' }}</span>
           </button>
 
-          <!-- Delivery Radius Slider -->
           <div class="field-item radius-slider-box">
             <div class="slider-header-line">
               <label class="field-label">Delivery Radius Threshold</label>
               <span class="radius-badge-val">{{kitchenRadiusKm}} km</span>
             </div>
             <input type="range" min="5" max="50" [(ngModel)]="kitchenRadiusKm" class="styled-range-slider">
-            <div class="slider-labels-line">
-              <span>5 km</span>
-              <span>25 km</span>
-              <span>50 km</span>
-            </div>
           </div>
 
-          <!-- Save / Update Button -->
           <button type="button" class="save-location-btn" (click)="saveKitchenLocation()" [disabled]="isSavingLocation">
             <ion-icon [name]="hasKitchenConfigured ? 'create-outline' : 'checkmark-circle-outline'" *ngIf="!isSavingLocation"></ion-icon>
             <span>{{ isSavingLocation ? 'Saving Changes...' : (hasKitchenConfigured ? 'Update Kitchen Details' : 'Save Kitchen Location') }}</span>
           </button>
         </div>
-
       </div>
     </ion-content>
   </ng-template>

@@ -13,6 +13,8 @@ import { Subscription, firstValueFrom, timeout, catchError, of } from 'rxjs';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 
+import { ThemeService } from '../../services/theme.service';
+
 @Component({
   selector: 'app-agent-dashboard',
   templateUrl: './agent-dashboard.page.html',
@@ -52,6 +54,7 @@ export class AgentDashboardPage implements OnInit {
   }
 
   constructor(
+    public themeService: ThemeService,
     private orderService: OrderService,
     private mealService: MealService,
     private trackingService: TrackingService,
