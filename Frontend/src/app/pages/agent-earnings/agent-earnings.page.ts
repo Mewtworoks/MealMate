@@ -6,6 +6,9 @@ import { NavController, ToastController } from '@ionic/angular';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
+import { PageLoaderService } from '../../services/page-loader.service';
+import { ThemeService } from '../../services/theme.service';
+
 export interface DailyEarning {
   day: string;
   amount: number;
@@ -87,13 +90,16 @@ export class AgentEarningsPage implements OnInit {
     private orderService: OrderService,
     private auth: AuthService,
     private navCtrl: NavController,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    public themeService: ThemeService,
+    private pageLoader: PageLoaderService
   ) {}
 
   ngOnInit() {}
 
   async ionViewWillEnter() {
     this.isLoading = true;
+    this.pageLoader.show(true);
     this.chefName = this.auth.userName || 'Chef';
     this.greeting = this.auth.greeting;
     const now = new Date();
@@ -114,6 +120,7 @@ export class AgentEarningsPage implements OnInit {
     }
 
     this.isLoading = false;
+    this.pageLoader.show(false);
   }
 
   ionViewWillLeave() {
