@@ -10,6 +10,16 @@ export class ThemeService {
   isDarkMode = false;
   isSidebarCollapsed = false;
 
+  get userRole(): 'customer' | 'agent' {
+    const role = localStorage.getItem('mealmate_role');
+    if (role === 'chef' || role === 'agent') return 'agent';
+    return 'customer';
+  }
+
+  get isAgent(): boolean {
+    return this.userRole === 'agent';
+  }
+
   constructor() {
     const savedDark = localStorage.getItem(this.darkModeKey);
     this.isDarkMode = savedDark === 'true';

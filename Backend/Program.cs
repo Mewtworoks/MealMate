@@ -267,6 +267,9 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// Lightweight health check endpoint for keep-alive pingers (cron-job.org / UptimeRobot)
+app.MapGet("/api/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
+
 app.Run();
 
 /// <summary>

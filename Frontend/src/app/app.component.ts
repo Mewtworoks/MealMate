@@ -13,8 +13,8 @@ export class AppComponent {
   
   // Routes where the bottom tab bar should be visible
   tabRoutes = [
-    '/customer-home', '/my-orders', '/health', '/ai-concierge', '/profile',
-    '/agent-home', '/manage-menu', '/agent-earnings'
+    '/customer-home', '/my-orders', '/health', '/ai-concierge', '/profile', '/custom-meal', '/subscribe', '/wallet',
+    '/agent-home', '/manage-menu', '/agent-earnings', '/manage-rotation'
   ];
 
   /** When true a page loader is active — hide the tab bar */
@@ -22,7 +22,7 @@ export class AppComponent {
 
   constructor(
     public router: Router,
-    private themeService: ThemeService,
+    public themeService: ThemeService,
     private pageLoaderService: PageLoaderService
   ) {
     this.pageLoaderService.loading$.subscribe(v => this.pageLoading = v);
@@ -35,7 +35,7 @@ export class AppComponent {
   }
 
   getRole(): string | null {
-    return localStorage.getItem('mealmate_role');
+    return this.themeService.userRole;
   }
 }
 

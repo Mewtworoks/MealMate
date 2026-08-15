@@ -72,7 +72,7 @@ export class ProfilePage implements OnInit {
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
-      this.userRole = params['role'] || 'customer';
+      this.userRole = params['role'] || (this.themeService.isAgent ? 'agent' : 'customer');
       this.setupProfile();
     });
   }

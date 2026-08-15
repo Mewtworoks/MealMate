@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { MealService, Meal } from '../../services/meal.service';
 import { AuthService } from '../../services/auth';
 import { NavController, ToastController, ActionSheetController } from '@ionic/angular';
+import { ThemeService } from '../../services/theme.service';
 
 
 @Component({
@@ -46,10 +47,8 @@ export class ManageMenuPage implements OnInit {
   isDeleteModalOpen = false;
   mealToDelete: Meal | null = null;
 
-
-
-
   constructor(
+    public themeService: ThemeService,
     private mealService: MealService,
     private auth: AuthService,
     private navCtrl: NavController,

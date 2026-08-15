@@ -5,6 +5,8 @@ import { Router } from '@angular/router';
 import { NavController, ToastController } from '@ionic/angular';
 import { Gemini } from '../../services/gemini';
 import { AuthService } from '../../services/auth';
+import { ThemeService } from '../../services/theme.service';
+import { SubscriptionService, Subscription as MealSubscription } from '../../services/subscription.service';
 
 @Component({
   selector: 'app-custom-meal',
@@ -31,8 +33,38 @@ export class CustomMealPage implements OnInit {
     private navCtrl: NavController,
     private toastCtrl: ToastController,
     private gemini: Gemini,
-    private auth: AuthService
+    private auth: AuthService,
+    public themeService: ThemeService,
+    public subscriptionService: SubscriptionService
   ) { }
+
+  get userName(): string {
+    return this.auth.userName || 'MealMate_User';
+  }
+
+  get userInitials(): string {
+    return this.auth.userInitials || 'MU';
+  }
+
+  get activeSubscription(): MealSubscription | null {
+    const userId = this.auth.userId;
+    if (!userId) return null;
+    const subs = this.subscriptionService.getUserSubscriptions(userId);
+    return subs.find(s => s.status === 'Active') || subs[0] || null;
+  }
+
+  get planName(): string {
+    return (this.activeSubscription && this.activeSubscription.planName) ? this.activeSubscription.planName : 'Healthy Mix Plan';
+  }
+
+  get activePlanPercent(): number {
+    if (!this.activeSubscription) return 6;
+    return Math.round((this.activeSubscription.currentDay / this.activeSubscription.totalDays) * 100);
+  }
+
+  get selectedChef(): Agent | null {
+    return this.agents.find(a => a.id === this.selectedAgentId) || (this.agents.length > 0 ? this.agents[0] : null);
+  }
 
   consultAi() {
     this.router.navigate(['/ai-concierge']);
