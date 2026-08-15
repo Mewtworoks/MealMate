@@ -1323,6 +1323,47 @@ body.in-frame .vptoggle{display:none}
 .chkl.ok .cb{background:var(--green);border-color:var(--green)}
 .chkl.ok .cb svg{opacity:1}
 
+/* ═══ CHEF PROFILE ═══ */
+.kitbadge{display:inline-flex;align-items:center;gap:7px;background:var(--green);color:#fff;font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;padding:6px 13px;border-radius:99px}
+.kitbadge svg{width:12px;height:12px;stroke:#fff;stroke-width:2.6;fill:none}
+.ratepill{display:inline-flex;align-items:center;gap:6px;background:#FDF3DC;color:#B77A08;font-size:12.5px;font-weight:800;padding:6px 13px;border-radius:99px}
+.ratepill svg{width:13px;height:13px;fill:#E0A11B}
+.fssai{display:inline-flex;align-items:center;gap:7px;background:var(--orange-soft);color:#C9520F;font-size:12px;font-weight:800;padding:6px 13px;border-radius:99px;font-family:"SF Mono",Menlo,monospace;letter-spacing:0}
+.fssai svg{width:13px;height:13px;stroke:var(--orange);stroke-width:2.2;fill:none}
+
+.kpi4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px 17px;display:flex;align-items:center;gap:12px}
+.kpi .ki{width:36px;height:36px;border-radius:11px;background:var(--orange-soft);display:grid;place-items:center;flex:none}
+.kpi .ki svg{width:17px;height:17px;stroke:var(--orange);stroke-width:2;fill:none}
+.kpi.g .ki{background:var(--green-soft)}
+.kpi.g .ki svg{stroke:var(--green)}
+.kpi .v{font-size:21px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.kpi .l{font-size:11.5px;font-weight:600;color:var(--ink-3);margin-top:4px}
+
+.slot{display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid var(--line)}
+.slot:last-child{border-bottom:0}
+.slot .si3{width:34px;height:34px;border-radius:11px;background:var(--orange-soft);display:grid;place-items:center;flex:none}
+.slot .si3 svg{width:16px;height:16px;stroke:var(--orange);stroke-width:2;fill:none}
+.slot .nm{font-size:14px;font-weight:800;letter-spacing:-.015em}
+.slot .hr{font-size:12.5px;font-weight:600;color:var(--ink-3);margin-top:3px}
+.slot .tg{margin-left:auto;flex:none;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:5px 11px;border-radius:99px;background:var(--green-soft);color:var(--green)}
+.slot.off .si3{background:#F2EDE9}
+.slot.off .si3 svg{stroke:var(--ink-3)}
+.slot.off .tg{background:#F2EDE9;color:var(--ink-3)}
+
+.cuis{display:flex;gap:8px;flex-wrap:wrap}
+.cu2{display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:99px;background:var(--orange-soft);border:1px solid var(--orange-line);font-size:13px;font-weight:700;color:#C9520F}
+.cu2 svg{width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none}
+
+.rev2{display:flex;gap:13px;padding:14px 0;border-bottom:1px solid var(--line)}
+.rev2:last-child{border-bottom:0}
+.rev2 .av2{width:36px;height:36px;border-radius:50%;flex:none;background:linear-gradient(150deg,#FFD3B5,#F9A870);display:grid;place-items:center;font-size:12.5px;font-weight:800;color:#8A3B0B}
+.rev2 .who{font-size:13.5px;font-weight:800;letter-spacing:-.015em}
+.rev2 .stars{display:inline-flex;gap:2px;margin-left:auto;flex:none}
+.rev2 .stars svg{width:12px;height:12px;fill:#E0A11B}
+.rev2 .tx{font-size:13px;font-weight:500;color:var(--ink-2);line-height:1.5;margin-top:5px}
+.rev2 .wh{font-size:11.5px;font-weight:700;color:var(--ink-3);margin-top:5px}
+
 @media(max-width:1280px){.body{grid-template-columns:minmax(0,1fr)}.rail{position:static;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}.picks{grid-template-columns:1fr 1fr}.nuts{grid-template-columns:1fr 1fr}}
 @media(max-width:1000px){.app{grid-template-columns:1fr}.side{display:none}.tabnav{display:flex}.body{padding-bottom:120px}.picks,.banners,.hero,.match{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.facts{grid-template-columns:1fr 1fr}.order{grid-template-columns:auto minmax(0,1fr)}.oright{grid-column:2;align-items:flex-start}.hstats{grid-template-columns:1fr 1fr}.macros{grid-template-columns:1fr}.chartcard{--axis-w:36px}.wsplit3{grid-template-columns:1fr}}
 
@@ -1698,6 +1739,19 @@ body.m{
   .draftbtn{padding:12px 14px;font-size:12.5px}
   .pubbtn{padding:13px 18px;font-size:13.5px}
   #v-new .body{padding-bottom:180px}
+
+  /* ── Chef profile ── */
+  .kpi4{grid-template-columns:1fr 1fr;gap:9px;padding:0 16px 12px;margin:0}
+  .kpi{padding:13px 14px;gap:11px}
+  .kpi .ki{width:32px;height:32px}
+  .kpi .v{font-size:18px}
+  .kpi .l{font-size:11px}
+  .kitbadge,.ratepill,.fssai{font-size:11px;padding:5px 11px}
+  .slot{gap:12px;padding:12px 0}
+  .slot .nm{font-size:13.5px}
+  .slot .hr{font-size:12px}
+  .cu2{font-size:12.5px;padding:8px 13px}
+  .rev2 .tx{font-size:12.5px}
   .swapmodal{left:0;right:0;top:auto;bottom:0;width:100%;max-width:100%;transform:translateY(16px);border-radius:26px 26px 0 0;max-height:82%;padding:18px 16px 24px}
   .swapmodal.open{transform:none}
 
@@ -1812,6 +1866,7 @@ body.m .phone-cap{display:block}
       <button data-go="plans"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="17" rx="3"/><path d="M8 2.5v4M16 2.5v4M3 10h18"/></svg>Meal Plans</button>
       <button data-go="health"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 5.6a5.2 5.2 0 0 0-7.4 0L12 7l-1.4-1.4a5.2 5.2 0 1 0-7.4 7.4L12 21.4l8.8-8.4a5.2 5.2 0 0 0 0-7.4z"/></svg>Health</button>
       <button data-go="chefd"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v8M8.5 3v8M6.75 11v10"/><path d="M17 3c-1.3 1.8-1.8 3.6-1.8 5.4S16 11 17 11s1.8-.8 1.8-2.6S18.3 4.8 17 3z"/><path d="M17 11v10"/></svg>Chef Dashboard</button>
+      <button data-go="chefp"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/></svg>Kitchen Profile</button>
       <button data-go="earn"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>Earnings</button>
       <button data-go="menu"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4.5h14M5 12h14M5 19.5h9"/></svg>Manage Menu</button>
       <button data-go="mantra"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l1.9 5.1 5.1 1.9-5.1 1.9L12 17.5l-1.9-5.1L5 10.5l5.1-1.9z"/><path d="M18.5 16l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></svg>MealMantra AI</button>
@@ -2522,6 +2577,11 @@ body.m .phone-cap{display:block}
           <button class="srow" data-go="chefd">
             <span class="si" style="background:var(--green-soft)"><svg viewBox="0 0 24 24" stroke="var(--green)" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v8M8.5 3v8M6.75 11v10"/><path d="M17 3c-1.3 1.8-1.8 3.6-1.8 5.4S16 11 17 11s1.8-.8 1.8-2.6S18.3 4.8 17 3z"/><path d="M17 11v10"/></svg></span>
             <span><span class="nm" style="display:block">Chef dashboard</span><span class="sb">Switch to kitchen mode</span></span>
+            <span class="ch"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+          </button>
+          <button class="srow" data-go="chefp">
+            <span class="si" style="background:var(--orange-soft)"><svg viewBox="0 0 24 24" stroke="var(--orange)" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/></svg></span>
+            <span><span class="nm" style="display:block">Kitchen profile</span><span class="sb">Hours, cuisines and payouts</span></span>
             <span class="ch"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
           </button>
           <button class="srow" data-go="earn">
@@ -3282,6 +3342,165 @@ body.m .phone-cap{display:block}
       </aside>
     </div>
   </div>
+  <!-- ══════ CHEF PROFILE ══════ -->
+  <div class="view" id="v-chefp">
+    <header class="top">
+      <button class="back" data-go="chefd"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <div>
+        <h1>Kitchen Profile</h1>
+        <div class="sub">Your public listing and settings</div>
+      </div>
+      <div class="top-r">
+        <span class="onlinechip"><i></i>Accepting orders</span>
+      </div>
+    </header>
+
+    <div class="body">
+      <div>
+        <section class="pcard">
+          <span class="pav">
+            <span class="ring photo tile" data-slot="chefp-av">HK</span>
+            <button class="cam" title="Change photo"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6.5" width="18" height="13" rx="2.5"/><circle cx="12" cy="13" r="3.2"/><path d="M8 6.5l1.2-2h5.6l1.2 2"/></svg></button>
+          </span>
+          <div class="pinfo">
+            <h2>The Homies Kitchen</h2>
+            <div class="em">MealMate_Chef · chef@mealmate.in</div>
+            <div class="prow">
+              <span class="kitbadge"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7"/></svg>Verified kitchen</span>
+              <span class="ratepill"><svg viewBox="0 0 24 24"><path d="m12 2 3 6.3 6.8 1-4.9 4.8 1.2 6.9L12 17.8 5.9 21l1.2-6.9L2.2 9.3l6.8-1z"/></svg>4.9 · 486 ratings</span>
+              <span class="fssai"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-4 7-9V6l-7-3-7 3v6c0 5 7 9 7 9z"/><path d="m9 11.5 2 2 4-4"/></svg>FSSAI 22821004000371</span>
+            </div>
+          </div>
+          <button class="pedit" id="chefpEdit">Edit kitchen <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10-10-4-4L4 16z"/><path d="M14 6l4 4"/></svg></button>
+        </section>
+
+        <div class="kpi4">
+          <div class="kpi"><span class="ki"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6.5V21h18V6.5L18 2z"/><path d="M3 6.5h18"/><path d="M16 10.5a4 4 0 0 1-8 0"/></svg></span><div><div class="v">1,284</div><div class="l">Orders served</div></div></div>
+          <div class="kpi g"><span class="ki"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.2 12.2 2.6 2.6 5-5.4"/></svg></span><div><div class="v">96%</div><div class="l">Accept rate</div></div></div>
+          <div class="kpi"><span class="ki"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.4l3.4 2"/></svg></span><div><div class="v">18 min</div><div class="l">Avg prep time</div></div></div>
+          <div class="kpi g"><span class="ki"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span><div><div class="v">6 km</div><div class="l">Delivery radius</div></div></div>
+        </div>
+
+        <section class="chartcard">
+          <div class="blkhead"><h2>Kitchen hours</h2><button class="weekpick" style="height:38px;font-size:12.5px">Edit hours<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M4 20h4l10-10-4-4L4 16z"/><path d="M14 6l4 4"/></svg></button></div>
+          <div class="slot"><span class="si3"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></span><div><div class="nm">Breakfast</div><div class="hr">Not serving yet</div></div><span class="tg">Closed</span></div>
+          <div class="slot"><span class="si3"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="4"/><path d="M3 8h4M17 8h4"/></svg></span><div><div class="nm">Lunch</div><div class="hr">11:30 AM – 3:00 PM</div></div><span class="tg">Open</span></div>
+          <div class="slot"><span class="si3"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></span><div><div class="nm">Dinner</div><div class="hr">7:00 PM – 10:30 PM</div></div><span class="tg">Open</span></div>
+          <div class="slot off"><span class="si3"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="17" rx="3"/><path d="M8 2.5v4M16 2.5v4M3 10h18"/></svg></span><div><div class="nm">Weekly off</div><div class="hr">Every Tuesday</div></div><span class="tg">Closed</span></div>
+        </section>
+
+        <section class="chartcard">
+          <div class="blkhead"><h2>Cuisines &amp; specialities</h2><span class="mini" style="font-size:12.5px;font-weight:700;color:var(--ink-3)">5 tags</span></div>
+          <div class="cuis">
+            <span class="cu2"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v8a3 3 0 0 0 6 0V3"/><path d="M9 11v10"/></svg>North Indian</span>
+            <span class="cu2"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18h16"/><path d="M5 18a7 7 0 0 1 14 0"/></svg>Home style</span>
+            <span class="cu2"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="4"/><path d="M3 8h4M17 8h4"/></svg>Punjabi thali</span>
+            <span class="cu2"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4-3-7-6.5-7-10a7 7 0 0 1 14 0c0 3.5-3 7-7 10z"/></svg>Awadhi</span>
+            <span class="cu2"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 5.6a5.2 5.2 0 0 0-7.4 0L12 7l-1.4-1.4a5.2 5.2 0 1 0-7.4 7.4L12 21.4l8.8-8.4a5.2 5.2 0 0 0 0-7.4z"/></svg>High protein</span>
+          </div>
+        </section>
+
+        <div class="setgroup">
+          <div class="gh">Kitchen</div>
+          <button class="srow" data-go="menu">
+            <span class="si" style="background:var(--orange-soft)"><svg viewBox="0 0 24 24" stroke="var(--orange)" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4.5h14M5 12h14M5 19.5h9"/></svg></span>
+            <span><span class="nm" style="display:block">Manage menu</span><span class="sb">4 items · 1 out of stock</span></span>
+            <span class="ch"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+          </button>
+          <button class="srow" data-go="earn">
+            <span class="si" style="background:var(--green-soft)"><svg viewBox="0 0 24 24" stroke="var(--green)" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg></span>
+            <span><span class="nm" style="display:block">Earnings &amp; payouts</span><span class="sb">₹5,080 available to withdraw</span></span>
+            <span class="ch"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+          </button>
+          <button class="srow">
+            <span class="si" style="background:var(--orange-soft)"><svg viewBox="0 0 24 24" stroke="var(--orange)" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M16 12.5h2"/></svg></span>
+            <span><span class="nm" style="display:block">Bank &amp; UPI details</span><span class="sb">HDFC •••• 4821 · verified</span></span>
+            <span class="ch"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+          </button>
+          <button class="srow">
+            <span class="si" style="background:var(--green-soft)"><svg viewBox="0 0 24 24" stroke="var(--green)" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-4 7-9V6l-7-3-7 3v6c0 5 7 9 7 9z"/><path d="m9 11.5 2 2 4-4"/></svg></span>
+            <span><span class="nm" style="display:block">Licences &amp; documents</span><span class="sb">FSSAI valid till Mar 2027</span></span>
+            <span class="ch"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+          </button>
+        </div>
+
+        <div class="setgroup">
+          <div class="gh">Preferences</div>
+          <div class="srow">
+            <span class="si" style="background:var(--orange-soft)"><svg viewBox="0 0 24 24" stroke="var(--orange)" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 1 0-12 0c0 6-2.5 7.5-2.5 7.5h17S18 14.5 18 8.5z"/><path d="M13.7 20a2 2 0 0 1-3.4 0"/></svg></span>
+            <span><span class="nm" style="display:block">New order alerts</span><span class="sb">Sound and push notification</span></span>
+            <button class="tgl on" data-ct></button>
+          </div>
+          <div class="srow">
+            <span class="si" style="background:var(--green-soft)"><svg viewBox="0 0 24 24" stroke="var(--green)" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 13.7-5.6L20 8"/><path d="M20 4v4h-4"/><path d="M20 12a8 8 0 0 1-13.7 5.6L4 16"/><path d="M4 20v-4h4"/></svg></span>
+            <span><span class="nm" style="display:block">Auto-accept repeat orders</span><span class="sb">From subscription customers</span></span>
+            <button class="tgl" data-ct></button>
+          </div>
+          <div class="srow">
+            <span class="si" style="background:var(--orange-soft)"><svg viewBox="0 0 24 24" stroke="var(--orange)" stroke-linecap="round" stroke-linejoin="round"><path d="M7 21h10"/><path d="M12 17v4"/><path d="M6 4.5A3.5 3.5 0 0 1 12 3a3.5 3.5 0 0 1 6 1.5 3.5 3.5 0 0 1-1.5 6.8V17h-9v-5.7A3.5 3.5 0 0 1 6 4.5z"/></svg></span>
+            <span><span class="nm" style="display:block">Custom dish requests</span><span class="sb">Let customers request off-menu dishes</span></span>
+            <button class="tgl on" data-ct></button>
+          </div>
+        </div>
+
+        <div class="setgroup">
+          <div class="gh">Support &amp; more</div>
+          <button class="srow">
+            <span class="si" style="background:var(--orange-soft)"><svg viewBox="0 0 24 24" stroke="var(--orange)" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.5a2.5 2.5 0 1 1 3.4 2.3c-.6.2-1 .8-1 1.4v.3"/><path d="M12 17h.01"/></svg></span>
+            <span><span class="nm" style="display:block">Partner support</span><span class="sb">Chat with the kitchen team</span></span>
+            <span class="ch"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+          </button>
+          <button class="srow" data-go="home">
+            <span class="si" style="background:var(--green-soft)"><svg viewBox="0 0 24 24" stroke="var(--green)" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13l-3-3"/><path d="M20 16H7l3 3"/></svg></span>
+            <span><span class="nm" style="display:block">Switch to customer mode</span><span class="sb">Browse and order as a customer</span></span>
+            <span class="ch"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></span>
+          </button>
+        </div>
+
+        <button class="logout" id="chefLogout"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>Log out</button>
+      </div>
+
+      <aside class="rail">
+        <div class="rcard">
+          <div class="rhead"><h3>Kitchen address</h3><span class="mini">Public</span></div>
+          <div class="delivery">
+            <span class="dtick"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
+            <div><div class="v">Kalkaji, New Delhi</div><div class="s">B-42, Kalkaji Extension · 110019</div></div>
+          </div>
+          <button class="railbtn ghost">Change address</button>
+        </div>
+
+        <div class="rcard">
+          <div class="rhead"><h3>This month</h3><span class="mini">August</span></div>
+          <div class="sumrow"><span>Orders completed</span><span style="font-weight:800;color:var(--ink)">98</span></div>
+          <div class="sumrow"><span>Repeat customers</span><span style="font-weight:800;color:var(--ink)">41</span></div>
+          <div class="sumrow"><span>On-time rate</span><span style="font-weight:800;color:var(--green)">94%</span></div>
+          <div class="sumrow"><span>Cancellations</span><span style="font-weight:800;color:var(--ink)">2</span></div>
+          <div class="sumrow tot"><span>Net payout</span><span>₹21,500</span></div>
+        </div>
+
+        <div class="rcard" style="margin-bottom:0">
+          <div class="rhead"><h3>Recent reviews</h3><span class="mini">4.9 avg</span></div>
+          <div class="rev2">
+            <span class="av2">AK</span>
+            <div style="min-width:0;flex:1">
+              <div style="display:flex;align-items:center;gap:8px"><span class="who">Ananya K.</span><span class="stars"><svg viewBox="0 0 24 24"><path d="m12 2 3 6.3 6.8 1-4.9 4.8 1.2 6.9L12 17.8 5.9 21l1.2-6.9L2.2 9.3l6.8-1z"/></svg><svg viewBox="0 0 24 24"><path d="m12 2 3 6.3 6.8 1-4.9 4.8 1.2 6.9L12 17.8 5.9 21l1.2-6.9L2.2 9.3l6.8-1z"/></svg><svg viewBox="0 0 24 24"><path d="m12 2 3 6.3 6.8 1-4.9 4.8 1.2 6.9L12 17.8 5.9 21l1.2-6.9L2.2 9.3l6.8-1z"/></svg><svg viewBox="0 0 24 24"><path d="m12 2 3 6.3 6.8 1-4.9 4.8 1.2 6.9L12 17.8 5.9 21l1.2-6.9L2.2 9.3l6.8-1z"/></svg><svg viewBox="0 0 24 24"><path d="m12 2 3 6.3 6.8 1-4.9 4.8 1.2 6.9L12 17.8 5.9 21l1.2-6.9L2.2 9.3l6.8-1z"/></svg></span></div>
+              <div class="tx">Butter chicken tasted exactly like home. Portion was generous.</div>
+              <div class="wh">Butter Chicken Bowl · 2 days ago</div>
+            </div>
+          </div>
+          <div class="rev2">
+            <span class="av2">VM</span>
+            <div style="min-width:0;flex:1">
+              <div style="display:flex;align-items:center;gap:8px"><span class="who">Vikram M.</span><span class="stars"><svg viewBox="0 0 24 24"><path d="m12 2 3 6.3 6.8 1-4.9 4.8 1.2 6.9L12 17.8 5.9 21l1.2-6.9L2.2 9.3l6.8-1z"/></svg><svg viewBox="0 0 24 24"><path d="m12 2 3 6.3 6.8 1-4.9 4.8 1.2 6.9L12 17.8 5.9 21l1.2-6.9L2.2 9.3l6.8-1z"/></svg><svg viewBox="0 0 24 24"><path d="m12 2 3 6.3 6.8 1-4.9 4.8 1.2 6.9L12 17.8 5.9 21l1.2-6.9L2.2 9.3l6.8-1z"/></svg><svg viewBox="0 0 24 24"><path d="m12 2 3 6.3 6.8 1-4.9 4.8 1.2 6.9L12 17.8 5.9 21l1.2-6.9L2.2 9.3l6.8-1z"/></svg></span></div>
+              <div class="tx">Biryani was fragrant and on time. Would order again.</div>
+              <div class="wh">Hyderabadi Veg Biryani · 4 days ago</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
 </div>
 
 <div class="vptoggle" id="vptoggle">
@@ -3395,7 +3614,7 @@ const ORDERS=[
 /* ════════ ROUTER ════════ */
 function go(view){
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+view));
-  const lit=view==='orders'?'Orders':view==='health'?'Health':view==='wallet'?'Wallet':view==='plans'||view==='rot'?'Meal Plans':view==='profile'?'Profile':view==='chef'?'Concierge':view==='mantra'?'MealMantra AI':view==='chefd'?'Chef Dashboard':view==='menu'||view==='new'?'Manage Menu':view==='earn'?'Earnings':'Home';
+  const lit=view==='orders'?'Orders':view==='health'?'Health':view==='wallet'?'Wallet':view==='plans'||view==='rot'?'Meal Plans':view==='profile'?'Profile':view==='chef'?'Concierge':view==='mantra'?'MealMantra AI':view==='chefd'?'Chef Dashboard':view==='menu'||view==='new'?'Manage Menu':view==='earn'?'Earnings':view==='chefp'?'Kitchen Profile':'Home';
   document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('on',b.textContent.trim().startsWith(lit)));
   const tabFor=view==='health'||view==='wallet'?'profile':view==='rot'?'plans':view;
   document.querySelectorAll('#tabnav button:not(.fab)').forEach(b=>b.classList.toggle('on',b.dataset.go===tabFor));
@@ -4532,6 +4751,13 @@ $('nmPub').addEventListener('click',()=>{
   renderMenu();go('menu');
 });
 
+$('chefLogout').addEventListener('click',()=>toast('Logged out of kitchen'));
+$('chefpEdit').addEventListener('click',()=>toast('Edit kitchen details'));
+document.querySelectorAll('#v-chefp [data-ct]').forEach(t=>t.addEventListener('click',()=>{
+  t.classList.toggle('on');
+  toast(t.previousElementSibling.querySelector('.nm').textContent+(t.classList.contains('on')?' on':' off'));
+}));
+
 /* ════════ MOBILE BEHAVIOUR ════════ */
 const isMobile=()=>document.body.classList.contains('m');
 
@@ -4543,7 +4769,7 @@ function syncMobileBars(){
   $('mcbN').textContent=count;
   $('mcbT').textContent=inr(total);
   $('mcbS').textContent=count===1?'1 item in cart':count+' items in cart';
-  const onChef=$('v-chef').classList.contains('on')||$('v-cart').classList.contains('on')||$('v-chefd').classList.contains('on')||$('v-menu').classList.contains('on')||$('v-earn').classList.contains('on')||$('v-new').classList.contains('on');
+  const onChef=$('v-chef').classList.contains('on')||$('v-cart').classList.contains('on')||$('v-chefd').classList.contains('on')||$('v-menu').classList.contains('on')||$('v-earn').classList.contains('on')||$('v-new').classList.contains('on')||$('v-chefp').classList.contains('on');
   $('mcartbar').classList.toggle('show',isMobile()&&!onDetail&&!onChef&&count>0);
   $('mbuy').classList.toggle('show',isMobile()&&onDetail);
   $('mbQty').textContent=curQty;

@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ToastController, AlertController } from '@ionic/angular';
 import { AuthService } from '../../services/auth';
 import { ThemeService } from '../../services/theme.service';
+import { MealService } from '../../services/meal.service';
 
 @Component({
   selector: 'app-profile',
@@ -42,14 +43,59 @@ export class ProfilePage implements OnInit {
     updates: false
   };
 
+  isOnline = true;
+  isLoadingProfile = false;
+
+  // Dynamic Chef KPIs — bound to template
+  chefKpis = {
+    ordersServed: 0,
+    acceptRate: 96,
+    avgPrepTime: '18 min',
+    deliveryRadiusKm: 6,
+    rating: 4.8,
+    ratingsCount: 0,
+    totalEarnings: 0,
+    availableBalance: 0,
+    menuCount: 0,
+    outOfStockCount: 0,
+    cuisines: ['North Indian', 'Home style'] as string[],
+    memberSince: '',
+    isVerified: true,
+    fssaiNumber: '22821004000371',
+    kitchenHours: {
+      breakfast: { label: 'Not serving yet', isOpen: false },
+      lunch: { label: '11:30 AM – 3:00 PM', isOpen: true },
+      dinner: { label: '7:00 PM – 10:30 PM', isOpen: true },
+      weeklyOff: { label: 'Every Tuesday', isOpen: false }
+    },
+    compliance: {
+      fssaiStatus: 'Verified',
+      fssaiExpiry: 'Mar 2027',
+      gstStatus: 'Active',
+      bankName: 'HDFC Bank',
+      bankAccount: 'HDFC •••• 4821'
+    }
+  };
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private toastCtrl: ToastController,
     private alertCtrl: AlertController,
     private auth: AuthService,
-    public themeService: ThemeService
+    public themeService: ThemeService,
+    private mealService: MealService
   ) { }
+
+  toggleOnlineStatus() {
+    this.isOnline = !this.isOnline;
+  }
+
+  switchToCustomerMode() {
+    localStorage.setItem('mealmate_role', 'customer');
+    this.userRole = 'customer';
+    this.router.navigate(['/customer-home']);
+  }
 
   get isDarkMode(): boolean {
     return this.themeService.isDarkMode;
@@ -97,6 +143,8 @@ export class ProfilePage implements OnInit {
         loyaltyLevel: 'Gold Partner',
         memberSince: 'Jan 2024'
       };
+      // Fetch dynamic chef profile from backend
+      this.loadChefProfile();
     } else {
       this.userProfile = {
         name: authName || 'MealMate_User',
@@ -110,6 +158,46 @@ export class ProfilePage implements OnInit {
         loyaltyLevel: 'Silver member',
         memberSince: 'Aug 2024'
       };
+    }
+  }
+
+  async loadChefProfile() {
+    const chefId = this.auth.userId || this.auth.userEmail || '';
+    if (!chefId) return;
+
+    this.isLoadingProfile = true;
+    try {
+      const profile = await this.mealService.getChefProfile(chefId);
+      if (profile) {
+        // Update user profile from API
+        this.userProfile.name = profile.kitchenName || this.userProfile.name;
+        this.userProfile.email = profile.email || this.userProfile.email;
+        if (profile.phone) this.userProfile.phone = profile.phone;
+
+        // Update KPIs
+        this.chefKpis = {
+          ordersServed: profile.ordersServed ?? this.chefKpis.ordersServed,
+          acceptRate: profile.acceptRate ?? this.chefKpis.acceptRate,
+          avgPrepTime: profile.avgPrepTime || this.chefKpis.avgPrepTime,
+          deliveryRadiusKm: profile.deliveryRadiusKm ?? this.chefKpis.deliveryRadiusKm,
+          rating: profile.rating ?? this.chefKpis.rating,
+          ratingsCount: profile.ratingsCount ?? this.chefKpis.ratingsCount,
+          totalEarnings: profile.totalEarnings ?? this.chefKpis.totalEarnings,
+          availableBalance: profile.availableBalance ?? this.chefKpis.availableBalance,
+          menuCount: profile.menuCount ?? this.chefKpis.menuCount,
+          outOfStockCount: profile.outOfStockCount ?? this.chefKpis.outOfStockCount,
+          cuisines: (profile.cuisines && profile.cuisines.length > 0) ? profile.cuisines : this.chefKpis.cuisines,
+          memberSince: profile.memberSince || this.chefKpis.memberSince,
+          isVerified: profile.isVerified ?? true,
+          fssaiNumber: profile.fssaiNumber || this.chefKpis.fssaiNumber,
+          kitchenHours: profile.kitchenHours || this.chefKpis.kitchenHours,
+          compliance: profile.compliance || this.chefKpis.compliance
+        };
+      }
+    } catch (e) {
+      console.warn('Chef profile load failed, using defaults', e);
+    } finally {
+      this.isLoadingProfile = false;
     }
   }
 

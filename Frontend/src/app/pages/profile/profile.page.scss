@@ -1048,3 +1048,246 @@ $shadow-h: 0 8px 24px rgba(30, 24, 21, 0.08);
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* ═══════════ CHEF KITCHEN PROFILE SPECIFIC STYLES ═══════════ */
+.kitbadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: $green;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 99px;
+
+  svg {
+    width: 12px;
+    height: 12px;
+    stroke: #ffffff;
+    stroke-width: 2.6;
+    fill: none;
+  }
+}
+
+.ratepill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #FDF3DC;
+  color: #B77A08;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: 99px;
+
+  svg {
+    width: 13px;
+    height: 13px;
+    fill: #E0A11B;
+  }
+}
+
+.fssai {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: $orange-soft;
+  color: #C9520F;
+  font-size: 11.5px;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: 99px;
+  font-family: "SF Mono", Menlo, monospace;
+
+  svg {
+    width: 13px;
+    height: 13px;
+    stroke: $orange;
+    stroke-width: 2.2;
+    fill: none;
+  }
+}
+
+.kpi4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.kpi {
+  background: #ffffff;
+  border: 1px solid $line;
+  border-radius: 16px;
+  padding: 15px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .ki {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    background: $orange-soft;
+    display: grid;
+    place-items: center;
+    flex: none;
+
+    svg {
+      width: 18px;
+      height: 18px;
+      stroke: $orange;
+      stroke-width: 2;
+      fill: none;
+    }
+  }
+
+  &.g .ki {
+    background: $green-soft;
+
+    svg {
+      stroke: $green;
+    }
+  }
+
+  .v {
+    font-size: 20px;
+    font-weight: 800;
+    color: $ink;
+    letter-spacing: -.03em;
+    line-height: 1;
+  }
+
+  .l {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: $ink-3;
+    margin-top: 4px;
+  }
+}
+
+.chartcard {
+  background: #ffffff;
+  border: 1px solid $line;
+  border-radius: $r-lg;
+  padding: 20px;
+
+  .blkhead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+
+    h2 {
+      font-size: 16px;
+      font-weight: 800;
+      color: $ink;
+      margin: 0;
+      letter-spacing: -.02em;
+    }
+  }
+}
+
+.slot {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid $line;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  .si3 {
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+    background: $orange-soft;
+    display: grid;
+    place-items: center;
+    flex: none;
+
+    svg {
+      width: 16px;
+      height: 16px;
+      stroke: $orange;
+      stroke-width: 2;
+      fill: none;
+    }
+  }
+
+  .nm {
+    font-size: 14px;
+    font-weight: 800;
+    color: $ink;
+  }
+
+  .hr {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: $ink-3;
+    margin-top: 2px;
+  }
+
+  .tg {
+    margin-left: auto;
+    flex: none;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 99px;
+    background: $green-soft;
+    color: $green;
+  }
+
+  &.off {
+    .si3 {
+      background: #F2EDE9;
+
+      svg {
+        stroke: $ink-3;
+      }
+    }
+
+    .tg {
+      background: #F2EDE9;
+      color: $ink-3;
+    }
+  }
+}
+
+.cuis {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cu2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 99px;
+  background: $orange-soft;
+  border: 1px solid $orange-line;
+  font-size: 13px;
+  font-weight: 700;
+  color: #C9520F;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+  }
+}

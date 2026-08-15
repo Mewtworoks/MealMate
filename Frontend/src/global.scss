@@ -120,6 +120,17 @@ $mm-font-xxl: 1.6rem;
   --border-radius: 24px 24px 0 0;
 }
 
+/* Hide header back buttons on Desktop Web UI */
+.view-main {
+  .top, header {
+    .back,
+    button.back,
+    .back-btn-pill {
+      display: none !important;
+    }
+  }
+}
+
 /* ==========================================================================
    Global Header Styles
    ========================================================================== */
