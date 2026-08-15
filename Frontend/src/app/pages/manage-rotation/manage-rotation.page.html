@@ -347,42 +347,79 @@
         <ion-icon [name]="themeService.isSidebarCollapsed ? 'chevron-forward-outline' : 'chevron-back-outline'"></ion-icon>
       </button>
     </div>
-    <div class="navlabel">Menu</div>
-    <nav class="nav">
-      <button routerLink="/customer-home">
-        <ion-icon name="home-outline"></ion-icon><span class="nav-text">Home</span>
-      </button>
-      <button routerLink="/my-orders">
-        <ion-icon name="bag-outline"></ion-icon><span class="nav-text">Orders</span>
-      </button>
-      <button class="on" routerLink="/subscribe">
-        <ion-icon name="calendar-outline"></ion-icon><span class="nav-text">Meal Plans</span>
-      </button>
-      <button routerLink="/health">
-        <ion-icon name="heart-outline"></ion-icon><span class="nav-text">Health</span>
-      </button>
-      <button routerLink="/ai-concierge">
-        <ion-icon name="chatbubbles-outline"></ion-icon><span class="nav-text">MealMantra AI</span>
-      </button>
-      <button routerLink="/wallet">
-        <ion-icon name="shield-checkmark-outline"></ion-icon><span class="nav-text">Wallet</span>
-      </button>
-      <button routerLink="/profile">
-        <ion-icon name="person-outline"></ion-icon><span class="nav-text">Profile</span>
-      </button>
-    </nav>
-    <div class="side-foot">
-      <div class="plan-mini" *ngIf="activeSub">
-        <div class="t">ACTIVE PLAN</div>
-        <div class="v">{{planName}}</div>
-        <div class="pbar"><i [style.width.%]="activePlanPercent"></i></div>
-        <div class="f"><span>Day {{activeSub.currentDay}} of {{activeSub.totalDays}}</span><span>{{activePlanPercent}}%</span></div>
+    <!-- CHEF SIDEBAR NAV -->
+    <ng-container *ngIf="themeService.isAgent">
+      <div class="navlabel">Chef Menu</div>
+      <nav class="nav">
+        <button routerLink="/agent-home">
+          <ion-icon name="home-outline"></ion-icon><span class="nav-text">Dashboard</span>
+        </button>
+        <button routerLink="/manage-menu">
+          <ion-icon name="restaurant-outline"></ion-icon><span class="nav-text">Manage Menu</span>
+        </button>
+        <button routerLink="/agent-earnings">
+          <ion-icon name="wallet-outline"></ion-icon><span class="nav-text">Earnings</span>
+        </button>
+        <button routerLink="/profile">
+          <ion-icon name="person-outline"></ion-icon><span class="nav-text">Chef Profile</span>
+        </button>
+      </nav>
+      <div class="side-foot">
+        <button class="me" routerLink="/profile" title="View Profile">
+          <span class="ava">🧑‍🍳</span>
+          <span class="me-text" style="text-align:left">
+            <span class="n">Chef Kitchen</span><br>
+            <span class="s">Partner Account</span>
+          </span>
+        </button>
       </div>
-      <button class="me" routerLink="/profile" title="View Profile">
-        <span class="ava">{{userInitials}}</span>
-        <span class="me-text" style="text-align:left"><span class="n">{{userName}}</span><br><span class="s">Premium member</span></span>
-      </button>
-    </div>
+    </ng-container>
+
+    <!-- CUSTOMER SIDEBAR NAV -->
+    <ng-container *ngIf="!themeService.isAgent">
+      <div class="navlabel">Menu</div>
+      <nav class="nav">
+        <button routerLink="/customer-home">
+          <ion-icon name="home-outline"></ion-icon><span class="nav-text">Home</span>
+        </button>
+        <button routerLink="/my-orders">
+          <ion-icon name="bag-outline"></ion-icon><span class="nav-text">Orders</span>
+        </button>
+        <button routerLink="/subscribe">
+          <ion-icon name="calendar-outline"></ion-icon><span class="nav-text">Meal Plans</span>
+        </button>
+        <button class="on" routerLink="/manage-rotation">
+          <ion-icon name="sync-outline"></ion-icon><span class="nav-text">Meal Rotation</span>
+        </button>
+        <button routerLink="/custom-meal">
+          <ion-icon name="restaurant-outline"></ion-icon><span class="nav-text">Personal Chef</span>
+        </button>
+        <button routerLink="/health">
+          <ion-icon name="heart-outline"></ion-icon><span class="nav-text">Health</span>
+        </button>
+        <button routerLink="/ai-concierge">
+          <ion-icon name="chatbubbles-outline"></ion-icon><span class="nav-text">MealMantra AI</span>
+        </button>
+        <button routerLink="/wallet">
+          <ion-icon name="shield-checkmark-outline"></ion-icon><span class="nav-text">Wallet</span>
+        </button>
+        <button routerLink="/profile">
+          <ion-icon name="person-outline"></ion-icon><span class="nav-text">Profile</span>
+        </button>
+      </nav>
+      <div class="side-foot">
+        <div class="plan-mini" *ngIf="activeSub">
+          <div class="t">ACTIVE PLAN</div>
+          <div class="v">{{planName}}</div>
+          <div class="pbar"><i [style.width.%]="activePlanPercent"></i></div>
+          <div class="f"><span>Day {{activeSub.currentDay}} of {{activeSub.totalDays}}</span><span>{{activePlanPercent}}%</span></div>
+        </div>
+        <button class="me" routerLink="/profile" title="View Profile">
+          <span class="ava">{{userInitials}}</span>
+          <span class="me-text" style="text-align:left"><span class="n">{{userName}}</span><br><span class="s">Premium member</span></span>
+        </button>
+      </div>
+    </ng-container>
   </aside>
 
   <!-- MAIN VIEW -->
