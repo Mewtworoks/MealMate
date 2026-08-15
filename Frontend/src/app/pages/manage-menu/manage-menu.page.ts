@@ -248,9 +248,35 @@ export class ManageMenuPage implements OnInit {
     this.mealForm.allergens = list.join(', ');
   }
 
+  activeKebabMealId: string | null = null;
+
+  get liveCount(): number {
+    return this.agentMeals.filter(m => m.isAvailable !== false).length;
+  }
+
+  get outOfStockCount(): number {
+    return this.agentMeals.filter(m => m.isAvailable === false).length;
+  }
+
+  get avgPrice(): number {
+    if (!this.agentMeals.length) return 0;
+    const total = this.agentMeals.reduce((acc, m) => acc + (m.price || 0), 0);
+    return Math.round(total / this.agentMeals.length);
+  }
+
+  get bestSellerName(): string {
+    return this.agentMeals.length ? this.agentMeals[0].name : '—';
+  }
+
+  toggleMealMenu(meal: Meal, event: Event) {
+    event.stopPropagation();
+    this.activeKebabMealId = this.activeKebabMealId === meal.id ? null : (meal.id || null);
+  }
+
   toggleMealAvailability(meal: Meal) {
     meal.isAvailable = meal.isAvailable === undefined ? false : !meal.isAvailable;
     this.mealService.updateMeal(meal);
   }
 }
+
 

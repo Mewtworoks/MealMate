@@ -118,148 +118,149 @@
     <!-- MAIN MANAGE MENU CONTENT AREA -->
     <div class="view-main">
       <header class="top">
-        <button class="back" (click)="goBack()" style="border:none; background:none; cursor:pointer; display:flex; align-items:center; gap:6px;">
-          <ion-icon name="arrow-back-outline"></ion-icon>
-          <span style="font-weight:700;">Back</span>
+        <button class="back" (click)="goBack()">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
         </button>
         <div>
-          <h1 style="font-size:20px; font-weight:800; margin:0; color:#1E1815;">Manage Menu</h1>
-          <div class="sub" style="font-size:12.5px; color:#948A83;">Add, edit or remove kitchen menu items</div>
+          <h1>Manage Menu</h1>
+          <div class="sub">Add, edit or remove menu items</div>
         </div>
-        <div class="top-r" style="margin-left:auto; display:flex; gap:10px; align-items:center;">
-          <div class="onlinechip">
-            <i></i>
-            <span>{{ agentMeals.length }} Items Live</span>
-          </div>
-          <button class="addfab" (click)="isAddMealModalOpen = true" style="margin:0; height:38px;">
-            <ion-icon name="add-outline"></ion-icon>
-            <span>Add Meal</span>
-          </button>
+        <div class="top-r">
+          <span class="onlinechip"><i></i><span>{{ liveCount }}</span> live</span>
         </div>
       </header>
 
-      <div class="body" style="padding: 24px;">
-        <div class="desktop-body-grid">
-          <!-- Main Left Column -->
-          <div class="main-column">
-            <!-- Search & Add Action Bar -->
-            <div class="search-section-wrap">
-              <div class="search-pill-box">
-                <ion-icon name="search-outline"></ion-icon>
-                <input type="text" placeholder="Search menu items..." [(ngModel)]="searchQuery" (input)="filterMeals()">
-              </div>
-              <button class="filter-sq-btn">
-                <ion-icon name="options-outline"></ion-icon>
-              </button>
-              <button class="addfab" (click)="isAddMealModalOpen = true">
-                <ion-icon name="add-outline"></ion-icon>
-                <span>Add Meal</span>
-              </button>
-            </div>
+      <div class="body">
+        <div>
+          <div class="mmsearch">
+            <span class="sw2">
+              <svg viewBox="0 0 24 24" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              <input type="text" placeholder="Search menu items…" [(ngModel)]="searchQuery" (input)="filterMeals()">
+            </span>
+            <button class="addfab" (click)="isAddMealModalOpen = true" title="Add item" aria-label="Add item">
+              <svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add Item
+            </button>
+          </div>
 
-            <!-- Category Pills -->
-            <div class="cat-pill-scroll">
-              <div class="cat-pill" [class.active]="selectedCat === 'All'" (click)="selectCategory('All')">
-                <ion-icon name="restaurant-outline"></ion-icon>
-                <span>All</span>
-                <div class="count">{{agentMeals.length}}</div>
-              </div>
-              <div class="cat-pill" [class.active]="selectedCat === 'Breakfast'" (click)="selectCategory('Breakfast')">
-                <ion-icon name="sunny-outline"></ion-icon>
-                <span>Breakfast</span>
-                <div class="count">{{getCatCount('Breakfast')}}</div>
-              </div>
-              <div class="cat-pill" [class.active]="selectedCat === 'Lunch'" (click)="selectCategory('Lunch')">
-                <ion-icon name="partly-sunny-outline"></ion-icon>
-                <span>Lunch</span>
-                <div class="count">{{getCatCount('Lunch')}}</div>
-              </div>
-              <div class="cat-pill" [class.active]="selectedCat === 'Dinner'" (click)="selectCategory('Dinner')">
-                <ion-icon name="moon-outline"></ion-icon>
-                <span>Dinner</span>
-                <div class="count">{{getCatCount('Dinner')}}</div>
-              </div>
-            </div>
+          <!-- Category Pills -->
+          <div class="mmcats">
+            <button class="mmcat" [class.on]="selectedCat === 'All'" (click)="selectCategory('All')">
+              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              All <span class="n">{{ agentMeals.length }}</span>
+            </button>
+            <button class="mmcat" [class.on]="selectedCat === 'Breakfast'" (click)="selectCategory('Breakfast')">
+              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+              Breakfast <span class="n">{{ getCatCount('Breakfast') }}</span>
+            </button>
+            <button class="mmcat" [class.on]="selectedCat === 'Lunch'" (click)="selectCategory('Lunch')">
+              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="4"/><path d="M3 8h4M17 8h4"/></svg>
+              Lunch <span class="n">{{ getCatCount('Lunch') }}</span>
+            </button>
+            <button class="mmcat" [class.on]="selectedCat === 'Dinner'" (click)="selectCategory('Dinner')">
+              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
+              Dinner <span class="n">{{ getCatCount('Dinner') }}</span>
+            </button>
+          </div>
 
-            <!-- Empty State -->
-            <div class="empty-state" *ngIf="filteredMeals.length === 0">
-              <div class="empty-icon-box">
-                <ion-icon name="restaurant-outline"></ion-icon>
-              </div>
-              <h2>Your Menu is Empty</h2>
-              <p>Customers can't order until you add some delicious meals!</p>
-              <ion-button class="org-btn" expand="block" (click)="isAddMealModalOpen = true">
-                Add First Meal
-              </ion-button>
+          <!-- Empty state -->
+          <div class="empty-state" *ngIf="filteredMeals.length === 0" style="text-align:center; padding:40px 20px; background:#fff; border:1px solid var(--line,#EDE6E1); border-radius:18px;">
+            <div class="empty-icon-box" style="width:56px; height:56px; border-radius:50%; background:var(--orange-soft,#FFF1E8); display:grid; place-items:center; margin:0 auto 16px;">
+              <ion-icon name="restaurant-outline" style="font-size:24px; color:var(--orange,#F26A21);"></ion-icon>
             </div>
+            <h2 style="font-size:18px; font-weight:800; color:var(--ink,#1E1815); margin:0 0 6px;">Your Menu is Empty</h2>
+            <p style="font-size:13px; color:var(--ink-3,#948A83); margin:0 0 20px;">Customers can't order until you add some delicious meals!</p>
+            <button class="addfab" (click)="isAddMealModalOpen = true" style="margin:0 auto;">
+              <svg viewBox="0 0 24 24" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add First Meal
+            </button>
+          </div>
 
-            <!-- Meal Items Grid -->
-            <div class="meals-list-container" *ngIf="filteredMeals.length > 0">
-              <div class="premium-meal-card" *ngFor="let meal of filteredMeals">
-                <div class="live-tag" *ngIf="meal.isAvailable !== false">
-                  <span class="dot"></span> LIVE
+          <!-- Meals Grid -->
+          <div class="mgrid" *ngIf="filteredMeals.length > 0">
+            <div class="mitem" *ngFor="let meal of filteredMeals" [class.off]="meal.isAvailable === false">
+              <div class="mtop">
+                <img [src]="meal.image || 'assets/placeholder-food.jpg'" [alt]="meal.name" class="ph" style="object-fit:cover;">
+                <div class="livetag" [class.paused]="meal.isAvailable === false">
+                  <i></i> {{ meal.isAvailable === false ? 'PAUSED' : 'LIVE' }}
                 </div>
-                <div class="live-tag paused" *ngIf="meal.isAvailable === false">
-                  <span class="dot grey"></span> PAUSED
-                </div>
-
-                <div class="meal-image-container">
-                  <img [src]="meal.image" [alt]="meal.name">
-                  <button class="more-btn" (click)="openPopover($event, meal)">
-                    <ion-icon name="ellipsis-vertical"></ion-icon>
+                <button class="kebab" (click)="toggleMealMenu(meal, $event)">
+                  <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                </button>
+                
+                <!-- Kebab popup menu -->
+                <div class="mmenu" [class.open]="activeKebabMealId === meal.id">
+                  <button (click)="editMeal(meal)">
+                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                    Edit item
+                  </button>
+                  <button (click)="toggleMealAvailability(meal)">
+                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10"/></svg>
+                    {{ meal.isAvailable === false ? 'Mark Available' : 'Mark Out of Stock' }}
+                  </button>
+                  <button class="dl" (click)="deleteMeal(meal)">
+                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    Delete item
                   </button>
                 </div>
+              </div>
 
-                <div class="meal-details-box">
-                  <div class="cat-label">{{meal.category}}</div>
-                  <h2 class="meal-name">{{meal.name}}</h2>
-                  <p class="meal-desc">{{meal.description || 'A calming meal for every Indian...'}}</p>
-
-                  <div class="meal-meta-row">
-                    <div class="price-chip">
-                      <span class="currency">₹</span>
-                      <span class="val">{{meal.price}}</span>
-                    </div>
-
-                    <div class="live-indicator-wrap" (click)="toggleMealAvailability(meal)" style="cursor: pointer;" [class.out]="meal.isAvailable === false">
-                      <span class="dot"></span>
-                      <span class="status-lab">{{meal.isAvailable !== false ? 'Available' : 'Paused'}}</span>
-                    </div>
+              <div class="mbody">
+                <span class="mtag">{{ meal.category || 'THALI' }}</span>
+                <div class="nm">{{ meal.name }}</div>
+                <div class="ds">{{ meal.description }}</div>
+                <div class="mfoot">
+                  <div class="pr">₹{{ meal.price }}</div>
+                  <div class="avsw" [class.out]="meal.isAvailable === false" (click)="toggleMealAvailability(meal)" style="cursor:pointer;">
+                    <i></i> {{ meal.isAvailable === false ? 'OUT OF STOCK' : 'AVAILABLE' }}
                   </div>
                 </div>
               </div>
             </div>
           </div>
-
-          <!-- Right Desktop Side Rail -->
-          <aside class="desktop-rail">
-            <div class="rcard">
-              <div class="rhead">
-                <h3>Menu Overview</h3>
-                <span class="mini">Live Status</span>
-              </div>
-              <div class="sumrow"><span>Total Menu Items</span><span class="val-bold">{{ agentMeals.length }}</span></div>
-              <div class="sumrow"><span>Active & Available</span><span class="val-green">{{ agentMeals.length }}</span></div>
-              <div class="sumrow"><span>Avg Meal Price</span><span class="val-bold">₹185</span></div>
-              <div class="sumrow tot"><span>Top Category</span><span>Lunch</span></div>
-            </div>
-
-            <div class="rcard insight-rail-box">
-              <div class="rhead">
-                <h3 style="display:flex;align-items:center;gap:6px;">
-                  <ion-icon name="sparkles" style="color:var(--orange, #F26A21);"></ion-icon> Mia's Insights
-                </h3>
-                <span class="mini">AI Co-Chef</span>
-              </div>
-              <p class="insight-text" style="font-size:13px; color:var(--ink-2, #5C524C); line-height:1.45; margin:0 0 10px;">
-                Adding 1 high-protein breakfast item could boost your morning subscriber orders by 24%.
-              </p>
-              <button class="railbtn ghost" (click)="isAddMealModalOpen = true" style="width:100%; padding:9px; border-radius:10px; border:1px solid var(--orange-line, #FFDCC6); background:var(--orange-soft, #FFF1E8); color:var(--orange, #F26A21); font-weight:800; font-size:12.5px; cursor:pointer;">
-                + Add Suggested Dish
-              </button>
-            </div>
-          </aside>
         </div>
+
+        <!-- Right Side Rail -->
+        <aside class="rail">
+          <div class="rcard">
+            <div class="rhead"><h3>Menu health</h3><span class="mini">Kitchen Overview</span></div>
+            <div class="sumrow"><span>Total items</span><span style="font-weight:800;color:var(--ink)">{{ agentMeals.length }}</span></div>
+            <div class="sumrow"><span>Live now</span><span style="font-weight:800;color:var(--green)">{{ liveCount }}</span></div>
+            <div class="sumrow"><span>Out of stock</span><span style="font-weight:800;color:var(--ink)">{{ outOfStockCount }}</span></div>
+            <div class="sumrow"><span>Avg price</span><span style="font-weight:800;color:var(--ink)">₹{{ avgPrice }}</span></div>
+            <div class="sumrow tot"><span>Best seller</span><span>{{ bestSellerName }}</span></div>
+          </div>
+
+          <div class="rcard">
+            <div class="rhead"><h3>Coverage</h3></div>
+            <div class="aicap" style="display:flex; gap:10px; align-items:center; margin-bottom:10px;">
+              <span class="ci" style="width:32px; height:32px; border-radius:10px; background:var(--orange-soft); display:grid; place-items:center; flex:none;">
+                <svg viewBox="0 0 24 24" style="width:16px; height:16px; stroke:var(--orange); stroke-width:2; fill:none;"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+              </span>
+              <div><div class="t" style="font-size:13px; font-weight:700;">Breakfast</div><div class="s" style="font-size:11.5px; color:var(--ink-3);">{{ getCatCount('Breakfast') }} items</div></div>
+            </div>
+            <div class="aicap" style="display:flex; gap:10px; align-items:center; margin-bottom:10px;">
+              <span class="ci" style="width:32px; height:32px; border-radius:10px; background:var(--orange-soft); display:grid; place-items:center; flex:none;">
+                <svg viewBox="0 0 24 24" style="width:16px; height:16px; stroke:var(--orange); stroke-width:2; fill:none;"><circle cx="12" cy="13" r="4"/><path d="M3 8h4M17 8h4"/></svg>
+              </span>
+              <div><div class="t" style="font-size:13px; font-weight:700;">Lunch</div><div class="s" style="font-size:11.5px; color:var(--ink-3);">{{ getCatCount('Lunch') }} items</div></div>
+            </div>
+            <div class="aicap" style="display:flex; gap:10px; align-items:center;">
+              <span class="ci" style="width:32px; height:32px; border-radius:10px; background:var(--orange-soft); display:grid; place-items:center; flex:none;">
+                <svg viewBox="0 0 24 24" style="width:16px; height:16px; stroke:var(--orange); stroke-width:2; fill:none;"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
+              </span>
+              <div><div class="t" style="font-size:13px; font-weight:700;">Dinner</div><div class="s" style="font-size:11.5px; color:var(--ink-3);">{{ getCatCount('Dinner') }} items</div></div>
+            </div>
+          </div>
+
+          <div class="insight" style="background:#FFF9F5; border:1px solid var(--orange-line,#FFDCC6); border-radius:16px; padding:16px; display:flex; gap:12px; align-items:flex-start;">
+            <span class="sp" style="width:32px; height:32px; border-radius:10px; background:var(--orange-soft,#FFF1E8); display:grid; place-items:center; flex:none;">
+              <svg viewBox="0 0 24 24" style="width:18px; height:18px; fill:var(--orange,#F26A21);"><path d="M12 2.5l2.1 5.6 5.6 2.1-5.6 2.1L12 17.9l-2.1-5.6L4.3 10.2l5.6-2.1z"/><path d="M18.5 15.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z"/></svg>
+            </span>
+            <div>
+              <div class="k" style="font-size:11px; font-weight:800; color:var(--orange,#F26A21); text-transform:uppercase; letter-spacing:0.05em;">Mia's Insight · AI Nutritionist</div>
+              <p style="font-size:12.5px; font-weight:600; color:var(--ink-2,#5C524C); margin:4px 0 0; line-height:1.4;">Your menu has {{ getCatCount('Breakfast') }} breakfast items. Adding more variety opens the morning delivery window.</p>
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
   </div>
