@@ -36,7 +36,12 @@ builder.Services.AddSwaggerGen();
 // Configure MySQL Connection
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(connectionString, new MySqlServerVersion(new Version(5, 7, 30))));
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(5, 7, 30)),
+        mySqlOptions => mySqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(10),
+            errorNumbersToAdd: null)));
+
 
 // Configure DI
 builder.Services.AddScoped<IUserRepository, UserRepository>();
