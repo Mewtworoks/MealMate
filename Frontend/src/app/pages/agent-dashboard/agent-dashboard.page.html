@@ -323,8 +323,8 @@
               <span class="mp"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 16V8a2 2 0 0 1 2-2h9v10H3z"/><path d="M14 9h3.5l2.5 3v4h-6"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg></span>
               <div style="min-width:0">
                 <div class="k">Current delivery</div>
-                <div class="v">Order #MM30003</div>
-                <div class="s"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>MealMate_User · 2.9 km</div>
+                <div class="v">Order {{ currentDelivery ? getFormattedOrderId(currentDelivery) : '#MM30003' }}</div>
+                <div class="s"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>{{ currentDelivery?.customerName || 'Customer' }} · {{ currentDelivery?.distanceKm || 2.9 }} km</div>
               </div>
               <span class="mins"><span class="n">12</span><span class="l">mins away</span></span>
             </div>
@@ -482,7 +482,7 @@
         <div class="delivery-details-box">
           <div class="delivery-card-header">
             <span class="delivery-badge-text">Current Delivery</span>
-            <span class="order-id-label">Order #{{ currentDelivery.id | slice:0:8 }}</span>
+            <span class="order-id-label">Order {{ getFormattedOrderId(currentDelivery) }}</span>
           </div>
           <h3 class="delivering-to-title">Delivering to <strong>{{ currentDelivery.customerName || 'Guest' }}</strong></h3>
         </div>

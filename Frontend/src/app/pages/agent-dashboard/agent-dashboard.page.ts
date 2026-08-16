@@ -271,6 +271,16 @@ export class AgentDashboardPage implements OnInit {
     return this.orderService.getStatusColor(status);
   }
 
+  getFormattedOrderId(order: any): string {
+    if (!order) return '#MM30003';
+    const rawId = order.displayId || order.DisplayId || order.id || order.Id || '';
+    if (!rawId) return '#MM30003';
+    if (rawId.startsWith('#')) return rawId;
+    if (rawId.startsWith('MM')) return `#${rawId}`;
+    const num = Math.abs(rawId.replace(/-/g, '').split('').reduce((acc: number, c: string) => acc + c.charCodeAt(0), 0)) % 90000 + 10000;
+    return `#MM${num}`;
+  }
+
   // Analytics Helpers
   get todaysEarnings(): number {
     return 0;

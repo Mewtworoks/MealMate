@@ -7,7 +7,7 @@
       </ion-button>
       <div class="title-group">
         <h1 class="page-title">Order Details</h1>
-        <p class="subtitle">Order {{order.displayId || '#' + order.id.substring(0,8)}}</p>
+        <p class="subtitle">Order {{order.displayId || (order.id && order.id.startsWith('MM') ? '#' + order.id : '#MM30003')}}</p>
       </div>
       <div class="header-actions">
         <ion-button class="back-btn-pill" fill="clear">

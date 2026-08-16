@@ -74,7 +74,7 @@
 
         <div class="oc2-right">
           <div class="oc2-header">
-            <span class="oc2-title">Order {{order.displayId || '#' + order.id.substring(0,8)}}</span>
+            <span class="oc2-title">Order {{order.displayId || (order.id && order.id.startsWith('MM') ? '#' + order.id : '#MM30003')}}</span>
             <span class="oc2-price">₹{{order.total}}</span>
           </div>
 
@@ -113,7 +113,7 @@
 
         <div class="oc2-right">
           <div class="oc2-header">
-            <span class="oc2-title">Order {{order.displayId || '#' + order.id.substring(0,8)}}</span>
+            <span class="oc2-title">Order {{order.displayId || (order.id && order.id.startsWith('MM') ? '#' + order.id : '#MM30003')}}</span>
             <span class="oc2-price">₹{{order.total}}</span>
           </div>
 
@@ -379,7 +379,7 @@
                 <div class="othumb"><img [src]="getOrderImage(o, i)" [alt]="o.id"></div>
                 <div class="ocol">
                   <div class="oid">
-                    <b>Order {{o.displayId || '#' + o.id.substring(0,8)}}</b>
+                    <b>Order {{o.displayId || (o.id && o.id.startsWith('MM') ? '#' + o.id : '#MM30003')}}</b>
                     <span class="badge" [ngClass]="o.status.toLowerCase()">
                       <ion-icon name="ellipse"></ion-icon>{{getStatusLabel(o.status)}}
                     </span>
@@ -411,7 +411,7 @@
                 <div class="othumb"><img [src]="getOrderImage(o, i)" [alt]="o.id"></div>
                 <div class="ocol">
                   <div class="oid">
-                    <b>Order {{o.displayId || '#' + o.id.substring(0,8)}}</b>
+                    <b>Order {{o.displayId || (o.id && o.id.startsWith('MM') ? '#' + o.id : '#MM30003')}}</b>
                     <span class="badge delivered"><ion-icon name="checkmark-circle"></ion-icon>Delivered</span>
                   </div>
                   <div class="oitems">{{getOrderItemNames(o)}}</div>
