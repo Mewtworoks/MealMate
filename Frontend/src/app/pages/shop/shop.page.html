@@ -559,13 +559,13 @@
             <div class="cart-list" *ngIf="cartItems && cartItems.length > 0; else emptyCartMsg">
               <div class="citem" *ngFor="let item of cartItems">
                 <div class="cthumb">
-                  <img [src]="item.image || 'assets/onboarding/dal_chawal.png'" [alt]="item.name">
+                  <img [src]="item.meal?.image || item.image || 'assets/onboarding/dal_chawal.png'" [alt]="item.meal?.name || item.name">
                 </div>
                 <div style="min-width:0;flex:1">
-                  <div class="nm">{{item.name}}</div>
+                  <div class="nm">{{item.meal?.name || item.name}}</div>
                   <div class="q">Qty: {{item.quantity || 1}}</div>
                 </div>
-                <div class="p">₹{{item.price * (item.quantity || 1)}}</div>
+                <div class="p">₹{{ item.total || ((item.meal?.price || item.price || 0) * (item.quantity || 1)) }}</div>
               </div>
             </div>
             <ng-template #emptyCartMsg>

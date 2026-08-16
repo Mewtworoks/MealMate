@@ -41,8 +41,27 @@ export class CartService {
     const localCart = localStorage.getItem(this.storageKey);
     if (localCart) {
       try {
-        this.cartItems = JSON.parse(localCart);
-        this.cartSubject.next([...this.cartItems]);
+        const rawItems = JSON.parse(localCart);
+        if (Array.isArray(rawItems)) {
+          this.cartItems = rawItems.map((item: any) => {
+            const meal = item.meal || {};
+            const mealPrice = Number(meal.price || meal.Price || 0);
+            const quantity = Number(item.quantity || item.Quantity || 1);
+            const total = Number(item.total || item.Total || (quantity * mealPrice));
+            return {
+              meal: {
+                ...meal,
+                id: meal.id || meal.Id || item.mealId || item.MealId,
+                name: meal.name || meal.Name || 'Meal',
+                price: isNaN(mealPrice) ? 0 : mealPrice,
+                image: meal.image || meal.Image || 'assets/onboarding/dal_makhani.png'
+              },
+              quantity: isNaN(quantity) ? 1 : quantity,
+              total: isNaN(total) ? (quantity * mealPrice) : total
+            };
+          });
+          this.cartSubject.next([...this.cartItems]);
+        }
       } catch (e) {
         console.error('Error parsing local cart', e);
       }
@@ -56,33 +75,47 @@ export class CartService {
           this.http.get(`${environment.apiUrl}/Cart/${userId}`)
         );
         if (remoteCart && Array.isArray(remoteCart)) {
-          // Map backend cart dto to frontend CartItem interface
-          // Note: Assuming backend returns { meal: {...}, quantity, total } 
-          // because we use .Include(c => c.Meal) in the API
-          if (remoteCart.length > 0 && remoteCart[0].meal) {
-             this.cartItems = remoteCart as CartItem[];
-             this.cartSubject.next([...this.cartItems]);
-             this.saveToLocal(); // Sync local with remote
+          if (remoteCart.length > 0) {
+            this.cartItems = remoteCart.map((item: any) => {
+              const meal = item.meal || item.Meal || {};
+              const mealPrice = Number(meal.price || meal.Price || 0);
+              const quantity = Number(item.quantity || item.Quantity || 1);
+              const total = Number(item.total || item.Total || (quantity * mealPrice));
+              return {
+                meal: {
+                  ...meal,
+                  id: meal.id || meal.Id || item.mealId || item.MealId,
+                  name: meal.name || meal.Name || 'Meal',
+                  price: isNaN(mealPrice) ? 0 : mealPrice,
+                  image: meal.image || meal.Image || 'assets/onboarding/dal_makhani.png'
+                },
+                quantity: isNaN(quantity) ? 1 : quantity,
+                total: isNaN(total) ? (quantity * mealPrice) : total
+              };
+            });
+            this.cartSubject.next([...this.cartItems]);
+            this.saveToLocal(); // Sync local with remote
           }
         }
       } catch (err) {
-        // API not available yet, silently fallback to local storage
         console.log('Cart API not available, using local storage fallback.');
       }
     }
   }
 
   addToCart(meal: Meal) {
+    const mealPrice = Number(meal.price || 0);
     const existing = this.cartItems.find(item => item.meal.id === meal.id);
 
     if (existing) {
-      existing.quantity++;
-      existing.total = existing.quantity * meal.price;
+      existing.quantity = (Number(existing.quantity) || 0) + 1;
+      existing.meal.price = mealPrice;
+      existing.total = existing.quantity * mealPrice;
     } else {
       this.cartItems.push({
-        meal,
+        meal: { ...meal, price: mealPrice },
         quantity: 1,
-        total: meal.price
+        total: mealPrice
       });
     }
     this.cartSubject.next([...this.cartItems]);
@@ -106,7 +139,8 @@ export class CartService {
 
       if (item.quantity > 1) {
         item.quantity--;
-        item.total = item.quantity * item.meal.price;
+        const mealPrice = Number(item.meal?.price || 0);
+        item.total = item.quantity * mealPrice;
       } else {
         this.cartItems.splice(index, 1);
       }
@@ -119,15 +153,21 @@ export class CartService {
       if (isLastUnit) {
         this.cartEventSubject.next({
           type: 'remove-last',
-          mealImage: item.meal.image,
-          mealName: item.meal.name
+          mealImage: item.meal?.image || '',
+          mealName: item.meal?.name || ''
         });
       }
     }
   }
 
   getCartTotal(): number {
-    return this.cartItems.reduce((sum, item) => sum + item.total, 0);
+    return this.cartItems.reduce((sum, item) => {
+      const mealPrice = Number(item.meal?.price || 0);
+      const qty = Number(item.quantity || 1);
+      const itemTotal = Number(item.total);
+      const validTotal = (!isNaN(itemTotal) && itemTotal > 0) ? itemTotal : (qty * mealPrice);
+      return sum + (isNaN(validTotal) ? 0 : validTotal);
+    }, 0);
   }
 
   getItemCount(): number {

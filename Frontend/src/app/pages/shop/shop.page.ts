@@ -123,9 +123,9 @@ export class ShopPage implements OnInit {
     this.wallet.credits$.subscribe(c => this.credits = c);
 
     this.cartService.cart$.subscribe(items => {
-      this.cartCount = items.reduce((sum: number, i: any) => sum + (i.quantity || 1), 0);
+      this.cartCount = items.reduce((sum: number, i: any) => sum + (Number(i.quantity) || 1), 0);
       this.cartItems = items;
-      this.cartTotal = items.reduce((sum: number, i: any) => sum + (i.price * (i.quantity || 1)), 0);
+      this.cartTotal = this.cartService.getCartTotal();
     });
 
     this.greeting = this.auth.greeting;
