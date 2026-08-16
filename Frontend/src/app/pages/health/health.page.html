@@ -1,284 +1,627 @@
-<!-- Page Loader -->
 <app-page-loader [isLoading]="isLoading"></app-page-loader>
 
-<ion-header class="ion-no-border sub-page-header" *ngIf="!isLoading">
+<!-- ═══════════════════════════════════════════════════
+     MOBILE HEADER (Screens < 1001px)
+     ═══════════════════════════════════════════════════ -->
+<ion-header class="ion-no-border sub-page-header mobile-only">
   <div class="header-curve-bg"></div>
   <ion-toolbar class="transparent-toolbar">
     <div class="header-content">
+      <ion-button (click)="goBack()" class="back-btn-pill">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
       <div class="title-group">
-        <h2 class="page-title">Health Tracker</h2>
-      </div>
-      <div class="header-actions">
-        <button class="period-filter-btn">
-          <span>{{weekRangeLabel || 'This Week'}}</span>
-          <ion-icon name="chevron-down-outline"></ion-icon>
-        </button>
+        <h1 class="page-title">Health Tracker</h1>
+        <p class="subtitle">{{weekRangeLabel || 'Nutrition & Goals'}}</p>
       </div>
     </div>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="health-content" *ngIf="!isLoading">
+<ion-content class="health-content" [fullscreen]="true">
+  <!-- ═══════════════════════════════════════════════════
+       MOBILE APP VIEW (Screens < 1001px)
+       ═══════════════════════════════════════════════════ -->
+  <div class="mobile-layout mobile-only" *ngIf="!isLoading">
+    <div class="content-container">
 
-  <!-- ===== MAIN CONTENT ===== -->
-  <div class="health-wrapper">
-
-    <!-- ===== GREETING ===== -->
-    <div class="greeting-section">
-      <div class="greeting-left">
-        <p class="greeting-line">Your week at a glance, <span class="chef-highlight">Health 💪</span></p>
-        <p class="greeting-sub">Track nutrition & stay on your goals</p>
-      </div>
-      <div class="greeting-coins-decor">
-        <div class="coin c1">🥗</div>
-        <div class="coin c2">🍎</div>
-        <div class="coin c3">🥑</div>
-      </div>
-    </div>
-
-    <!-- ===== HERO HEALTH CARD ===== -->
-    <div class="hero-earnings-card">
-      <div class="hero-card-bg-mesh"></div>
-      <div class="hero-card-content">
-        <div class="hero-left">
-          <span class="hero-label">Average Daily</span>
-          <h1 class="hero-amount">{{avgCalories || 0}} <small style="font-size:1rem; font-weight:700;">kcal</small></h1>
-          <p class="hero-trend">
-            <ion-icon [name]="goalProgress >= 50 ? 'arrow-up-outline' : 'arrow-down-outline'"></ion-icon>
-            {{goalProgress}}% on track this week
-          </p>
-        </div>
-        <div class="hero-right">
-          <div class="hero-orders-block">
-            <span class="hero-orders-label">Day Streak</span>
-            <h2 class="hero-orders-val">{{streak}}</h2>
+      <!-- QUICK STATS ROW -->
+      <div class="quick-stats-grid" *ngIf="healthGoal">
+        <div class="qs-card">
+          <div class="qs-icon flame">
+            <ion-icon name="flame"></ion-icon>
           </div>
-          <div class="hero-avg-block">
-            <span class="hero-avg-label">Goal</span>
-            <h3 class="hero-avg-val">{{healthGoal.targetCalories}}</h3>
+          <div class="qs-info">
+            <span class="qs-label">Avg Daily</span>
+            <h3 class="qs-value">{{avgCalories}} <small>kcal</small></h3>
+            <span class="qs-sub" [class.over]="avgCalories > healthGoal.targetCalories">
+              {{avgCalories > healthGoal.targetCalories ? '↑ Over' : '↓ Under'}} target
+            </span>
+          </div>
+        </div>
+
+        <div class="qs-card">
+          <div class="qs-icon trophy">
+            <ion-icon name="trophy"></ion-icon>
+          </div>
+          <div class="qs-info">
+            <span class="qs-label">On Track</span>
+            <h3 class="qs-value">{{goalProgress}}%</h3>
+            <span class="qs-sub gold-text">this week</span>
           </div>
         </div>
       </div>
-      <!-- Decorative icon -->
-      <div class="hero-coin-decor">
-        <svg viewBox="0 0 60 60" width="60" height="60">
-          <circle cx="30" cy="30" r="28" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.25)" stroke-width="2"/>
-          <text x="30" y="38" text-anchor="middle" font-size="24" fill="rgba(255,255,255,0.5)">♥</text>
-        </svg>
-      </div>
-    </div>
 
-    <!-- ===== QUICK STATS ROW ===== -->
-    <div class="quick-stats-row">
-      <div class="qs-card">
-        <div class="qs-icon orange-bg"><ion-icon name="flame-outline"></ion-icon></div>
-        <div class="qs-info">
-          <span class="qs-label">Today's Intake</span>
-          <h3 class="qs-value">{{todayLog.totalCalories}}</h3>
-          <span class="qs-sub orange-text">kcal</span>
+      <!-- WEEKLY CALORIE CHART -->
+      <section class="chart-section" *ngIf="healthGoal">
+        <div class="section-header-row">
+          <h3 class="section-title">Weekly Intake</h3>
+          <span class="target-badge">Target: {{healthGoal.targetCalories}} kcal</span>
         </div>
-      </div>
-      <div class="qs-card">
-        <div class="qs-icon blue-bg"><ion-icon name="barbell-outline"></ion-icon></div>
-        <div class="qs-info">
-          <span class="qs-label">Protein</span>
-          <h3 class="qs-value">{{todayLog.totalProtein}}g</h3>
-          <span class="qs-sub blue-text">{{proteinPercent}}% of goal</span>
-        </div>
-      </div>
-      <div class="qs-card">
-        <div class="qs-icon gold-bg"><ion-icon name="leaf-outline"></ion-icon></div>
-        <div class="qs-info">
-          <span class="qs-label">On Track</span>
-          <h3 class="qs-value">{{goalProgress}}%</h3>
-          <span class="qs-sub gold-text">this week</span>
-        </div>
-      </div>
-    </div>
 
-    <!-- ===== WEEKLY CALORIE CHART ===== -->
-    <section class="chart-section">
-      <div class="section-header-row">
-        <h3 class="section-title">Weekly Intake</h3>
-        <span class="target-badge">Target: {{healthGoal.targetCalories}} kcal</span>
-      </div>
-
-      <div class="bar-chart-container">
-        <div class="chart-bar-group" *ngFor="let day of weeklyData">
-          <span class="bar-value-label" *ngIf="day.calories > 0">{{day.calories}}</span>
-          <div class="chart-bar"
-            [class.today]="day.isToday"
-            [class.on-track]="day.onTrack && !day.isToday && day.calories > 0"
-            [class.off-track]="!day.onTrack && day.calories > 0 && !day.isToday"
-            [style.height.%]="getBarHeight(day.calories) | slice:0:-1"
-            [style.min-height]="day.calories === 0 ? '8px' : ''"
-            >
-          </div>
-          <span class="bar-day-label" [class.today]="day.isToday">{{day.dayName}}</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== TODAY'S MACROS ===== -->
-    <section class="macros-section">
-      <div class="section-header-row">
-        <h3 class="section-title">Today's Macros</h3>
-        <span class="macro-cal-badge">{{todayLog.totalCalories}} kcal</span>
-      </div>
-
-      <div class="macros-row">
-        <div class="macro-card">
-          <div class="macro-ring-wrap protein">
-            <svg viewBox="0 0 36 36" class="macro-ring-svg">
-              <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-              <path class="ring-fill" [attr.stroke-dasharray]="proteinPercent + ', 100'" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-            </svg>
-            <span class="macro-center-val">{{todayLog.totalProtein}}g</span>
-          </div>
-          <span class="macro-label">Protein</span>
-        </div>
-        <div class="macro-card">
-          <div class="macro-ring-wrap carbs">
-            <svg viewBox="0 0 36 36" class="macro-ring-svg">
-              <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-              <path class="ring-fill" [attr.stroke-dasharray]="carbsPercent + ', 100'" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-            </svg>
-            <span class="macro-center-val">{{todayLog.totalCarbs}}g</span>
-          </div>
-          <span class="macro-label">Carbs</span>
-        </div>
-        <div class="macro-card">
-          <div class="macro-ring-wrap fat">
-            <svg viewBox="0 0 36 36" class="macro-ring-svg">
-              <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-              <path class="ring-fill" [attr.stroke-dasharray]="fatPercent + ', 100'" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-            </svg>
-            <span class="macro-center-val">{{todayLog.totalFat}}g</span>
-          </div>
-          <span class="macro-label">Fat</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== GOAL SELECTOR ===== -->
-    <section class="goal-section">
-      <div class="section-header-row">
-        <h3 class="section-title">Your Goal</h3>
-        <span class="link-btn" *ngIf="streak > 0"><ion-icon name="flame"></ion-icon> {{streak}} day streak</span>
-      </div>
-
-      <div class="goal-pills-row">
-        <button *ngFor="let g of goalOptions"
-          class="goal-pill"
-          [class.active]="healthGoal.goalType === g"
-          (click)="onGoalChange(g)">
-          {{g}}
-        </button>
-      </div>
-
-      <div class="goal-progress-row">
-        <div class="goal-ring-container">
-          <svg viewBox="0 0 100 100" class="goal-ring-svg">
-            <circle cx="50" cy="50" r="42" fill="none" stroke="#F3F4F6" stroke-width="6"/>
-            <circle cx="50" cy="50" r="42" fill="none" stroke="#FF7235" stroke-width="6"
-              stroke-linecap="round"
-              [attr.stroke-dasharray]="2 * 3.14159 * 42"
-              [attr.stroke-dashoffset]="getGoalRingDashoffset()"
-              class="goal-ring-progress"/>
-          </svg>
-          <div class="goal-ring-center">
-            <span class="goal-pct">{{goalProgress}}%</span>
-            <span class="goal-pct-label">on track</span>
+        <div class="bar-chart-container">
+          <div class="chart-bar-group" *ngFor="let day of weeklyData">
+            <span class="bar-value-label" *ngIf="day.calories > 0">{{day.calories}}</span>
+            <div class="chart-bar" [class.today]="day.isToday"
+              [class.on-track]="day.onTrack && !day.isToday && day.calories > 0"
+              [class.off-track]="!day.onTrack && day.calories > 0 && !day.isToday"
+              [style.height.%]="getBarHeight(day.calories) | slice:0:-1"
+              [style.min-height]="day.calories === 0 ? '8px' : ''">
+            </div>
+            <span class="bar-day-label" [class.today]="day.isToday">{{day.dayName}}</span>
           </div>
         </div>
-        <div class="goal-info">
-          <h4>{{healthGoal.goalType}}</h4>
-          <p>{{healthGoal.targetCalories}} kcal/day · {{healthGoal.targetProtein}}g protein</p>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- ===== MIA AI INSIGHT ===== -->
-    <section class="mia-section">
-      <div class="section-header-row">
-        <h3 class="section-title">Mia's Insight ✨</h3>
-        <span class="mia-role-badge">AI Nutritionist</span>
-      </div>
-
-      <div class="mia-card">
-        <div class="mia-avatar">
-          <ion-icon name="sparkles"></ion-icon>
+      <!-- TODAY'S MACROS -->
+      <section class="macros-section" *ngIf="todayLog">
+        <div class="section-header-row">
+          <h3 class="section-title">Today's Macros</h3>
+          <span class="macro-cal-badge">{{todayLog.totalCalories}} kcal</span>
         </div>
-        <div class="mia-body">
-          <p *ngIf="!isLoadingInsight">{{miaInsight}}</p>
-          <div *ngIf="isLoadingInsight">
-            <ion-skeleton-text animated style="width: 90%; height: 14px; margin-bottom: 8px;"></ion-skeleton-text>
-            <ion-skeleton-text animated style="width: 70%; height: 14px;"></ion-skeleton-text>
+
+        <div class="macros-row">
+          <div class="macro-card">
+            <div class="macro-ring-wrap protein">
+              <svg viewBox="0 0 36 36" class="macro-ring-svg">
+                <path class="ring-bg"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                <path class="ring-fill" [attr.stroke-dasharray]="proteinPercent + ', 100'"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              </svg>
+              <span class="macro-center-val">{{todayLog.totalProtein}}g</span>
+            </div>
+            <span class="macro-label">Protein</span>
+          </div>
+          <div class="macro-card">
+            <div class="macro-ring-wrap carbs">
+              <svg viewBox="0 0 36 36" class="macro-ring-svg">
+                <path class="ring-bg"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                <path class="ring-fill" [attr.stroke-dasharray]="carbsPercent + ', 100'"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              </svg>
+              <span class="macro-center-val">{{todayLog.totalCarbs}}g</span>
+            </div>
+            <span class="macro-label">Carbs</span>
+          </div>
+          <div class="macro-card">
+            <div class="macro-ring-wrap fat">
+              <svg viewBox="0 0 36 36" class="macro-ring-svg">
+                <path class="ring-bg"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                <path class="ring-fill" [attr.stroke-dasharray]="fatPercent + ', 100'"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              </svg>
+              <span class="macro-center-val">{{todayLog.totalFat}}g</span>
+            </div>
+            <span class="macro-label">Fat</span>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- ===== TODAY'S MEAL LOG ===== -->
-    <section class="meal-log-section">
-      <div class="section-header-row">
-        <h3 class="section-title">Today's Meals</h3>
-        <span class="link-btn" *ngIf="todayLog.meals.length > 0">{{todayLog.meals.length}} logged</span>
-      </div>
-
-      <!-- Empty state -->
-      <div class="empty-state-mini" *ngIf="todayLog.meals.length === 0">
-        <ion-icon name="restaurant-outline"></ion-icon>
-        <p>No meals logged yet. Your subscription meal will appear after 1 PM delivery!</p>
-      </div>
-
-      <!-- Meal items -->
-      <div class="meal-log-item" *ngFor="let meal of todayLog.meals">
-        <div class="ml-icon-circle">
-          <ion-icon name="restaurant"></ion-icon>
+      <!-- GOAL SELECTOR -->
+      <section class="goal-section" *ngIf="healthGoal">
+        <div class="section-header-row">
+          <h3 class="section-title">Your Goal</h3>
+          <span class="link-btn" *ngIf="streak > 0"><ion-icon name="flame"></ion-icon> {{streak}} day streak</span>
         </div>
-        <div class="ml-details">
-          <h4 class="ml-name">{{meal.mealName}}</h4>
-          <p class="ml-meta">{{meal.calories}} kcal · {{meal.protein}}g protein · {{meal.mealTime}}</p>
-        </div>
-        <div class="ml-rating">
-          <button *ngFor="let star of getStars(meal.rating)"
-            class="star-btn"
-            [class.filled]="star <= meal.rating"
-            (click)="onRateMeal(meal.mealId, star)">
-            <ion-icon [name]="star <= meal.rating ? 'star' : 'star-outline'"></ion-icon>
+
+        <div class="goal-pills-row">
+          <button *ngFor="let g of goalOptions" class="goal-pill" [class.active]="healthGoal.goalType === g"
+            (click)="onGoalChange(g)">
+            {{g}}
           </button>
         </div>
-      </div>
-    </section>
 
-    <!-- ===== WEEKLY MEAL HISTORY ===== -->
-    <section class="history-section">
-      <div class="section-header-row">
-        <h3 class="section-title">This Week's Meals</h3>
-      </div>
+        <div class="goal-progress-row">
+          <div class="goal-ring-container">
+            <svg viewBox="0 0 100 100" class="goal-ring-svg">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="#F3F4F6" stroke-width="6" />
+              <circle cx="50" cy="50" r="42" fill="none" stroke="#FF7235" stroke-width="6" stroke-linecap="round"
+                [attr.stroke-dasharray]="2 * 3.14159 * 42" [attr.stroke-dashoffset]="getGoalRingDashoffset()"
+                class="goal-ring-progress" />
+            </svg>
+            <div class="goal-ring-center">
+              <span class="goal-pct">{{goalProgress}}%</span>
+              <span class="goal-pct-label">on track</span>
+            </div>
+          </div>
+          <div class="goal-info">
+            <h4>{{healthGoal.goalType}}</h4>
+            <p>{{healthGoal.targetCalories}} kcal/day · {{healthGoal.targetProtein}}g protein</p>
+          </div>
+        </div>
+      </section>
 
-      <div class="history-item" *ngFor="let day of weeklyData" [class.today-row]="day.isToday">
-        <div class="hi-day">
-          <span class="hi-day-name">{{day.dayName}}</span>
-          <span class="hi-date">{{day.dateStr | date:'d MMM'}}</span>
+      <!-- MIA AI INSIGHT -->
+      <section class="mia-section">
+        <div class="section-header-row">
+          <h3 class="section-title">Mia's Insight ✨</h3>
+          <span class="mia-role-badge">AI Nutritionist</span>
         </div>
-        <div class="hi-meal" *ngIf="day.mealName">
-          <span class="hi-meal-name">{{day.mealName}}</span>
-          <span class="hi-kcal">{{day.calories}} kcal</span>
-        </div>
-        <div class="hi-meal empty" *ngIf="!day.mealName">
-          <span class="hi-meal-name">No meal</span>
-        </div>
-        <ion-icon
-          [name]="day.onTrack ? 'checkmark-circle' : (day.calories > 0 ? 'alert-circle' : 'ellipse-outline')"
-          class="hi-status-icon"
-          [class.on-track]="day.onTrack"
-          [class.off-track]="!day.onTrack && day.calories > 0">
-        </ion-icon>
-      </div>
-    </section>
 
-    <div style="height: 100px;"></div>
+        <div class="mia-card">
+          <div class="mia-avatar">
+            <ion-icon name="sparkles"></ion-icon>
+          </div>
+          <div class="mia-body">
+            <p *ngIf="!isLoadingInsight">{{miaInsight}}</p>
+            <div *ngIf="isLoadingInsight">
+              <ion-skeleton-text animated style="width: 90%; height: 14px; margin-bottom: 8px;"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 70%; height: 14px;"></ion-skeleton-text>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TODAY'S MEAL LOG -->
+      <section class="meal-log-section" *ngIf="todayLog">
+        <div class="section-header-row">
+          <h3 class="section-title">Today's Meals</h3>
+          <span class="link-btn" *ngIf="todayLog.meals?.length">{{todayLog.meals.length}} logged</span>
+        </div>
+
+        <!-- Empty state -->
+        <div class="empty-state-mini" *ngIf="!todayLog.meals || todayLog.meals.length === 0">
+          <ion-icon name="restaurant-outline"></ion-icon>
+          <p>No meals logged yet. Your subscription meal will appear after 1 PM delivery!</p>
+        </div>
+
+        <!-- Meal items -->
+        <div class="meal-log-item" *ngFor="let meal of todayLog.meals">
+          <div class="ml-icon-circle">
+            <ion-icon name="restaurant"></ion-icon>
+          </div>
+          <div class="ml-details">
+            <h4 class="ml-name">{{meal.mealName}}</h4>
+            <p class="ml-meta">{{meal.calories}} kcal · {{meal.protein}}g protein · {{meal.mealTime}}</p>
+          </div>
+          <div class="ml-rating">
+            <button *ngFor="let star of getStars(5); let idx = index" class="star-btn"
+              [class.filled]="idx < (meal.rating || 0)" (click)="onRateMeal(meal.mealId, idx + 1)">
+              <ion-icon [name]="idx < (meal.rating || 0) ? 'star' : 'star-outline'"></ion-icon>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- WEEKLY MEAL HISTORY -->
+      <section class="history-section">
+        <div class="section-header-row">
+          <h3 class="section-title">This Week's Meals</h3>
+        </div>
+
+        <div class="history-item" *ngFor="let day of weeklyData" [class.today-row]="day.isToday">
+          <div class="hi-day">
+            <span class="hi-day-name">{{day.dayName}}</span>
+            <span class="hi-date">{{day.dateStr | date:'d MMM'}}</span>
+          </div>
+          <div class="hi-meal" *ngIf="day.mealName">
+            <span class="hi-meal-name">{{day.mealName}}</span>
+            <span class="hi-kcal">{{day.calories}} kcal</span>
+          </div>
+          <div class="hi-meal empty" *ngIf="!day.mealName">
+            <span class="hi-meal-name">No meal</span>
+          </div>
+          <ion-icon [name]="day.onTrack ? 'checkmark-circle' : (day.calories > 0 ? 'alert-circle' : 'ellipse-outline')"
+            class="hi-status-icon" [class.on-track]="day.onTrack" [class.off-track]="!day.onTrack && day.calories > 0">
+          </ion-icon>
+        </div>
+      </section>
+
+      <div style="height: 100px;"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       DESKTOP WEB VIEW (Screens >= 1001px)
+       ═══════════════════════════════════════════════════ -->
+  <div class="web-app desktop-only" *ngIf="!isLoading">
+    <!-- SIDEBAR -->
+    <aside class="side">
+      <div class="side-top">
+        <div class="logo">
+          <span class="glyph">
+            <img src="assets/logo/chef_hat.png" alt="MealMate">
+          </span>
+          <b class="brand-name">MealMate</b>
+        </div>
+        <button class="sidebar-toggle-btn" (click)="themeService.toggleSidebar()"
+          [title]="themeService.isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+          <ion-icon
+            [name]="themeService.isSidebarCollapsed ? 'chevron-forward-outline' : 'chevron-back-outline'"></ion-icon>
+        </button>
+      </div>
+      <!-- CHEF SIDEBAR NAV -->
+      <ng-container *ngIf="themeService.isAgent">
+        <div class="navlabel">Chef Menu</div>
+        <nav class="nav">
+          <button routerLink="/agent-home">
+            <ion-icon name="home-outline"></ion-icon><span class="nav-text">Dashboard</span>
+          </button>
+          <button routerLink="/manage-menu">
+            <ion-icon name="restaurant-outline"></ion-icon><span class="nav-text">Manage Menu</span>
+          </button>
+          <button routerLink="/agent-earnings">
+            <ion-icon name="wallet-outline"></ion-icon><span class="nav-text">Earnings</span>
+          </button>
+          <button routerLink="/profile">
+            <ion-icon name="person-outline"></ion-icon><span class="nav-text">Chef Profile</span>
+          </button>
+        </nav>
+        <div class="side-foot">
+          <button class="me" routerLink="/profile" title="View Profile">
+            <span class="ava">🧑‍🍳</span>
+            <span class="me-text" style="text-align:left">
+              <span class="n">Chef Kitchen</span><br>
+              <span class="s">Partner Account</span>
+            </span>
+          </button>
+        </div>
+      </ng-container>
+
+      <!-- CUSTOMER SIDEBAR NAV -->
+      <ng-container *ngIf="!themeService.isAgent">
+        <div class="navlabel">Menu</div>
+        <nav class="nav">
+          <button routerLink="/customer-home">
+            <ion-icon name="home-outline"></ion-icon><span class="nav-text">Home</span>
+          </button>
+          <button routerLink="/my-orders">
+            <ion-icon name="bag-outline"></ion-icon><span class="nav-text">Orders</span>
+          </button>
+          <button routerLink="/subscribe">
+            <ion-icon name="calendar-outline"></ion-icon><span class="nav-text">Meal Plans</span>
+          </button>
+          <button routerLink="/manage-rotation">
+            <ion-icon name="sync-outline"></ion-icon><span class="nav-text">Meal Rotation</span>
+          </button>
+          <button routerLink="/custom-meal">
+            <ion-icon name="restaurant-outline"></ion-icon><span class="nav-text">Personal Chef</span>
+          </button>
+          <button class="on" routerLink="/health">
+            <ion-icon name="heart-outline"></ion-icon><span class="nav-text">Health</span>
+          </button>
+          <button routerLink="/ai-concierge">
+            <ion-icon name="chatbubbles-outline"></ion-icon><span class="nav-text">MealMantra AI</span>
+          </button>
+          <button routerLink="/wallet">
+            <ion-icon name="shield-checkmark-outline"></ion-icon><span class="nav-text">Wallet</span>
+          </button>
+          <button routerLink="/profile">
+            <ion-icon name="person-outline"></ion-icon><span class="nav-text">Profile</span>
+          </button>
+        </nav>
+        <div class="side-foot">
+          <button class="me" routerLink="/profile" title="View Profile">
+            <span class="ava">{{userInitials}}</span>
+            <span class="me-text" style="text-align:left"><span class="n">{{userName}}</span><br><span class="s">Premium
+                member</span></span>
+          </button>
+        </div>
+      </ng-container>
+    </aside>
+
+    <!-- MAIN VIEW -->
+    <div class="view-main">
+      <header class="top">
+        <div>
+          <h1>Health Tracker</h1>
+          <div class="sub">Track nutrition and stay on your goals</div>
+        </div>
+        <div class="top-r">
+          <button class="weekpick">
+            {{weekRangeLabel || 'This Week'}} <ion-icon name="chevron-down-outline"></ion-icon>
+          </button>
+          <button class="iconbtn" title="Settings">
+            <ion-icon name="settings-outline"></ion-icon>
+          </button>
+        </div>
+      </header>
+
+      <div class="body">
+        <div class="main-col">
+          <!-- Health Stats Row -->
+          <div class="hstats">
+            <div class="hstat">
+              <div class="hd">
+                <span class="ic" style="background:var(--orange-soft)"><ion-icon name="flame-outline"
+                    style="color:var(--orange)"></ion-icon></span>
+                <span class="l">Avg daily</span>
+              </div>
+              <div class="v">{{avgCalories}}<small>kcal</small></div>
+              <div class="s" style="color:var(--ink-3)">
+                <span *ngIf="avgCalories < healthGoal.targetCalories">↓ {{healthGoal.targetCalories - avgCalories}}
+                  under target</span>
+                <span *ngIf="avgCalories >= healthGoal.targetCalories">↑ {{avgCalories - healthGoal.targetCalories}}
+                  over target</span>
+              </div>
+            </div>
+
+            <div class="hstat">
+              <div class="hd">
+                <span class="ic" style="background:var(--amber-soft)"><ion-icon name="time-outline"
+                    style="color:var(--amber)"></ion-icon></span>
+                <span class="l">Today</span>
+              </div>
+              <div class="v">{{todayLog?.totalCalories || 0}}<small>kcal</small></div>
+              <div class="s" style="color:var(--ink-3)">
+                {{ ((todayLog?.totalCalories || 0) / healthGoal.targetCalories * 100) | number:'1.0-0' }}% of daily goal
+              </div>
+            </div>
+
+            <div class="hstat">
+              <div class="hd">
+                <span class="ic" style="background:var(--blue-soft)"><ion-icon name="barbell-outline"
+                    style="color:var(--blue)"></ion-icon></span>
+                <span class="l">Protein</span>
+              </div>
+              <div class="v">{{todayLog?.totalProtein || 0}}<small>g</small></div>
+              <div class="s" style="color:var(--blue)">
+                {{proteinPercent}}% of {{healthGoal.targetProtein}}g goal
+              </div>
+            </div>
+
+            <div class="hstat">
+              <div class="hd">
+                <span class="ic" style="background:var(--green-soft)"><ion-icon name="trending-up-outline"
+                    style="color:var(--green)"></ion-icon></span>
+                <span class="l">On track</span>
+              </div>
+              <div class="v">{{goalProgress}}<small>%</small></div>
+              <div class="s" style="color:var(--ink-3)">of days this week</div>
+            </div>
+          </div>
+
+          <!-- Weekly Chart -->
+          <div class="chartcard">
+            <div class="blkhead" style="margin-bottom:0">
+              <h2>Weekly Intake</h2>
+              <span class="pillg">Target {{healthGoal.targetCalories | number}} kcal/day</span>
+            </div>
+            <div class="chart">
+              <div class="gl target" [style.bottom.%]="(healthGoal.targetCalories / maxChartCalories) * 100">
+                <span>{{ (healthGoal.targetCalories / 1000) | number:'1.1-1' }}k</span>
+              </div>
+              <div class="bars">
+                <div class="barcol" *ngFor="let day of weeklyData" [class.today]="day.isToday"
+                  [title]="day.dayName + ' · ' + day.calories + ' kcal'">
+                  <div class="bar" [style.height]="getBarHeight(day.calories)">
+                    <span class="val">{{day.calories}}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="xaxis">
+              <span *ngFor="let day of weeklyData" [class.today]="day.isToday">{{day.dayName}}</span>
+            </div>
+          </div>
+
+          <!-- Today's Macros -->
+          <div class="chartcard">
+            <div class="blkhead">
+              <h2>Today's Macros</h2>
+              <span class="tag o">{{todayLog?.totalCalories || 0}} kcal today</span>
+            </div>
+            <div class="macros">
+              <div class="macro">
+                <div class="mr">
+                  <svg width="78" height="78" viewBox="0 0 78 78">
+                    <circle cx="39" cy="39" r="33" fill="none" stroke="#EDE6E1" stroke-width="7" />
+                    <circle cx="39" cy="39" r="33" fill="none" stroke="#F26A21" stroke-width="7" stroke-linecap="round"
+                      stroke-dasharray="207" [attr.stroke-dashoffset]="207 * (1 - proteinPercent / 100)" />
+                  </svg>
+                  <span class="lb">{{todayLog?.totalProtein || 0}}g</span>
+                </div>
+                <div>
+                  <div class="l">Protein</div>
+                  <div class="g">of {{healthGoal.targetProtein}}g goal</div>
+                  <div class="pct" style="color:#F26A21">{{proteinPercent}}% complete</div>
+                </div>
+              </div>
+
+              <div class="macro">
+                <div class="mr">
+                  <svg width="78" height="78" viewBox="0 0 78 78">
+                    <circle cx="39" cy="39" r="33" fill="none" stroke="#EDE6E1" stroke-width="7" />
+                    <circle cx="39" cy="39" r="33" fill="none" stroke="#E0A11B" stroke-width="7" stroke-linecap="round"
+                      stroke-dasharray="207" [attr.stroke-dashoffset]="207 * (1 - carbsPercent / 100)" />
+                  </svg>
+                  <span class="lb">{{todayLog?.totalCarbs || 0}}g</span>
+                </div>
+                <div>
+                  <div class="l">Carbs</div>
+                  <div class="g">of {{ (healthGoal.targetCalories * 0.5 / 4) | number:'1.0-0' }}g goal</div>
+                  <div class="pct" style="color:#E0A11B">{{carbsPercent}}% complete</div>
+                </div>
+              </div>
+
+              <div class="macro">
+                <div class="mr">
+                  <svg width="78" height="78" viewBox="0 0 78 78">
+                    <circle cx="39" cy="39" r="33" fill="none" stroke="#EDE6E1" stroke-width="7" />
+                    <circle cx="39" cy="39" r="33" fill="none" stroke="#2F6FD0" stroke-width="7" stroke-linecap="round"
+                      stroke-dasharray="207" [attr.stroke-dashoffset]="207 * (1 - fatPercent / 100)" />
+                  </svg>
+                  <span class="lb">{{todayLog?.totalFat || 0}}g</span>
+                </div>
+                <div>
+                  <div class="l">Fat</div>
+                  <div class="g">of {{ (healthGoal.targetCalories * 0.25 / 9) | number:'1.0-0' }}g goal</div>
+                  <div class="pct" style="color:#2F6FD0">{{fatPercent}}% complete</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Goal Selection -->
+          <div class="chartcard">
+            <div class="blkhead" style="margin-bottom:14px">
+              <h2>Your Goal</h2>
+            </div>
+            <div class="goals">
+              <button class="goalchip" *ngFor="let g of goalOptions" [class.on]="healthGoal.goalType === g"
+                (click)="onGoalChange(g)">
+                {{g}}
+              </button>
+            </div>
+            <div class="goalnow">
+              <div class="mr" style="width:64px;height:64px">
+                <svg width="64" height="64" viewBox="0 0 64 64">
+                  <circle cx="32" cy="32" r="27" fill="none" stroke="#EDE6E1" stroke-width="6" />
+                  <circle cx="32" cy="32" r="27" fill="none" stroke="var(--orange)" stroke-width="6"
+                    stroke-linecap="round" stroke-dasharray="170" [attr.stroke-dashoffset]="getGoalRingDashoffset()" />
+                </svg>
+                <span class="lb" style="font-size:13px">{{goalProgress}}%</span>
+              </div>
+              <div>
+                <div class="h">{{healthGoal.goalType}}</div>
+                <div class="d">{{healthGoal.targetCalories | number}} kcal/day · {{healthGoal.targetProtein}}g protein
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Today's Logged Meals -->
+          <div class="chartcard">
+            <div class="blkhead">
+              <h2>Today's Meals</h2>
+              <span class="tag o">{{todayLog?.meals?.length || 0}} logged</span>
+            </div>
+            <div *ngIf="!todayLog?.meals || todayLog?.meals?.length === 0"
+              style="color:var(--ink-3);font-size:13px;padding:12px 0">
+              No meals logged for today yet.
+            </div>
+            <div class="mealrow" *ngFor="let m of todayLog?.meals">
+              <span class="othumb tile"
+                style="width:46px;height:46px;border-radius:13px;font-size:17px">{{m.mealName[0]}}</span>
+              <div class="info">
+                <div class="nm">{{m.mealName}}</div>
+                <div class="sub">{{m.calories}} kcal · {{m.protein}}g protein · {{m.mealTime || 'Meal'}}</div>
+              </div>
+              <span class="rate5">
+                <button *ngFor="let star of getStars(5); let idx = index" [class.on]="idx < (m.rating || 0)"
+                  (click)="onRateMeal(m.mealId, idx + 1)">★</button>
+              </span>
+            </div>
+          </div>
+
+          <!-- This Week's Meals -->
+          <div class="chartcard" style="margin-bottom:0">
+            <div class="blkhead">
+              <h2>This Week's Meals</h2>
+              <span class="mini" style="font-size:12px;font-weight:700;color:var(--ink-3)">7 days</span>
+            </div>
+            <div class="mealrow" *ngFor="let day of weeklyData"
+              [style.background]="day.isToday ? 'var(--orange-soft)' : 'none'" style="border-radius:12px;padding:10px">
+              <span class="mday"><b>{{day.dayName}}</b><span>{{day.dateStr | date:'d MMM'}}</span></span>
+              <div class="info">
+                <div class="nm">{{day.mealName || 'No Meal Logged'}}</div>
+                <div class="sub">{{day.protein}}g protein · {{day.calories}} kcal</div>
+              </div>
+              <span class="mkcal">{{day.calories}} kcal</span>
+              <span class="badge" [class.done]="day.calories >= healthGoal.targetCalories * 0.8"
+                [class.wait]="day.calories < healthGoal.targetCalories * 0.8">
+                {{day.calories >= healthGoal.targetCalories * 0.8 ? 'On track' : 'Under target'}}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Rail (Summary & Insight) -->
+        <aside class="rail">
+          <div class="rcard">
+            <div class="rhead">
+              <h3>Today</h3>
+              <span class="mini">{{ ( (todayLog?.totalCalories || 0) / healthGoal.targetCalories * 100 ) |
+                number:'1.0-0' }}% of goal</span>
+            </div>
+            <div class="today-ring">
+              <div class="tr">
+                <svg width="150" height="150" viewBox="0 0 150 150">
+                  <circle cx="75" cy="75" r="64" fill="none" stroke="#F0EAE5" stroke-width="12" />
+                  <circle cx="75" cy="75" r="64" fill="none" stroke="url(#tg)" stroke-width="12" stroke-linecap="round"
+                    stroke-dasharray="402"
+                    [attr.stroke-dashoffset]="402 * (1 - (todayLog?.totalCalories || 0) / healthGoal.targetCalories)" />
+                  <defs>
+                    <linearGradient id="tg" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%" stop-color="#FF8A47" />
+                      <stop offset="100%" stop-color="#F26A21" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div class="lb">
+                  <div>
+                    <div class="big">{{todayLog?.totalCalories || 0}}</div>
+                    <div class="cap">of {{healthGoal.targetCalories | number}} kcal</div>
+                  </div>
+                </div>
+              </div>
+              <div class="trmeta">
+                <div class="trcell">
+                  <div class="k">Consumed</div>
+                  <div class="v">{{todayLog?.totalCalories || 0}} kcal</div>
+                </div>
+                <div class="trcell">
+                  <div class="k">Remaining</div>
+                  <div class="v">{{ (healthGoal.targetCalories - (todayLog?.totalCalories || 0)) > 0 ?
+                    (healthGoal.targetCalories - (todayLog?.totalCalories || 0)) : 0 }} kcal</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rcard" style="padding:0;border:0;background:transparent">
+            <div class="streak">
+              <span class="fl"><ion-icon name="flame-outline"></ion-icon></span>
+              <div>
+                <div class="v">{{streak}} days</div>
+                <div class="l">Logging streak</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="insight" style="margin-bottom:0">
+            <span class="sp"><ion-icon name="sparkles"></ion-icon></span>
+            <div>
+              <div class="k">Mia's Insight · AI Nutritionist</div>
+              <p>{{miaInsight || 'Analyzing your weekly nutrition data...'}}</p>
+            </div>
+          </div>
+
+          <div class="rcard">
+            <div class="rhead">
+              <h3>Quick actions</h3>
+            </div>
+            <button class="railbtn" style="margin-top:0" routerLink="/customer-home">
+              <ion-icon name="add"></ion-icon>Log a meal
+            </button>
+          </div>
+        </aside>
+      </div>
+    </div>
   </div>
 </ion-content>
+
+<app-cart-pill></app-cart-pill>

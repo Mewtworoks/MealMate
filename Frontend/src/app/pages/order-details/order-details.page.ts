@@ -61,4 +61,16 @@ export class OrderDetailsPage implements OnInit {
     }
     return this.orderService.getMealFallbackImage(index);
   }
+
+  rateMeal(mealId?: string) {
+    if (mealId) {
+      this.navCtrl.navigateForward(['/meal-detail', mealId]);
+    } else if (this.order && this.order.items && this.order.items.length > 0) {
+      const firstItem = this.order.items[0];
+      const mId = firstItem.mealId || firstItem.id || '1';
+      this.navCtrl.navigateForward(['/meal-detail', mId]);
+    } else {
+      this.navCtrl.navigateForward(['/meal-detail', '1']);
+    }
+  }
 }

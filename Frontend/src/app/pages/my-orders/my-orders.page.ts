@@ -6,6 +6,7 @@ import { AuthService } from '../../services/auth';
 import { SubscriptionService, Subscription, RotationMeal } from '../../services/subscription.service';
 
 import { MealService } from '../../services/meal.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-my-orders',
@@ -17,8 +18,13 @@ export class MyOrdersPage implements OnInit {
   orders: Order[] = [];
   subscriptions: Subscription[] = [];
   activeTab: 'active' | 'past' | 'subscriptions' = 'active';
+  isLoading: boolean = false;
 
-  // UI state for schedule view
+  // UI state for schedule & order selection
+  selectedOrder: Order | null = null;
+  searchQuery: string = '';
+  statusFilter: string = 'all';
+  selectedSubscription: Subscription | null = null;
   viewingScheduleFor: string | null = null;
   scheduleView: any[] = [];
 
@@ -28,8 +34,17 @@ export class MyOrdersPage implements OnInit {
     private auth: AuthService,
     private router: Router,
     private navCtrl: NavController,
-    private subscriptionService: SubscriptionService
+    private subscriptionService: SubscriptionService,
+    public themeService: ThemeService
   ) { }
+
+  get userName(): string {
+    return this.auth.userName || 'MealMate User';
+  }
+
+  get userInitials(): string {
+    return this.auth.userInitials;
+  }
 
   async ngOnInit() {
     this.loadOrdersData();
@@ -54,10 +69,54 @@ export class MyOrdersPage implements OnInit {
 
     this.orderService.orders$.subscribe(orders => {
       this.orders = orders;
+      if (orders.length > 0 && !this.selectedOrder) {
+        this.selectedOrder = orders[0];
+      }
       if (this.subscriptions.length > 0 && this.activeOrders.length === 0) {
         this.activeTab = 'subscriptions';
       }
     });
+  }
+
+  selectOrder(order: Order) {
+    this.selectedOrder = order;
+  }
+
+  getFilteredOrders(): Order[] {
+    let list = this.activeTab === 'past' ? this.pastOrders : this.activeOrders;
+    if (this.statusFilter !== 'all') {
+      list = list.filter(o => o.status.toLowerCase() === this.statusFilter.toLowerCase());
+    }
+    if (this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      list = list.filter(o => o.id.toLowerCase().includes(q) || (o.displayId && o.displayId.toLowerCase().includes(q)));
+    }
+    return list;
+  }
+
+  get outForDeliveryCount(): number {
+    return this.orders.filter(o => o.status === 'OutForDelivery').length;
+  }
+
+  getOutForDeliveryCount(): number {
+    return this.outForDeliveryCount;
+  }
+
+  getTotalSpent(): number {
+    return this.orders.reduce((sum, o) => sum + (o.total || 0), 0);
+  }
+
+  getFilteredActiveOrders(): Order[] {
+    return this.getFilteredOrders();
+  }
+
+  getOrderItemNames(order: Order): string {
+    if (!order.items || order.items.length === 0) return 'Homestyle Meal';
+    return order.items.map((i: any) => i.mealName || i.MealName || i.name || 'Meal').join(', ');
+  }
+
+  get deliveredCount(): number {
+    return this.orders.filter(o => o.status === 'Delivered').length;
   }
 
   get activeOrders(): Order[] {

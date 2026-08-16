@@ -2,11 +2,9 @@
      MEAL PLAN PAGE — Two-state: Selection ↔ Active Dashboard
      ============================================================ -->
 
-<!-- ═══════════════════════════════════════════════════════════
-     STATE 0: SKELETON LOADER
-     ═══════════════════════════════════════════════════════════ -->
+<!-- ════════════════ STATE 0: SKELETON LOADER ════════════════ -->
 <ng-container *ngIf="isLoading">
-  <ion-header class="ion-no-border sub-page-header">
+  <ion-header class="ion-no-border sub-page-header mobile-only">
     <div class="header-curve-bg"></div>
     <ion-toolbar class="transparent-toolbar" style="--padding-top: 5px;">
       <div class="header-content">
@@ -43,140 +41,931 @@
   </ion-content>
 </ng-container>
 
-<!-- ═══════════════════════════════════════════════════════════
-     STATE 1: NO ACTIVE PLAN
-     ═══════════════════════════════════════════════════════════ -->
-<ng-container *ngIf="!isLoading && !activeSub">
-
-  <ion-header class="ion-no-border sub-page-header">
-    <div class="header-curve-bg"></div>
-    <ion-toolbar class="transparent-toolbar" style="--padding-top: 5px;">
-      <div class="header-content">
-        <ion-button (click)="goBack()" class="back-btn-pill">
-          <ion-icon name="arrow-back-outline"></ion-icon>
+<!-- ════════════════ MOBILE HEADER (Screens < 1001px) ════════════════ -->
+<ion-header class="ion-no-border sub-page-header mobile-only" *ngIf="!isLoading">
+  <div class="header-curve-bg"></div>
+  <ion-toolbar class="transparent-toolbar" style="--padding-top: 5px;">
+    <div class="header-content">
+      <ion-button (click)="goBack()" class="back-btn-pill">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+      <div class="title-group">
+        <h1 class="page-title">{{ activeSub ? 'Your Meal Plan' : 'Meal Plan' }}</h1>
+        <div class="page-sub">{{ activeSub ? (activeSub.months + ' Month Plan · renews ' + (activeSub.endDate | date:'d MMM')) : 'Subscribe to daily home-cooked meals' }}</div>
+      </div>
+      <div class="header-actions" *ngIf="activeSub">
+        <ion-button fill="clear" class="more-btn" (click)="openPlanOptions()">
+          <ion-icon name="ellipsis-vertical"></ion-icon>
         </ion-button>
-        <div class="title-group">
-          <h1 class="page-title">Meal Plan</h1>
-        </div>
       </div>
-    </ion-toolbar>
-  </ion-header>
-
-  <ion-content [fullscreen]="true" class="subscribe-content">
-    <div class="scrollable-body">
-
-      <!-- ── Hero ── -->
-      <div class="hero-section">
-        <div class="hero-img-wrap">
-          <img src="assets/onboarding/empty_plan.png" alt="Tiffin box">
-        </div>
-        <h2 class="hero-title">No Active Plan</h2>
-        <p class="hero-sub">Subscribe to daily home-cooked meals<br>and eat healthy every day!</p>
-      </div>
-
-      <!-- ── Why Subscribe ── -->
-      <div class="why-section">
-        <h3 class="sec-label">Why subscribe?</h3>
-        <div class="why-row">
-          <div class="why-item" *ngFor="let w of whyItems">
-            <div class="why-icon"><ion-icon [name]="w.icon"></ion-icon></div>
-            <span>{{w.line1}}<br>{{w.line2}}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── Choose Your Plan ── -->
-      <h3 class="sec-label" style="margin-bottom:12px;">Choose Your Plan</h3>
-
-      <!-- Premium Horizontal Plan Grid -->
-      <div class="plan-duration-grid">
-        <div class="duration-card" *ngFor="let plan of plans; let i = index" [class.selected]="selectedPlanIndex === i"
-          (click)="selectPlan(i)">
-          <div class="dc-badge" *ngIf="plan.savePct">-{{plan.savePct}}%</div>
-          <span class="dc-name">{{plan.name.replace(' Plan', '')}}</span>
-          <span class="dc-days">{{plan.days}} Days</span>
-          <div class="dc-divider"></div>
-          <div class="dc-price-block">
-            <span class="dc-price">₹{{plan.price | number:'1.0-0'}}</span>
-            <span class="dc-per-day">₹{{plan.perDay}}/day</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Unified Rotation Preview Card -->
-      <div class="rotation-preview-card">
-        <div class="rpc-header">
-          <div class="rpc-title-group">
-            <h4>Rotation Menu Preview</h4>
-            <p>Select meals below to fill your rotation</p>
-          </div>
-          <div class="rpc-badge-pill">
-            {{selectedMeals.length}}/3 Meals
-          </div>
-        </div>
-
-        <div class="pc-rotation" *ngIf="selectedMeals.length > 0">
-          <div class="rot-meal" *ngFor="let rm of selectedMeals; let j = index">
-            <div class="rot-img-wrap">
-              <img [src]="rm.image" [alt]="rm.name">
-              <span class="rot-day-badge">Day {{j+1}}</span>
-            </div>
-            <span class="rot-name">{{rm.name}}</span>
-          </div>
-        </div>
-
-        <div class="pc-rotation-empty" *ngIf="selectedMeals.length === 0">
-          <ion-icon name="restaurant-outline" class="empty-icon"></ion-icon>
-          <span>Tap meals below to build your subscription rotation</span>
-        </div>
-      </div>
-
-      <!-- ── Choose Your Meals ── -->
-      <div class="meals-section">
-        <div class="meals-header">
-          <h3 class="sec-label">Choose Your Meals</h3>
-          <span class="meal-counter" [class.full]="selectedMeals.length === 3">{{selectedMeals.length}}/3</span>
-        </div>
-        <p class="meals-hint">Select up to 3 meals. We'll rotate them daily so you don't get bored!</p>
-
-        <div class="meals-grid">
-          <div class="meal-card" *ngFor="let meal of meals" [class.selected]="isSelected(meal)"
-            (click)="toggleMealSelection(meal)">
-            <div class="mc-img">
-              <div class="mc-check">
-                <ion-icon name="checkmark" *ngIf="isSelected(meal)"></ion-icon>
-              </div>
-              <img [src]="meal.image" [alt]="meal.name">
-            </div>
-            <span class="mc-name">{{meal.name.length > 14 ? (meal.name | slice:0:14) + '...' : meal.name}}</span>
-            <span class="mc-price">₹{{meal.price || basePricePerMeal}}/day</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── What's included ── -->
-      <div class="included-section">
-        <h3 class="sec-label">What's included?</h3>
-        <div class="included-body">
-          <div class="included-list">
-            <div class="included-item" *ngFor="let feat of includedFeatures">
-              <ion-icon name="checkmark-circle" class="inc-check"></ion-icon>
-              <span>{{feat}}</span>
-            </div>
-          </div>
-          <div class="included-img">
-            <img src="assets/onboarding/salad_bowl_checked.png" alt="Healthy food">
-          </div>
-        </div>
-      </div>
-
     </div>
-  </ion-content>
+  </ion-toolbar>
+</ion-header>
 
-</ng-container>
+<!-- ════════════════ MAIN CONTENT CONTAINER ════════════════ -->
+<ion-content [fullscreen]="true" class="subscribe-content" [class.active-plan-content]="activeSub" *ngIf="!isLoading">
 
-<!-- ── Sticky Footer CTA ── -->
-<ion-footer class="ion-no-border sub-footer" *ngIf="!isLoading && !activeSub">
+  <!-- ════════════════ MOBILE APP VIEW (Screens < 1001px) ════════════════ -->
+  <div class="mobile-layout mobile-only">
+    <!-- State 1: Selection View -->
+    <div class="body" *ngIf="!activeSub">
+      <div class="main-column">
+        <!-- Hero -->
+        <div class="hero-section">
+          <div class="hero-img-wrap">
+            <img src="assets/onboarding/empty_plan.png" alt="Tiffin box">
+          </div>
+          <h2 class="hero-title">No Active Plan</h2>
+          <p class="hero-sub">Subscribe to daily home-cooked meals<br>and eat healthy every day!</p>
+        </div>
+
+        <!-- Why Subscribe -->
+        <div class="why-section">
+          <h3 class="sec-label">Why subscribe?</h3>
+          <div class="why-row">
+            <div class="why-item" *ngFor="let w of whyItems">
+              <div class="why-icon"><ion-icon [name]="w.icon"></ion-icon></div>
+              <span>{{w.line1}}<br>{{w.line2}}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Choose Your Plan -->
+        <div class="section-block">
+          <h3 class="sec-label" style="margin-bottom:12px;">Choose Your Plan</h3>
+          <div class="plan-duration-grid">
+            <div class="duration-card" *ngFor="let plan of plans; let i = index"
+              [class.selected]="selectedPlanIndex === i" (click)="selectPlan(i)">
+              <div class="dc-badge" *ngIf="plan.savePct">-{{plan.savePct}}%</div>
+              <span class="dc-name">{{plan.name.replace(' Plan', '')}}</span>
+              <span class="dc-days">{{plan.days}} Days</span>
+              <div class="dc-divider"></div>
+              <div class="dc-price-block">
+                <span class="dc-price">₹{{plan.price | number:'1.0-0'}}</span>
+                <span class="dc-per-day">₹{{plan.perDay}}/day</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rotation Menu Preview -->
+        <div class="rotation-preview-card">
+          <div class="rpc-header">
+            <div class="rpc-title-group">
+              <h4>Rotation Menu Preview</h4>
+              <p>Select meals below to fill your rotation</p>
+            </div>
+            <div class="rpc-badge-pill">
+              {{selectedMeals.length}}/3 Meals
+            </div>
+          </div>
+
+          <div class="pc-rotation" *ngIf="selectedMeals.length > 0">
+            <div class="rot-meal" *ngFor="let rm of selectedMeals; let j = index">
+              <div class="rot-img-wrap">
+                <img [src]="rm.image" [alt]="rm.name">
+                <span class="rot-day-badge">Day {{j+1}}</span>
+              </div>
+              <span class="rot-name">{{rm.name}}</span>
+            </div>
+          </div>
+
+          <div class="pc-rotation-empty" *ngIf="selectedMeals.length === 0">
+            <ion-icon name="restaurant-outline" class="empty-icon"></ion-icon>
+            <span>Tap meals below to build your subscription rotation</span>
+          </div>
+        </div>
+
+        <!-- Choose Your Meals -->
+        <div class="meals-section">
+          <div class="meals-header">
+            <h3 class="sec-label">Choose Your Meals</h3>
+            <span class="meal-counter" [class.full]="selectedMeals.length === 3">{{selectedMeals.length}}/3</span>
+          </div>
+          <p class="meals-hint">Select up to 3 meals. We'll rotate them daily so you don't get bored!</p>
+
+          <div class="meals-grid">
+            <div class="meal-card" *ngFor="let meal of meals" [class.selected]="isSelected(meal)"
+              (click)="toggleMealSelection(meal)">
+              <div class="mc-img">
+                <div class="mc-check">
+                  <ion-icon name="checkmark" *ngIf="isSelected(meal)"></ion-icon>
+                </div>
+                <img [src]="meal.image" [alt]="meal.name">
+              </div>
+              <span class="mc-name">{{meal.name.length > 14 ? (meal.name | slice:0:14) + '...' : meal.name}}</span>
+              <span class="mc-price">₹{{meal.price || basePricePerMeal}}/day</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- What's included -->
+        <div class="included-section">
+          <h3 class="sec-label">What's included?</h3>
+          <div class="included-body">
+            <div class="included-list">
+              <div class="included-item" *ngFor="let feat of includedFeatures">
+                <ion-icon name="checkmark-circle" class="inc-check"></ion-icon>
+                <span>{{feat}}</span>
+              </div>
+            </div>
+            <div class="included-img">
+              <img src="assets/onboarding/salad_bowl_checked.png" alt="Healthy food">
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- State 2: Active Plan Dashboard View -->
+    <div class="body" *ngIf="activeSub">
+      <div class="main-column">
+        <!-- Active Plan Hero Card -->
+        <section class="planhero">
+          <div>
+            <span class="pactive">
+              <svg viewBox="0 0 24 24" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"
+                style="width:11px;height:11px">
+                <path d="m5 12.5 4.5 4.5L19 7" />
+              </svg>
+              Active plan
+            </span>
+            <h2>{{activeSub.months}} Month Plan</h2>
+            <div class="pdates">
+              <div class="pdate">
+                <span class="ci">
+                  <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4.5" width="18" height="17" rx="3" />
+                    <path d="M8 2.5v4M16 2.5v4M3 10h18" />
+                  </svg>
+                </span>
+                <div>
+                  <div class="k">Start date</div>
+                  <div class="v">{{activeSub.startDate | date:'d MMM yyyy'}}</div>
+                </div>
+              </div>
+              <div class="pdate">
+                <span class="ci">
+                  <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4.5" width="18" height="17" rx="3" />
+                    <path d="M8 2.5v4M16 2.5v4M3 10h18" />
+                    <path d="m9 15 2 2 4-4" />
+                  </svg>
+                </span>
+                <div>
+                  <div class="k">End date</div>
+                  <div class="v">{{activeSub.endDate | date:'d MMM yyyy'}}</div>
+                </div>
+              </div>
+            </div>
+            <span class="pleft">
+              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 7v5.4l3.4 2" />
+              </svg>
+              {{daysLeft}} days left
+            </span>
+          </div>
+          <div class="pring">
+            <svg width="118" height="118" viewBox="0 0 118 118">
+              <circle cx="59" cy="59" r="50" fill="none" stroke="#C2E5D3" stroke-width="9" />
+              <circle cx="59" cy="59" r="50" fill="none" stroke="#2E7D52" stroke-width="9" stroke-linecap="round"
+                stroke-dasharray="314" [attr.stroke-dashoffset]="314 - (314 * goalProgress / 100)" />
+            </svg>
+            <div class="lb">
+              <div>
+                <div class="big">{{goalProgress}}%</div>
+                <div class="cap">Completed</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Today's Meal Card -->
+        <section class="chartcard">
+          <div class="blkhead">
+            <h2>Today's Meal</h2>
+            <span class="badge" [ngClass]="todaysMeal.statusClass">
+              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"
+                *ngIf="todaysMeal.statusClass === 'delivered'">
+                <circle cx="12" cy="12" r="9" />
+                <path d="m8.2 12.2 2.6 2.6 5-5.4" />
+              </svg>
+              {{todaysMeal.statusText}}
+            </span>
+          </div>
+          <div class="todaymeal">
+            <div class="ph">
+              <img [src]="todaysMeal.image" [alt]="todaysMeal.name">
+            </div>
+            <div style="min-width:0">
+              <div class="nm">{{todaysMeal.name}}</div>
+              <div class="mt">{{todaysMeal.details}} · Lunch</div>
+              <div class="chips">
+                <span class="veg-tag"><span class="vdot"></span>Veg</span>
+                <span class="tag o">High Protein</span>
+              </div>
+            </div>
+            <div class="tslot">
+              <div class="k">Delivery time</div>
+              <div class="v">1:00 PM</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Your Rotation Card -->
+        <div class="chartcard">
+          <div class="blkhead">
+            <h2>Your Rotation</h2>
+            <span class="mini">Repeats every {{activeSub.rotationMeals.length}} days</span>
+          </div>
+          <div class="rot4">
+            <div class="rday" *ngFor="let rm of rotationDisplay" [class.today]="rm.isToday">
+              <span class="dtag">{{rm.dayLabel}}</span>
+              <div class="ph">
+                <img [src]="rm.image" [alt]="rm.name">
+              </div>
+              <div class="nm">{{rm.name}}</div>
+              <div class="when">{{rm.whenLabel}}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Monthly Khata Card -->
+        <div class="chartcard">
+          <div class="blkhead">
+            <h2>Monthly Khata</h2>
+            <span class="badge delivered" style="background:#FFF1E8; color:#C9520F;">Auto-debit on</span>
+          </div>
+          <div class="khata">
+            <div class="kcell">
+              <div class="k">PAID SO FAR</div>
+              <div class="v">₹{{monthlyDeducted || 450}}</div>
+            </div>
+            <div class="kcell">
+              <div class="k">PER DAY</div>
+              <div class="v">₹{{activeSub.dailyDeduction || 150}}</div>
+            </div>
+            <div class="kcell">
+              <div class="k">MEALS LEFT</div>
+              <div class="v">{{daysLeft}}</div>
+            </div>
+            <div class="kcell hi">
+              <div class="k">NEXT DEBIT</div>
+              <div class="v" style="color:#F26A21;">{{nextDeductionLabel}}</div>
+            </div>
+          </div>
+          <div class="autodeb">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9" />
+              <path d="m8.2 12.2 2.6 2.6 5-5.4" />
+            </svg>
+            <span>Auto deduction from wallet · <a (click)="router.navigate(['/profile'])" style="color:#F26A21; text-decoration:none; cursor:pointer; font-weight:800;">Manage in Wallet</a></span>
+          </div>
+        </div>
+
+        <!-- This Week Progress Card -->
+        <div class="chartcard" *ngIf="weekDays && weekDays.length > 0">
+          <div class="blkhead">
+            <h2>This Week</h2>
+            <span class="mini">{{weekMealsCompleted}} / 7 meals delivered</span>
+          </div>
+          <div class="wkline">
+            <div class="wknode" *ngFor="let d of weekDays" [class.done]="d.completed" [class.now]="d.isToday">
+              <div class="bul">
+                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m8.2 12.2 2.6 2.6 5-5.4" />
+                </svg>
+              </div>
+              <span>{{d.short}}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upcoming Deliveries Section -->
+        <div class="chartcard" *ngIf="upcomingDeliveries && upcomingDeliveries.length > 0">
+          <div class="blkhead">
+            <h2>Upcoming Deliveries</h2>
+            <a class="mini" (click)="router.navigate(['/my-orders'])" style="color:#F26A21; text-decoration:none; font-weight:800; cursor:pointer;">View all &rsaquo;</a>
+          </div>
+          <div class="delivs">
+            <button class="deliv" *ngFor="let item of upcomingDeliveries" (click)="router.navigate(['/my-orders'])">
+              <div class="dvdate">
+                <b>{{item.dateNum}}</b>
+                <span>{{item.dateMonth}}</span>
+              </div>
+              <div class="ph">
+                <img [src]="item.image" [alt]="item.name">
+              </div>
+              <div style="min-width:0">
+                <div class="nm">{{item.name}}</div>
+                <div class="mt">{{item.details}}</div>
+              </div>
+              <div class="rt">
+                <b>{{item.dayLabel}}</b>
+                <span>{{item.time}}</span>
+              </div>
+              <ion-icon name="chevron-forward-outline" style="color:#C4BAB3; font-size:16px; margin-left:4px;"></ion-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Action Cards Grid -->
+        <div class="action-cards-grid">
+          <!-- Card 1: Need a break? -->
+          <div class="action-card pause-card">
+            <div class="ac-icon-badge">
+              <ion-icon [name]="activeSub.status === 'Paused' ? 'play' : 'pause'"></ion-icon>
+            </div>
+            <h3 class="ac-title">Need a break?</h3>
+            <p class="ac-sub">Pause your plan anytime and we'll extend the end date by the same number of days.</p>
+            <button class="ac-btn" (click)="togglePause()">
+              <ion-icon [name]="activeSub.status === 'Paused' ? 'play' : 'pause'"></ion-icon>
+              <span>{{ activeSub.status === 'Paused' ? 'Resume plan' : 'Pause plan' }}</span>
+            </button>
+          </div>
+
+          <!-- Card 2: Customize rotation -->
+          <div class="action-card rotation-card">
+            <div class="ac-icon-badge">
+              <ion-icon name="sync-outline"></ion-icon>
+            </div>
+            <h3 class="ac-title">Customize rotation</h3>
+            <p class="ac-sub">Swap any meal in your {{activeSub.rotationMeals?.length || 4}}-day cycle or change dietary preferences whenever you like.</p>
+            <button class="ac-btn" (click)="manageRotation()">
+              <ion-icon name="sync-outline"></ion-icon>
+              <span>Manage rotation</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ DESKTOP WEB VIEW (Screens >= 1001px) ════════════════ -->
+  <div class="web-app desktop-only" [class.sidebar-collapsed]="themeService.isSidebarCollapsed">
+    <!-- SIDEBAR -->
+    <aside class="side">
+      <div class="side-top">
+        <div class="logo">
+          <span class="glyph">
+            <img src="assets/logo/chef_hat.png" alt="MealMate">
+          </span>
+          <b class="brand-name">MealMate</b>
+        </div>
+        <button class="sidebar-toggle-btn" (click)="themeService.toggleSidebar()"
+          [title]="themeService.isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+          <ion-icon
+            [name]="themeService.isSidebarCollapsed ? 'chevron-forward-outline' : 'chevron-back-outline'"></ion-icon>
+        </button>
+      </div>
+      <!-- CHEF SIDEBAR NAV -->
+      <ng-container *ngIf="themeService.isAgent">
+        <div class="navlabel">Chef Menu</div>
+        <nav class="nav">
+          <button routerLink="/agent-home">
+            <ion-icon name="home-outline"></ion-icon><span class="nav-text">Dashboard</span>
+          </button>
+          <button routerLink="/manage-menu">
+            <ion-icon name="restaurant-outline"></ion-icon><span class="nav-text">Manage Menu</span>
+          </button>
+          <button routerLink="/agent-earnings">
+            <ion-icon name="wallet-outline"></ion-icon><span class="nav-text">Earnings</span>
+          </button>
+          <button routerLink="/profile">
+            <ion-icon name="person-outline"></ion-icon><span class="nav-text">Chef Profile</span>
+          </button>
+        </nav>
+        <div class="side-foot">
+          <button class="me" routerLink="/profile" title="View Profile">
+            <span class="ava">🧑‍🍳</span>
+            <span class="me-text" style="text-align:left">
+              <span class="n">Chef Kitchen</span><br>
+              <span class="s">Partner Account</span>
+            </span>
+          </button>
+        </div>
+      </ng-container>
+
+      <!-- CUSTOMER SIDEBAR NAV -->
+      <ng-container *ngIf="!themeService.isAgent">
+        <div class="navlabel">Menu</div>
+        <nav class="nav">
+          <button routerLink="/customer-home">
+            <ion-icon name="home-outline"></ion-icon><span class="nav-text">Home</span>
+          </button>
+          <button routerLink="/my-orders">
+            <ion-icon name="bag-outline"></ion-icon><span class="nav-text">Orders</span>
+          </button>
+          <button class="on" routerLink="/subscribe">
+            <ion-icon name="calendar-outline"></ion-icon><span class="nav-text">Meal Plans</span>
+          </button>
+          <button routerLink="/manage-rotation">
+            <ion-icon name="sync-outline"></ion-icon><span class="nav-text">Meal Rotation</span>
+          </button>
+          <button routerLink="/custom-meal">
+            <ion-icon name="restaurant-outline"></ion-icon><span class="nav-text">Personal Chef</span>
+          </button>
+          <button routerLink="/health">
+            <ion-icon name="heart-outline"></ion-icon><span class="nav-text">Health</span>
+          </button>
+          <button routerLink="/ai-concierge">
+            <ion-icon name="chatbubbles-outline"></ion-icon><span class="nav-text">MealMantra AI</span>
+          </button>
+          <button routerLink="/wallet">
+            <ion-icon name="shield-checkmark-outline"></ion-icon><span class="nav-text">Wallet</span>
+          </button>
+          <button routerLink="/profile">
+            <ion-icon name="person-outline"></ion-icon><span class="nav-text">Profile</span>
+          </button>
+        </nav>
+        <div class="side-foot">
+          <button class="me" routerLink="/profile" title="View Profile">
+            <span class="ava">{{userInitials}}</span>
+            <span class="me-text" style="text-align:left"><span class="n">{{userName}}</span><br><span class="s">Premium member</span></span>
+          </button>
+        </div>
+      </ng-container>
+    </aside>
+
+    <!-- MAIN VIEW -->
+    <div class="view-main">
+      <header class="top">
+        <button class="iconbtn" (click)="goBack()" title="Back">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </button>
+        <div>
+          <h1>{{ activeSub ? 'Your Meal Plan' : 'Meal Plan' }}</h1>
+          <div class="sub">{{ activeSub ? (activeSub.months + ' Month Plan · renews ' + (activeSub.endDate | date:'d MMM')) : 'Subscribe to daily home-cooked meals' }}</div>
+        </div>
+        <div class="top-r">
+          <button class="iconbtn" *ngIf="activeSub" (click)="openPlanOptions()" title="Plan Options">
+            <ion-icon name="ellipsis-vertical"></ion-icon>
+          </button>
+        </div>
+      </header>
+
+      <!-- STATE 1: SELECTION VIEW (No active plan) -->
+      <div class="body" *ngIf="!activeSub">
+        <div class="main-column">
+          <!-- Hero -->
+          <div class="hero-section">
+            <div class="hero-img-wrap">
+              <img src="assets/onboarding/empty_plan.png" alt="Tiffin box">
+            </div>
+            <h2 class="hero-title">No Active Plan</h2>
+            <p class="hero-sub">Subscribe to daily home-cooked meals<br>and eat healthy every day!</p>
+          </div>
+
+          <!-- Why Subscribe -->
+          <div class="why-section">
+            <h3 class="sec-label">Why subscribe?</h3>
+            <div class="why-row">
+              <div class="why-item" *ngFor="let w of whyItems">
+                <div class="why-icon"><ion-icon [name]="w.icon"></ion-icon></div>
+                <span>{{w.line1}}<br>{{w.line2}}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Choose Your Plan -->
+          <div class="section-block">
+            <h3 class="sec-label" style="margin-bottom:12px;">Choose Your Plan</h3>
+            <div class="plan-duration-grid">
+              <div class="duration-card" *ngFor="let plan of plans; let i = index"
+                [class.selected]="selectedPlanIndex === i" (click)="selectPlan(i)">
+                <div class="dc-badge" *ngIf="plan.savePct">-{{plan.savePct}}%</div>
+                <span class="dc-name">{{plan.name.replace(' Plan', '')}}</span>
+                <span class="dc-days">{{plan.days}} Days</span>
+                <div class="dc-divider"></div>
+                <div class="dc-price-block">
+                  <span class="dc-price">₹{{plan.price | number:'1.0-0'}}</span>
+                  <span class="dc-per-day">₹{{plan.perDay}}/day</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rotation Menu Preview -->
+          <div class="rotation-preview-card">
+            <div class="rpc-header">
+              <div class="rpc-title-group">
+                <h4>Rotation Menu Preview</h4>
+                <p>Select meals below to fill your rotation</p>
+              </div>
+              <div class="rpc-badge-pill">
+                {{selectedMeals.length}}/3 Meals
+              </div>
+            </div>
+
+            <div class="pc-rotation" *ngIf="selectedMeals.length > 0">
+              <div class="rot-meal" *ngFor="let rm of selectedMeals; let j = index">
+                <div class="rot-img-wrap">
+                  <img [src]="rm.image" [alt]="rm.name">
+                  <span class="rot-day-badge">Day {{j+1}}</span>
+                </div>
+                <span class="rot-name">{{rm.name}}</span>
+              </div>
+            </div>
+
+            <div class="pc-rotation-empty" *ngIf="selectedMeals.length === 0">
+              <ion-icon name="restaurant-outline" class="empty-icon"></ion-icon>
+              <span>Tap meals below to build your subscription rotation</span>
+            </div>
+          </div>
+
+          <!-- Choose Your Meals -->
+          <div class="meals-section">
+            <div class="meals-header">
+              <h3 class="sec-label">Choose Your Meals</h3>
+              <span class="meal-counter" [class.full]="selectedMeals.length === 3">{{selectedMeals.length}}/3</span>
+            </div>
+            <p class="meals-hint">Select up to 3 meals. We'll rotate them daily so you don't get bored!</p>
+
+            <div class="meals-grid">
+              <div class="meal-card" *ngFor="let meal of meals" [class.selected]="isSelected(meal)"
+                (click)="toggleMealSelection(meal)">
+                <div class="mc-img">
+                  <div class="mc-check">
+                    <ion-icon name="checkmark" *ngIf="isSelected(meal)"></ion-icon>
+                  </div>
+                  <img [src]="meal.image" [alt]="meal.name">
+                </div>
+                <span class="mc-name">{{meal.name.length > 14 ? (meal.name | slice:0:14) + '...' : meal.name}}</span>
+                <span class="mc-price">₹{{meal.price || basePricePerMeal}}/day</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- What's included -->
+          <div class="included-section">
+            <h3 class="sec-label">What's included?</h3>
+            <div class="included-body">
+              <div class="included-list">
+                <div class="included-item" *ngFor="let feat of includedFeatures">
+                  <ion-icon name="checkmark-circle" class="inc-check"></ion-icon>
+                  <span>{{feat}}</span>
+                </div>
+              </div>
+              <div class="included-img">
+                <img src="assets/onboarding/salad_bowl_checked.png" alt="Healthy food">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Rail -->
+        <aside class="rail">
+          <div class="rcard">
+            <div class="rhead">
+              <h3>Selected Summary</h3>
+            </div>
+            <div class="sumrow">
+              <span>Plan</span>
+              <span style="font-weight:800;color:var(--ink)">{{plans[selectedPlanIndex].name}}</span>
+            </div>
+            <div class="sumrow">
+              <span>Duration</span>
+              <span style="font-weight:800;color:var(--ink)">{{plans[selectedPlanIndex].days}} Days</span>
+            </div>
+            <div class="sumrow">
+              <span>Daily Rate</span>
+              <span style="font-weight:800;color:var(--orange)">₹{{plans[selectedPlanIndex].perDay}}/day</span>
+            </div>
+            <div class="sumrow">
+              <span>Selected Meals</span>
+              <span style="font-weight:800;color:var(--ink)">{{selectedMeals.length}} / 3</span>
+            </div>
+            <div class="sumrow tot">
+              <span>Total Payable</span>
+              <span>₹{{plans[selectedPlanIndex].price | number:'1.0-0'}}</span>
+            </div>
+            <button class="railbtn" (click)="choosePlan(selectedPlanIndex)"
+              [disabled]="isPlacingOrder || selectedMeals.length === 0">
+              Subscribe Now
+            </button>
+          </div>
+
+          <div class="insight" style="margin-bottom:0">
+            <span class="sp">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 2.5l2.1 5.6 5.6 2.1-5.6 2.1L12 17.9l-2.1-5.6L4.3 10.2l5.6-2.1z" />
+                <path d="M18.5 15.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" />
+              </svg>
+            </span>
+            <div>
+              <div class="k">MealMate Guarantee</div>
+              <p>100% home-cooked hygiene. Pause, skip or cancel your plan anytime with automated instant wallet refunds.</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <!-- STATE 2: ACTIVE PLAN DASHBOARD VIEW -->
+      <div class="body" *ngIf="activeSub">
+        <div class="main-column">
+          <!-- Active Plan Hero Card -->
+          <section class="planhero">
+            <div>
+              <span class="pactive">
+                <svg viewBox="0 0 24 24" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"
+                  style="width:11px;height:11px">
+                  <path d="m5 12.5 4.5 4.5L19 7" />
+                </svg>
+                Active plan
+              </span>
+              <h2>{{activeSub.months}} Month Plan</h2>
+              <div class="pdates">
+                <div class="pdate">
+                  <span class="ci">
+                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="4.5" width="18" height="17" rx="3" />
+                      <path d="M8 2.5v4M16 2.5v4M3 10h18" />
+                    </svg>
+                  </span>
+                  <div>
+                    <div class="k">Start date</div>
+                    <div class="v">{{activeSub.startDate | date:'d MMM yyyy'}}</div>
+                  </div>
+                </div>
+                <div class="pdate">
+                  <span class="ci">
+                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="4.5" width="18" height="17" rx="3" />
+                      <path d="M8 2.5v4M16 2.5v4M3 10h18" />
+                      <path d="m9 15 2 2 4-4" />
+                    </svg>
+                  </span>
+                  <div>
+                    <div class="k">End date</div>
+                    <div class="v">{{activeSub.endDate | date:'d MMM yyyy'}}</div>
+                  </div>
+                </div>
+              </div>
+              <span class="pleft">
+                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 7v5.4l3.4 2" />
+                </svg>
+                {{daysLeft}} days left
+              </span>
+            </div>
+            <div class="pring">
+              <svg width="118" height="118" viewBox="0 0 118 118">
+                <circle cx="59" cy="59" r="50" fill="none" stroke="#C2E5D3" stroke-width="9" />
+                <circle cx="59" cy="59" r="50" fill="none" stroke="#2E7D52" stroke-width="9" stroke-linecap="round"
+                  stroke-dasharray="314" [attr.stroke-dashoffset]="314 - (314 * goalProgress / 100)" />
+              </svg>
+              <div class="lb">
+                <div>
+                  <div class="big">{{goalProgress}}%</div>
+                  <div class="cap">Completed</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Today's Meal Card -->
+          <section class="chartcard">
+            <div class="blkhead">
+              <h2>Today's Meal</h2>
+              <span class="badge" [ngClass]="todaysMeal.statusClass">
+                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"
+                  *ngIf="todaysMeal.statusClass === 'delivered'">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="m8.2 12.2 2.6 2.6 5-5.4" />
+                </svg>
+                {{todaysMeal.statusText}}
+              </span>
+            </div>
+            <div class="todaymeal">
+              <div class="ph">
+                <img [src]="todaysMeal.image" [alt]="todaysMeal.name">
+              </div>
+              <div style="min-width:0">
+                <div class="nm">{{todaysMeal.name}}</div>
+                <div class="mt">{{todaysMeal.details}} · Lunch</div>
+                <div class="chips">
+                  <span class="veg-tag"><span class="vdot"></span>Veg</span>
+                  <span class="tag o">High Protein</span>
+                </div>
+              </div>
+              <div class="tslot">
+                <div class="k">Delivery time</div>
+                <div class="v">1:00 PM</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Your Rotation Card -->
+          <div class="chartcard">
+            <div class="blkhead">
+              <h2>Your Rotation</h2>
+              <span class="mini">Repeats every {{activeSub.rotationMeals.length}} days</span>
+            </div>
+            <div class="rot4">
+              <div class="rday" *ngFor="let rm of rotationDisplay" [class.today]="rm.isToday">
+                <span class="dtag">{{rm.dayLabel}}</span>
+                <div class="ph">
+                  <img [src]="rm.image" [alt]="rm.name">
+                </div>
+                <div class="nm">{{rm.name}}</div>
+                <div class="when">{{rm.whenLabel}}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Monthly Khata Card -->
+          <div class="chartcard">
+            <div class="blkhead">
+              <h2>Monthly Khata</h2>
+              <span class="badge delivered" style="background:#FFF1E8; color:#C9520F;">Auto-debit on</span>
+            </div>
+            <div class="khata">
+              <div class="kcell">
+                <div class="k">PAID SO FAR</div>
+                <div class="v">₹{{monthlyDeducted || 450}}</div>
+              </div>
+              <div class="kcell">
+                <div class="k">PER DAY</div>
+                <div class="v">₹{{activeSub.dailyDeduction || 150}}</div>
+              </div>
+              <div class="kcell">
+                <div class="k">MEALS LEFT</div>
+                <div class="v">{{daysLeft}}</div>
+              </div>
+              <div class="kcell hi">
+                <div class="k">NEXT DEBIT</div>
+                <div class="v" style="color:#F26A21;">{{nextDeductionLabel}}</div>
+              </div>
+            </div>
+            <div class="autodeb">
+              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9" />
+                <path d="m8.2 12.2 2.6 2.6 5-5.4" />
+              </svg>
+              <span>Auto deduction from wallet · <a (click)="router.navigate(['/profile'])" style="color:#F26A21; text-decoration:none; cursor:pointer; font-weight:800;">Manage in Wallet</a></span>
+            </div>
+          </div>
+
+          <!-- This Week Progress Card -->
+          <div class="chartcard" *ngIf="weekDays && weekDays.length > 0">
+            <div class="blkhead">
+              <h2>This Week</h2>
+              <span class="mini">{{weekMealsCompleted}} / 7 meals delivered</span>
+            </div>
+            <div class="wkline">
+              <div class="wknode" *ngFor="let d of weekDays" [class.done]="d.completed" [class.now]="d.isToday">
+                <div class="bul">
+                  <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m8.2 12.2 2.6 2.6 5-5.4" />
+                  </svg>
+                </div>
+                <span>{{d.short}}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Upcoming Deliveries Section -->
+          <div class="chartcard" *ngIf="upcomingDeliveries && upcomingDeliveries.length > 0">
+            <div class="blkhead">
+              <h2>Upcoming Deliveries</h2>
+              <a class="mini" (click)="router.navigate(['/my-orders'])" style="color:#F26A21; text-decoration:none; font-weight:800; cursor:pointer;">View all &rsaquo;</a>
+            </div>
+            <div class="delivs">
+              <button class="deliv" *ngFor="let item of upcomingDeliveries" (click)="router.navigate(['/my-orders'])">
+                <div class="dvdate">
+                  <b>{{item.dateNum}}</b>
+                  <span>{{item.dateMonth}}</span>
+                </div>
+                <div class="ph">
+                  <img [src]="item.image" [alt]="item.name">
+                </div>
+                <div style="min-width:0">
+                  <div class="nm">{{item.name}}</div>
+                  <div class="mt">{{item.details}}</div>
+                </div>
+                <div class="rt">
+                  <b>{{item.dayLabel}}</b>
+                  <span>{{item.time}}</span>
+                </div>
+                <ion-icon name="chevron-forward-outline" style="color:#C4BAB3; font-size:16px; margin-left:4px;"></ion-icon>
+              </button>
+            </div>
+          </div>
+
+          <!-- Action Cards Grid -->
+          <div class="action-cards-grid">
+            <!-- Card 1: Need a break? -->
+            <div class="action-card pause-card">
+              <div class="ac-icon-badge">
+                <ion-icon [name]="activeSub.status === 'Paused' ? 'play' : 'pause'"></ion-icon>
+              </div>
+              <h3 class="ac-title">Need a break?</h3>
+              <p class="ac-sub">Pause your plan anytime and we'll extend the end date by the same number of days.</p>
+              <button class="ac-btn" (click)="togglePause()">
+                <ion-icon [name]="activeSub.status === 'Paused' ? 'play' : 'pause'"></ion-icon>
+                <span>{{ activeSub.status === 'Paused' ? 'Resume plan' : 'Pause plan' }}</span>
+              </button>
+            </div>
+
+            <!-- Card 2: Customize rotation -->
+            <div class="action-card rotation-card">
+              <div class="ac-icon-badge">
+                <ion-icon name="sync-outline"></ion-icon>
+              </div>
+              <h3 class="ac-title">Customize rotation</h3>
+              <p class="ac-sub">Swap any meal in your {{activeSub.rotationMeals?.length || 4}}-day cycle or change dietary preferences whenever you like.</p>
+              <button class="ac-btn" (click)="manageRotation()">
+                <ion-icon name="sync-outline"></ion-icon>
+                <span>Manage rotation</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Rail -->
+        <aside class="rail">
+          <!-- Next Delivery Card -->
+          <div class="rcard">
+            <div class="rhead">
+              <h3>Next delivery</h3>
+              <span class="mini">{{upcomingDeliveries[0]?.dayLabel || 'Tomorrow'}}</span>
+            </div>
+            <div class="delivery">
+              <span class="dtick">
+                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 7v5.4l3.4 2" />
+                </svg>
+              </span>
+              <div>
+                <div class="v">{{upcomingDeliveries[0]?.dateNum || '9'}} {{upcomingDeliveries[0]?.dateMonth || 'Aug'}} ·
+                  {{upcomingDeliveries[0]?.time || '1:00 PM'}}</div>
+                <div class="s">{{upcomingDeliveries[0]?.name || todaysMeal.name}}</div>
+              </div>
+            </div>
+            <button class="railbtn ghost" (click)="openPlanOptions()">
+              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4.5" width="18" height="17" rx="3" />
+                <path d="M8 2.5v4M16 2.5v4M3 10h18" />
+              </svg>
+              Reschedule
+            </button>
+          </div>
+
+          <!-- Plan Summary Card -->
+          <div class="rcard">
+            <div class="rhead">
+              <h3>Plan summary</h3>
+            </div>
+            <div class="sumrow">
+              <span>Plan</span>
+              <span style="font-weight:800;color:var(--ink)">{{activeSub.months}} Month</span>
+            </div>
+            <div class="sumrow">
+              <span>Meals per day</span>
+              <span style="font-weight:800;color:var(--ink)">1 lunch</span>
+            </div>
+            <div class="sumrow">
+              <span>Rotation</span>
+              <span style="font-weight:800;color:var(--ink)">{{activeSub.rotationMeals.length}} days</span>
+            </div>
+            <div class="sumrow">
+              <span>Delivered</span>
+              <span style="font-weight:800;color:var(--ink)">{{(activeSub.totalDays - daysLeft)}} /
+                {{activeSub.totalDays}}</span>
+            </div>
+            <div class="sumrow tot">
+              <span>Plan value</span>
+              <span>₹{{activeSub.totalPaid || (activeSub.dailyDeduction * activeSub.totalDays) | number:'1.0-0'}}</span>
+            </div>
+            <button class="railbtn" (click)="openPlanOptions()">Upgrade plan</button>
+          </div>
+
+          <!-- Mia AI Insight -->
+          <div class="insight" style="margin-bottom:0">
+            <span class="sp">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 2.5l2.1 5.6 5.6 2.1-5.6 2.1L12 17.9l-2.1-5.6L4.3 10.2l5.6-2.1z" />
+                <path d="M18.5 15.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" />
+              </svg>
+            </span>
+            <div>
+              <div class="k">Mia's Insight · AI Nutritionist</div>
+              <p>Your rotation averages 495 kcal per lunch. Swapping Day 2 for a higher-protein bowl would balance the week.</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+</ion-content>
+
+<!-- Sticky Footer CTA (Mobile Only) -->
+<ion-footer class="ion-no-border sub-footer mobile-only" *ngIf="!isLoading && !activeSub">
   <div class="footer-info" *ngIf="selectedMeals.length > 0">
     <span class="fi-meals">{{selectedMeals.length}} meal{{selectedMeals.length > 1 ? 's' : ''}} selected</span>
     <span class="fi-price">₹{{plans[selectedPlanIndex].price | number:'1.0-0'}} ·
@@ -191,443 +980,116 @@
   </button>
 </ion-footer>
 
+<!-- ── Custom Plan Controls Modal (Bottom Sheet) ── -->
+<ion-modal [isOpen]="isPlanControlsOpen" (didDismiss)="isPlanControlsOpen = false" [initialBreakpoint]="0.85"
+  [breakpoints]="[0, 0.85, 0.95]" class="plan-controls-modal">
+  <ng-template>
+    <div class="plan-controls-sheet">
+      <div class="sheet-handle"></div>
 
-<!-- ═══════════════════════════════════════════════════════════
-     STATE 2: ACTIVE PLAN DASHBOARD
-     ═══════════════════════════════════════════════════════════ -->
-<ng-container *ngIf="!isLoading && activeSub">
-
-  <ion-header class="ion-no-border sub-page-header">
-    <div class="header-curve-bg"></div>
-    <ion-toolbar class="transparent-toolbar" style="--padding-top: 5px;">
-      <div class="header-content">
-        <ion-button (click)="goBack()" class="back-btn-pill">
-          <ion-icon name="arrow-back-outline"></ion-icon>
-        </ion-button>
-        <div class="title-group">
-          <h1 class="page-title">Your Meal Plan</h1>
+      <div class="sheet-header">
+        <div class="header-text">
+          <h2>Plan Controls</h2>
+          <p>Manage your subscription with ease</p>
         </div>
-        <div class="header-actions">
-          <ion-button fill="clear" class="more-btn" (click)="openPlanOptions()">
-            <ion-icon name="ellipsis-vertical"></ion-icon>
-          </ion-button>
-        </div>
-      </div>
-    </ion-toolbar>
-  </ion-header>
-
-  <ion-content [fullscreen]="true" class="subscribe-content active-plan-content">
-    <div class="scrollable-body">
-
-      <!-- ── Active Plan Hero Card ── -->
-      <div class="active-hero-card">
-        <div class="ahc-badge">ACTIVE PLAN</div>
-        <div class="ahc-body">
-          <div class="ahc-info">
-            <h3>{{activeSub.months}} Month Plan</h3>
-            <div class="ahc-dates">
-              <div class="ahc-date">
-                <ion-icon name="calendar-outline"></ion-icon>
-                <div>
-                  <span class="ahc-d-label">Start Date</span>
-                  <span class="ahc-d-value">{{activeSub.startDate | date:'d MMM yyyy'}}</span>
-                </div>
-              </div>
-              <div class="ahc-date">
-                <ion-icon name="calendar-outline"></ion-icon>
-                <div>
-                  <span class="ahc-d-label">End Date</span>
-                  <span class="ahc-d-value">{{activeSub.endDate | date:'d MMM yyyy'}}</span>
-                </div>
-              </div>
-            </div>
-            <div class="ahc-days-left">
-              <ion-icon name="time-outline"></ion-icon>
-              <span>{{daysLeft}} days left</span>
-            </div>
-          </div>
-          <div class="ahc-ring">
-            <svg viewBox="0 0 100 100">
-              <circle class="ring-bg" cx="50" cy="50" r="42" />
-              <circle class="ring-fill" cx="50" cy="50" r="42"
-                [attr.stroke-dasharray]="goalProgress * 2.64 + ' ' + (264 - goalProgress * 2.64)" />
-            </svg>
-            <div class="ring-label">
-              <span class="ring-pct">{{goalProgress}}%</span>
-              <span class="ring-sub">Completed</span>
-            </div>
-          </div>
+        <div class="header-illustration">
+          <img src="assets/onboarding/chef_hat.png" alt="Chef hat">
         </div>
       </div>
 
-      <!-- ── Today's Meal ── -->
-      <div class="todays-meal-card">
-        <div class="tm-header">
-          <h3>Today's Meal</h3>
-          <span class="tm-badge" [ngClass]="todaysMeal.statusClass">
-            <span class="tm-dot"></span> {{ todaysMeal.statusText }}
-          </span>
-        </div>
-        <div class="tm-body">
-          <div class="tm-img">
-            <img [src]="todaysMeal.image" [alt]="todaysMeal.name">
-          </div>
-          <div class="tm-info">
-            <h4>{{todaysMeal.name}}</h4>
-            <p>{{todaysMeal.details}}</p>
-            <div class="tm-veg-badge">
-              <span class="veg-dot"></span> Veg
+      <div class="sheet-body" *ngIf="activeSub">
+        <!-- Status Banner -->
+        <div class="status-card" [class.paused]="activeSub.status === 'Paused'">
+          <div class="sc-left">
+            <div class="sc-icon">
+              <ion-icon [name]="activeSub.status === 'Paused' ? 'pause-circle' : 'checkmark-circle'"></ion-icon>
             </div>
-            <div class="tm-delivery">
-              <span class="tm-del-label">Delivery Time</span>
-              <span class="tm-del-time">1:00 PM</span>
+            <div class="sc-info">
+              <span class="sc-status">{{activeSub.status}}</span>
+              <span class="sc-sub">{{activeSub.status === 'Paused' ? 'Deliveries are paused. Resume anytime.' :
+                'Deliveries active. Next delivery tomorrow 1:00 PM.'}}</span>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- ── Your Rotation ── -->
-      <div class="rotation-section">
-        <h3 class="sec-label">Your Rotation <span class="rot-sub">(Repeats Every {{activeSub.rotationMeals.length}}
-            Days)</span></h3>
-        <div class="rotation-row">
-          <div class="rot-item" *ngFor="let rm of rotationDisplay; let i = index" [class.active]="rm.isToday">
-            <span class="rot-day-tag" [class.today]="rm.isToday">{{rm.dayLabel}}</span>
-            <div class="rot-item-img">
-              <img [src]="rm.image" [alt]="rm.name">
+        <!-- Quick Actions List -->
+        <div class="control-actions">
+
+          <button class="ctrl-btn" (click)="togglePause()">
+            <div class="cb-icon" [class.orange]="activeSub.status === 'Paused'">
+              <ion-icon [name]="activeSub.status === 'Paused' ? 'play' : 'pause'"></ion-icon>
             </div>
-            <span class="rot-item-name">{{rm.name}}</span>
-            <span class="rot-item-when">{{rm.whenLabel}}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── Monthly Khata (Wallet) ── -->
-      <div class="khata-section">
-        <div class="khata-header">
-          <h3 class="sec-label">Monthly Khata (Wallet)</h3>
-          <ion-icon name="wallet-outline" class="khata-icon"></ion-icon>
-        </div>
-        <div class="khata-stats">
-          <div class="khata-stat">
-            <span class="ks-label">Total Deducted<br>This Month</span>
-            <span class="ks-value">₹{{monthlyDeducted | number:'1.0-0'}}</span>
-          </div>
-          <div class="khata-stat">
-            <span class="ks-label">Daily<br>Deduction</span>
-            <span class="ks-value">₹{{activeSub.dailyDeduction | number:'1.0-0'}}/day</span>
-          </div>
-          <div class="khata-stat">
-            <span class="ks-label">Remaining<br>Days</span>
-            <span class="ks-value">{{daysLeft}}</span>
-          </div>
-          <div class="khata-stat">
-            <span class="ks-label">Next<br>Deduction</span>
-            <span class="ks-value highlight">{{ nextDeductionLabel }}</span>
-          </div>
-        </div>
-        <div class="khata-note">
-          <ion-icon name="checkmark-circle" class="kn-icon"></ion-icon>
-          <span>Auto deduction from wallet • <strong (click)="router.navigate(['/wallet'])">Manage in
-              Wallet</strong></span>
-        </div>
-      </div>
-
-      <!-- ── This Week Progress ── -->
-      <div class="week-section">
-        <div class="sec-row">
-          <h3 class="sec-label">This Week Progress</h3>
-          <span class="week-count">{{weekMealsCompleted}} / 7 meals delivered</span>
-        </div>
-        <div class="week-dots">
-          <div class="week-dot" *ngFor="let day of weekDays" 
-            [class.completed]="day.completed"
-            [class.today]="day.isToday"
-            [class.skipped]="day.skipped"
-            [class.paused]="day.paused">
-            <div class="dot-circle">
-              <ion-icon *ngIf="day.completed" name="checkmark"></ion-icon>
-              <ion-icon *ngIf="day.skipped" name="close-outline"></ion-icon>
-              <ion-icon *ngIf="day.paused" name="pause-outline"></ion-icon>
-              <span *ngIf="!day.completed && !day.skipped && !day.paused && day.isToday" class="today-pulse"></span>
+            <div class="cb-text">
+              <span class="cb-title">{{activeSub.status === 'Paused' ? 'Resume Subscription' : 'Pause Subscription'}}</span>
+              <span class="cb-sub">{{activeSub.status === 'Paused' ? 'Restart your daily meal deliveries' : 'Take a break without losing your balance'}}</span>
             </div>
-            <span class="dot-label">{{day.short}}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── Upcoming Deliveries ── -->
-      <div class="upcoming-section">
-        <div class="sec-row">
-          <h3 class="sec-label">Upcoming Deliveries</h3>
-          <button class="view-all" (click)="viewAllMeals()">View all →</button>
-        </div>
-        <div class="upcoming-item" *ngFor="let item of upcomingDeliveries">
-          <div class="upc-date-col">
-            <span class="upc-dd">{{item.dateNum}}</span>
-            <span class="upc-mm">{{item.dateMonth}}</span>
-          </div>
-          <div class="upc-img">
-            <img [src]="item.image" [alt]="item.name">
-          </div>
-          <div class="upc-info">
-            <h4>{{item.name}}</h4>
-            <p>{{item.details}}</p>
-          </div>
-          <div class="upc-right">
-            <span class="upc-day">{{item.dayLabel}}</span>
-            <span class="upc-time">{{item.time}}</span>
-          </div>
-          <ion-icon name="chevron-forward" class="upc-chevron"></ion-icon>
-        </div>
-      </div>
-
-      <!-- ── Need a Break? ── -->
-      <div class="action-card break-card">
-        <div class="ac-info">
-          <h4>Need a Break?</h4>
-          <p>Pause your plan anytime and we'll extend it for you.</p>
-          <button class="ac-btn pause-btn" (click)="togglePause()">
-            <ion-icon [name]="activeSub.status === 'Paused' ? 'play' : 'pause'"></ion-icon>
-            {{activeSub.status === 'Paused' ? 'Resume Plan' : 'Pause Plan'}}
+            <ion-icon name="chevron-forward-outline" class="cb-arrow"></ion-icon>
           </button>
-        </div>
-        <div class="ac-illustration">
-          <img src="assets/onboarding/calendar_clock.png" alt="Calendar clock">
-        </div>
-      </div>
 
-      <!-- ── Customize Rotation ── -->
-      <div class="action-card rotation-card">
-        <div class="ac-info">
-          <h4>Customize Rotation</h4>
-          <p>Swap meals or change preferences anytime.</p>
-          <button class="ac-btn manage-btn" (click)="manageRotation()">
-            <ion-icon name="refresh-outline"></ion-icon>
-            Manage Rotation
+          <button class="ctrl-btn" (click)="manageRotation()">
+            <div class="cb-icon green">
+              <ion-icon name="restaurant"></ion-icon>
+            </div>
+            <div class="cb-text">
+              <span class="cb-title">Manage Meal Rotation</span>
+              <span class="cb-sub">Swap dishes in your daily cycle</span>
+            </div>
+            <ion-icon name="chevron-forward-outline" class="cb-arrow"></ion-icon>
           </button>
-        </div>
-        <div class="ac-illustration">
-          <img src="assets/onboarding/salad_bowl_checked.png" alt="">
+
+          <button class="ctrl-btn" (click)="changePlan()">
+            <div class="cb-icon purple">
+              <ion-icon name="star"></ion-icon>
+            </div>
+            <div class="cb-text">
+              <span class="cb-title">Change Plan Duration</span>
+              <span class="cb-sub">Switch to 3 or 6 months & save up to 20%</span>
+            </div>
+            <ion-icon name="chevron-forward-outline" class="cb-arrow"></ion-icon>
+          </button>
+
+          <button class="ctrl-btn danger" (click)="cancelSubscription()">
+            <div class="cb-icon red">
+              <ion-icon name="close-circle"></ion-icon>
+            </div>
+            <div class="cb-text">
+              <span class="cb-title">Cancel Subscription</span>
+              <span class="cb-sub">Get instant pro-rata refund to your wallet</span>
+            </div>
+            <ion-icon name="chevron-forward-outline" class="cb-arrow"></ion-icon>
+          </button>
+
         </div>
       </div>
-
     </div>
-  </ion-content>
+  </ng-template>
+</ion-modal>
 
-  <!-- ── Custom Plan Controls Modal (Bottom Sheet) ── -->
-  <ion-modal [isOpen]="isPlanControlsOpen" (didDismiss)="isPlanControlsOpen = false"
-    [initialBreakpoint]="0.85" [breakpoints]="[0, 0.85, 0.95]" class="plan-controls-modal">
-    <ng-template>
-      <div class="plan-controls-sheet">
-        <div class="sheet-handle"></div>
+<!-- ── Cancel Confirmation Modal ── -->
+<ion-modal [isOpen]="isCancelModalOpen" (didDismiss)="isCancelModalOpen = false" [initialBreakpoint]="0.6"
+  [breakpoints]="[0, 0.6]" class="plan-controls-modal">
+  <ng-template>
+    <div class="plan-controls-sheet cancel-sheet">
+      <div class="sheet-handle"></div>
 
-        <div class="sheet-header">
-          <div class="header-text">
-            <h2>Plan Controls</h2>
-            <p>Manage your subscription with ease</p>
-          </div>
-          <div class="header-illustration">
-            <img src="assets/onboarding/plan_controls_illustration.png" alt="Plan Controls Illustration">
-          </div>
+      <div class="cancel-hero">
+        <div class="ch-icon">
+          <ion-icon name="warning"></ion-icon>
         </div>
-
-        <div class="sheet-body">
-          <!-- Pause Plan -->
-          <div class="control-row pause-row" (click)="togglePause(); isPlanControlsOpen = false">
-            <div class="row-icon orange">
-              <ion-icon name="pause"></ion-icon>
-            </div>
-            <div class="row-info">
-              <h3>Pause Plan</h3>
-              <p>Pause your plan anytime. We'll extend your end date.</p>
-            </div>
-            <button class="row-pill-btn orange">
-              <span class="pause-symbol">||</span> Pause
-            </button>
-            <ion-icon name="chevron-forward" class="row-chevron"></ion-icon>
-          </div>
-
-          <!-- Change Plan -->
-          <div class="control-row change-row" (click)="changePlan(); isPlanControlsOpen = false">
-            <div class="row-icon blue">
-              <ion-icon name="swap-horizontal"></ion-icon>
-            </div>
-            <div class="row-info">
-              <h3>Change Plan</h3>
-              <p>Upgrade, downgrade or switch to a different plan.</p>
-            </div>
-            <ion-icon name="chevron-forward" class="row-chevron"></ion-icon>
-          </div>
-
-          <!-- Manage Rotation -->
-          <div class="control-row rotation-row" (click)="manageRotation(); isPlanControlsOpen = false">
-            <div class="row-icon purple">
-              <ion-icon name="refresh"></ion-icon>
-            </div>
-            <div class="row-info">
-              <h3>Manage Rotation</h3>
-              <p>Swap meals or change your 3-meal rotation anytime.</p>
-            </div>
-            <ion-icon name="chevron-forward" class="row-chevron"></ion-icon>
-          </div>
-
-          <!-- Cancel Subscription -->
-          <div class="control-row cancel-row" (click)="cancelSubscription(); isPlanControlsOpen = false">
-            <div class="row-icon red">
-              <ion-icon name="trash"></ion-icon>
-            </div>
-            <div class="row-info">
-              <h3>Cancel Subscription</h3>
-              <p>Cancel your plan. You can resubscribe anytime.</p>
-            </div>
-            <ion-icon name="chevron-forward" class="row-chevron"></ion-icon>
-          </div>
-
-          <!-- Need Help -->
-          <div class="control-row help-row">
-            <div class="row-icon gold">
-              <ion-icon name="bulb-outline"></ion-icon>
-            </div>
-            <div class="row-info">
-              <h3>Need help?</h3>
-              <p>We're here to help you with your plan.</p>
-            </div>
-            <button class="chat-support-btn" (click)="contactSupport(); isPlanControlsOpen = false">
-              <ion-icon name="headset-outline"></ion-icon>
-              Chat Support
-            </button>
-          </div>
-        </div>
-
-        <div class="sheet-footer">
-          <button class="sheet-close-btn" (click)="isPlanControlsOpen = false">
-            Close
-          </button>
-        </div>
+        <h2>Cancel Subscription?</h2>
+        <p>You have <strong>{{daysLeft}} days</strong> remaining on your {{activeSub?.months}} Month Plan.</p>
       </div>
-    </ng-template>
-  </ion-modal>
 
-
-
-</ng-container>
-
-  <!-- ── Cancel Subscription Confirmation Modal (Centered Modal) ── -->
-  <ion-modal [isOpen]="isCancelModalOpen" (didDismiss)="isCancelModalOpen = false" class="cancel-modal">
-    <ng-template>
-      <div class="cancel-modal-container">
-        <!-- Close button top-right -->
-        <button class="modal-close-circle-btn" (click)="isCancelModalOpen = false">
-          <ion-icon name="close"></ion-icon>
-        </button>
-
-        <!-- Illustration -->
-        <div class="cancel-illustration-box">
-          <img src="assets/onboarding/cancel_plan_illustration.png" alt="Cancel Subscription Warning">
-        </div>
-
-        <!-- Header -->
-        <h2 class="cancel-modal-title">Cancel Subscription?</h2>
-        <p class="cancel-modal-subtitle">Are you sure? Your remaining balance will be refunded to your wallet.</p>
-
-        <!-- Refund Card Details -->
-        <div class="refund-detail-card">
-          <div class="refund-row">
-            <div class="wallet-icon-circle">
-              <ion-icon name="wallet"></ion-icon>
-            </div>
-            <span class="refund-label-text">Refund to Wallet</span>
-            <span class="refund-amount-text" *ngIf="activeSub">₹{{ (daysLeft * activeSub.dailyDeduction) | number:'1.0-0' }}</span>
-            <span class="refund-amount-text" *ngIf="!activeSub">₹2,420</span>
-          </div>
-
-          <div class="refund-divider"></div>
-
-          <div class="refund-note-row">
-            <div class="shield-icon-circle">
-              <ion-icon name="shield-checkmark-outline"></ion-icon>
-            </div>
-            <p class="refund-note-text">You can resubscribe anytime and continue from where you left off.</p>
-          </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="cancel-modal-actions">
-          <button class="keep-plan-btn" (click)="isCancelModalOpen = false">
-            Keep Plan
-          </button>
-          <button class="confirm-cancel-btn" (click)="confirmCancelSubscription()">
-            Yes, Cancel Plan
-          </button>
-        </div>
-
-        <!-- Secure Footer -->
-        <div class="secure-footer">
-          <ion-icon name="lock-closed-outline"></ion-icon>
-          <span>100% secure. No hidden charges.</span>
-        </div>
+      <div class="refund-estimate" *ngIf="activeSub">
+        <div class="re-label">Estimated Instant Wallet Refund</div>
+        <div class="re-amount">₹{{(daysLeft * activeSub.dailyDeduction) | number:'1.0-0'}}</div>
+        <p class="re-note">Calculated at ₹{{activeSub.dailyDeduction}}/day for remaining {{daysLeft}} days.</p>
       </div>
-    </ng-template>
-  </ion-modal>
 
-  <!-- ── Confirm Subscription Modal (Centered Modal) ── -->
-  <ion-modal [isOpen]="isConfirmModalOpen" (didDismiss)="isConfirmModalOpen = false" class="confirm-modal">
-    <ng-template>
-      <div class="confirm-modal-container">
-        <!-- Close button top-right -->
-        <button class="modal-close-circle-btn" (click)="isConfirmModalOpen = false">
-          <ion-icon name="close"></ion-icon>
-        </button>
-
-        <!-- Illustration -->
-        <div class="confirm-illustration-box">
-          <img src="assets/onboarding/salad_bowl_checked.png" alt="Confirm Subscription">
-        </div>
-
-        <!-- Header -->
-        <h2 class="confirm-modal-title">Confirm Subscription</h2>
-        <p class="confirm-modal-subtitle">Review your plan details and rotation selection before confirming.</p>
-
-        <!-- Plan Details Card -->
-        <div class="confirm-detail-card" *ngIf="confirmingPlan">
-          <div class="plan-main-info">
-            <span class="plan-name-badge">{{ confirmingPlan.name }}</span>
-            <div class="plan-price-row">
-              <span class="price-val">₹{{ confirmingPlan.price | number:'1.0-0' }}</span>
-              <span class="price-per-day">/ ₹{{ confirmingPlan.perDay }}/day</span>
-            </div>
-            <span class="plan-days-tag">Duration: {{ confirmingPlan.days }} Days</span>
-          </div>
-
-          <div class="confirm-divider"></div>
-
-          <div class="confirm-rotation-info">
-            <span class="rotation-label">Rotation Menu Preview</span>
-            <div class="rotation-meals-row">
-              <div class="meal-badge" *ngFor="let meal of selectedMeals">
-                <ion-icon name="restaurant-outline"></ion-icon>
-                <span>{{ meal.name }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="confirm-modal-actions">
-          <button class="keep-plan-btn" (click)="isConfirmModalOpen = false">
-            Cancel
-          </button>
-          <button class="confirm-cancel-btn" (click)="confirmPurchase()">
-            Subscribe Now
-          </button>
-        </div>
-
-        <!-- Secure Footer -->
-        <div class="secure-footer">
-          <ion-icon name="lock-closed-outline"></ion-icon>
-          <span>100% secure. No hidden charges.</span>
-        </div>
+      <div class="cancel-actions">
+        <button class="btn-keep" (click)="isCancelModalOpen = false">Keep My Subscription</button>
+        <button class="btn-cancel-confirm" (click)="confirmCancelSubscription()">Yes, Cancel & Refund</button>
       </div>
-    </ng-template>
-  </ion-modal>
+    </div>
+  </ng-template>
+</ion-modal>

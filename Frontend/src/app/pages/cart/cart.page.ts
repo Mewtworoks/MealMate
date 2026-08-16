@@ -3,6 +3,8 @@ import { CartService, CartItem } from '../../services/cart.service';
 import { WalletService } from '../../services/wallet.service';
 import { OrderService } from '../../services/order.service';
 import { AuthService } from '../../services/auth';
+import { SubscriptionService, Subscription as MealSubscription } from '../../services/subscription.service';
+import { ThemeService } from '../../services/theme.service';
 import { Router } from '@angular/router';
 import { NavController, ToastController, AlertController, ModalController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
@@ -40,11 +42,53 @@ export class CartPage implements OnInit, OnDestroy {
     public wallet: WalletService,
     private orderService: OrderService,
     private auth: AuthService,
+    public subscriptionService: SubscriptionService,
+    public themeService: ThemeService,
     private router: Router,
     private navCtrl: NavController,
     private toastCtrl: ToastController,
     private alertCtrl: AlertController
   ) { }
+
+  get userName(): string {
+    return this.auth.userName || 'MealMate_User';
+  }
+
+  get userInitials(): string {
+    return this.auth.userInitials || 'MU';
+  }
+
+  get activeSubscription(): MealSubscription | null {
+    const userId = this.auth.userId;
+    if (!userId) return null;
+    const subs = this.subscriptionService.getUserSubscriptions(userId);
+    return subs.find(s => s.status === 'Active') || subs[0] || null;
+  }
+
+  get planName(): string {
+    return (this.activeSubscription && this.activeSubscription.planName) ? this.activeSubscription.planName : 'Healthy Mix Plan';
+  }
+
+  get activePlanPercent(): number {
+    if (!this.activeSubscription) return 6;
+    return Math.round((this.activeSubscription.currentDay / this.activeSubscription.totalDays) * 100);
+  }
+
+  get taxAmount(): number {
+    return Math.round(this.subTotal * 0.05);
+  }
+
+  async clearCart() {
+    this.cartService.clearCart();
+    this.redeemPoints = false;
+    this.calculateBill();
+    const toast = await this.toastCtrl.create({
+      message: 'Cart cleared',
+      duration: 1500,
+      color: 'dark'
+    });
+    toast.present();
+  }
 
   ngOnInit() {
     this.subs.push(
@@ -58,10 +102,11 @@ export class CartPage implements OnInit, OnDestroy {
       this.wallet.creditUsed$.subscribe(cu => this.creditUsed = cu)
     );
 
-    // Try to load wallet from backend
+    // Try to load wallet & subscriptions from backend
     const userId = this.auth.userId;
     if (userId) {
       this.wallet.loadWallet(userId);
+      this.subscriptionService.fetchUserSubscriptions(userId);
     }
   }
 

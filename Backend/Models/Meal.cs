@@ -41,5 +41,10 @@ namespace MealMate.Api.Models
         public string? PortionSize { get; set; } = "350g";
         public string? Ingredients { get; set; } = string.Empty;  // comma-separated
         public string? Allergens { get; set; } = string.Empty;    // comma-separated
+
+        // ── Customer Reviews fields ──
+        public string? ReviewsJson { get; set; } = "[]";
+        public double Rating { get; set; } = 4.8;
+        public int ReviewCount { get; set; } = 0;
     }
 }

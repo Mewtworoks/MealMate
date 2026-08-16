@@ -260,5 +260,14 @@ export class MealService {
     await firstValueFrom(this.http.delete(`${environment.apiUrl}/meals/${id}`));
     this.refreshMeals();
   }
+
+  async getChefProfile(chefId: string): Promise<any> {
+    try {
+      return await firstValueFrom(this.http.get(`${environment.apiUrl}/chef/${encodeURIComponent(chefId)}/profile`));
+    } catch (e) {
+      console.warn('Error fetching chef profile, using defaults', e);
+      return null;
+    }
+  }
 }
 

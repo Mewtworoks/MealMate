@@ -15,6 +15,7 @@ namespace MealMate.Api.Services
         Task<MealResponseDto> CreateAsync(MealRequestDto mealRequest);
         Task<bool> UpdateAsync(Guid id, MealRequestDto mealRequest);
         Task<bool> DeleteAsync(Guid id);
+        Task<bool> AddReviewAsync(Guid id, ReviewDto review);
     }
 
     public class MealService : IMealService
@@ -28,6 +29,30 @@ namespace MealMate.Api.Services
             _mealRepository = mealRepository;
             _context = context;
             _mapper = mapper;
+        }
+
+        public async Task<bool> AddReviewAsync(Guid id, ReviewDto review)
+        {
+            var meal = await _mealRepository.GetByIdAsync(id);
+            if (meal == null) return false;
+
+            var reviewsList = new List<ReviewDto>();
+            if (!string.IsNullOrWhiteSpace(meal.ReviewsJson))
+            {
+                try
+                {
+                    reviewsList = System.Text.Json.JsonSerializer.Deserialize<List<ReviewDto>>(meal.ReviewsJson) ?? new List<ReviewDto>();
+                }
+                catch { }
+            }
+
+            reviewsList.Insert(0, review);
+            meal.ReviewsJson = System.Text.Json.JsonSerializer.Serialize(reviewsList);
+            meal.ReviewCount = reviewsList.Count;
+            meal.Rating = Math.Round(reviewsList.Average(r => r.Rating), 1);
+
+            await _mealRepository.UpdateAsync(meal);
+            return true;
         }
 
         public async Task<IEnumerable<MealResponseDto>> GetAllAsync(string? category)

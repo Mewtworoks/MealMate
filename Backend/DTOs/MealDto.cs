@@ -22,6 +22,9 @@ namespace MealMate.Api.DTOs
         public string? PortionSize { get; set; } = "350g";
         public string? Ingredients { get; set; } = string.Empty;
         public string? Allergens { get; set; } = string.Empty;
+        public string? ReviewsJson { get; set; } = "[]";
+        public double Rating { get; set; } = 4.8;
+        public int ReviewCount { get; set; } = 0;
     }
 
     public class MealResponseDto
@@ -47,5 +50,21 @@ namespace MealMate.Api.DTOs
         public string? PortionSize { get; set; } = string.Empty;
         public string? Ingredients { get; set; } = string.Empty;
         public string? Allergens { get; set; } = string.Empty;
+        public string? ReviewsJson { get; set; } = "[]";
+        public double Rating { get; set; } = 4.8;
+        public int ReviewCount { get; set; } = 0;
+    }
+
+    public class ReviewDto
+    {
+        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string MealId { get; set; } = string.Empty;
+        public string MealName { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
+        public string UserAvatarBg { get; set; } = "#F26A21";
+        public double Rating { get; set; } = 5;
+        public string Comment { get; set; } = string.Empty;
+        public string Date { get; set; } = DateTime.UtcNow.ToString("MMM d, yyyy");
     }
 }

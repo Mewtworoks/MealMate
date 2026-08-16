@@ -5,6 +5,7 @@ import { HealthService, HealthGoal, DailyLog, WeeklyDay } from '../../services/h
 import { MealService } from '../../services/meal.service';
 import { SubscriptionService } from '../../services/subscription.service';
 import { PageLoaderService } from '../../services/page-loader.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-health',
@@ -21,12 +22,14 @@ export class HealthPage implements OnInit {
   healthGoal!: HealthGoal;
   todayLog!: DailyLog;
   weeklyData: WeeklyDay[] = [];
-  streak = 0;
+
+  // Metrics & Progress
   avgCalories = 0;
   goalProgress = 0;
+  streak = 0;
   miaInsight = '';
 
-  // Macro Progress (%)
+  // Macros percentages for gauge/rings
   proteinPercent = 0;
   carbsPercent = 0;
   fatPercent = 0;
@@ -40,16 +43,25 @@ export class HealthPage implements OnInit {
   // Date display
   weekRangeLabel = '';
 
+  get userName(): string {
+    return this.auth.userName || 'MealMate User';
+  }
+
+  get userInitials(): string {
+    return this.auth.userInitials;
+  }
+
   constructor(
     private navCtrl: NavController,
     private auth: AuthService,
     private healthService: HealthService,
     private mealService: MealService,
     private subscriptionService: SubscriptionService,
-    private pageLoader: PageLoaderService
-  ) {}
+    private pageLoader: PageLoaderService,
+    public themeService: ThemeService
+  ) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   async ionViewWillEnter() {
     this.isLoading = true;

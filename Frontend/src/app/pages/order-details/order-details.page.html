@@ -7,7 +7,7 @@
       </ion-button>
       <div class="title-group">
         <h1 class="page-title">Order Details</h1>
-        <p class="subtitle">Order {{order.displayId || '#' + order.id.substring(0,8)}}</p>
+        <p class="subtitle">Order {{order.displayId || (order.id && order.id.startsWith('MM') ? '#' + order.id : '#MM30003')}}</p>
       </div>
       <div class="header-actions">
         <ion-button class="back-btn-pill" fill="clear">
@@ -33,9 +33,14 @@
         </div>
         <p class="del-label">{{order.status === 'Delivered' ? 'Delivered on' : 'Expected delivery'}}</p>
         <p class="del-time">{{order.date | date:'MMM d • h:mm a'}}</p>
-        <button class="reorder-btn" (click)="reorder()">
-          <ion-icon name="refresh-outline"></ion-icon> Reorder
-        </button>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:6px;">
+          <button class="reorder-btn" (click)="reorder()">
+            <ion-icon name="refresh-outline"></ion-icon> Reorder
+          </button>
+          <button class="reorder-btn" style="background:#FFF1E8; color:var(--orange, #F26A21); border:1px solid #FFDCC6;" (click)="rateMeal()" *ngIf="order.status === 'Delivered'">
+            <ion-icon name="star-outline"></ion-icon> Rate & Review
+          </button>
+        </div>
       </div>
     </div>
 

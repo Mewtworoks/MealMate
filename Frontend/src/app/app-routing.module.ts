@@ -76,7 +76,8 @@ const routes: Routes = [
   },
   {
     path: 'all-meals',
-    loadChildren: () => import('./pages/all-meals/all-meals.module').then( m => m.AllMealsPageModule)
+    redirectTo: 'customer-home',
+    pathMatch: 'full'
   },
   {
     path: 'health',

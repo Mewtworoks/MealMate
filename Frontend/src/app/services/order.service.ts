@@ -50,12 +50,29 @@ export class OrderService {
     }
   }
 
+  private formatDisplayId(rawId: string, rawDisplayId?: string): string {
+    if (rawDisplayId && rawDisplayId.trim().length > 0) {
+      return rawDisplayId.startsWith('#') ? rawDisplayId : `#${rawDisplayId}`;
+    }
+    if (rawId && rawId.startsWith('MM')) {
+      return `#${rawId}`;
+    }
+    if (rawId && rawId.startsWith('#MM')) {
+      return rawId;
+    }
+    if (rawId) {
+      const num = Math.abs(rawId.replace(/-/g, '').split('').reduce((acc, c) => acc + c.charCodeAt(0), 0)) % 90000 + 10000;
+      return `#MM${num}`;
+    }
+    return '#MM30003';
+  }
+
   async refreshUserOrders(userId: string) {
     try {
       const data: any[] = await firstValueFrom(this.http.get<any[]>(`${environment.apiUrl}/orders/user/${userId}`));
       const mappedOrders: Order[] = data.map(o => ({
         id: o.id || o.Id,
-        displayId: o.displayId || o.DisplayId,
+        displayId: this.formatDisplayId(o.id || o.Id || '', o.displayId || o.DisplayId),
         date: o.date || o.Date || o.orderDate || o.OrderDate || o.createdAt || o.CreatedAt,
         total: o.total || o.Total || o.totalAmount || o.TotalAmount,
         items: (o.items || o.Items || o.orderItems || o.OrderItems || []).map((i: any) => ({
@@ -89,7 +106,7 @@ export class OrderService {
       const data: any[] = await firstValueFrom(this.http.get<any[]>(`${environment.apiUrl}/orders/agent-orders/${agentId}`));
       const mappedOrders: Order[] = data.map(o => ({
         id: o.id || o.Id,
-        displayId: o.displayId || o.DisplayId,
+        displayId: this.formatDisplayId(o.id || o.Id || '', o.displayId || o.DisplayId),
         date: o.date || o.Date || o.orderDate || o.OrderDate || o.createdAt || o.CreatedAt,
         total: o.total || o.Total || o.totalAmount || o.TotalAmount,
         items: (o.items || o.Items || o.orderItems || o.OrderItems || []).map((i: any) => ({

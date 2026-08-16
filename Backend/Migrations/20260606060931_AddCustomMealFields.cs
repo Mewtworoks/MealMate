@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -20,7 +20,7 @@ namespace MealMate.Api.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
                     Email = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     FullName = table.Column<string>(type: "longtext", nullable: true)
@@ -45,8 +45,8 @@ namespace MealMate.Api.Migrations
                 name: "AgentAdvances",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    AgentId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    AgentId = table.Column<Guid>(type: "char(36)", nullable: false),
                     AdvanceTaken = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     DailyDeduction = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TotalDeducted = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -69,8 +69,8 @@ namespace MealMate.Api.Migrations
                 name: "AgentPayouts",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    AgentId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    AgentId = table.Column<Guid>(type: "char(36)", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Status = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -93,7 +93,7 @@ namespace MealMate.Api.Migrations
                 name: "Meals",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
                     Name = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Description = table.Column<string>(type: "longtext", nullable: true)
@@ -105,7 +105,7 @@ namespace MealMate.Api.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     IsVeg = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     IsAvailable = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    AgentId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    AgentId = table.Column<Guid>(type: "char(36)", nullable: false),
                     Calories = table.Column<int>(type: "int", nullable: false),
                     Protein = table.Column<int>(type: "int", nullable: false),
                     Carbs = table.Column<int>(type: "int", nullable: false),
@@ -138,9 +138,9 @@ namespace MealMate.Api.Migrations
                 name: "Orders",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    CustomerId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    AgentId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    CustomerId = table.Column<Guid>(type: "char(36)", nullable: false),
+                    AgentId = table.Column<Guid>(type: "char(36)", nullable: false),
                     OrderDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Status = table.Column<string>(type: "longtext", nullable: false)
@@ -179,8 +179,8 @@ namespace MealMate.Api.Migrations
                 name: "Subscriptions",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    CustomerId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    CustomerId = table.Column<Guid>(type: "char(36)", nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Months = table.Column<int>(type: "int", nullable: false),
@@ -211,9 +211,9 @@ namespace MealMate.Api.Migrations
                 name: "CartItems",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    CustomerId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    MealId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    CustomerId = table.Column<Guid>(type: "char(36)", nullable: false),
+                    MealId = table.Column<Guid>(type: "char(36)", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     Total = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
@@ -239,9 +239,9 @@ namespace MealMate.Api.Migrations
                 name: "OrderItems",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    OrderId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    MealId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    OrderId = table.Column<Guid>(type: "char(36)", nullable: false),
+                    MealId = table.Column<Guid>(type: "char(36)", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     UnitPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
@@ -267,8 +267,8 @@ namespace MealMate.Api.Migrations
                 name: "SubscriptionPausedDays",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    SubscriptionId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    SubscriptionId = table.Column<Guid>(type: "char(36)", nullable: false),
                     PausedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
@@ -287,9 +287,9 @@ namespace MealMate.Api.Migrations
                 name: "SubscriptionRotationMeals",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    SubscriptionId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    MealId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    SubscriptionId = table.Column<Guid>(type: "char(36)", nullable: false),
+                    MealId = table.Column<Guid>(type: "char(36)", nullable: false),
                     Position = table.Column<int>(type: "int", nullable: false),
                     PriceAtSubscription = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
@@ -315,8 +315,8 @@ namespace MealMate.Api.Migrations
                 name: "SubscriptionSkippedDays",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    SubscriptionId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false),
+                    SubscriptionId = table.Column<Guid>(type: "char(36)", nullable: false),
                     SkippedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>

@@ -1,151 +1,410 @@
-<ion-header class="ion-no-border sub-page-header">
-  <div class="header-curve-bg"></div>
-  <ion-toolbar class="transparent-toolbar" style="--padding-top: 5px;">
-    <div class="header-content">
-      <ion-button (click)="goBack()" class="back-btn-pill">
-        <ion-icon name="arrow-back-outline"></ion-icon>
-      </ion-button>
-      <div class="title-group">
-        <h1 class="page-title">Personal Chef</h1>
-        <p class="subtitle">Tell us your preferences</p>
+<!-- ════════════════ MOBILE VIEW (Screens <= 1000px) ════════════════ -->
+<div class="mobile-only">
+  <ion-header class="ion-no-border sub-page-header">
+    <div class="header-curve-bg"></div>
+    <ion-toolbar class="transparent-toolbar" style="--padding-top: 5px;">
+      <div class="header-content">
+        <ion-button (click)="goBack()" class="back-btn-pill">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </ion-button>
+        <div class="title-group">
+          <h1 class="page-title">Personal Chef</h1>
+          <p class="subtitle">Tell us your preferences</p>
+        </div>
       </div>
-    </div>
-  </ion-toolbar>
-</ion-header>
+    </ion-toolbar>
+  </ion-header>
 
-<ion-content class="concierge-content">
-  <div class="content-wrapper animate-up">
+  <ion-content class="concierge-content">
+    <div class="content-wrapper animate-up">
 
-    <!-- Visual Hero -->
-    <div class="hero-card">
-      <div class="hero-illustration">
-        <img src="assets/onboarding/dal_makhani.png" alt="Chef Illustration" class="floating">
+      <!-- Visual Hero -->
+      <div class="hero-card">
+        <div class="hero-illustration">
+          <img src="assets/onboarding/dal_makhani.png" alt="Chef Illustration" class="floating">
+        </div>
+        <div class="hero-text">
+          <h2>What's on your mind?</h2>
+          <p>Our home-cooks are ready to prepare a personalized dish just for you.</p>
+        </div>
       </div>
-      <div class="hero-text">
-        <h2>What's on your mind?</h2>
-        <p>Our home-cooks are ready to prepare a personalized dish just for you.</p>
-      </div>
-    </div>
 
-    <!-- Dish Details Form -->
-    <section class="form-container">
-      <div class="custom-input-group">
-        <div class="label-row">
-          <span class="input-label">Dish Name</span>
-          <button class="ai-help-btn" (click)="consultAi()">
-            <ion-icon name="sparkles"></ion-icon> ASK AI
+      <!-- Dish Details Form -->
+      <section class="form-container">
+        <div class="custom-input-group">
+          <div class="label-row">
+            <span class="input-label">Dish Name</span>
+            <button class="ai-help-btn" (click)="consultAi()">
+              <ion-icon name="sparkles"></ion-icon> ASK AI
+            </button>
+          </div>
+          <div class="input-box">
+            <input type="text" placeholder="e.g. Grandma's special Rajma" [(ngModel)]="mealName" (ngModelChange)="getPriceEstimate()">
+          </div>
+        </div>
+
+        <div class="custom-input-group">
+          <div class="label-row">
+            <span class="input-label">Add your preferences (optional)</span>
+          </div>
+          <div class="input-box textarea-box">
+            <textarea rows="3" placeholder="e.g. Less spicy, extra butter, no garlic" [(ngModel)]="details" (ngModelChange)="getPriceEstimate()"></textarea>
+            <div class="char-counter">{{details.length || 0}}/200</div>
+          </div>
+        </div>
+
+        <div class="selection-row">
+          <button class="pill-toggle veg-pill" [class.selected]="mealType === 'Veg'" (click)="mealType = 'Veg'">
+            <div class="dot veg-dot"></div> Veg
+          </button>
+          <button class="pill-toggle non-veg-pill" [class.selected]="mealType === 'Non-Veg'" (click)="mealType = 'Non-Veg'">
+            <div class="dot non-veg-dot"></div> Non-Veg
           </button>
         </div>
-        <div class="input-box">
-          <input type="text" placeholder="e.g. Grandma's special Rajma" [(ngModel)]="mealName" (ngModelChange)="getPriceEstimate()">
+      </section>
+
+      <!-- Agent Selection -->
+      <section class="agent-selection">
+        <div class="s-header-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h3 class="s-title" style="margin: 0;">Choose Your Chef</h3>
+          <span class="radius-badge" style="font-size: 0.72rem; font-weight: 700; color: #ff7235; background: #fff5ee; padding: 4px 10px; border-radius: 12px; border: 1px solid rgba(255, 114, 53, 0.2); display: flex; align-items: center; gap: 4px;">
+            <ion-icon name="navigate-circle-outline"></ion-icon> Within 20 km radius
+          </span>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="isLoadingChefs" style="text-align: center; padding: 24px 0;">
+          <ion-spinner name="crescent" color="warning"></ion-spinner>
+          <p style="font-size: 0.8rem; color: #8e7c76; margin-top: 8px;">Finding home chefs near you (20 km radius)...</p>
+        </div>
+
+        <!-- Chef Cards List (If chefs available within 20km) -->
+        <div class="agent-scroll" *ngIf="!isLoadingChefs && agents.length > 0">
+          <div *ngFor="let agent of agents; let i = index" class="agent-card" [class.selected]="selectedAgentId === agent.id" (click)="selectedAgentId = agent.id">
+            
+            <div class="check-circle" *ngIf="selectedAgentId === agent.id">
+              <ion-icon name="checkmark-circle"></ion-icon>
+            </div>
+
+            <div class="avatar">{{agent.name.charAt(0)}}</div>
+            
+            <div class="a-info">
+              <span class="a-name">{{agent.name}}</span>
+              <span class="a-meta">
+                <ion-icon name="star" class="star-icon"></ion-icon> {{agent.rating}} 
+                <span class="divider">|</span> 
+                <ion-icon name="location" style="color: #ff7235; font-size: 0.75rem;"></ion-icon> {{agent.distance}}
+              </span>
+            </div>
+
+            <div class="card-badge" [ngClass]="['top-rated', 'hygienic', 'homestyle'][i % 3]">
+              <ion-icon [name]="['ribbon', 'shield-checkmark', 'heart'][i % 3]"></ion-icon>
+              {{ agent.tag || ['Top Rated', 'Hygienic', 'Homestyle'][i % 3] }}
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Empty State (No Chefs within 20km) -->
+        <div class="no-chefs-card" *ngIf="!isLoadingChefs && agents.length === 0" style="background: white; border-radius: 20px; padding: 24px 16px; text-align: center; border: 1.5px dashed #ffd5c2; margin-top: 8px;">
+          <div style="width: 54px; height: 54px; background: #fff5ee; border-radius: 50%; margin: 0 auto 12px auto; display: flex; align-items: center; justify-content: center; color: #ff7235; font-size: 24px;">
+            <ion-icon name="compass-outline"></ion-icon>
+          </div>
+          <h4 style="font-size: 1.05rem; font-weight: 800; color: #483129; margin: 0 0 6px 0;">No Chefs Available Within 20 km</h4>
+          <p style="font-size: 0.8rem; color: #8e7c76; margin: 0 0 16px 0; line-height: 1.4;">
+            We couldn't find any home cooks active within your 20 km radius right now. Try refreshing your GPS location!
+          </p>
+          <button type="button" (click)="loadNearbyChefs()" style="background: #ff7235; color: white; border: none; padding: 10px 20px; border-radius: 14px; font-weight: 700; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 4px 12px rgba(255, 114, 53, 0.25);">
+            <ion-icon name="refresh-outline"></ion-icon> Refresh Location
+          </button>
+        </div>
+      </section>
+
+      <!-- Estimate Price Dark Card -->
+      <div class="estimate-card">
+        <span class="est-label">ESTIMATE PRICE</span>
+        <div class="est-amount" *ngIf="!isEstimating">₹{{estimateMin}} - ₹{{estimateMax}}</div>
+        <div class="est-amount-loading" *ngIf="isEstimating">
+          <ion-spinner name="crescent" color="warning"></ion-spinner>
+        </div>
+        <div class="dashed-line"></div>
+        <div class="est-footer">
+          <ion-icon name="bag-handle-outline"></ion-icon>
+          <span>Price may vary based on ingredients and portion.</span>
         </div>
       </div>
 
-      <div class="custom-input-group">
-        <div class="label-row">
-          <span class="input-label">Add your preferences (optional)</span>
-        </div>
-        <div class="input-box textarea-box">
-          <textarea rows="3" placeholder="e.g. Less spicy, extra butter, no garlic" [(ngModel)]="details" (ngModelChange)="getPriceEstimate()"></textarea>
-          <div class="char-counter">{{details.length || 0}}/200</div>
-        </div>
-      </div>
+    </div>
+  </ion-content>
 
-      <div class="selection-row">
-        <button class="pill-toggle veg-pill" [class.selected]="mealType === 'Veg'" (click)="mealType = 'Veg'">
-          <div class="dot veg-dot"></div> Veg
+  <!-- Bottom Action Bar -->
+  <ion-footer class="ion-no-border bottom-action-bar">
+    <div class="action-wrap">
+      <div class="info-block">
+        <div class="icon-circle">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+        </div>
+        <span class="info-text">Final price will be<br>confirmed by the agent.</span>
+      </div>
+      <button class="continue-btn" (click)="submitOrder()" [disabled]="!mealName || !selectedAgentId">
+        CONTINUE <ion-icon name="arrow-forward-outline"></ion-icon>
+      </button>
+    </div>
+  </ion-footer>
+</div>
+
+<!-- ════════════════ DESKTOP WEB VIEW (Screens >= 1001px) ════════════════ -->
+<div class="web-app desktop-only" [class.sidebar-collapsed]="themeService.isSidebarCollapsed">
+  <!-- SIDEBAR -->
+  <aside class="side">
+    <div class="side-top">
+      <div class="logo">
+        <span class="glyph"><img src="assets/logo/chef_hat.png" alt="MealMate"></span>
+        <b class="brand-name">MealMate</b>
+      </div>
+      <button class="sidebar-toggle-btn" (click)="themeService.toggleSidebar()"
+        [title]="themeService.isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+        <ion-icon [name]="themeService.isSidebarCollapsed ? 'chevron-forward-outline' : 'chevron-back-outline'"></ion-icon>
+      </button>
+    </div>
+    <!-- CHEF SIDEBAR NAV -->
+    <ng-container *ngIf="themeService.isAgent">
+      <div class="navlabel">Chef Menu</div>
+      <nav class="nav">
+        <button routerLink="/agent-home">
+          <ion-icon name="home-outline"></ion-icon><span class="nav-text">Dashboard</span>
         </button>
-        <button class="pill-toggle non-veg-pill" [class.selected]="mealType === 'Non-Veg'" (click)="mealType = 'Non-Veg'">
-          <div class="dot non-veg-dot"></div> Non-Veg
+        <button routerLink="/manage-menu">
+          <ion-icon name="restaurant-outline"></ion-icon><span class="nav-text">Manage Menu</span>
+        </button>
+        <button routerLink="/agent-earnings">
+          <ion-icon name="wallet-outline"></ion-icon><span class="nav-text">Earnings</span>
+        </button>
+        <button routerLink="/profile">
+          <ion-icon name="person-outline"></ion-icon><span class="nav-text">Chef Profile</span>
+        </button>
+      </nav>
+      <div class="side-foot">
+        <button class="me" routerLink="/profile" title="View Profile">
+          <span class="ava">🧑‍🍳</span>
+          <span class="me-text" style="text-align:left">
+            <span class="n">Chef Kitchen</span><br>
+            <span class="s">Partner Account</span>
+          </span>
         </button>
       </div>
-    </section>
+    </ng-container>
 
-    <!-- Agent Selection -->
-    <section class="agent-selection">
-      <div class="s-header-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-        <h3 class="s-title" style="margin: 0;">Choose Your Chef</h3>
-        <span class="radius-badge" style="font-size: 0.72rem; font-weight: 700; color: #ff7235; background: #fff5ee; padding: 4px 10px; border-radius: 12px; border: 1px solid rgba(255, 114, 53, 0.2); display: flex; align-items: center; gap: 4px;">
-          <ion-icon name="navigate-circle-outline"></ion-icon> Within 20 km radius
-        </span>
+    <!-- CUSTOMER SIDEBAR NAV -->
+    <ng-container *ngIf="!themeService.isAgent">
+      <div class="navlabel">Menu</div>
+      <nav class="nav">
+        <button routerLink="/customer-home"><ion-icon name="home-outline"></ion-icon><span class="nav-text">Home</span></button>
+        <button routerLink="/my-orders"><ion-icon name="bag-outline"></ion-icon><span class="nav-text">Orders</span></button>
+        <button routerLink="/subscribe"><ion-icon name="calendar-outline"></ion-icon><span class="nav-text">Meal Plans</span></button>
+        <button routerLink="/manage-rotation"><ion-icon name="sync-outline"></ion-icon><span class="nav-text">Meal Rotation</span></button>
+        <button routerLink="/custom-meal" class="active"><ion-icon name="restaurant-outline"></ion-icon><span class="nav-text">Personal Chef</span></button>
+        <button routerLink="/health"><ion-icon name="heart-outline"></ion-icon><span class="nav-text">Health</span></button>
+        <button routerLink="/ai-concierge"><ion-icon name="sparkles-outline"></ion-icon><span class="nav-text">MealMantra AI</span></button>
+        <button routerLink="/wallet"><ion-icon name="wallet-outline"></ion-icon><span class="nav-text">Wallet</span></button>
+        <button routerLink="/profile"><ion-icon name="person-outline"></ion-icon><span class="nav-text">Profile</span></button>
+      </nav>
+      <div class="side-foot">
+        <div class="plan-mini" *ngIf="activeSubscription">
+          <div class="t">YOUR MEAL PLAN</div>
+          <div class="v">{{planName}}</div>
+          <div class="pbar"><i [style.width.%]="activePlanPercent"></i></div>
+          <div class="f"><span>Day {{activeSubscription.currentDay}} of {{activeSubscription.totalDays}}</span><span>{{activePlanPercent}}%</span></div>
+        </div>
+        <button class="me" routerLink="/profile" title="View Profile">
+          <span class="ava">{{userInitials}}</span>
+          <span class="me-text" style="text-align:left"><span class="n">{{userName}}</span><br><span class="s">Premium member</span></span>
+        </button>
       </div>
+    </ng-container>
+  </aside>
 
-      <!-- Loading State -->
-      <div *ngIf="isLoadingChefs" style="text-align: center; padding: 24px 0;">
-        <ion-spinner name="crescent" color="warning"></ion-spinner>
-        <p style="font-size: 0.8rem; color: #8e7c76; margin-top: 8px;">Finding home chefs near you (20 km radius)...</p>
+  <!-- MAIN VIEW -->
+  <div class="view-main">
+    <header class="top">
+      <div>
+        <h1>Personal Chef</h1>
+        <div class="sub">Tell us your preferences &amp; order custom dish</div>
       </div>
+      <div class="top-r" style="margin-left: auto;">
+        <button class="iconbtn" (click)="consultAi()" title="Consult AI Assistant">
+          <ion-icon name="sparkles"></ion-icon> Ask AI
+        </button>
+      </div>
+    </header>
 
-      <!-- Chef Cards List (If chefs available within 20km) -->
-      <div class="agent-scroll" *ngIf="!isLoadingChefs && agents.length > 0">
-        <div *ngFor="let agent of agents; let i = index" class="agent-card" [class.selected]="selectedAgentId === agent.id" (click)="selectedAgentId = agent.id">
-          
-          <div class="check-circle" *ngIf="selectedAgentId === agent.id">
-            <ion-icon name="checkmark-circle"></ion-icon>
+    <div class="body custom-meal-body-grid">
+      <!-- LEFT FORM AREA -->
+      <div class="main-form-section">
+        
+        <!-- Hero Card Banner -->
+        <div class="hero-card-web">
+          <div class="hero-illustration">
+            <img src="assets/onboarding/dal_makhani.png" alt="Chef Illustration" class="floating">
+          </div>
+          <div class="hero-text">
+            <h2>What's on your mind today?</h2>
+            <p>Our expert home cooks are ready to prepare a fresh, customized dish tailored to your exact taste &amp; diet preferences.</p>
+          </div>
+        </div>
+
+        <!-- Form Card -->
+        <div class="web-form-card">
+          <div class="custom-input-group">
+            <div class="label-row">
+              <span class="input-label">Dish Name</span>
+              <button class="ai-help-btn" (click)="consultAi()">
+                <ion-icon name="sparkles"></ion-icon> ASK AI
+              </button>
+            </div>
+            <div class="input-box">
+              <input type="text" placeholder="e.g. Grandma's special Rajma" [(ngModel)]="mealName" (ngModelChange)="getPriceEstimate()">
+            </div>
           </div>
 
-          <div class="avatar">{{agent.name.charAt(0)}}</div>
-          
-          <div class="a-info">
-            <span class="a-name">{{agent.name}}</span>
-            <span class="a-meta">
-              <ion-icon name="star" class="star-icon"></ion-icon> {{agent.rating}} 
-              <span class="divider">|</span> 
-              <ion-icon name="location" style="color: #ff7235; font-size: 0.75rem;"></ion-icon> {{agent.distance}}
+          <div class="custom-input-group">
+            <div class="label-row">
+              <span class="input-label">Add your preferences (optional)</span>
+            </div>
+            <div class="input-box textarea-box">
+              <textarea rows="3" placeholder="e.g. Less spicy, extra butter, no garlic, double gravy..." [(ngModel)]="details" (ngModelChange)="getPriceEstimate()"></textarea>
+              <div class="char-counter">{{details.length || 0}}/200</div>
+            </div>
+          </div>
+
+          <div class="selection-row">
+            <button class="pill-toggle veg-pill" [class.selected]="mealType === 'Veg'" (click)="mealType = 'Veg'">
+              <div class="dot veg-dot"></div> Veg
+            </button>
+            <button class="pill-toggle non-veg-pill" [class.selected]="mealType === 'Non-Veg'" (click)="mealType = 'Non-Veg'">
+              <div class="dot non-veg-dot"></div> Non-Veg
+            </button>
+          </div>
+        </div>
+
+        <!-- Choose Your Chef Section -->
+        <div class="web-chef-section">
+          <div class="s-header-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div>
+              <h3 class="s-title" style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #1E1815;">Choose Your Chef</h3>
+              <p style="margin: 2px 0 0 0; font-size: 0.8rem; color: #8E7C76;">Select a home chef active near your location</p>
+            </div>
+            <span class="radius-badge" style="font-size: 0.78rem; font-weight: 700; color: #ff7235; background: #fff5ee; padding: 6px 14px; border-radius: 12px; border: 1px solid rgba(255, 114, 53, 0.2); display: flex; align-items: center; gap: 6px;">
+              <ion-icon name="navigate-circle-outline" style="font-size: 1.1rem;"></ion-icon> Within 20 km radius
             </span>
           </div>
 
-          <div class="card-badge" [ngClass]="['top-rated', 'hygienic', 'homestyle'][i % 3]">
-            <ion-icon [name]="['ribbon', 'shield-checkmark', 'heart'][i % 3]"></ion-icon>
-            {{ agent.tag || ['Top Rated', 'Hygienic', 'Homestyle'][i % 3] }}
+          <!-- Loading State -->
+          <div *ngIf="isLoadingChefs" style="text-align: center; padding: 36px 0; background: white; border-radius: 20px;">
+            <ion-spinner name="crescent" color="warning"></ion-spinner>
+            <p style="font-size: 0.85rem; color: #8e7c76; margin-top: 10px; font-weight: 600;">Finding home chefs near you (20 km radius)...</p>
+          </div>
+
+          <!-- Chef Grid (Desktop View) -->
+          <div class="chef-grid-desktop" *ngIf="!isLoadingChefs && agents.length > 0">
+            <div *ngFor="let agent of agents; let i = index" class="chef-card-web" [class.selected]="selectedAgentId === agent.id" (click)="selectedAgentId = agent.id">
+              
+              <div class="check-circle" *ngIf="selectedAgentId === agent.id">
+                <ion-icon name="checkmark-circle"></ion-icon>
+              </div>
+
+              <div class="avatar">{{agent.name.charAt(0)}}</div>
+              
+              <div class="a-info">
+                <span class="a-name">{{agent.name}}</span>
+                <span class="a-meta">
+                  <ion-icon name="star" class="star-icon"></ion-icon> {{agent.rating}} 
+                  <span class="divider">•</span> 
+                  <ion-icon name="location" style="color: #ff7235; font-size: 0.8rem;"></ion-icon> {{agent.distance}}
+                </span>
+              </div>
+
+              <div class="card-badge" [ngClass]="['top-rated', 'hygienic', 'homestyle'][i % 3]">
+                <ion-icon [name]="['ribbon', 'shield-checkmark', 'heart'][i % 3]"></ion-icon>
+                {{ agent.tag || ['Top Rated', 'Hygienic', 'Homestyle'][i % 3] }}
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div class="no-chefs-card" *ngIf="!isLoadingChefs && agents.length === 0" style="background: white; border-radius: 20px; padding: 32px; text-align: center; border: 1.5px dashed #ffd5c2;">
+            <div style="width: 60px; height: 60px; background: #fff5ee; border-radius: 50%; margin: 0 auto 14px auto; display: flex; align-items: center; justify-content: center; color: #ff7235; font-size: 28px;">
+              <ion-icon name="compass-outline"></ion-icon>
+            </div>
+            <h4 style="font-size: 1.1rem; font-weight: 800; color: #1E1815; margin: 0 0 6px 0;">No Chefs Available Within 20 km</h4>
+            <p style="font-size: 0.85rem; color: #8e7c76; margin: 0 0 18px 0; max-width: 400px; margin-left: auto; margin-right: auto;">
+              We couldn't find any home cooks active within your 20 km radius right now. Try refreshing your location!
+            </p>
+            <button type="button" (click)="loadNearbyChefs()" style="background: #ff7235; color: white; border: none; padding: 12px 24px; border-radius: 14px; font-weight: 700; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 4px 14px rgba(255, 114, 53, 0.25);">
+              <ion-icon name="refresh-outline"></ion-icon> Refresh Location
+            </button>
           </div>
 
         </div>
+
       </div>
 
-      <!-- Empty State (No Chefs within 20km) -->
-      <div class="no-chefs-card" *ngIf="!isLoadingChefs && agents.length === 0" style="background: white; border-radius: 20px; padding: 24px 16px; text-align: center; border: 1.5px dashed #ffd5c2; margin-top: 8px;">
-        <div style="width: 54px; height: 54px; background: #fff5ee; border-radius: 50%; margin: 0 auto 12px auto; display: flex; align-items: center; justify-content: center; color: #ff7235; font-size: 24px;">
-          <ion-icon name="compass-outline"></ion-icon>
+      <!-- RIGHT RAIL (LIVE ORDER ESTIMATE & SUBMIT) -->
+      <aside class="rail">
+        
+        <!-- Live Request Preview Card -->
+        <div class="rcard custom-request-summary-card">
+          <div class="rhead">
+            <h3>Request Summary</h3>
+            <span class="diet-pill" [class.veg]="mealType === 'Veg'" [class.nonveg]="mealType === 'Non-Veg'">
+              {{ mealType }}
+            </span>
+          </div>
+
+          <div class="meal-name-preview">
+            <span class="dish-title">{{ mealName || 'Your Custom Dish' }}</span>
+            <span class="pref-text" *ngIf="details">"{{ details }}"</span>
+            <span class="pref-placeholder" *ngIf="!details">No special preferences added</span>
+          </div>
+
+          <div class="chef-assigned-row" *ngIf="selectedChef">
+            <div class="mini-chef-avatar">{{ selectedChef.name.charAt(0) }}</div>
+            <div class="chef-details">
+              <span class="c-label">Selected Chef</span>
+              <span class="c-name">{{ selectedChef.name }}</span>
+              <span class="c-meta">★ {{ selectedChef.rating }} • {{ selectedChef.distance }}</span>
+            </div>
+          </div>
         </div>
-        <h4 style="font-size: 1.05rem; font-weight: 800; color: #483129; margin: 0 0 6px 0;">No Chefs Available Within 20 km</h4>
-        <p style="font-size: 0.8rem; color: #8e7c76; margin: 0 0 16px 0; line-height: 1.4;">
-          We couldn't find any home cooks active within your 20 km radius right now. Try refreshing your GPS location!
-        </p>
-        <button type="button" (click)="loadNearbyChefs()" style="background: #ff7235; color: white; border: none; padding: 10px 20px; border-radius: 14px; font-weight: 700; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 4px 12px rgba(255, 114, 53, 0.25);">
-          <ion-icon name="refresh-outline"></ion-icon> Refresh Location
-        </button>
-      </div>
-    </section>
 
-    <!-- Estimate Price Dark Card -->
-    <div class="estimate-card">
-      <span class="est-label">ESTIMATE PRICE</span>
-      <div class="est-amount" *ngIf="!isEstimating">₹{{estimateMin}} - ₹{{estimateMax}}</div>
-      <div class="est-amount-loading" *ngIf="isEstimating">
-        <ion-spinner name="crescent" color="warning"></ion-spinner>
-      </div>
-      <div class="dashed-line"></div>
-      <div class="est-footer">
-        <ion-icon name="bag-handle-outline"></ion-icon>
-        <span>Price may vary based on ingredients and portion.</span>
-      </div>
+        <!-- Estimate Price Dark Card -->
+        <div class="estimate-card-web">
+          <span class="est-label">ESTIMATE PRICE RANGE</span>
+          <div class="est-amount" *ngIf="!isEstimating">₹{{estimateMin}} - ₹{{estimateMax}}</div>
+          <div class="est-amount-loading" *ngIf="isEstimating">
+            <ion-spinner name="crescent" color="warning"></ion-spinner>
+          </div>
+          <div class="dashed-line"></div>
+          <div class="est-footer">
+            <ion-icon name="information-circle-outline"></ion-icon>
+            <span>Price may vary based on ingredients &amp; portion size.</span>
+          </div>
+        </div>
+
+        <!-- Submit Action Block -->
+        <div class="rcard action-rail-card">
+          <button class="continue-btn-web" (click)="submitOrder()" [disabled]="!mealName || !selectedAgentId">
+            CONTINUE REQUEST <ion-icon name="arrow-forward-outline"></ion-icon>
+          </button>
+
+          <div class="guarantee-note">
+            <ion-icon name="shield-checkmark"></ion-icon>
+            <span>Final price will be confirmed by chef before cooking starts.</span>
+          </div>
+        </div>
+
+      </aside>
     </div>
-
   </div>
-</ion-content>
-
-<!-- Bottom Action Bar -->
-<ion-footer class="ion-no-border bottom-action-bar">
-  <div class="action-wrap">
-    <div class="info-block">
-      <div class="icon-circle">
-        <ion-icon name="shield-checkmark-outline"></ion-icon>
-      </div>
-      <span class="info-text">Final price will be<br>confirmed by the agent.</span>
-    </div>
-    <button class="continue-btn" (click)="submitOrder()" [disabled]="!mealName || !selectedAgentId">
-      CONTINUE <ion-icon name="arrow-forward-outline"></ion-icon>
-    </button>
-  </div>
-</ion-footer>
+</div>

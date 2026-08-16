@@ -4,6 +4,7 @@ import { MealService, Meal } from '../../services/meal.service';
 import { SubscriptionService, Subscription, RotationMeal } from '../../services/subscription.service';
 import { AuthService } from '../../services/auth';
 import { PageLoaderService } from '../../services/page-loader.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-manage-rotation',
@@ -15,6 +16,23 @@ export class ManageRotationPage implements OnInit {
   activeSub: Subscription | null = null;
   meals: Meal[] = [];
   isLoading = true;
+
+  get userName(): string {
+    return this.auth.userName || 'MealMate_User';
+  }
+
+  get userInitials(): string {
+    return this.auth.userInitials;
+  }
+
+  get planName(): string {
+    return (this.activeSub && this.activeSub.planName) ? this.activeSub.planName : 'Healthy Mix Plan';
+  }
+
+  get activePlanPercent(): number {
+    if (!this.activeSub) return 0;
+    return Math.round((this.activeSub.currentDay / this.activeSub.totalDays) * 100);
+  }
 
   // Tab state
   activeTab: 'rotation' | 'swap' | 'schedule' = 'rotation';
@@ -41,7 +59,8 @@ export class ManageRotationPage implements OnInit {
     private mealService: MealService,
     private subscriptionService: SubscriptionService,
     private auth: AuthService,
-    private pageLoader: PageLoaderService
+    private pageLoader: PageLoaderService,
+    public themeService: ThemeService
   ) {}
 
   async ngOnInit() {

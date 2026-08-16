@@ -6,6 +6,9 @@ import { AuthService } from '../../services/auth';
 import { SubscriptionService, Subscription } from '../../services/subscription.service';
 import { PageLoaderService } from '../../services/page-loader.service';
 import { NavController, ToastController } from '@ionic/angular';
+import { ThemeService } from '../../services/theme.service';
+
+import { ReviewService, MealReview } from '../../services/review.service';
 
 interface Review {
   name: string;
@@ -29,6 +32,26 @@ export class MealDetailPage implements OnInit {
   quantity: number = 1;
   isLoading: boolean = true;
   isFavorited: boolean = false;
+
+  userRating: number = 5;
+  userComment: string = '';
+  isSubmittingReview: boolean = false;
+
+  get isFavorite(): boolean {
+    return this.isFavorited;
+  }
+
+  get userName(): string {
+    return this.auth.userName || 'MealMate User';
+  }
+
+  get userInitials(): string {
+    return this.auth.userInitials;
+  }
+
+  shareMeal() {
+    this.shareItem();
+  }
 
   // Active subscription info
   activeSubscription: Subscription | null = null;
@@ -59,8 +82,10 @@ export class MealDetailPage implements OnInit {
     private subscriptionService: SubscriptionService,
     private pageLoader: PageLoaderService,
     private navCtrl: NavController,
-    private toastCtrl: ToastController
-  ) {}
+    private toastCtrl: ToastController,
+    public themeService: ThemeService,
+    public reviewService: ReviewService
+  ) { }
 
   ngOnInit() {
     const mealId = this.route.snapshot.paramMap.get('id');
@@ -85,18 +110,15 @@ export class MealDetailPage implements OnInit {
         .filter(m => m.category === this.meal!.category && m.id !== this.meal!.id)
         .slice(0, 4);
 
-      // If not enough similar from same category, fill from others
       if (this.similarMeals.length < 3) {
         const others = meals.filter(m => m.id !== this.meal!.id && !this.similarMeals.find(s => s.id === m.id));
         this.similarMeals = [...this.similarMeals, ...others].slice(0, 4);
       }
 
-      // Generate mock data based on meal properties
       this.generateMealDetails();
-      this.generateReviews();
+      this.loadReviews();
       this.generateAiMatch();
 
-      // Check subscription
       const userId = this.auth.userId;
       if (userId) {
         await this.subscriptionService.fetchUserSubscriptions(userId);
@@ -112,17 +134,15 @@ export class MealDetailPage implements OnInit {
   private generateMealDetails() {
     if (!this.meal) return;
 
-    this.prepTime = this.meal.prepTime || 'N/A';
-    this.portionSize = this.meal.portionSize || 'N/A';
+    this.prepTime = this.meal.prepTime || '25 min';
+    this.portionSize = this.meal.portionSize || '350g';
 
-    // Ingredients
     if (this.meal.ingredients) {
       this.ingredients = this.meal.ingredients.split(',').map(s => s.trim()).filter(s => s);
     } else {
-      this.ingredients = [];
+      this.ingredients = ['Fresh Spices', 'Olive Oil', 'Himalayan Salt', 'Fresh Herbs'];
     }
 
-    // Allergens
     if (this.meal.allergens) {
       this.allergens = this.meal.allergens.split(',').map(s => s.trim()).filter(s => s);
     } else {
@@ -130,23 +150,56 @@ export class MealDetailPage implements OnInit {
     }
   }
 
-  private generateReviews() {
-    const names = ['Priya S.', 'Rahul M.', 'Neha K.', 'Amit G.'];
-    const comments = [
-      'Absolutely delicious! Fresh ingredients and perfect spice level. Will order again.',
-      'Great portion size and taste. Reminds me of home-cooked food.',
-      'Loved it! The packaging was clean and food was still warm on delivery.',
-      'Perfect balance of flavors. My go-to meal for weekday lunches.'
-    ];
-    const avatarColors = ['#FF7235', '#4CAF50', '#2196F3', '#9C27B0'];
-
-    this.reviews = names.slice(0, 3).map((name, i) => ({
-      name,
-      avatar: avatarColors[i],
-      rating: 4 + (i % 2 === 0 ? 0.5 : 0),
-      comment: comments[i],
-      date: `${i + 1}d ago`
+  loadReviews() {
+    if (!this.meal) return;
+    const revs = this.reviewService.getReviewsForMeal(this.meal.id);
+    this.reviews = revs.map(r => ({
+      name: r.userName,
+      avatar: r.userAvatarBg,
+      rating: r.rating,
+      comment: r.comment,
+      date: r.date
     }));
+  }
+
+  setRating(star: number) {
+    this.userRating = star;
+  }
+
+  async submitReview() {
+    if (!this.meal) return;
+    if (!this.userComment || !this.userComment.trim()) {
+      const toast = await this.toastCtrl.create({
+        message: 'Please write your feedback before submitting! 💬',
+        duration: 2000,
+        color: 'warning'
+      });
+      await toast.present();
+      return;
+    }
+
+    this.isSubmittingReview = true;
+    this.reviewService.addReview({
+      mealId: this.meal.id,
+      mealName: this.meal.name,
+      agentId: this.meal.agentId,
+      userId: this.auth.userId || undefined,
+      userName: this.auth.userName || 'MealMate User',
+      rating: this.userRating,
+      comment: this.userComment.trim()
+    });
+
+    this.loadReviews();
+    this.userComment = '';
+    this.isSubmittingReview = false;
+
+    const toast = await this.toastCtrl.create({
+      message: 'Thank you for your feedback! ⭐ Review published.',
+      duration: 2500,
+      color: 'success',
+      icon: 'star'
+    });
+    await toast.present();
   }
 
   private generateAiMatch() {
@@ -182,7 +235,10 @@ export class MealDetailPage implements OnInit {
     this.aiMatchReasons = reasons;
   }
 
-  // Helpers
+  getMealCalories(meal: Meal): number {
+    return meal?.calories || 420;
+  }
+
   get mealCalories(): number {
     return this.meal?.calories || 0;
   }
@@ -204,11 +260,13 @@ export class MealDetailPage implements OnInit {
   }
 
   get mealRating(): string {
-    return (4 + ((this.meal?.price || 100) % 5) / 10 + 0.5).toFixed(1);
+    if (!this.meal) return '4.8';
+    return this.reviewService.getAverageRatingForMeal(this.meal.id).rating;
   }
 
   get reviewCount(): number {
-    return 40 + ((this.meal?.price || 100) % 60);
+    if (!this.meal) return 42;
+    return this.reviewService.getAverageRatingForMeal(this.meal.id).count;
   }
 
   get totalPrice(): number {
@@ -253,7 +311,7 @@ export class MealDetailPage implements OnInit {
     for (let i = 0; i < this.quantity; i++) {
       this.cartService.addToCart(this.meal);
     }
-    
+
     const toast = await this.toastCtrl.create({
       message: `${this.quantity}x ${this.meal.name} added to cart!`,
       duration: 2000,
@@ -262,7 +320,7 @@ export class MealDetailPage implements OnInit {
       icon: 'checkmark-circle'
     });
     await toast.present();
-    
+
     this.navCtrl.back();
   }
 
@@ -273,7 +331,7 @@ export class MealDetailPage implements OnInit {
       name: this.meal.name,
       price: this.meal.price
     });
-    
+
     const toast = await this.toastCtrl.create({
       message: `${this.meal.name} added to your rotation! 🔄`,
       duration: 2500,

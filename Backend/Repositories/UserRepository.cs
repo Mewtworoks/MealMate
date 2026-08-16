@@ -9,6 +9,7 @@ namespace MealMate.Api.Repositories
         Task<User?> GetByPhoneNumberAsync(string phoneNumber);
         Task<User?> GetByEmailAsync(string email);
         Task<User?> GetByIdAsync(Guid id);
+        Task<IEnumerable<User>> GetAllAsync();
         Task<User> AddAsync(User user);
         Task UpdateAsync(User user);
     }
@@ -35,6 +36,11 @@ namespace MealMate.Api.Repositories
         public async Task<User?> GetByIdAsync(Guid id)
         {
             return await _context.Users.FindAsync(id);
+        }
+
+        public async Task<IEnumerable<User>> GetAllAsync()
+        {
+            return await _context.Users.ToListAsync();
         }
 
         public async Task<User> AddAsync(User user)

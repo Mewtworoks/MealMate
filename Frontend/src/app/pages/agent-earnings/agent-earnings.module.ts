@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { AgentEarningsPageRoutingModule } from './agent-earnings-routing.module';
 
 import { AgentEarningsPage } from './agent-earnings.page';
+import { SharedComponentsModule } from '../../components/shared-components.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    AgentEarningsPageRoutingModule
+    AgentEarningsPageRoutingModule,
+    SharedComponentsModule
   ],
   declarations: [AgentEarningsPage]
 })

@@ -24,7 +24,12 @@ builder.Services.AddSwaggerGen();
 // Configure MySQL Connection
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(connectionString, new MySqlServerVersion(new Version(5, 7, 30))));
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(5, 7, 30)),
+        mySqlOptions => mySqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(10),
+            errorNumbersToAdd: null)));
+
 
 // Configure DI
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -55,129 +60,53 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Automatically Create Database (EnsureCreated) asynchronously to keep cold start light & prevent status 139 OOM
-Task.Run(() =>
+// Synchronously apply missing table columns on startup
+using (var scope = app.Services.CreateScope())
 {
-    using (var scope = app.Services.CreateScope())
+    var context = scope.ServiceProvider.GetService<AppDbContext>();
+    if (context != null)
     {
-        var services = scope.ServiceProvider;
-        try
+        Console.WriteLine("--> Checking and adding missing columns to TiDB database...");
+        context.Database.EnsureCreated();
+        
+        string[] alterQueries = new string[]
         {
-            var context = services.GetService<AppDbContext>();
-            if (context != null)
+            "ALTER TABLE Users ADD COLUMN Email VARCHAR(100) NULL",
+            "ALTER TABLE Users ADD COLUMN FullName LONGTEXT NULL",
+            "ALTER TABLE Users ADD COLUMN Address LONGTEXT NULL",
+            "ALTER TABLE Users ADD COLUMN KitchenName LONGTEXT NULL",
+            "ALTER TABLE Users ADD COLUMN ServiceRadiusKm DOUBLE DEFAULT 20.0",
+            "ALTER TABLE Users ADD COLUMN Latitude DOUBLE NULL",
+            "ALTER TABLE Users ADD COLUMN Longitude DOUBLE NULL",
+            "ALTER TABLE Meals ADD COLUMN Calories INT DEFAULT 0",
+            "ALTER TABLE Meals ADD COLUMN Protein INT DEFAULT 0",
+            "ALTER TABLE Meals ADD COLUMN Carbs INT DEFAULT 0",
+            "ALTER TABLE Meals ADD COLUMN Fat INT DEFAULT 0",
+            "ALTER TABLE Meals ADD COLUMN Fiber INT DEFAULT 0",
+            "ALTER TABLE Meals ADD COLUMN SpiceLevel VARCHAR(50) DEFAULT 'Medium'",
+            "ALTER TABLE Meals ADD COLUMN PrepTime VARCHAR(50) DEFAULT '25 min'",
+            "ALTER TABLE Meals ADD COLUMN PortionSize VARCHAR(50) DEFAULT '350g'",
+            "ALTER TABLE Meals ADD COLUMN Ingredients LONGTEXT NULL",
+            "ALTER TABLE Meals ADD COLUMN Allergens LONGTEXT NULL",
+            "ALTER TABLE Meals ADD COLUMN Rating DOUBLE DEFAULT 4.8",
+            "ALTER TABLE Meals ADD COLUMN ReviewCount INT DEFAULT 0",
+            "ALTER TABLE Meals ADD COLUMN ReviewsJson LONGTEXT NULL",
+            "UPDATE Meals SET ReviewsJson = '[]' WHERE ReviewsJson IS NULL OR ReviewsJson = ''",
+            "UPDATE Meals SET Rating = 4.8 WHERE Rating IS NULL OR Rating = 0"
+        };
+
+        foreach (var query in alterQueries)
+        {
+            try
             {
-                Console.WriteLine("Applying database changes in background...");
-                context.Database.EnsureCreated();
-                
-                // Universal SQL to add missing columns
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD Email VARCHAR(100) NULL"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD FullName LONGTEXT NULL"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Users MODIFY PhoneNumber VARCHAR(15) NULL"); } catch { }
-                try { context.Database.ExecuteSqlRaw("UPDATE Users SET PhoneNumber = NULL WHERE PhoneNumber = '' OR PhoneNumber IS NULL"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD WalletBalance DECIMAL(18,2) DEFAULT 2500"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD CreditLimit DECIMAL(18,2) DEFAULT 500"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD CreditUsed DECIMAL(18,2) DEFAULT 0"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD LoyaltyPoints INT DEFAULT 1000"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD Latitude DOUBLE NULL"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD Longitude DOUBLE NULL"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD Address LONGTEXT NULL"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD KitchenName LONGTEXT NULL"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Users ADD ServiceRadiusKm DOUBLE DEFAULT 20.0"); } catch { }
-
-                // Fix decimal column precision to 2 decimal places
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Users MODIFY WalletBalance DECIMAL(18,2) DEFAULT 2500"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Users MODIFY CreditLimit DECIMAL(18,2) DEFAULT 500"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Users MODIFY CreditUsed DECIMAL(18,2) DEFAULT 0"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Orders MODIFY TotalAmount DECIMAL(18,2) DEFAULT 0"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Orders MODIFY WalletAmount DECIMAL(18,2) DEFAULT 0"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Orders MODIFY CreditUsedAmount DECIMAL(18,2) DEFAULT 0"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE OrderItems MODIFY UnitPrice DECIMAL(18,2) DEFAULT 0"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Meals MODIFY Price DECIMAL(18,2) DEFAULT 0"); } catch { }
-                
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Orders ADD OrderNumber INT AUTO_INCREMENT UNIQUE"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Orders ADD WalletAmount DECIMAL(18,2) DEFAULT 0"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Orders ADD CreditUsedAmount DECIMAL(18,2) DEFAULT 0"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Orders ADD PointsRedeemed INT DEFAULT 0"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Orders ADD PointsEarned INT DEFAULT 0"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Orders ADD IsCustomMeal TINYINT(1) DEFAULT 0"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Orders ADD CustomMealDetails LONGTEXT NULL"); } catch { }
-
-                // Meals table updates for nutrition & details
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Meals ADD Calories INT DEFAULT 0"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Meals ADD Protein INT DEFAULT 0"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Meals ADD Carbs INT DEFAULT 0"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Meals ADD Fat INT DEFAULT 0"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Meals ADD Fiber INT DEFAULT 0"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Meals ADD SpiceLevel VARCHAR(50) DEFAULT 'Medium'"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Meals ADD PrepTime VARCHAR(50) DEFAULT '25 min'"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Meals ADD PortionSize VARCHAR(50) DEFAULT '350g'"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Meals ADD Ingredients LONGTEXT NULL"); } catch { }
-                try { context.Database.ExecuteSqlRaw("ALTER TABLE Meals ADD Allergens LONGTEXT NULL"); } catch { }
-
-                // Fix NULLs that cause EF Core InvalidCastException for non-nullable string properties
-                try { context.Database.ExecuteSqlRaw("UPDATE Meals SET SpiceLevel = 'Medium' WHERE SpiceLevel IS NULL"); } catch { }
-                try { context.Database.ExecuteSqlRaw("UPDATE Meals SET PrepTime = '25 min' WHERE PrepTime IS NULL"); } catch { }
-                try { context.Database.ExecuteSqlRaw("UPDATE Meals SET PortionSize = '350g' WHERE PortionSize IS NULL"); } catch { }
-                try { context.Database.ExecuteSqlRaw("UPDATE Meals SET Ingredients = '' WHERE Ingredients IS NULL"); } catch { }
-                try { context.Database.ExecuteSqlRaw("UPDATE Meals SET Allergens = '' WHERE Allergens IS NULL"); } catch { }
-                try { context.Database.ExecuteSqlRaw("UPDATE Orders SET DeliveryAddress = '' WHERE DeliveryAddress IS NULL"); } catch { }
-                try { context.Database.ExecuteSqlRaw("UPDATE Orders SET PaymentMethod = 'COD' WHERE PaymentMethod IS NULL"); } catch { }
-                try { context.Database.ExecuteSqlRaw("UPDATE Orders SET Status = 'Pending' WHERE Status IS NULL"); } catch { }
-                try { context.Database.ExecuteSqlRaw("UPDATE Orders SET CustomMealDetails = '' WHERE CustomMealDetails IS NULL"); } catch { }
-                try { context.Database.ExecuteSqlRaw("UPDATE Users SET Role = 'Customer' WHERE Role IS NULL"); } catch { }
-
-                // AgentAdvances table
-                try
-                {
-                    context.Database.ExecuteSqlRaw(@"
-                        CREATE TABLE IF NOT EXISTS AgentAdvances (
-                            Id CHAR(36) NOT NULL PRIMARY KEY,
-                            AgentId CHAR(36) NOT NULL,
-                            AdvanceTaken DECIMAL(18,2) NOT NULL DEFAULT 0,
-                            DailyDeduction DECIMAL(18,2) NOT NULL DEFAULT 100,
-                            TotalDeducted DECIMAL(18,2) NOT NULL DEFAULT 0,
-                            IsFullyRepaid TINYINT(1) NOT NULL DEFAULT 0,
-                            CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-                        )");
-                }
-                catch { }
-
-                // AgentPayouts table
-                try
-                {
-                    context.Database.ExecuteSqlRaw(@"
-                        CREATE TABLE IF NOT EXISTS AgentPayouts (
-                            Id CHAR(36) NOT NULL PRIMARY KEY,
-                            AgentId CHAR(36) NOT NULL,
-                            Amount DECIMAL(18,2) NOT NULL DEFAULT 0,
-                            Status VARCHAR(50) NOT NULL DEFAULT 'Pending',
-                            RequestedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                            ProcessedAt DATETIME NULL
-                        )");
-                }
-                catch { }
-
-                // Subscriptions table
-                try
-                {
-                    context.Database.ExecuteSqlRaw(@"
-                        CREATE TABLE IF NOT EXISTS Subscriptions (
-                            Id CHAR(36) NOT NULL PRIMARY KEY,
-                            CustomerId CHAR(36) NOT NULL,
-                            StartDate DATETIME NOT NULL,
-                            EndDate DATETIME NOT NULL,
-                            Months INT NOT NULL DEFAULT 1,
-                            Status VARCHAR(50) NOT NULL DEFAULT 'Active',
-                            TotalDays INT NOT NULL DEFAULT 30,
-                            CurrentDay INT NOT NULL DEFAULT 1,
-                            TotalPaid DECIMAL(18,2) NOT NULL DEFAULT 0,
-                            DailyDeduction DECIMAL(18,2) NOT NULL DEFAULT 0,
-                            PlanName VARCHAR(100) NULL,
-                            CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                            UpdatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-                        )");
-                }
-                catch { }
+                context.Database.ExecuteSqlRaw(query);
+                Console.WriteLine($"[DB MIGRATION SUCCESS]: {query}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[DB MIGRATION NOTICE]: {query} -> {ex.Message}");
+            }
+        }
 
                 // SubscriptionRotationMeals table
                 try
@@ -232,14 +161,8 @@ Task.Run(() =>
                 catch { }
 
                 Console.WriteLine("Database is ready.");
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Database initialization failed: {ex.Message}");
-        }
     }
-});
+}
 
 // Configure the HTTP request pipeline.
 app.UseSwagger();
@@ -254,6 +177,9 @@ app.UseCors("IonicPolicy");
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Lightweight health check endpoint for keep-alive pingers (cron-job.org / UptimeRobot)
+app.MapGet("/api/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
 
 app.Run();
 
