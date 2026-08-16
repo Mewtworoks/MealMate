@@ -61,7 +61,6 @@ export class ShopPage implements OnInit {
     return this.auth.userInitials;
   }
   userLocation = 'Fetching location...';
-  weekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
   getCategoryIcon(category: string): string {
     const icons: { [key: string]: string } = {
@@ -115,6 +114,9 @@ export class ShopPage implements OnInit {
     public themeService: ThemeService
   ) { }
 
+  weekDays: any[] = [];
+  weekMealsCompleted = 0;
+
   ngOnInit() {
     this.mealService.meals$.subscribe(m => this.meals = m);
     this.agents = this.mealService.getAgents();
@@ -131,6 +133,7 @@ export class ShopPage implements OnInit {
     this.greeting = this.auth.greeting;
     this.userName = this.auth.userName || 'Foodie';
     this.fetchLocation();
+    this.buildWeekDays();
   }
 
   fetchLocation() {
@@ -165,6 +168,8 @@ export class ShopPage implements OnInit {
       await this.wallet.loadWallet(userId);
       await this.subscriptionService.fetchUserSubscriptions(userId);
       this.checkActiveSubscription(userId);
+    } else {
+      this.buildWeekDays();
     }
     this.loadAiPicks();
     setTimeout(() => {
@@ -193,6 +198,57 @@ export class ShopPage implements OnInit {
     } else {
       this.activeSubscription = null;
     }
+    this.buildWeekDays();
+  }
+
+  buildWeekDays() {
+    const dayNames = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    const today = new Date();
+    const todayDay = today.getDay();
+    const mappedToday = todayDay === 0 ? 6 : todayDay - 1; // 0=Mon, 6=Sun
+
+    if (!this.activeSubscription) {
+      // Default dynamic visualization when no sub: Mon..Wed completed, Thu today
+      this.weekDays = dayNames.map((name, i) => ({
+        short: name,
+        completed: i < mappedToday,
+        isToday: i === mappedToday
+      }));
+      this.weekMealsCompleted = mappedToday;
+      return;
+    }
+
+    const todayDateLocal = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const start = new Date(this.activeSubscription.startDate);
+    const startDateLocal = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+
+    const mondayDate = new Date(todayDateLocal);
+    mondayDate.setDate(todayDateLocal.getDate() - mappedToday);
+
+    this.weekDays = dayNames.map((name, i) => {
+      const dayDate = new Date(mondayDate);
+      dayDate.setDate(mondayDate.getDate() + i);
+      const dateStr = `${dayDate.getFullYear()}-${String(dayDate.getMonth() + 1).padStart(2, '0')}-${String(dayDate.getDate()).padStart(2, '0')}`;
+
+      const isSkipped = this.activeSubscription?.skippedDays?.includes(dateStr) || false;
+      const isPaused = this.activeSubscription?.pausedDays?.includes(dateStr) || this.activeSubscription?.status === 'Paused';
+      const isToday = i === mappedToday;
+
+      let completed = false;
+      if (dayDate.getTime() < todayDateLocal.getTime()) {
+        completed = dayDate.getTime() >= startDateLocal.getTime() && !isSkipped && !isPaused;
+      } else if (isToday) {
+        completed = today.getHours() >= 13 && !isSkipped && !isPaused;
+      }
+
+      return {
+        short: name,
+        completed,
+        isToday
+      };
+    });
+
+    this.weekMealsCompleted = this.weekDays.filter(d => d.completed).length;
   }
 
   async loadAiPicks() {

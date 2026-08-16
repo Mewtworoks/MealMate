@@ -46,7 +46,7 @@
           <div class="rcard-mob">
             <div class="rhead">
               <h3>This week</h3>
-              <span class="mini">{{activeSubscription ? activeSubscription.currentDay : 7}} / 7 meals</span>
+              <span class="mini">{{weekMealsCompleted}} / 7 meals</span>
             </div>
             <div class="delivery">
               <div class="dtick">
@@ -59,13 +59,10 @@
               </div>
             </div>
             <div class="weekbar">
-              <div class="wd"><i></i><span>M</span></div>
-              <div class="wd"><i></i><span>T</span></div>
-              <div class="wd"><i></i><span>W</span></div>
-              <div class="wd"><i></i><span>T</span></div>
-              <div class="wd"><i></i><span>F</span></div>
-              <div class="wd"><i></i><span>S</span></div>
-              <div class="wd"><i></i><span>S</span></div>
+              <div class="wd" *ngFor="let d of weekDays" [class.completed]="d.completed" [class.today]="d.isToday">
+                <i [class.done]="d.completed" [class.curr]="d.isToday && !d.completed"></i>
+                <span>{{d.short}}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -133,7 +130,7 @@
           <div class="rcard-mob">
             <div class="rhead">
               <h3>This week</h3>
-              <span class="mini">{{activeSubscription ? activeSubscription.currentDay : 7}} / 7 meals</span>
+              <span class="mini">{{weekMealsCompleted}} / 7 meals</span>
             </div>
             <div class="delivery">
               <div class="dtick">
@@ -146,13 +143,10 @@
               </div>
             </div>
             <div class="weekbar">
-              <div class="wd"><i></i><span>M</span></div>
-              <div class="wd"><i></i><span>T</span></div>
-              <div class="wd"><i></i><span>W</span></div>
-              <div class="wd"><i></i><span>T</span></div>
-              <div class="wd"><i></i><span>F</span></div>
-              <div class="wd"><i></i><span>S</span></div>
-              <div class="wd"><i></i><span>S</span></div>
+              <div class="wd" *ngFor="let d of weekDays" [class.completed]="d.completed" [class.today]="d.isToday">
+                <i [class.done]="d.completed" [class.curr]="d.isToday && !d.completed"></i>
+                <span>{{d.short}}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -529,8 +523,7 @@
           <!-- Delivery Card -->
           <div class="rcard">
             <div class="rhead">
-              <h3>This week</h3><span class="mini">{{activeSubscription ? activeSubscription.currentDay : 7}} / 7
-                meals</span>
+              <h3>This week</h3><span class="mini">{{weekMealsCompleted}} / 7 meals</span>
             </div>
             <div class="delivery">
               <div class="dtick"><ion-icon name="time-outline"></ion-icon></div>
@@ -541,13 +534,10 @@
               </div>
             </div>
             <div class="weekbar">
-              <div class="wd"><i></i><span>M</span></div>
-              <div class="wd"><i></i><span>T</span></div>
-              <div class="wd"><i></i><span>W</span></div>
-              <div class="wd"><i></i><span>T</span></div>
-              <div class="wd"><i></i><span>F</span></div>
-              <div class="wd"><i></i><span>S</span></div>
-              <div class="wd"><i></i><span>S</span></div>
+              <div class="wd" *ngFor="let d of weekDays" [class.completed]="d.completed" [class.today]="d.isToday">
+                <i [class.done]="d.completed" [class.curr]="d.isToday && !d.completed"></i>
+                <span>{{d.short}}</span>
+              </div>
             </div>
           </div>
 
