@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, firstValueFrom } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 export interface MealReview {
   id: string;
@@ -62,7 +64,7 @@ export class ReviewService {
     }
   ];
 
-  constructor() {
+  constructor(private http: HttpClient) {
     this.loadReviews();
   }
 
@@ -154,7 +156,31 @@ export class ReviewService {
     const updated = [newRev, ...current];
     this.reviewsSubject.next(updated);
     this.saveReviews(updated);
+
+    // Sync review to backend database (Meals table ReviewsJson column)
+    this.syncReviewToBackend(newRev);
+
     return newRev;
+  }
+
+  private async syncReviewToBackend(review: MealReview) {
+    try {
+      const baseUrl = environment.apiUrl || 'http://localhost:5000/api';
+      const url = `${baseUrl}/meals/${review.mealId}/review`;
+      await firstValueFrom(this.http.post(url, {
+        id: review.id,
+        mealId: review.mealId,
+        mealName: review.mealName || '',
+        userId: review.userId || '',
+        userName: review.userName,
+        userAvatarBg: review.userAvatarBg,
+        rating: review.rating,
+        comment: review.comment,
+        date: review.date
+      }));
+    } catch (e) {
+      console.warn('Backend review sync note (saved locally):', e);
+    }
   }
 
   getAverageRatingForMeal(mealId: string): { rating: string; count: number } {

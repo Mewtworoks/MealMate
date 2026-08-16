@@ -59,5 +59,13 @@ namespace MealMate.Api.Controllers
             if (!success) return NotFound();
             return NoContent();
         }
+
+        [HttpPost("{id}/review")]
+        public async Task<IActionResult> AddReview(Guid id, [FromBody] ReviewDto review)
+        {
+            var success = await _mealService.AddReviewAsync(id, review);
+            if (!success) return NotFound();
+            return Ok(new { message = "Review added successfully" });
+        }
     }
 }
