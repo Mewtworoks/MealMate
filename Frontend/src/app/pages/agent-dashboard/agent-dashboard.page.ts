@@ -14,6 +14,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 
 import { ThemeService } from '../../services/theme.service';
+import { ReviewService, MealReview } from '../../services/review.service';
 
 @Component({
   selector: 'app-agent-dashboard',
@@ -33,6 +34,11 @@ export class AgentDashboardPage implements OnInit {
   isOnline = true;
   chefName = '';
   greeting = '';
+
+  // Reviews
+  chefReviews: MealReview[] = [];
+  chefRating: string = '4.9';
+  totalReviewCount: number = 0;
 
   // Kitchen location management
   kitchenName = 'Grand Central Kitchen';
@@ -55,6 +61,7 @@ export class AgentDashboardPage implements OnInit {
 
   constructor(
     public themeService: ThemeService,
+    public reviewService: ReviewService,
     private orderService: OrderService,
     private mealService: MealService,
     private trackingService: TrackingService,
@@ -75,6 +82,7 @@ export class AgentDashboardPage implements OnInit {
       await this.orderService.refreshAgentOrders(agentId);
     }
     await this.loadChefKitchenLocation();
+    this.loadChefReviews();
 
     if (this.ordersSubscription) {
       this.ordersSubscription.unsubscribe();
@@ -85,6 +93,18 @@ export class AgentDashboardPage implements OnInit {
       this.filterOrders();
       this.calculateEarnings();
     });
+  }
+
+  loadChefReviews() {
+    const agentId = this.auth.userId || '05603423-ff0f-442c-8b8a-b306536cdb7b';
+    this.chefReviews = this.reviewService.getReviewsForAgent(agentId);
+    this.totalReviewCount = this.chefReviews.length;
+    if (this.chefReviews.length > 0) {
+      const sum = this.chefReviews.reduce((acc, r) => acc + r.rating, 0);
+      this.chefRating = (sum / this.chefReviews.length).toFixed(1);
+    } else {
+      this.chefRating = '4.9';
+    }
   }
 
   async loadChefKitchenLocation() {

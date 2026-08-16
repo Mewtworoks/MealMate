@@ -206,6 +206,23 @@
         </span>
       </div>
 
+      <!-- Write Review Form (Mobile) -->
+      <div class="write-review-card">
+        <h3 class="wr-title">Leave a Review</h3>
+        <p class="wr-sub">How was your meal experience?</p>
+        <div class="star-rating-selector">
+          <button type="button" class="star-btn" *ngFor="let star of [1,2,3,4,5]" (click)="setRating(star)" [class.active]="star <= userRating">
+            <ion-icon [name]="star <= userRating ? 'star' : 'star-outline'"></ion-icon>
+          </button>
+          <span class="rating-label-text">{{userRating}} Stars</span>
+        </div>
+        <textarea class="wr-textarea" [(ngModel)]="userComment" placeholder="Write your honest review about taste, freshness, spice level..."></textarea>
+        <button class="wr-submit-btn" (click)="submitReview()" [disabled]="isSubmittingReview">
+          <ion-icon name="send-outline"></ion-icon>
+          <span>Submit Review</span>
+        </button>
+      </div>
+
       <div class="md-reviews-list">
         <div class="md-review-item" *ngFor="let review of reviews">
           <div class="md-rev-avatar" [style.background]="review.avatar">
@@ -401,6 +418,24 @@
               <h2>Customer Reviews</h2>
               <span class="tag o">★ {{mealRating}} ({{reviewCount}})</span>
             </div>
+
+            <!-- Write Review Form (Desktop) -->
+            <div class="write-review-card">
+              <h3 class="wr-title">Leave a Review</h3>
+              <p class="wr-sub">How was your meal experience?</p>
+              <div class="star-rating-selector">
+                <button type="button" class="star-btn" *ngFor="let star of [1,2,3,4,5]" (click)="setRating(star)" [class.active]="star <= userRating">
+                  <ion-icon [name]="star <= userRating ? 'star' : 'star-outline'"></ion-icon>
+                </button>
+                <span class="rating-label-text">{{userRating}} Stars</span>
+              </div>
+              <textarea class="wr-textarea" [(ngModel)]="userComment" placeholder="Write your honest review about taste, freshness, spice level..."></textarea>
+              <button class="wr-submit-btn" (click)="submitReview()" [disabled]="isSubmittingReview">
+                <ion-icon name="send-outline"></ion-icon>
+                <span>Submit Review</span>
+              </button>
+            </div>
+
             <div class="d-rev-list">
               <div class="d-rev-item" *ngFor="let r of reviews">
                 <div class="avatar" [style.background]="r.avatar">{{r.name.charAt(0)}}</div>

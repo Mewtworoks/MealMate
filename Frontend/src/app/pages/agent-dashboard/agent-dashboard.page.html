@@ -334,7 +334,7 @@
               <div class="sumrow"><span>Orders completed</span><span style="font-weight:800;color:var(--ink)">{{ completedOrders.length || 6 }}</span></div>
               <div class="sumrow"><span>Avg prep time</span><span style="font-weight:800;color:var(--ink)">18 min</span></div>
               <div class="sumrow"><span>Accept rate</span><span style="font-weight:800;color:var(--green)">96%</span></div>
-              <div class="sumrow"><span>Rating</span><span style="font-weight:800;color:var(--ink)">4.9 ★</span></div>
+              <div class="sumrow"><span>Rating</span><span style="font-weight:800;color:var(--ink)">{{chefRating}} ★</span></div>
               <div class="sumrow tot"><span>Payout tonight</span><span>₹{{ (earnings || 1850) | number:'1.0-0' }}</span></div>
             </div>
 
@@ -350,6 +350,24 @@
                   <span class="oq">1</span>
                   <span class="nm">Hyderabadi Veg Biryani</span>
                   <span class="p">2 min left</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Customer Feedback Card -->
+            <div class="rcard">
+              <div class="rhead">
+                <h3>Customer Feedback</h3>
+                <span class="mini">{{chefRating}} ★ ({{chefReviews.length}})</span>
+              </div>
+              <div class="chef-rev-list">
+                <div class="chef-rev-item" *ngFor="let r of chefReviews.slice(0, 4)">
+                  <div class="rev-hdr">
+                    <b>{{r.userName}}</b>
+                    <span class="rev-star">★ {{r.rating}}</span>
+                  </div>
+                  <p class="rev-txt">{{r.comment}}</p>
+                  <span class="rev-meal-name" *ngIf="r.mealName">Dish: {{r.mealName}}</span>
                 </div>
               </div>
             </div>
