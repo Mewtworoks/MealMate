@@ -119,7 +119,7 @@ Task.Run(() =>
                 try { context.Database.ExecuteSqlRaw("ALTER TABLE Orders ADD IsCustomMeal TINYINT(1) DEFAULT 0"); } catch { }
                 try { context.Database.ExecuteSqlRaw("ALTER TABLE Orders ADD CustomMealDetails LONGTEXT NULL"); } catch { }
 
-                // Meals table updates for nutrition & details
+                // Meals table updates for nutrition & details & reviews
                 try { context.Database.ExecuteSqlRaw("ALTER TABLE Meals ADD Calories INT DEFAULT 0"); } catch { }
                 try { context.Database.ExecuteSqlRaw("ALTER TABLE Meals ADD Protein INT DEFAULT 0"); } catch { }
                 try { context.Database.ExecuteSqlRaw("ALTER TABLE Meals ADD Carbs INT DEFAULT 0"); } catch { }
@@ -130,6 +130,10 @@ Task.Run(() =>
                 try { context.Database.ExecuteSqlRaw("ALTER TABLE Meals ADD PortionSize VARCHAR(50) DEFAULT '350g'"); } catch { }
                 try { context.Database.ExecuteSqlRaw("ALTER TABLE Meals ADD Ingredients LONGTEXT NULL"); } catch { }
                 try { context.Database.ExecuteSqlRaw("ALTER TABLE Meals ADD Allergens LONGTEXT NULL"); } catch { }
+                try { context.Database.ExecuteSqlRaw("ALTER TABLE Meals ADD Rating DOUBLE DEFAULT 4.8"); } catch { }
+                try { context.Database.ExecuteSqlRaw("ALTER TABLE Meals ADD ReviewCount INT DEFAULT 0"); } catch { }
+                try { context.Database.ExecuteSqlRaw("ALTER TABLE Meals ADD ReviewsJson LONGTEXT NULL"); } catch { }
+                try { context.Database.ExecuteSqlRaw("UPDATE Meals SET ReviewsJson = '[]' WHERE ReviewsJson IS NULL"); } catch { }
 
                 // Fix NULLs that cause EF Core InvalidCastException for non-nullable string properties
                 try { context.Database.ExecuteSqlRaw("UPDATE Meals SET SpiceLevel = 'Medium' WHERE SpiceLevel IS NULL"); } catch { }
