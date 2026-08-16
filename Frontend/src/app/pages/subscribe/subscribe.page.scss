@@ -2508,3 +2508,166 @@
     opacity: 0.65;
   }
 }
+
+/* ════════════════ BOTTOM ACTION CARDS ════════════════ */
+.action-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+  margin-bottom: 24px;
+  width: 100%;
+  box-sizing: border-box;
+
+  @media (max-width: 680px) {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+
+.action-card {
+  border-radius: 20px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+
+  &.pause-card {
+    background: #FFF2EB;
+    border: 1.5px solid #FFDEC9;
+
+    .ac-icon-badge {
+      background: #FFFFFF;
+      color: #F26A21;
+      box-shadow: 0 3px 10px rgba(242, 106, 33, 0.12);
+    }
+
+    .ac-btn {
+      background: #FFFFFF;
+      color: #F26A21;
+      border: 1px solid #FFDCC6;
+
+      &:hover {
+        background: #F26A21;
+        color: #FFFFFF;
+      }
+    }
+  }
+
+  &.rotation-card {
+    background: #EBF7F0;
+    border: 1.5px solid #CDECD8;
+
+    .ac-icon-badge {
+      background: #FFFFFF;
+      color: #2E7D52;
+      box-shadow: 0 3px 10px rgba(46, 125, 82, 0.12);
+    }
+
+    .ac-btn {
+      background: #FFFFFF;
+      color: #2E7D52;
+      border: 1px solid #D5EFE0;
+
+      &:hover {
+        background: #2E7D52;
+        color: #FFFFFF;
+      }
+    }
+  }
+
+  .ac-icon-badge {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+
+    ion-icon, svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .ac-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #1E1815;
+    margin: 0 0 6px 0;
+    letter-spacing: -0.02em;
+  }
+
+  .ac-sub {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #6E6660;
+    line-height: 1.45;
+    margin: 0 0 18px 0;
+    flex: 1;
+  }
+
+  .ac-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    border-radius: 99px;
+    font-size: 0.82rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    outline: none;
+
+    ion-icon, svg {
+      font-size: 1.05rem;
+      width: 17px;
+      height: 17px;
+    }
+
+    &:active {
+      transform: scale(0.96);
+    }
+  }
+}
+
+.ghostbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  background: var(--orange-soft, #FFF1E8);
+  color: var(--orange, #F26A21);
+  border: 1px solid var(--orange-line, #FFDCC6);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  ion-icon, svg {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    background: var(--orange, #F26A21);
+    color: #ffffff;
+    border-color: var(--orange, #F26A21);
+
+    ion-icon, svg {
+      stroke: #ffffff;
+      color: #ffffff;
+    }
+  }
+}

@@ -290,12 +290,111 @@
               <div class="when">{{rm.whenLabel}}</div>
             </div>
           </div>
-          <div class="rotfoot" style="margin-top:16px;">
-            <button class="ghostbtn" (click)="manageRotation()">
-              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 12a8 8 0 1 1 2.6 5.9" />
-                <path d="M4 20v-5h5" />
-              </svg>
+        </div>
+
+        <!-- Monthly Khata Card -->
+        <div class="chartcard">
+          <div class="blkhead">
+            <h2>Monthly Khata</h2>
+            <span class="badge delivered" style="background:#FFF1E8; color:#C9520F;">Auto-debit on</span>
+          </div>
+          <div class="khata">
+            <div class="kcell">
+              <div class="k">PAID SO FAR</div>
+              <div class="v">₹{{monthlyDeducted || 450}}</div>
+            </div>
+            <div class="kcell">
+              <div class="k">PER DAY</div>
+              <div class="v">₹{{activeSub.dailyDeduction || 150}}</div>
+            </div>
+            <div class="kcell">
+              <div class="k">MEALS LEFT</div>
+              <div class="v">{{daysLeft}}</div>
+            </div>
+            <div class="kcell hi">
+              <div class="k">NEXT DEBIT</div>
+              <div class="v" style="color:#F26A21;">{{nextDeductionLabel}}</div>
+            </div>
+          </div>
+          <div class="autodeb">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9" />
+              <path d="m8.2 12.2 2.6 2.6 5-5.4" />
+            </svg>
+            <span>Auto deduction from wallet · <a (click)="router.navigate(['/profile'])" style="color:#F26A21; text-decoration:none; cursor:pointer; font-weight:800;">Manage in Wallet</a></span>
+          </div>
+        </div>
+
+        <!-- This Week Progress Card -->
+        <div class="chartcard" *ngIf="weekDays && weekDays.length > 0">
+          <div class="blkhead">
+            <h2>This Week</h2>
+            <span class="mini">{{weekMealsCompleted}} / 7 meals delivered</span>
+          </div>
+          <div class="wkline">
+            <div class="wknode" *ngFor="let d of weekDays" [class.done]="d.completed" [class.now]="d.isToday">
+              <div class="bul">
+                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m8.2 12.2 2.6 2.6 5-5.4" />
+                </svg>
+              </div>
+              <span>{{d.short}}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upcoming Deliveries Section -->
+        <div class="chartcard" *ngIf="upcomingDeliveries && upcomingDeliveries.length > 0">
+          <div class="blkhead">
+            <h2>Upcoming Deliveries</h2>
+            <a class="mini" (click)="router.navigate(['/my-orders'])" style="color:#F26A21; text-decoration:none; font-weight:800; cursor:pointer;">View all &rsaquo;</a>
+          </div>
+          <div class="delivs">
+            <button class="deliv" *ngFor="let item of upcomingDeliveries" (click)="router.navigate(['/my-orders'])">
+              <div class="dvdate">
+                <b>{{item.dateNum}}</b>
+                <span>{{item.dateMonth}}</span>
+              </div>
+              <div class="ph">
+                <img [src]="item.image" [alt]="item.name">
+              </div>
+              <div style="min-width:0">
+                <div class="nm">{{item.name}}</div>
+                <div class="mt">{{item.details}}</div>
+              </div>
+              <div class="rt">
+                <b>{{item.dayLabel}}</b>
+                <span>{{item.time}}</span>
+              </div>
+              <ion-icon name="chevron-forward-outline" style="color:#C4BAB3; font-size:16px; margin-left:4px;"></ion-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Action Cards Grid -->
+        <div class="action-cards-grid">
+          <!-- Card 1: Need a break? -->
+          <div class="action-card pause-card">
+            <div class="ac-icon-badge">
+              <ion-icon [name]="activeSub.status === 'Paused' ? 'play' : 'pause'"></ion-icon>
+            </div>
+            <h3 class="ac-title">Need a break?</h3>
+            <p class="ac-sub">Pause your plan anytime and we'll extend the end date by the same number of days.</p>
+            <button class="ac-btn" (click)="togglePause()">
+              <ion-icon [name]="activeSub.status === 'Paused' ? 'play' : 'pause'"></ion-icon>
+              <span>{{ activeSub.status === 'Paused' ? 'Resume plan' : 'Pause plan' }}</span>
+            </button>
+          </div>
+
+          <!-- Card 2: Customize rotation -->
+          <div class="action-card rotation-card">
+            <div class="ac-icon-badge">
+              <ion-icon name="sync-outline"></ion-icon>
+            </div>
+            <h3 class="ac-title">Customize rotation</h3>
+            <p class="ac-sub">Swap any meal in your {{activeSub.rotationMeals?.length || 4}}-day cycle or change dietary preferences whenever you like.</p>
+            <button class="ac-btn" (click)="manageRotation()">
+              <ion-icon name="sync-outline"></ion-icon>
               <span>Manage rotation</span>
             </button>
           </div>
@@ -675,12 +774,111 @@
                 <div class="when">{{rm.whenLabel}}</div>
               </div>
             </div>
-            <div class="rotfoot" style="margin-top:16px;">
-              <button class="ghostbtn" (click)="manageRotation()">
-                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M4 12a8 8 0 1 1 2.6 5.9" />
-                  <path d="M4 20v-5h5" />
-                </svg>
+          </div>
+
+          <!-- Monthly Khata Card -->
+          <div class="chartcard">
+            <div class="blkhead">
+              <h2>Monthly Khata</h2>
+              <span class="badge delivered" style="background:#FFF1E8; color:#C9520F;">Auto-debit on</span>
+            </div>
+            <div class="khata">
+              <div class="kcell">
+                <div class="k">PAID SO FAR</div>
+                <div class="v">₹{{monthlyDeducted || 450}}</div>
+              </div>
+              <div class="kcell">
+                <div class="k">PER DAY</div>
+                <div class="v">₹{{activeSub.dailyDeduction || 150}}</div>
+              </div>
+              <div class="kcell">
+                <div class="k">MEALS LEFT</div>
+                <div class="v">{{daysLeft}}</div>
+              </div>
+              <div class="kcell hi">
+                <div class="k">NEXT DEBIT</div>
+                <div class="v" style="color:#F26A21;">{{nextDeductionLabel}}</div>
+              </div>
+            </div>
+            <div class="autodeb">
+              <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9" />
+                <path d="m8.2 12.2 2.6 2.6 5-5.4" />
+              </svg>
+              <span>Auto deduction from wallet · <a (click)="router.navigate(['/profile'])" style="color:#F26A21; text-decoration:none; cursor:pointer; font-weight:800;">Manage in Wallet</a></span>
+            </div>
+          </div>
+
+          <!-- This Week Progress Card -->
+          <div class="chartcard" *ngIf="weekDays && weekDays.length > 0">
+            <div class="blkhead">
+              <h2>This Week</h2>
+              <span class="mini">{{weekMealsCompleted}} / 7 meals delivered</span>
+            </div>
+            <div class="wkline">
+              <div class="wknode" *ngFor="let d of weekDays" [class.done]="d.completed" [class.now]="d.isToday">
+                <div class="bul">
+                  <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m8.2 12.2 2.6 2.6 5-5.4" />
+                  </svg>
+                </div>
+                <span>{{d.short}}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Upcoming Deliveries Section -->
+          <div class="chartcard" *ngIf="upcomingDeliveries && upcomingDeliveries.length > 0">
+            <div class="blkhead">
+              <h2>Upcoming Deliveries</h2>
+              <a class="mini" (click)="router.navigate(['/my-orders'])" style="color:#F26A21; text-decoration:none; font-weight:800; cursor:pointer;">View all &rsaquo;</a>
+            </div>
+            <div class="delivs">
+              <button class="deliv" *ngFor="let item of upcomingDeliveries" (click)="router.navigate(['/my-orders'])">
+                <div class="dvdate">
+                  <b>{{item.dateNum}}</b>
+                  <span>{{item.dateMonth}}</span>
+                </div>
+                <div class="ph">
+                  <img [src]="item.image" [alt]="item.name">
+                </div>
+                <div style="min-width:0">
+                  <div class="nm">{{item.name}}</div>
+                  <div class="mt">{{item.details}}</div>
+                </div>
+                <div class="rt">
+                  <b>{{item.dayLabel}}</b>
+                  <span>{{item.time}}</span>
+                </div>
+                <ion-icon name="chevron-forward-outline" style="color:#C4BAB3; font-size:16px; margin-left:4px;"></ion-icon>
+              </button>
+            </div>
+          </div>
+
+          <!-- Action Cards Grid -->
+          <div class="action-cards-grid">
+            <!-- Card 1: Need a break? -->
+            <div class="action-card pause-card">
+              <div class="ac-icon-badge">
+                <ion-icon [name]="activeSub.status === 'Paused' ? 'play' : 'pause'"></ion-icon>
+              </div>
+              <h3 class="ac-title">Need a break?</h3>
+              <p class="ac-sub">Pause your plan anytime and we'll extend the end date by the same number of days.</p>
+              <button class="ac-btn" (click)="togglePause()">
+                <ion-icon [name]="activeSub.status === 'Paused' ? 'play' : 'pause'"></ion-icon>
+                <span>{{ activeSub.status === 'Paused' ? 'Resume plan' : 'Pause plan' }}</span>
+              </button>
+            </div>
+
+            <!-- Card 2: Customize rotation -->
+            <div class="action-card rotation-card">
+              <div class="ac-icon-badge">
+                <ion-icon name="sync-outline"></ion-icon>
+              </div>
+              <h3 class="ac-title">Customize rotation</h3>
+              <p class="ac-sub">Swap any meal in your {{activeSub.rotationMeals?.length || 4}}-day cycle or change dietary preferences whenever you like.</p>
+              <button class="ac-btn" (click)="manageRotation()">
+                <ion-icon name="sync-outline"></ion-icon>
                 <span>Manage rotation</span>
               </button>
             </div>
