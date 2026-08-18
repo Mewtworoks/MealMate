@@ -47,6 +47,8 @@ namespace MealMate.Api.DTOs
     {
         public Guid MealId { get; set; }
         public string MealName { get; set; } = string.Empty;
+        public string ImageUrl { get; set; } = string.Empty;
+        public bool IsVeg { get; set; } = true;
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
     }

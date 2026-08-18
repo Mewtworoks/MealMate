@@ -21,7 +21,9 @@ namespace MealMate.Api.Mappings
                 .ForMember(dest => dest.CustomerPhone, opt => opt.MapFrom(src => (src.Customer != null && !string.IsNullOrEmpty(src.Customer.PhoneNumber)) ? src.Customer.PhoneNumber : string.Empty))
                 .ForMember(dest => dest.DistanceKm, opt => opt.MapFrom(src => Math.Round(0.5 + Math.Abs(src.Id.GetHashCode() % 45) / 10.0, 1)));
             CreateMap<OrderItem, OrderItemResponseDto>()
-                .ForMember(dest => dest.MealName, opt => opt.MapFrom(src => src.Meal != null ? src.Meal.Name : string.Empty));
+                .ForMember(dest => dest.MealName, opt => opt.MapFrom(src => src.Meal != null ? src.Meal.Name : string.Empty))
+                .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Meal != null ? src.Meal.ImageUrl : string.Empty))
+                .ForMember(dest => dest.IsVeg, opt => opt.MapFrom(src => src.Meal != null ? src.Meal.IsVeg : true));
         }
     }
 }

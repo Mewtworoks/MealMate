@@ -75,14 +75,25 @@ export class OrderService {
         displayId: this.formatDisplayId(o.id || o.Id || '', o.displayId || o.DisplayId),
         date: o.date || o.Date || o.orderDate || o.OrderDate || o.createdAt || o.CreatedAt,
         total: o.total || o.Total || o.totalAmount || o.TotalAmount,
-        items: (o.items || o.Items || o.orderItems || o.OrderItems || []).map((i: any) => ({
-          mealId: i.mealId || i.MealId,
-          name: i.mealName || i.MealName || i.name || i.Name || 'Item',
-          mealName: i.mealName || i.MealName || i.name || i.Name || 'Item',
-          price: i.unitPrice !== undefined ? i.unitPrice : (i.UnitPrice !== undefined ? i.UnitPrice : (i.price || 0)),
-          unitPrice: i.unitPrice !== undefined ? i.unitPrice : (i.UnitPrice !== undefined ? i.UnitPrice : (i.price || 0)),
-          quantity: i.quantity || i.Quantity || 1
-        })),
+        items: (o.items || o.Items || o.orderItems || o.OrderItems || []).map((i: any) => {
+          const mealName = i.mealName || i.MealName || i.name || i.Name || 'Item';
+          const rawImg = i.imageUrl || i.ImageUrl || i.image || i.Image || '';
+          const rawIsVeg = i.isVeg !== undefined ? i.isVeg : i.IsVeg;
+          const img = this.resolveMealImage(mealName, rawImg);
+          const type = this.resolveMealType(mealName, rawIsVeg);
+          return {
+            mealId: i.mealId || i.MealId,
+            name: mealName,
+            mealName: mealName,
+            price: i.unitPrice !== undefined ? i.unitPrice : (i.UnitPrice !== undefined ? i.UnitPrice : (i.price || 0)),
+            unitPrice: i.unitPrice !== undefined ? i.unitPrice : (i.UnitPrice !== undefined ? i.UnitPrice : (i.price || 0)),
+            quantity: i.quantity || i.Quantity || 1,
+            image: img,
+            imageUrl: img,
+            isVeg: type === 'Veg',
+            type: type
+          };
+        }),
         status: o.status || o.Status || 'Pending',
         agentId: o.agentId || o.AgentId,
         customerId: o.customerId || o.CustomerId,
@@ -109,14 +120,25 @@ export class OrderService {
         displayId: this.formatDisplayId(o.id || o.Id || '', o.displayId || o.DisplayId),
         date: o.date || o.Date || o.orderDate || o.OrderDate || o.createdAt || o.CreatedAt,
         total: o.total || o.Total || o.totalAmount || o.TotalAmount,
-        items: (o.items || o.Items || o.orderItems || o.OrderItems || []).map((i: any) => ({
-          mealId: i.mealId || i.MealId,
-          name: i.mealName || i.MealName || i.name || i.Name || 'Item',
-          mealName: i.mealName || i.MealName || i.name || i.Name || 'Item',
-          price: i.unitPrice !== undefined ? i.unitPrice : (i.UnitPrice !== undefined ? i.UnitPrice : (i.price || 0)),
-          unitPrice: i.unitPrice !== undefined ? i.unitPrice : (i.UnitPrice !== undefined ? i.UnitPrice : (i.price || 0)),
-          quantity: i.quantity || i.Quantity || 1
-        })),
+        items: (o.items || o.Items || o.orderItems || o.OrderItems || []).map((i: any) => {
+          const mealName = i.mealName || i.MealName || i.name || i.Name || 'Item';
+          const rawImg = i.imageUrl || i.ImageUrl || i.image || i.Image || '';
+          const rawIsVeg = i.isVeg !== undefined ? i.isVeg : i.IsVeg;
+          const img = this.resolveMealImage(mealName, rawImg);
+          const type = this.resolveMealType(mealName, rawIsVeg);
+          return {
+            mealId: i.mealId || i.MealId,
+            name: mealName,
+            mealName: mealName,
+            price: i.unitPrice !== undefined ? i.unitPrice : (i.UnitPrice !== undefined ? i.UnitPrice : (i.price || 0)),
+            unitPrice: i.unitPrice !== undefined ? i.unitPrice : (i.UnitPrice !== undefined ? i.UnitPrice : (i.price || 0)),
+            quantity: i.quantity || i.Quantity || 1,
+            image: img,
+            imageUrl: img,
+            isVeg: type === 'Veg',
+            type: type
+          };
+        }),
         status: o.status || o.Status || 'Pending',
         agentId: o.agentId || o.AgentId,
         customerId: o.customerId || o.CustomerId,
@@ -133,6 +155,43 @@ export class OrderService {
       console.error('Error fetching agent orders', e);
       return [];
     }
+  }
+
+  private resolveMealImage(name: string = '', rawUrl: string = ''): string {
+    const url = rawUrl || '';
+    const lower = (name || url).toLowerCase();
+
+    if (lower.includes('chole') || lower.includes('bhature')) return 'assets/onboarding/chole_bhature.png';
+    if (lower.includes('kulcha') || lower.includes('amritsari')) return 'assets/onboarding/amritsari_kulcha_dish.png';
+    if (lower.includes('saag') || lower.includes('sarson')) return 'assets/onboarding/sarson_saag_makki_roti.png';
+    if (lower.includes('shahi paneer')) return 'assets/onboarding/shahi_paneer_thali.png';
+    if (lower.includes('rajma')) return 'assets/onboarding/homestyle_rajma_chawal.png';
+    if (lower.includes('butter chicken')) return 'assets/onboarding/butter_chicken_bowl.png';
+    if (lower.includes('biryani')) return 'assets/onboarding/awadhi_biryani_bowl.png';
+    if (lower.includes('kebab') || lower.includes('galouti')) return 'assets/onboarding/lucknowi_galouti_kebab.png';
+    if (lower.includes('moong')) return 'assets/onboarding/sprouted_moong_chilla.png';
+    if (lower.includes('oats')) return 'assets/onboarding/oats_sprouts_chilla.png';
+    if (lower.includes('quinoa')) return 'assets/onboarding/protein_quinoa_bowl.png';
+    if (lower.includes('keto') || lower.includes('avocado')) return 'assets/onboarding/keto_avocado_salad.png';
+    if (lower.includes('dal makhani')) return 'assets/onboarding/dal_makhani.png';
+    if (lower.includes('paneer tikka')) return 'assets/onboarding/paneer_tikka.png';
+    if (lower.includes('pulao')) return 'assets/onboarding/veg_pulao.png';
+    if (lower.includes('paratha') || lower.includes('aloo')) return 'assets/onboarding/stuffed_aloo_paratha_thali.png';
+
+    if (url && (url.startsWith('assets/') || url.startsWith('http://') || url.startsWith('https://'))) return url;
+
+    return 'assets/onboarding/kadhai-paneer-chawal.png';
+  }
+
+  private resolveMealType(name: string = '', isVeg?: boolean): 'Veg' | 'Non-Veg' {
+    if (isVeg !== undefined && isVeg !== null) {
+      return isVeg ? 'Veg' : 'Non-Veg';
+    }
+    const lower = name.toLowerCase();
+    if (lower.includes('chicken') || lower.includes('mutton') || lower.includes('fish') || lower.includes('egg') || lower.includes('kebab') || lower.includes('galouti')) {
+      return 'Non-Veg';
+    }
+    return 'Veg';
   }
 
   async updateOrderStatus(orderId: string, status: string) {

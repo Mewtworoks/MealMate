@@ -46,19 +46,11 @@ namespace MealMate.Api.Services
 
             if (user == null)
             {
-                user = new User
-                {
-                    Id = Guid.NewGuid(),
-                    Email = emailClean,
-                    FullName = emailClean.Split('@')[0],
-                    Role = formattedRole,
-                    WalletBalance = 2500m,
-                    CreditLimit = 500m,
-                    CreditUsed = 0m,
-                    LoyaltyPoints = 1000,
-                    CreatedAt = DateTime.UtcNow
-                };
-                await _userRepository.AddAsync(user);
+                var newId = Guid.NewGuid();
+                var fullName = emailClean.Split('@')[0];
+                await InsertUserRawSql(newId, emailClean, fullName, "", formattedRole);
+                user = await _userRepository.GetByEmailAsync(emailClean);
+                if (user == null) return null;
             }
 
             return _mapper.Map<UserResponseDto>(user);
@@ -92,23 +84,13 @@ namespace MealMate.Api.Services
 
             try
             {
-                var newUser = new User
-                {
-                    Id = Guid.NewGuid(),
-                    Email = emailClean,
-                    FullName = !string.IsNullOrWhiteSpace(request.FullName) ? request.FullName : emailClean.Split('@')[0],
-                    PhoneNumber = phoneClean,
-                    Role = formattedRole,
-                    WalletBalance = 2500m,
-                    CreditLimit = 500m,
-                    CreditUsed = 0m,
-                    LoyaltyPoints = 1000,
-                    CreatedAt = DateTime.UtcNow
-                };
-                await _userRepository.AddAsync(newUser);
+                var newId = Guid.NewGuid();
+                var fullName = !string.IsNullOrWhiteSpace(request.FullName) ? request.FullName : emailClean.Split('@')[0];
+
+                await InsertUserRawSql(newId, emailClean, fullName, phoneClean, formattedRole);
 
                 // Create user in Clerk (if Clerk SecretKey is configured)
-                var clerkResult = await _clerkService.CreateUserAsync(emailClean, request.Password ?? "MealMate@123", newUser.FullName, formattedRole);
+                var clerkResult = await _clerkService.CreateUserAsync(emailClean, request.Password ?? "MealMate@123", fullName, formattedRole);
                 if (!clerkResult.Success)
                 {
                     await transaction.RollbackAsync();
@@ -118,7 +100,8 @@ namespace MealMate.Api.Services
 
                 await transaction.CommitAsync();
 
-                return _mapper.Map<UserResponseDto>(newUser);
+                var user = await _userRepository.GetByEmailAsync(emailClean);
+                return _mapper.Map<UserResponseDto>(user);
             }
             catch (Exception)
             {
@@ -154,19 +137,10 @@ namespace MealMate.Api.Services
 
                 if (user == null)
                 {
-                    user = new User
-                    {
-                        Id = Guid.NewGuid(),
-                        Email = email,
-                        FullName = name ?? email.Split('@')[0],
-                        Role = googleRequest.Role,
-                        WalletBalance = 2500m,
-                        CreditLimit = 500m,
-                        CreditUsed = 0m,
-                        LoyaltyPoints = 1000,
-                        CreatedAt = DateTime.UtcNow
-                    };
-                    await _userRepository.AddAsync(user);
+                    var newId = Guid.NewGuid();
+                    await InsertUserRawSql(newId, email, name ?? email.Split('@')[0], "", googleRequest.Role);
+                    user = await _userRepository.GetByEmailAsync(email);
+                    if (user == null) return null;
                 }
 
                 return _mapper.Map<UserResponseDto>(user);
@@ -208,22 +182,12 @@ namespace MealMate.Api.Services
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                user = new User
-                {
-                    Id = Guid.NewGuid(),
-                    Email = emailClean,
-                    FullName = !string.IsNullOrWhiteSpace(request.FullName) ? request.FullName : emailClean.Split('@')[0],
-                    PhoneNumber = phoneClean,
-                    Role = formattedRole,
-                    WalletBalance = 2500m,
-                    CreditLimit = 500m,
-                    CreditUsed = 0m,
-                    LoyaltyPoints = 1000,
-                    CreatedAt = DateTime.UtcNow
-                };
-                await _userRepository.AddAsync(user);
+                var newGuid = Guid.NewGuid();
+                var fullName = !string.IsNullOrWhiteSpace(request.FullName) ? request.FullName : emailClean.Split('@')[0];
+                await InsertUserRawSql(newGuid, emailClean, fullName, phoneClean, formattedRole);
                 await transaction.CommitAsync();
 
+                user = await _userRepository.GetByEmailAsync(emailClean);
                 return _mapper.Map<UserResponseDto>(user);
             }
             catch (Exception)
@@ -235,11 +199,42 @@ namespace MealMate.Api.Services
 
         private async Task ValidatePhoneNumberUniqueAsync(string phoneNumber)
         {
-            var existing = await _userRepository.GetByPhoneNumberAsync(phoneNumber);
-            if (existing != null)
+            var conn = _context.Database.GetDbConnection();
+            if (conn.State != System.Data.ConnectionState.Open) await conn.OpenAsync();
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT COUNT(*) FROM Users WHERE PhoneNumber = @phone";
+            var param = cmd.CreateParameter();
+            param.ParameterName = "@phone";
+            param.Value = phoneNumber;
+            cmd.Parameters.Add(param);
+
+            var count = Convert.ToInt64(await cmd.ExecuteScalarAsync());
+            if (count > 0)
             {
                 throw new InvalidOperationException($"An account already exists with phone number '{phoneNumber}'.");
             }
+        }
+
+        /// <summary>
+        /// Insert a user using raw SQL to avoid EF Core including model columns that don't yet exist in the remote DB.
+        /// Only uses core columns guaranteed to be present in the Users table.
+        /// </summary>
+        private async Task InsertUserRawSql(Guid id, string email, string fullName, string? phoneNumber, string role)
+        {
+            await _context.Database.ExecuteSqlRawAsync(
+                "INSERT INTO Users (Id, Email, FullName, PhoneNumber, Role, WalletBalance, CreditLimit, CreditUsed, LoyaltyPoints, CreatedAt) VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9})",
+                id.ToString(),
+                email,
+                fullName,
+                phoneNumber,
+                role,
+                2500m,
+                500m,
+                0m,
+                1000,
+                DateTime.UtcNow
+            );
         }
     }
 }
