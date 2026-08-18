@@ -194,14 +194,14 @@
                   </div>
                   <div class="oinfo" style="flex:1; min-width:0;">
                     <div class="nm">
-                      <span>{{ order.items[0]?.name || 'Sarson Ka Saag & Makki Roti' }}</span>
+                      <span>{{ order.items[0]?.name || 'Meal Order' }}</span>
                       <i [style.background]="order.items[0]?.type === 'Non-Veg' ? '#C0392B' : '#16A34A'"></i>
                     </div>
-                    <div class="cu">Customer: <b>{{ order.customerName || 'Mewtworoks' }}</b></div>
+                    <div class="cu">Customer: <b>{{ order.customerName || 'Customer' }}</b></div>
                     <div class="mt">
                       <span>{{ order.items?.length || 1 }} {{ (order.items?.length || 1) === 1 ? 'item' : 'items' }}</span>
                       <span class="dot"></span>
-                      <span>{{ order.distanceKm || 3.9 }} km away</span>
+                      <span>{{ order.distanceKm ? order.distanceKm + ' km away' : 'Nearby' }}</span>
                       <span class="dot"></span>
                       <span class="diet-chip-badge" [class.nonveg]="order.items[0]?.type === 'Non-Veg'">
                         <span class="diet-box-icon"><span class="diet-inner-dot"></span></span>
@@ -212,9 +212,9 @@
                   <div class="oend">
                     <div class="tmr">
                       <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/></svg>
-                      03:55 left
+                      Pending
                     </div>
-                    <div class="earn">₹{{ order.total || 500 }} earnings</div>
+                    <div class="earn">₹{{ order.total || 0 }} earnings</div>
                     <div class="oacts">
                       <button class="rej" (click)="rejectOrder(order.id)">Reject</button>
                       <button class="acc" (click)="acceptOrder(order.id)">
@@ -240,24 +240,24 @@
                   </div>
                   <div class="oinfo" style="flex:1; min-width:0;">
                     <div class="nm">
-                      <span>{{ order.items[0]?.name || 'Butter Chicken Bowl' }}</span>
+                      <span>{{ order.items[0]?.name || 'Meal Order' }}</span>
                       <i [style.background]="order.items[0]?.type === 'Non-Veg' ? '#C0392B' : '#16A34A'"></i>
                     </div>
-                    <div class="cu">Customer: <b>{{ order.customerName || 'Ananya K.' }}</b></div>
+                    <div class="cu">Customer: <b>{{ order.customerName || 'Customer' }}</b></div>
                     <div class="mt">
-                      <span>{{ order.items?.length || 2 }} {{ (order.items?.length || 2) === 1 ? 'item' : 'items' }}</span>
+                      <span>{{ order.items?.length || 1 }} {{ (order.items?.length || 1) === 1 ? 'item' : 'items' }}</span>
                       <span class="dot"></span>
-                      <span>{{ order.distanceKm || 2.9 }} km away</span>
+                      <span>{{ order.distanceKm ? order.distanceKm + ' km away' : 'Nearby' }}</span>
                       <span class="dot"></span>
                       <span class="diet-chip-badge" [class.nonveg]="order.items[0]?.type === 'Non-Veg'">
                         <span class="diet-box-icon"><span class="diet-inner-dot"></span></span>
-                        <span>{{ order.items[0]?.type || 'Non-Veg' }}</span>
+                        <span>{{ order.items[0]?.type || 'Veg' }}</span>
                       </span>
                     </div>
                   </div>
                   <div class="oend">
-                    <div class="tmr calm">In kitchen · 8 min left</div>
-                    <div class="earn">₹{{ order.total || 640 }} earnings</div>
+                    <div class="tmr calm">{{ order.status === 'Preparing' ? 'In kitchen' : (order.status === 'OutForDelivery' ? 'Out for delivery' : 'Accepted') }}</div>
+                    <div class="earn">₹{{ order.total || 0 }} earnings</div>
                     <div class="oacts">
                       <button *ngIf="order.status === 'Accepted'" class="prep" (click)="updateOrderStatus(order.id, 'Preparing')">
                         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
@@ -290,14 +290,14 @@
                   </div>
                   <div class="oinfo" style="flex:1; min-width:0;">
                     <div class="nm">
-                      <span>{{ order.items[0]?.name || 'Shahi Paneer Thali' }}</span>
+                      <span>{{ order.items[0]?.name || 'Meal Order' }}</span>
                       <i [style.background]="order.items[0]?.type === 'Non-Veg' ? '#C0392B' : '#16A34A'"></i>
                     </div>
-                    <div class="cu">Customer: <b>{{ order.customerName || 'Neha G.' }}</b></div>
+                    <div class="cu">Customer: <b>{{ order.customerName || 'Customer' }}</b></div>
                     <div class="mt">
                       <span>{{ order.items?.length || 1 }} {{ (order.items?.length || 1) === 1 ? 'item' : 'items' }}</span>
                       <span class="dot"></span>
-                      <span>{{ order.distanceKm || 2.1 }} km away</span>
+                      <span>{{ order.distanceKm ? order.distanceKm + ' km away' : 'Nearby' }}</span>
                       <span class="dot"></span>
                       <span class="diet-chip-badge" [class.nonveg]="order.items[0]?.type === 'Non-Veg'">
                         <span class="diet-box-icon"><span class="diet-inner-dot"></span></span>
@@ -306,10 +306,10 @@
                     </div>
                   </div>
                   <div class="oend">
-                    <div class="tmr calm">Delivered · 6:40 PM</div>
-                    <div class="earn">₹{{ order.total || 460 }} earnings</div>
+                    <div class="tmr calm">Delivered</div>
+                    <div class="earn">₹{{ order.total || 0 }} earnings</div>
                     <div class="oacts">
-                      <button class="rej">Invoice</button>
+                      <button class="rej">Completed</button>
                     </div>
                   </div>
                 </div>
@@ -431,15 +431,15 @@
             </div>
             <div class="order-meal-details">
               <div class="order-header-line">
-                <h2 class="meal-name-title" *ngIf="!order.isCustomMeal">{{ order.items[0]?.name || 'Sarson Ka Saag & Makki Roti' }}</h2>
+                <h2 class="meal-name-title" *ngIf="!order.isCustomMeal">{{ order.items[0]?.name || 'Meal Order' }}</h2>
                 <h2 class="meal-name-title" *ngIf="order.isCustomMeal">Custom Request</h2>
                 <span class="type-dot-indicator veg"></span>
               </div>
-              <p class="customer-info-line">Customer: <strong>{{ order.customerName || 'Mewtworoks' }}</strong></p>
+              <p class="customer-info-line">Customer: <strong>{{ order.customerName || 'Customer' }}</strong></p>
               <div class="order-meta-info-row">
                 <span class="meta-item">{{ order.items?.length || 1 }} {{ (order.items?.length || 1) === 1 ? 'item' : 'items' }}</span>
                 <span class="meta-divider">•</span>
-                <span class="meta-item">{{ order.distanceKm || 3.9 }} km away</span>
+                <span class="meta-item">{{ order.distanceKm ? order.distanceKm + ' km away' : 'Nearby' }}</span>
                 <span class="meta-divider">•</span>
                 <span class="diet-chip-badge" [class.nonveg]="order.items[0]?.type === 'Non-Veg'">
                   <span class="diet-box-icon"><span class="diet-inner-dot"></span></span>
