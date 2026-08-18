@@ -51,6 +51,7 @@ export class MyOrdersPage implements OnInit {
   }
 
   async ionViewWillEnter() {
+    this.activeTab = 'active';
     this.loadOrdersData();
   }
 
@@ -71,9 +72,6 @@ export class MyOrdersPage implements OnInit {
       this.orders = orders;
       if (orders.length > 0 && !this.selectedOrder) {
         this.selectedOrder = orders[0];
-      }
-      if (this.subscriptions.length > 0 && this.activeOrders.length === 0) {
-        this.activeTab = 'subscriptions';
       }
     });
   }
