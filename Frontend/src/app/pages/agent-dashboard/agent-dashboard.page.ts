@@ -301,8 +301,30 @@ export class AgentDashboardPage implements OnInit {
     return `#MM${num}`;
   }
 
-  // Analytics Helpers
-  get todaysEarnings(): number {
-    return 0;
+  // Dynamic Analytics Helpers
+  get acceptRate(): number {
+    if (!this.orders || this.orders.length === 0) return 100;
+    const rejected = this.orders.filter(o => o.status === 'Rejected').length;
+    return Math.round(((this.orders.length - rejected) / this.orders.length) * 100);
+  }
+
+  get avgPrepTime(): number {
+    if (!this.orders || this.orders.length === 0) return 15;
+    const totalItems = this.orders.reduce((sum, o) => sum + (o.items?.length || 1), 0);
+    const avg = Math.round(12 + (totalItems / Math.max(1, this.orders.length)) * 3);
+    return Math.min(25, Math.max(10, avg));
+  }
+
+  getDeliveryMinsAway(order: Order | null): number {
+    if (!order) return 12;
+    const dist = order.distanceKm || 1.5;
+    return Math.max(4, Math.round(dist * 4));
+  }
+
+  getPrepTimeLeft(order: Order): string {
+    if (!order) return '8 min left';
+    if (order.status === 'OutForDelivery') return 'Out for delivery';
+    if (order.status === 'Preparing') return 'In kitchen';
+    return '8 min left';
   }
 }
