@@ -207,7 +207,7 @@
       </div>
 
       <!-- Write Review Form (Mobile) -->
-      <div class="write-review-card">
+      <div class="write-review-card" *ngIf="hasOrderedMeal">
         <h3 class="wr-title">Leave a Review</h3>
         <p class="wr-sub">How was your meal experience?</p>
         <div class="star-rating-selector">
@@ -220,6 +220,20 @@
         <button class="wr-submit-btn" (click)="submitReview()" [disabled]="isSubmittingReview">
           <ion-icon name="send-outline"></ion-icon>
           <span>Submit Review</span>
+        </button>
+      </div>
+
+      <!-- Verified Buyer Lock Notice (Mobile) -->
+      <div class="review-lock-notice" *ngIf="!hasOrderedMeal">
+        <div class="rln-icon">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+        </div>
+        <div class="rln-text">
+          <h4>Verified Buyer Reviews Only</h4>
+          <p>Order this meal to rate and post your review.</p>
+        </div>
+        <button class="rln-btn" (click)="addToCart()">
+          <ion-icon name="cart-outline"></ion-icon> Order Now
         </button>
       </div>
 
@@ -420,7 +434,7 @@
             </div>
 
             <!-- Write Review Form (Desktop) -->
-            <div class="write-review-card">
+            <div class="write-review-card" *ngIf="hasOrderedMeal">
               <h3 class="wr-title">Leave a Review</h3>
               <p class="wr-sub">How was your meal experience?</p>
               <div class="star-rating-selector">
@@ -433,6 +447,20 @@
               <button class="wr-submit-btn" (click)="submitReview()" [disabled]="isSubmittingReview">
                 <ion-icon name="send-outline"></ion-icon>
                 <span>Submit Review</span>
+              </button>
+            </div>
+
+            <!-- Verified Buyer Lock Notice (Desktop) -->
+            <div class="review-lock-notice" *ngIf="!hasOrderedMeal">
+              <div class="rln-icon">
+                <ion-icon name="shield-checkmark-outline"></ion-icon>
+              </div>
+              <div class="rln-text">
+                <h4>Verified Buyer Reviews Only</h4>
+                <p>Order this meal to rate and post your review.</p>
+              </div>
+              <button class="rln-btn" (click)="addToCart()">
+                <ion-icon name="cart-outline"></ion-icon> Order Now
               </button>
             </div>
 

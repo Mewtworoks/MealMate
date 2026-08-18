@@ -8,6 +8,7 @@ import { PageLoaderService } from '../../services/page-loader.service';
 import { NavController, ToastController } from '@ionic/angular';
 import { ThemeService } from '../../services/theme.service';
 
+import { OrderService } from '../../services/order.service';
 import { ReviewService, MealReview } from '../../services/review.service';
 
 interface Review {
@@ -32,6 +33,7 @@ export class MealDetailPage implements OnInit {
   quantity: number = 1;
   isLoading: boolean = true;
   isFavorited: boolean = false;
+  hasOrderedMeal: boolean = false;
 
   userRating: number = 5;
   userComment: string = '';
@@ -80,6 +82,7 @@ export class MealDetailPage implements OnInit {
     private cartService: CartService,
     private auth: AuthService,
     private subscriptionService: SubscriptionService,
+    private orderService: OrderService,
     private pageLoader: PageLoaderService,
     private navCtrl: NavController,
     private toastCtrl: ToastController,
@@ -125,10 +128,38 @@ export class MealDetailPage implements OnInit {
         const subs = this.subscriptionService.getUserSubscriptions(userId);
         this.activeSubscription = subs.find(s => s.status === 'Active') || null;
       }
+
+      await this.checkIfUserOrderedMeal(mealId);
     }
 
     this.isLoading = false;
     this.pageLoader.show(false);
+  }
+
+  private async checkIfUserOrderedMeal(mealId: string) {
+    const userId = this.auth.userId;
+    if (!userId) {
+      this.hasOrderedMeal = false;
+      return;
+    }
+
+    let orders = this.orderService.getOrders();
+    if (!orders || orders.length === 0) {
+      orders = await this.orderService.refreshUserOrders(userId);
+    }
+
+    const subs = this.subscriptionService.getUserSubscriptions(userId);
+    const hasSub = subs && subs.some(s => s.status === 'Active');
+
+    const orderedInOrders = orders.some(o =>
+      o.items && o.items.some((i: any) =>
+        i.mealId === mealId ||
+        (i.mealName && this.meal && i.mealName.toLowerCase().trim() === this.meal.name.toLowerCase().trim()) ||
+        (i.name && this.meal && i.name.toLowerCase().trim() === this.meal.name.toLowerCase().trim())
+      )
+    );
+
+    this.hasOrderedMeal = orderedInOrders || hasSub;
   }
 
   private generateMealDetails() {

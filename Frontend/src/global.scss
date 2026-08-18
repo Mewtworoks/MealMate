@@ -869,3 +869,67 @@ body.sidebar-collapsed {
     }
   }
 }
+
+/* ==========================================================================
+   Global Review Lock Notice Banner (Verified Buyers Only)
+   ========================================================================== */
+.review-lock-notice {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: $mm-primary-surface;
+  border: 1px dashed rgba(242, 106, 33, 0.3);
+  border-radius: $mm-radius-md;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+
+  .rln-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: $mm-primary-bg;
+    color: $mm-brand-orange;
+    display: grid;
+    place-items: center;
+    font-size: 1.3rem;
+    flex: none;
+  }
+
+  .rln-text {
+    flex: 1;
+
+    h4 {
+      margin: 0 0 3px 0;
+      font-size: $mm-font-base;
+      font-weight: 800;
+      color: $mm-text-dark;
+    }
+
+    p {
+      margin: 0;
+      font-size: $mm-font-sm;
+      color: $mm-text-muted;
+      font-weight: 500;
+    }
+  }
+
+  .rln-btn {
+    background: $mm-brand-orange;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: $mm-font-sm;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    box-shadow: $mm-shadow-sm;
+    transition: transform 0.15s ease;
+
+    &:hover, &:active {
+      transform: scale(0.96);
+    }
+  }
+}
