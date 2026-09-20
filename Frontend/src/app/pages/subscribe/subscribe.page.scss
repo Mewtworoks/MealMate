@@ -1894,17 +1894,13 @@
   }
 }
 
-/* ════════════════ CUSTOM PLAN CONTROLS MODAL ════════════════ */
-.plan-controls-modal {
-  --height: auto;
-  --max-height: 85%;
-  --border-radius: 28px 28px 0 0;
+/* ════════════════ PREMIUM CARD MODAL (matches agent-dashboard's location-modal) ════════════════ */
+.premium-card-modal {
+  --border-radius: 24px;
   --background: #FFFFFF;
-  --box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.12);
-  align-items: flex-end;
 
   &::part(content) {
-    border-radius: 28px 28px 0 0;
+    border-radius: 24px;
   }
 }
 

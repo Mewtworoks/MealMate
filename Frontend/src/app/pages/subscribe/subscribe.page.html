@@ -917,82 +917,70 @@
 </ion-footer>
 
 <!-- ── Custom Plan Controls Modal (Bottom Sheet) ── -->
-<ion-modal [isOpen]="isPlanControlsOpen" (didDismiss)="isPlanControlsOpen = false" [initialBreakpoint]="0.85"
-  [breakpoints]="[0, 0.85, 0.95]" class="plan-controls-modal">
+<ion-modal [isOpen]="isPlanControlsOpen" (didDismiss)="isPlanControlsOpen = false" class="premium-card-modal">
   <ng-template>
-    <div class="plan-controls-sheet">
-      <div class="sheet-handle"></div>
-
-      <div class="sheet-header">
-        <div class="header-text">
-          <h2>Plan Controls</h2>
-          <p>Manage your subscription with ease</p>
-        </div>
-        <div class="header-illustration">
-          <img src="assets/onboarding/chef_hat.png" alt="Chef hat">
-        </div>
+    <div class="modal-main-wrap" style="height: 100%; display: flex; flex-direction: column; background: #ffffff;">
+      <div class="custom-modal-header" style="padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f3f4f6; background: #ffffff;">
+        <button type="button" class="header-circle-btn" (click)="isPlanControlsOpen = false" style="width: 42px; height: 42px; border-radius: 14px; background: #FFF1EA; color: #F26A21; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; border: none; cursor: pointer;">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </button>
+        <h2 class="header-title" style="font-size: 1.15rem; font-weight: 800; color: #483129; margin: 0 0 0 12px; flex: 1;">Plan Controls</h2>
+        <button type="button" class="header-cancel-link" (click)="isPlanControlsOpen = false" style="background: none; border: none; font-weight: 800; color: #F26A21; font-size: 0.95rem; cursor: pointer;">Cancel</button>
       </div>
 
-      <div class="sheet-body" *ngIf="activeSub">
-        <!-- Status Banner -->
-        <div class="status-card" [class.paused]="activeSub.status === 'Paused'">
-          <div class="sc-left">
-            <div class="sc-icon">
-              <ion-icon [name]="activeSub.status === 'Paused' ? 'pause-circle' : 'checkmark-circle'"></ion-icon>
-            </div>
-            <div class="sc-info">
-              <span class="sc-status">{{activeSub.status}}</span>
-              <span class="sc-sub">{{activeSub.status === 'Paused' ? 'Deliveries are paused. Resume anytime.' :
-                'Deliveries active. Next delivery tomorrow 1:00 PM.'}}</span>
-            </div>
+      <div class="modal-scroll-content" style="flex: 1; overflow-y: auto; padding: 24px 20px;" *ngIf="activeSub">
+        <div class="form-body-wrapper" style="max-width: 600px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 12px;">
+
+          <div style="background: #FFF1EA; border: 1px solid #FFDCC6; border-radius: 16px; padding: 16px; display: flex; gap: 12px; align-items: flex-start;">
+            <ion-icon [name]="activeSub.status === 'Paused' ? 'pause-circle-outline' : 'checkmark-circle-outline'" style="font-size: 1.4rem; color: #F26A21; flex: none; margin-top: 2px;"></ion-icon>
+            <p style="margin: 0; font-size: 0.9rem; color: #5C524C; line-height: 1.5; font-weight: 500;">
+              <strong>{{activeSub.status}}</strong> —
+              {{activeSub.status === 'Paused' ? 'Deliveries are paused. Resume anytime.' : 'Deliveries active. Next delivery tomorrow 1:00 PM.'}}
+            </p>
           </div>
-        </div>
 
-        <!-- Quick Actions List -->
-        <div class="control-actions">
-
-          <button class="ctrl-btn" (click)="togglePause()">
-            <div class="cb-icon" [class.orange]="activeSub.status === 'Paused'">
+          <button type="button" (click)="togglePause()" style="width: 100%; text-align: left; display: flex; align-items: center; gap: 12px; border: 1.5px solid #F3F4F6; border-radius: 20px; padding: 16px; background: #fff; cursor: pointer;">
+            <div style="width: 48px; height: 48px; border-radius: 14px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #FFF1EA; color: #F26A21; font-size: 1.3rem;">
               <ion-icon [name]="activeSub.status === 'Paused' ? 'play' : 'pause'"></ion-icon>
             </div>
-            <div class="cb-text">
-              <span class="cb-title">{{activeSub.status === 'Paused' ? 'Resume Subscription' : 'Pause Subscription'}}</span>
-              <span class="cb-sub">{{activeSub.status === 'Paused' ? 'Restart your daily meal deliveries' : 'Take a break without losing your balance'}}</span>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 0.95rem; font-weight: 800; color: #483129;">{{activeSub.status === 'Paused' ? 'Resume Subscription' : 'Pause Subscription'}}</div>
+              <div style="font-size: 0.75rem; color: #8E7C76; font-weight: 500; margin-top: 2px;">{{activeSub.status === 'Paused' ? 'Restart your daily meal deliveries' : 'Take a break without losing your balance'}}</div>
             </div>
-            <ion-icon name="chevron-forward-outline" class="cb-arrow"></ion-icon>
+            <ion-icon name="chevron-forward-outline" style="color: #9CA3AF; flex-shrink: 0;"></ion-icon>
           </button>
 
-          <button class="ctrl-btn" (click)="manageRotation()">
-            <div class="cb-icon green">
+          <button type="button" (click)="manageRotation()" style="width: 100%; text-align: left; display: flex; align-items: center; gap: 12px; border: 1.5px solid #F3F4F6; border-radius: 20px; padding: 16px; background: #fff; cursor: pointer;">
+            <div style="width: 48px; height: 48px; border-radius: 14px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #E6F9F0; color: #1DBF73; font-size: 1.3rem;">
               <ion-icon name="restaurant"></ion-icon>
             </div>
-            <div class="cb-text">
-              <span class="cb-title">Manage Meal Rotation</span>
-              <span class="cb-sub">Swap dishes in your daily cycle</span>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 0.95rem; font-weight: 800; color: #483129;">Manage Meal Rotation</div>
+              <div style="font-size: 0.75rem; color: #8E7C76; font-weight: 500; margin-top: 2px;">Swap dishes in your daily cycle</div>
             </div>
-            <ion-icon name="chevron-forward-outline" class="cb-arrow"></ion-icon>
+            <ion-icon name="chevron-forward-outline" style="color: #9CA3AF; flex-shrink: 0;"></ion-icon>
           </button>
 
-          <button class="ctrl-btn" (click)="changePlan()">
-            <div class="cb-icon purple">
+          <button type="button" (click)="changePlan()" style="width: 100%; text-align: left; display: flex; align-items: center; gap: 12px; border: 1.5px solid #F3F4F6; border-radius: 20px; padding: 16px; background: #fff; cursor: pointer;">
+            <div style="width: 48px; height: 48px; border-radius: 14px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #F3EBFF; color: #9C43FF; font-size: 1.3rem;">
               <ion-icon name="star"></ion-icon>
             </div>
-            <div class="cb-text">
-              <span class="cb-title">Change Plan Duration</span>
-              <span class="cb-sub">Switch to 3 or 6 months & save up to 20%</span>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 0.95rem; font-weight: 800; color: #483129;">Change Plan Duration</div>
+              <div style="font-size: 0.75rem; color: #8E7C76; font-weight: 500; margin-top: 2px;">Switch to 3 or 6 months &amp; save up to 20%</div>
             </div>
-            <ion-icon name="chevron-forward-outline" class="cb-arrow"></ion-icon>
+            <ion-icon name="chevron-forward-outline" style="color: #9CA3AF; flex-shrink: 0;"></ion-icon>
           </button>
 
-          <button class="ctrl-btn danger" (click)="cancelSubscription()">
-            <div class="cb-icon red">
+          <button type="button" (click)="cancelSubscription()" style="width: 100%; text-align: left; display: flex; align-items: center; gap: 12px; border: 1.5px solid #FFE5E5; border-radius: 20px; padding: 16px; background: #FFF8F8; cursor: pointer;">
+            <div style="width: 48px; height: 48px; border-radius: 14px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #FFEBEB; color: #FF5B5B; font-size: 1.3rem;">
               <ion-icon name="close-circle"></ion-icon>
             </div>
-            <div class="cb-text">
-              <span class="cb-title">Cancel Subscription</span>
-              <span class="cb-sub">Get instant pro-rata refund to your wallet</span>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 0.95rem; font-weight: 800; color: #483129;">Cancel Subscription</div>
+              <div style="font-size: 0.75rem; color: #8E7C76; font-weight: 500; margin-top: 2px;">Get instant pro-rata refund to your wallet</div>
             </div>
-            <ion-icon name="chevron-forward-outline" class="cb-arrow"></ion-icon>
+            <ion-icon name="chevron-forward-outline" style="color: #9CA3AF; flex-shrink: 0;"></ion-icon>
           </button>
 
         </div>
@@ -1001,30 +989,93 @@
   </ng-template>
 </ion-modal>
 
-<!-- ── Cancel Confirmation Modal ── -->
-<ion-modal [isOpen]="isCancelModalOpen" (didDismiss)="isCancelModalOpen = false" [initialBreakpoint]="0.6"
-  [breakpoints]="[0, 0.6]" class="plan-controls-modal">
+<!-- ── Confirm Subscription Modal ── -->
+<ion-modal [isOpen]="isConfirmModalOpen" (didDismiss)="isConfirmModalOpen = false" class="premium-card-modal">
   <ng-template>
-    <div class="plan-controls-sheet cancel-sheet">
-      <div class="sheet-handle"></div>
+    <div class="modal-main-wrap" style="height: 100%; display: flex; flex-direction: column; background: #ffffff;" *ngIf="confirmingPlan as plan">
+      <div class="custom-modal-header" style="padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f3f4f6; background: #ffffff;">
+        <button type="button" class="header-circle-btn" (click)="isConfirmModalOpen = false" [disabled]="isPlacingOrder" style="width: 42px; height: 42px; border-radius: 14px; background: #FFF1EA; color: #F26A21; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; border: none; cursor: pointer;">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </button>
+        <h2 class="header-title" style="font-size: 1.15rem; font-weight: 800; color: #483129; margin: 0 0 0 12px; flex: 1;">Confirm Subscription</h2>
+        <button type="button" class="header-cancel-link" (click)="isConfirmModalOpen = false" [disabled]="isPlacingOrder" style="background: none; border: none; font-weight: 800; color: #F26A21; font-size: 0.95rem; cursor: pointer;">Cancel</button>
+      </div>
 
-      <div class="cancel-hero">
-        <div class="ch-icon">
-          <ion-icon name="warning"></ion-icon>
+      <div class="modal-scroll-content" style="flex: 1; overflow-y: auto; padding: 24px 20px;">
+        <div class="form-body-wrapper" style="max-width: 600px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 20px;">
+
+          <div style="background: #FFF1EA; border: 1px solid #FFDCC6; border-radius: 16px; padding: 16px; display: flex; gap: 12px; align-items: flex-start;">
+            <ion-icon name="checkmark-circle-outline" style="font-size: 1.4rem; color: #F26A21; flex: none; margin-top: 2px;"></ion-icon>
+            <p style="margin: 0; font-size: 0.9rem; color: #5C524C; line-height: 1.5; font-weight: 500;">
+              You're subscribing to the <strong>{{plan.name}}</strong> for {{plan.days}} days.
+            </p>
+          </div>
+
+          <div style="border: 1px solid #F3F4F6; border-radius: 16px; padding: 16px 20px; display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #8E7C76; font-weight: 600;">
+              <span>Daily Rate</span><span style="color: #483129; font-weight: 700;">₹{{plan.perDay}}/day</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #8E7C76; font-weight: 600;">
+              <span>Selected Meals</span><span style="color: #483129; font-weight: 700;">{{selectedMeals.length}} / 3</span>
+            </div>
+            <div style="height: 1px; background: #F3F4F6; margin: 4px 0;"></div>
+            <div style="display: flex; justify-content: space-between; font-size: 1rem; color: #483129; font-weight: 800;">
+              <span>Total Payable</span><span style="color: #F26A21;">₹{{plan.price | number:'1.0-0'}}</span>
+            </div>
+            <p style="margin: 0; font-size: 0.75rem; color: #8E7C76;">Charged to your MealMate wallet balance.</p>
+          </div>
+
         </div>
-        <h2>Cancel Subscription?</h2>
-        <p>You have <strong>{{daysLeft}} days</strong> remaining on your {{activeSub?.months}} Month Plan.</p>
       </div>
 
-      <div class="refund-estimate" *ngIf="activeSub">
-        <div class="re-label">Estimated Instant Wallet Refund</div>
-        <div class="re-amount">₹{{(daysLeft * activeSub.dailyDeduction) | number:'1.0-0'}}</div>
-        <p class="re-note">Calculated at ₹{{activeSub.dailyDeduction}}/day for remaining {{daysLeft}} days.</p>
+      <div class="modal-footer-cta" style="padding: 16px 20px 24px; border-top: 1px solid #f3f4f6; max-width: 600px; margin: 0 auto; width: 100%; background: #ffffff;">
+        <button type="button" (click)="confirmPurchase()" [disabled]="isPlacingOrder" style="width: 100%; height: 56px; background: #F26A21; border-radius: 18px; display: flex; align-items: center; justify-content: center; gap: 10px; color: white; font-weight: 800; font-size: 1rem; border: none; box-shadow: 0 10px 25px rgba(242, 106, 33, 0.3); cursor: pointer;">
+          <span *ngIf="!isPlacingOrder">Confirm &amp; Subscribe</span>
+          <ion-spinner *ngIf="isPlacingOrder" name="crescent"></ion-spinner>
+        </button>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>
+
+<!-- ── Cancel Confirmation Modal ── -->
+<ion-modal [isOpen]="isCancelModalOpen" (didDismiss)="isCancelModalOpen = false" class="premium-card-modal">
+  <ng-template>
+    <div class="modal-main-wrap" style="height: 100%; display: flex; flex-direction: column; background: #ffffff;">
+      <div class="custom-modal-header" style="padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f3f4f6; background: #ffffff;">
+        <button type="button" class="header-circle-btn" (click)="isCancelModalOpen = false" style="width: 42px; height: 42px; border-radius: 14px; background: #FFEBEB; color: #FF5B5B; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; border: none; cursor: pointer;">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </button>
+        <h2 class="header-title" style="font-size: 1.15rem; font-weight: 800; color: #483129; margin: 0 0 0 12px; flex: 1;">Cancel Subscription?</h2>
+        <button type="button" class="header-cancel-link" (click)="isCancelModalOpen = false" style="background: none; border: none; font-weight: 800; color: #F26A21; font-size: 0.95rem; cursor: pointer;">Keep Plan</button>
       </div>
 
-      <div class="cancel-actions">
-        <button class="btn-keep" (click)="isCancelModalOpen = false">Keep My Subscription</button>
-        <button class="btn-cancel-confirm" (click)="confirmCancelSubscription()">Yes, Cancel & Refund</button>
+      <div class="modal-scroll-content" style="flex: 1; overflow-y: auto; padding: 24px 20px;">
+        <div class="form-body-wrapper" style="max-width: 600px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 20px;">
+
+          <div style="background: #FFF8F8; border: 1px solid #FFE5E5; border-radius: 16px; padding: 16px; display: flex; gap: 12px; align-items: flex-start;">
+            <ion-icon name="warning-outline" style="font-size: 1.4rem; color: #FF5B5B; flex: none; margin-top: 2px;"></ion-icon>
+            <p style="margin: 0; font-size: 0.9rem; color: #5C524C; line-height: 1.5; font-weight: 500;">
+              You have <strong>{{daysLeft}} days</strong> remaining on your {{activeSub?.months}} Month Plan.
+            </p>
+          </div>
+
+          <div style="border: 1px solid #F3F4F6; border-radius: 16px; padding: 16px 20px;" *ngIf="activeSub">
+            <div style="font-size: 0.8rem; color: #8E7C76; font-weight: 600; margin-bottom: 6px;">Estimated Instant Wallet Refund</div>
+            <div style="font-size: 1.6rem; color: #483129; font-weight: 800;">₹{{(daysLeft * activeSub.dailyDeduction) | number:'1.0-0'}}</div>
+            <p style="margin: 6px 0 0; font-size: 0.75rem; color: #8E7C76;">Calculated at ₹{{activeSub.dailyDeduction}}/day for remaining {{daysLeft}} days.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="modal-footer-cta" style="padding: 16px 20px 24px; border-top: 1px solid #f3f4f6; max-width: 600px; margin: 0 auto; width: 100%; background: #ffffff; display: flex; flex-direction: column; gap: 10px;">
+        <button type="button" (click)="confirmCancelSubscription()" style="width: 100%; height: 56px; background: #FF5B5B; border-radius: 18px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1rem; border: none; box-shadow: 0 10px 25px rgba(255, 91, 91, 0.25); cursor: pointer;">
+          Yes, Cancel &amp; Refund
+        </button>
+        <button type="button" (click)="isCancelModalOpen = false" style="width: 100%; height: 48px; background: none; border: none; color: #8E7C76; font-weight: 700; font-size: 0.9rem; cursor: pointer;">
+          Keep My Subscription
+        </button>
       </div>
     </div>
   </ng-template>
