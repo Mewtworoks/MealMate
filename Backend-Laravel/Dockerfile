@@ -1,7 +1,7 @@
 # MealMate Laravel API — deploys as its own Render Web Service, separate
 # from the .NET backend, sharing the same MySQL/TiDB database.
 
-FROM php:8.3-cli
+FROM php:8.4-cli
 
 RUN apt-get update && apt-get install -y \
     git unzip libzip-dev libpng-dev ca-certificates \
