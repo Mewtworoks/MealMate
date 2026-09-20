@@ -56,6 +56,7 @@ namespace MealMate.Api.Repositories
                 .Include(o => o.Customer)
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Meal)
+                .Where(o => o.AgentId == agentId)
                 .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
         }
