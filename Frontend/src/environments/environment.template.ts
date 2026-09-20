@@ -5,7 +5,10 @@
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:5000/api',
+  phpApiUrl: 'http://localhost:8000/api',
+  clerkPublishableKey: 'pk_test_YOUR_CLERK_KEY',
   geminiApiKey: 'YOUR_GEMINI_API_KEY',
+  groqApiKey: 'YOUR_GROQ_API_KEY',
   firebase: {
     apiKey: "YOUR_API_KEY",
     authDomain: "YOUR_AUTH_DOMAIN",
