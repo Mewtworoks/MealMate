@@ -1,8 +1,8 @@
 export const environment = {
   production: true,
   apiUrl: 'https://mealmate-hokz.onrender.com/api',
-  // TODO: point this at your deployed Laravel API once Backend-Laravel is hosted
-  phpApiUrl: 'https://mealmate-hokz.onrender.com/api',
+  // New Laravel/PHP API (currently: meals, cart), live on Render
+  phpApiUrl: 'https://mealmate-laravel-api.onrender.com/api',
   clerkPublishableKey: 'pk_test_YOUR_CLERK_KEY',
   geminiApiKey: 'YOUR_GEMINI_API_KEY',
   firebase: {

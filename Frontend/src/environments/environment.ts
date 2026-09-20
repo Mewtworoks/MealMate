@@ -5,8 +5,8 @@
 export const environment = {
   production: false,
   apiUrl: 'https://mealmate-hokz.onrender.com/api',
-  // New Laravel/PHP API (currently: meals, cart) — run `php artisan serve` in Backend-Laravel/
-  phpApiUrl: 'http://localhost:8000/api',
+  // New Laravel/PHP API (currently: meals, cart), live on Render
+  phpApiUrl: 'https://mealmate-laravel-api.onrender.com/api',
   clerkPublishableKey: 'pk_test_YOUR_CLERK_KEY',
   geminiApiKey: 'YOUR_GEMINI_API_KEY',
   firebase: {
