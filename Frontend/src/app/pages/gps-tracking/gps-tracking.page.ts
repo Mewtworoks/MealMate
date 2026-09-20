@@ -4,6 +4,7 @@ import { NavController, ToastController } from '@ionic/angular';
 import { OrderService } from '../../services/order.service';
 import { MealService } from '../../services/meal.service';
 import { TrackingService, Location } from '../../services/tracking.service';
+import { Subscription } from 'rxjs';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import * as L from 'leaflet';
@@ -32,6 +33,7 @@ export class GpsTrackingPage implements OnInit, OnDestroy, AfterViewInit {
 private agentMarker: L.Marker | undefined;
   private customerMarker: L.Marker | undefined;
   private routeLine: L.Polyline | undefined;
+  private agentLocationSub?: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -64,10 +66,16 @@ private agentMarker: L.Marker | undefined;
   }
   
   ionViewDidEnter() {
-    // Crucial for Leaflet in Ionic/Angular to fix tile loading issues
+    // Crucial for Leaflet in Ionic/Angular to fix tile loading issues.
+    // invalidateSize() alone only fixes pixel dimensions — if the container
+    // was the wrong size when the map first initialized, the view can end up
+    // zoomed out to fit whatever it thought the world looked like, so the
+    // center/zoom has to be explicitly restored afterward too.
     setTimeout(() => {
       if (this.map) {
         this.map.invalidateSize();
+        const customerPos = this.trackingService.customerLocation;
+        this.map.setView([customerPos.lat, customerPos.lng], 15);
       }
     }, 500);
   }
@@ -76,6 +84,7 @@ private agentMarker: L.Marker | undefined;
     if (this.map) {
       this.map.remove();
     }
+    this.agentLocationSub?.unsubscribe();
   }
 
   initMap() {
@@ -127,6 +136,7 @@ private agentMarker: L.Marker | undefined;
     }
 
     if (this.orderId) {
+      // Real device-to-device sync, when a real Firebase project is configured.
       firebase.database()
         .ref(`tracking/${this.orderId}`)
         .on('value', (snapshot: any) => {
@@ -136,6 +146,12 @@ private agentMarker: L.Marker | undefined;
           }
         });
     }
+
+    // Local same-session simulation (works without any Firebase project) —
+    // this is what actually drives the demo delivery agent's movement.
+    this.agentLocationSub = this.trackingService.agentLocation$.subscribe(loc => {
+      this.updateAgentPosition({ lat: loc.lat, lng: loc.lng, timestamp: loc.timestamp });
+    });
   }
 
   updateAgentPosition(loc: Location) {

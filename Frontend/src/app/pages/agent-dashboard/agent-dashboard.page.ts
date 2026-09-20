@@ -282,7 +282,8 @@ export class AgentDashboardPage implements OnInit {
 
     // Trigger tracking if needed
     if (newStatus === 'OutForDelivery') {
-      this.trackingService.startAgentTracking(); // keep old one for UI compat if needed
+      // Drives the live map locally (works without a real Firebase project).
+      this.trackingService.startSimulation(this.kitchenLat, this.kitchenLng);
       this.gpsService.activeOrderId = orderId;
       this.gpsService.startTracking(agentId || '', this.kitchenLat, this.kitchenLng);
     } else if (newStatus === 'Delivered') {

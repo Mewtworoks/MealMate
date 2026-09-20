@@ -80,24 +80,34 @@ export class TrackingService {
       navigator.geolocation.clearWatch(this.watchId);
       this.watchId = null;
     }
+    if (this.simulationInterval) {
+      clearInterval(this.simulationInterval);
+      this.simulationInterval = null;
+    }
   }
 
-  // Helper for Testing on Desktop (Simulates real movement)
-  startSimulation() {
+  private simulationInterval: any;
+
+  // Drives the demo delivery agent's movement locally (no external service
+  // required) — interpolates from the chef's real kitchen location toward
+  // the customer's real location over 20 steps.
+  startSimulation(startLat: number = 28.6200, startLng: number = 77.2200) {
+    if (this.simulationInterval) clearInterval(this.simulationInterval);
+
     let step = 0;
     const totalSteps = 20;
-    const startLat = 28.6200;
-    const startLng = 77.2200;
-    
-    const interval = setInterval(() => {
+
+    this.updateAgentLocation(startLat, startLng);
+
+    this.simulationInterval = setInterval(() => {
       step++;
       const fraction = step / totalSteps;
       const curLat = startLat + (this.customerLocation.lat - startLat) * fraction;
       const curLng = startLng + (this.customerLocation.lng - startLng) * fraction;
       
       this.updateAgentLocation(curLat, curLng);
-      
-      if (step >= totalSteps) clearInterval(interval);
+
+      if (step >= totalSteps) clearInterval(this.simulationInterval);
     }, 2000);
   }
 
