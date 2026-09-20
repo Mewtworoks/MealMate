@@ -23,18 +23,28 @@ export class Gemini {
   ];
 
   private async chatCompletion(model: string, messages: { role: string; content: string }[], maxTokens = 1000): Promise<string> {
-    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${environment.groqApiKey}`
-      },
-      body: JSON.stringify({
-        model,
-        messages,
-        max_tokens: maxTokens
-      })
-    });
+    // In production, this goes through a Netlify Function (netlify/functions/groq-chat.js)
+    // so the real Groq key only ever lives server-side, never in the client bundle.
+    // In local dev there's no function server running, so call Groq directly with the
+    // local environment's key instead.
+    const res = environment.production
+      ? await fetch('/.netlify/functions/groq-chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ model, messages, max_tokens: maxTokens })
+        })
+      : await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${environment.groqApiKey}`
+          },
+          body: JSON.stringify({
+            model,
+            messages,
+            max_tokens: maxTokens
+          })
+        });
 
     if (!res.ok) {
       const errBody = await res.text();

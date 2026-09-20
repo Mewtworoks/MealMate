@@ -2,6 +2,7 @@
   base = "Frontend"
   command = "npm run build"
   publish = "www"
+  functions = "netlify/functions"
 
 [[redirects]]
   from = "/*"

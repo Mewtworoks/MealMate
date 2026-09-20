@@ -24,7 +24,7 @@ if (!fs.existsSync(devEnvPath)) {
 // leave the committed placeholder file untouched, so `git status` doesn't
 // get dirtied by every `ng build`.
 const isNetlify = !!process.env.NETLIFY;
-const hasRealSecret = !!process.env.GROQ_API_KEY;
+const hasRealSecret = !!process.env.FIREBASE_API_KEY || !!process.env.GEMINI_API_KEY || !!process.env.CLERK_PUBLISHABLE_KEY;
 if (!isNetlify && !hasRealSecret) {
   console.log('Skipping environment.prod.ts generation (not on Netlify, no secrets set).');
   process.exit(0);
@@ -38,7 +38,11 @@ const config = {
   phpApiUrl: env('PHP_API_URL', 'https://mealmate-laravel-api.onrender.com/api'),
   clerkPublishableKey: env('CLERK_PUBLISHABLE_KEY', 'pk_test_YOUR_CLERK_KEY'),
   geminiApiKey: env('GEMINI_API_KEY', 'YOUR_GEMINI_API_KEY'),
-  groqApiKey: env('GROQ_API_KEY', 'YOUR_GROQ_API_KEY'),
+  // groqApiKey is deliberately NOT read from a real env var here — Groq
+  // calls go through netlify/functions/groq-chat.js in production, which
+  // reads GROQ_API_KEY server-side. Keeping this a permanent placeholder
+  // means the real key never ends up in the client bundle at all.
+  groqApiKey: 'YOUR_GROQ_API_KEY',
   firebase: {
     apiKey: env('FIREBASE_API_KEY', 'YOUR_API_KEY'),
     authDomain: env('FIREBASE_AUTH_DOMAIN', 'YOUR_AUTH_DOMAIN'),
