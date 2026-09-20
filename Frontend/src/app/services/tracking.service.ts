@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
 
 export interface Location {
   lat: number;
@@ -39,76 +38,52 @@ export class TrackingService {
     }
   }
 
-  // Agent location stream
-  private agentLocation = new BehaviorSubject<Location>({
-    lat: 28.6200, // Starting a bit away
-    lng: 77.2200,
-    timestamp: Date.now()
-  });
+  // ══════════════════════════════════════════════════════════════════════
+  // Delivery position: a pure function of wall-clock time, persisted to
+  // localStorage. Any page — chef dashboard, customer tracking, a fresh
+  // reload, a brand new tab — computes the exact same current position from
+  // (startedAt, durationMs, start point, end point) without needing a JS
+  // interval to have been continuously running in the background. This is
+  // what makes movement keep progressing even when no tracking screen is
+  // open, and stay correct immediately on reload rather than resetting.
+  // ══════════════════════════════════════════════════════════════════════
+  private static readonly DEMO_TRIP_DURATION_MS = 40000;
 
-  agentLocation$ = this.agentLocation.asObservable();
-
-  private watchId: any;
-
-  updateAgentLocation(lat: number, lng: number) {
-    this.agentLocation.next({
-      lat,
-      lng,
-      timestamp: Date.now()
-    });
+  private deliveryKey(orderId: string) {
+    return `mm_delivery_${orderId}`;
   }
 
-  // Real GPS Tracking for Agent
-  startAgentTracking() {
-    if ('geolocation' in navigator) {
-      if (this.watchId) navigator.geolocation.clearWatch(this.watchId);
+  beginDelivery(orderId: string, startLat: number, startLng: number, durationMs = TrackingService.DEMO_TRIP_DURATION_MS) {
+    const record = {
+      startLat,
+      startLng,
+      endLat: this.customerLocation.lat,
+      endLng: this.customerLocation.lng,
+      startedAt: Date.now(),
+      durationMs
+    };
+    localStorage.setItem(this.deliveryKey(orderId), JSON.stringify(record));
+  }
 
-      this.watchId = navigator.geolocation.watchPosition((pos) => {
-        this.updateAgentLocation(pos.coords.latitude, pos.coords.longitude);
-      }, (err) => {
-        console.error('GPS Error:', err);
-      }, {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0
-      });
+  getDeliverySnapshot(orderId: string): { lat: number; lng: number; arrived: boolean } | null {
+    const raw = localStorage.getItem(this.deliveryKey(orderId));
+    if (!raw) return null;
+
+    try {
+      const record = JSON.parse(raw);
+      const fraction = Math.min(1, (Date.now() - record.startedAt) / record.durationMs);
+      return {
+        lat: record.startLat + (record.endLat - record.startLat) * fraction,
+        lng: record.startLng + (record.endLng - record.startLng) * fraction,
+        arrived: fraction >= 1
+      };
+    } catch {
+      return null;
     }
   }
 
-  stopAgentTracking() {
-    if (this.watchId) {
-      navigator.geolocation.clearWatch(this.watchId);
-      this.watchId = null;
-    }
-    if (this.simulationInterval) {
-      clearInterval(this.simulationInterval);
-      this.simulationInterval = null;
-    }
-  }
-
-  private simulationInterval: any;
-
-  // Drives the demo delivery agent's movement locally (no external service
-  // required) — interpolates from the chef's real kitchen location toward
-  // the customer's real location over 20 steps.
-  startSimulation(startLat: number = 28.6200, startLng: number = 77.2200) {
-    if (this.simulationInterval) clearInterval(this.simulationInterval);
-
-    let step = 0;
-    const totalSteps = 20;
-
-    this.updateAgentLocation(startLat, startLng);
-
-    this.simulationInterval = setInterval(() => {
-      step++;
-      const fraction = step / totalSteps;
-      const curLat = startLat + (this.customerLocation.lat - startLat) * fraction;
-      const curLng = startLng + (this.customerLocation.lng - startLng) * fraction;
-      
-      this.updateAgentLocation(curLat, curLng);
-
-      if (step >= totalSteps) clearInterval(this.simulationInterval);
-    }, 2000);
+  endDelivery(orderId: string) {
+    localStorage.removeItem(this.deliveryKey(orderId));
   }
 
   // Calculate distance in KM using Haversine formula

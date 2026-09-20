@@ -4,7 +4,6 @@ import { NavController, ToastController } from '@ionic/angular';
 import { OrderService } from '../../services/order.service';
 import { MealService } from '../../services/meal.service';
 import { TrackingService, Location } from '../../services/tracking.service';
-import { Subscription } from 'rxjs';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import * as L from 'leaflet';
@@ -33,7 +32,7 @@ export class GpsTrackingPage implements OnInit, OnDestroy, AfterViewInit {
 private agentMarker: L.Marker | undefined;
   private customerMarker: L.Marker | undefined;
   private routeLine: L.Polyline | undefined;
-  private agentLocationSub?: Subscription;
+  private deliveryPollInterval: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -84,7 +83,7 @@ private agentMarker: L.Marker | undefined;
     if (this.map) {
       this.map.remove();
     }
-    this.agentLocationSub?.unsubscribe();
+    if (this.deliveryPollInterval) clearInterval(this.deliveryPollInterval);
   }
 
   initMap() {
@@ -147,11 +146,19 @@ private agentMarker: L.Marker | undefined;
         });
     }
 
-    // Local same-session simulation (works without any Firebase project) —
-    // this is what actually drives the demo delivery agent's movement.
-    this.agentLocationSub = this.trackingService.agentLocation$.subscribe(loc => {
-      this.updateAgentPosition({ lat: loc.lat, lng: loc.lng, timestamp: loc.timestamp });
-    });
+    // Delivery position is a pure function of elapsed time (see
+    // TrackingService.getDeliverySnapshot), so this works correctly on a
+    // fresh page load too — no need to have been watching continuously.
+    this.pollDeliveryPosition();
+    this.deliveryPollInterval = setInterval(() => this.pollDeliveryPosition(), 2000);
+  }
+
+  private pollDeliveryPosition() {
+    if (!this.orderId) return;
+    const snapshot = this.trackingService.getDeliverySnapshot(this.orderId);
+    if (snapshot) {
+      this.updateAgentPosition({ lat: snapshot.lat, lng: snapshot.lng, timestamp: Date.now() });
+    }
   }
 
   updateAgentPosition(loc: Location) {
@@ -216,6 +223,7 @@ private agentMarker: L.Marker | undefined;
 
     if (this.orderId) {
       this.orderService.updateOrderStatus(this.orderId, 'Delivered');
+      this.trackingService.endDelivery(this.orderId);
       firebase.database().ref(`tracking/${this.orderId}`).off();
       firebase.database().ref(`tracking/${this.orderId}`).remove();
     }

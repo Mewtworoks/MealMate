@@ -144,7 +144,6 @@ export class AgentDashboardPage implements OnInit {
   async logout() {
     this.isProfileModalOpen = false;
     await this.auth.logout();
-    this.trackingService.stopAgentTracking();
     const lastLoc = this.gpsService.lastLocation || { latitude: 0, longitude: 0 };
     this.gpsService.stopTracking(lastLoc.latitude, lastLoc.longitude);
     this.router.navigate(['/login']);
@@ -282,12 +281,14 @@ export class AgentDashboardPage implements OnInit {
 
     // Trigger tracking if needed
     if (newStatus === 'OutForDelivery') {
-      // Drives the live map locally (works without a real Firebase project).
-      this.trackingService.startSimulation(this.kitchenLat, this.kitchenLng);
+      // Persists start point + start time so any page (this dashboard, the
+      // customer's tracking page, a fresh reload) can compute the current
+      // position itself — movement doesn't depend on that page staying open.
+      this.trackingService.beginDelivery(orderId, this.kitchenLat, this.kitchenLng);
       this.gpsService.activeOrderId = orderId;
       this.gpsService.startTracking(agentId || '', this.kitchenLat, this.kitchenLng);
     } else if (newStatus === 'Delivered') {
-      this.trackingService.stopAgentTracking();
+      this.trackingService.endDelivery(orderId);
       const lastLoc = this.gpsService.lastLocation || { latitude: 0, longitude: 0 };
       this.gpsService.stopTracking(lastLoc.latitude, lastLoc.longitude);
       firebase.database().ref(`tracking/${orderId}`).remove();
