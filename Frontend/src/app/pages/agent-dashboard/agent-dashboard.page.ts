@@ -34,6 +34,7 @@ export class AgentDashboardPage implements OnInit {
   isOnline = true;
   chefName = '';
   isLoading = false;
+  processingOrderId: string | null = null;
 
   get userName(): string {
     return this.auth.userName || 'MealMate User';
@@ -276,26 +277,31 @@ export class AgentDashboardPage implements OnInit {
   }
 
   async updateOrderStatus(orderId: string, newStatus: any) {
-    const agentId = this.auth.userId;
-    await this.orderService.updateOrderStatus(orderId, newStatus);
+    this.processingOrderId = orderId;
+    try {
+      const agentId = this.auth.userId;
+      await this.orderService.updateOrderStatus(orderId, newStatus);
 
-    // Trigger tracking if needed
-    if (newStatus === 'OutForDelivery') {
-      // Persists start point + start time so any page (this dashboard, the
-      // customer's tracking page, a fresh reload) can compute the current
-      // position itself — movement doesn't depend on that page staying open.
-      this.trackingService.beginDelivery(orderId, this.kitchenLat, this.kitchenLng);
-      this.gpsService.activeOrderId = orderId;
-      this.gpsService.startTracking(agentId || '', this.kitchenLat, this.kitchenLng);
-    } else if (newStatus === 'Delivered') {
-      this.trackingService.endDelivery(orderId);
-      const lastLoc = this.gpsService.lastLocation || { latitude: 0, longitude: 0 };
-      this.gpsService.stopTracking(lastLoc.latitude, lastLoc.longitude);
-      firebase.database().ref(`tracking/${orderId}`).remove();
-    }
+      // Trigger tracking if needed
+      if (newStatus === 'OutForDelivery') {
+        // Persists start point + start time so any page (this dashboard, the
+        // customer's tracking page, a fresh reload) can compute the current
+        // position itself — movement doesn't depend on that page staying open.
+        this.trackingService.beginDelivery(orderId, this.kitchenLat, this.kitchenLng);
+        this.gpsService.activeOrderId = orderId;
+        this.gpsService.startTracking(agentId || '', this.kitchenLat, this.kitchenLng);
+      } else if (newStatus === 'Delivered') {
+        this.trackingService.endDelivery(orderId);
+        const lastLoc = this.gpsService.lastLocation || { latitude: 0, longitude: 0 };
+        this.gpsService.stopTracking(lastLoc.latitude, lastLoc.longitude);
+        firebase.database().ref(`tracking/${orderId}`).remove();
+      }
 
-    if (agentId) {
-      await this.orderService.refreshAgentOrders(agentId);
+      if (agentId) {
+        await this.orderService.refreshAgentOrders(agentId);
+      }
+    } finally {
+      this.processingOrderId = null;
     }
   }
 

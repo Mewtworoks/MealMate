@@ -244,7 +244,7 @@
       <!-- ===== ALL DISHES (2-COLUMN GRID) ===== -->
       <section class="popular-section">
         <div class="section-hdr">
-          <h2>All Dishes 🔥</h2>
+          <h2>All Dishes</h2>
           <span class="dish-count-badge">{{getFilteredMeals().length}} items</span>
         </div>
 
@@ -305,7 +305,7 @@
       <header class="top">
         <div class="hello">
           <div class="k">{{greeting}},</div>
-          <div class="v">{{userName}} 👋</div>
+          <div class="v">{{userName}}</div>
         </div>
         <div class="search" style="margin-left:12px">
           <ion-icon name="search-outline" class="search-icon"></ion-icon>
@@ -341,7 +341,7 @@
           <section class="sec" *ngIf="getPickMeals().length > 0">
             <div class="sechead">
               <div>
-                <h2>MealMantra Picks ✨</h2>
+                <h2>MealMantra Picks</h2>
                 <p>Curated for your taste and health goals</p>
               </div>
               <a (click)="navigateToAi()" class="seelink" style="cursor:pointer">See all <ion-icon
@@ -372,7 +372,7 @@
           <section class="sec">
             <div class="sechead">
               <div>
-                <h2>Popular Today 🔥</h2>
+                <h2>Popular Today</h2>
                 <p>What {{selectedAddress ? selectedAddress.tag : 'Kalkaji'}} is ordering right now</p>
               </div>
               <span class="seelink"

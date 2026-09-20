@@ -178,10 +178,13 @@
                     </div>
                     <div class="earn">₹{{ order.total || 0 }} earnings</div>
                     <div class="oacts">
-                      <button class="rej" (click)="rejectOrder(order.id)">Reject</button>
-                      <button class="acc" (click)="acceptOrder(order.id)">
-                        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                        Accept
+                      <button class="rej" [disabled]="processingOrderId === order.id" (click)="rejectOrder(order.id)">Reject</button>
+                      <button class="acc" [disabled]="processingOrderId === order.id" (click)="acceptOrder(order.id)">
+                        <ion-spinner *ngIf="processingOrderId === order.id" name="crescent"></ion-spinner>
+                        <ng-container *ngIf="processingOrderId !== order.id">
+                          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                          Accept
+                        </ng-container>
                       </button>
                     </div>
                   </div>
@@ -221,17 +224,26 @@
                     <div class="tmr calm">{{ order.status === 'Preparing' ? 'In kitchen' : (order.status === 'OutForDelivery' ? 'Out for delivery' : 'Accepted') }}</div>
                     <div class="earn">₹{{ order.total || 0 }} earnings</div>
                     <div class="oacts">
-                      <button *ngIf="order.status === 'Accepted'" class="prep" (click)="updateOrderStatus(order.id, 'Preparing')">
-                        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                        Start preparing
+                      <button *ngIf="order.status === 'Accepted'" class="prep" [disabled]="processingOrderId === order.id" (click)="updateOrderStatus(order.id, 'Preparing')">
+                        <ion-spinner *ngIf="processingOrderId === order.id" name="crescent"></ion-spinner>
+                        <ng-container *ngIf="processingOrderId !== order.id">
+                          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                          Start preparing
+                        </ng-container>
                       </button>
-                      <button *ngIf="order.status === 'Preparing'" class="prep" (click)="updateOrderStatus(order.id, 'OutForDelivery')">
-                        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                        Mark ready
+                      <button *ngIf="order.status === 'Preparing'" class="prep" [disabled]="processingOrderId === order.id" (click)="updateOrderStatus(order.id, 'OutForDelivery')">
+                        <ion-spinner *ngIf="processingOrderId === order.id" name="crescent"></ion-spinner>
+                        <ng-container *ngIf="processingOrderId !== order.id">
+                          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                          Mark ready
+                        </ng-container>
                       </button>
-                      <button *ngIf="order.status === 'OutForDelivery'" class="acc" (click)="updateOrderStatus(order.id, 'Delivered')">
-                        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                        Mark delivered
+                      <button *ngIf="order.status === 'OutForDelivery'" class="acc" [disabled]="processingOrderId === order.id" (click)="updateOrderStatus(order.id, 'Delivered')">
+                        <ion-spinner *ngIf="processingOrderId === order.id" name="crescent"></ion-spinner>
+                        <ng-container *ngIf="processingOrderId !== order.id">
+                          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                          Mark delivered
+                        </ng-container>
                       </button>
                     </div>
                   </div>

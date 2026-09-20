@@ -751,6 +751,18 @@
       fill: none;
     }
   }
+
+  .rej:disabled, .acc:disabled, .prep:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  .acc ion-spinner, .prep ion-spinner {
+    width: 16px;
+    height: 16px;
+    --color: #ffffff;
+  }
 }
 
 .chef-rev-list {

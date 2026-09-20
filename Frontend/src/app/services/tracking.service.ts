@@ -10,14 +10,12 @@ export interface Location {
   providedIn: 'root'
 })
 export class TrackingService {
-  // TEMPORARY: hardcoded to Sarojini Nagar, New Delhi for testing the
-  // delivery tracking flow reliably — real device/IP geolocation is
-  // disabled below so this doesn't get silently overwritten by an
-  // inaccurate fix. Revert to the geolocation-based version once
-  // tracking is confirmed working.
+  // Customer's live device location, used as the delivery destination on the
+  // tracking map. Falls back to a fixed Delhi coordinate only when geolocation
+  // is unavailable or denied — never overwrites a real fix once one arrives.
   private _customerLocation: Location = {
-    lat: 28.5745,
-    lng: 77.1974,
+    lat: 28.6139,
+    lng: 77.2090,
     timestamp: Date.now()
   };
 
@@ -26,19 +24,18 @@ export class TrackingService {
   }
 
   constructor() {
-    // Real geolocation lookup disabled for now — see note above.
-    // if ('geolocation' in navigator) {
-    //   navigator.geolocation.getCurrentPosition(
-    //     (pos) => {
-    //       this._customerLocation = {
-    //         lat: pos.coords.latitude,
-    //         lng: pos.coords.longitude,
-    //         timestamp: Date.now()
-    //       };
-    //     },
-    //     () => { /* keep the fallback coordinate — permission denied or unavailable */ }
-    //   );
-    // }
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          this._customerLocation = {
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+            timestamp: Date.now()
+          };
+        },
+        () => { /* keep the fallback coordinate — permission denied or unavailable */ }
+      );
+    }
   }
 
   // ══════════════════════════════════════════════════════════════════════

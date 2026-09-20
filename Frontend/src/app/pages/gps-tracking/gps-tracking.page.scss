@@ -345,3 +345,112 @@
   0%, 100% { opacity: 1; }
   50% { opacity: 0.3; }
 }
+/* ════════════════ ARRIVED STATE ════════════════ */
+.arrived-view {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-top: 8px;
+  animation: fadeInUp 0.4s ease;
+
+  .arrived-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .arrived-icon {
+      width: 52px;
+      height: 52px;
+      flex: none;
+      border-radius: 16px;
+      background: #FFF1EA;
+      color: var(--mm-primary, #F26A21);
+      font-size: 1.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    h3 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #483129;
+      margin: 0 0 4px 0;
+    }
+
+    p {
+      font-size: 0.85rem;
+      color: #8E7C76;
+      font-weight: 600;
+      margin: 0;
+    }
+  }
+
+  .pickup-btn {
+    width: 100%;
+    height: 56px;
+    background: var(--mm-primary, #F26A21);
+    color: white;
+    border: none;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(242, 106, 33, 0.3);
+
+    ion-icon {
+      font-size: 1.2rem;
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+}
+
+/* ════════════════ DELIVERED STATE ════════════════ */
+.delivered-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 24px 0 16px;
+  animation: fadeInUp 0.4s ease;
+
+  .check-circle {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: #E8F5EE;
+    color: #16A34A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.4rem;
+    margin-bottom: 8px;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #483129;
+    margin: 0;
+  }
+
+  p {
+    font-size: 0.9rem;
+    color: #8E7C76;
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
