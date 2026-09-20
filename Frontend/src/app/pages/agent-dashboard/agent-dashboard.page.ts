@@ -33,6 +33,7 @@ export class AgentDashboardPage implements OnInit {
   isLocationModalOpen = false;
   isOnline = true;
   chefName = '';
+  isLoading = false;
 
   get userName(): string {
     return this.auth.userName || 'MealMate User';
@@ -84,6 +85,12 @@ export class AgentDashboardPage implements OnInit {
   async ionViewWillEnter() {
     this.chefName = this.auth.userName || 'Chef';
     this.greeting = this.auth.greeting;
+
+    // Only show the skeleton on first load — a repeat visit already has data to show instantly.
+    if (this.orders.length === 0) {
+      this.isLoading = true;
+    }
+
     const agentId = this.auth.userId;
     if (agentId) {
       await this.orderService.refreshAgentOrders(agentId);
@@ -94,12 +101,14 @@ export class AgentDashboardPage implements OnInit {
     if (this.ordersSubscription) {
       this.ordersSubscription.unsubscribe();
     }
-    
+
     this.ordersSubscription = this.orderService.orders$.subscribe(allOrders => {
       this.orders = allOrders;
       this.filterOrders();
       this.calculateEarnings();
     });
+
+    this.isLoading = false;
   }
 
   loadChefReviews() {

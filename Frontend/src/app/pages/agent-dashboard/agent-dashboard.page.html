@@ -56,6 +56,52 @@
 
       <div class="body" style="padding: 24px;">
         <div class="desktop-body-grid">
+
+          <!-- Skeleton Loader -->
+          <ng-container *ngIf="isLoading">
+            <div class="main-column sk-pulse">
+              <section class="cstats">
+                <div class="cstat" *ngFor="let s of [1,2,3]">
+                  <span class="ci sk-block" style="background:#F3F4F6;"></span>
+                  <div><div class="sk-block" style="width:40px;height:20px;border-radius:6px;"></div><div class="sk-block" style="width:70px;height:11px;border-radius:6px;margin-top:8px;"></div></div>
+                </div>
+              </section>
+
+              <div class="tabbar">
+                <div class="sk-block" style="width:90px;height:38px;border-radius:12px;" *ngFor="let s of [1,2,3]"></div>
+              </div>
+
+              <div class="ord" *ngFor="let s of [1,2,3]" style="align-items:center;">
+                <div class="sk-block sk-img"></div>
+                <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:8px;">
+                  <div class="sk-block" style="width:55%;height:14px;"></div>
+                  <div class="sk-block" style="width:40%;height:11px;"></div>
+                  <div class="sk-block" style="width:60%;height:11px;"></div>
+                </div>
+                <div class="sk-block" style="width:80px;height:36px;border-radius:10px;"></div>
+              </div>
+            </div>
+
+            <aside class="desktop-rail sk-pulse">
+              <div class="delivcard" style="background:#F3F4F6; box-shadow:none;">
+                <span class="mp sk-block" style="background:rgba(255,255,255,0.5);"></span>
+                <div style="min-width:0; flex:1; display:flex; flex-direction:column; gap:8px;">
+                  <div class="sk-block" style="width:60%;height:11px;background:rgba(255,255,255,0.5);"></div>
+                  <div class="sk-block" style="width:80%;height:13px;background:rgba(255,255,255,0.5);"></div>
+                </div>
+              </div>
+
+              <div class="rcard" *ngFor="let s of [1,2]">
+                <div class="sk-block" style="width:50%;height:14px;margin-bottom:16px;"></div>
+                <div class="sumrow" *ngFor="let r of [1,2,3,4]">
+                  <div class="sk-block" style="width:60%;height:11px;"></div>
+                  <div class="sk-block" style="width:15%;height:11px;"></div>
+                </div>
+              </div>
+            </aside>
+          </ng-container>
+
+          <ng-container *ngIf="!isLoading">
           <!-- Main Left Column -->
           <div class="main-column">
             <!-- Quick Stats Cards Row -->
@@ -289,6 +335,7 @@
               </div>
             </div>
           </aside>
+          </ng-container>
         </div>
       </div>
     </div>
