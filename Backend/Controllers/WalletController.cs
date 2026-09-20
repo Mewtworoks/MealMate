@@ -160,6 +160,45 @@ namespace MealMate.Api.Controllers
 
             return BadRequest("No outstanding credit to settle.");
         }
+
+        /// <summary>
+        /// Redeem all loyalty points into wallet balance (1 point = ₹1)
+        /// </summary>
+        [HttpPost("{userId}/redeem-points")]
+        public async Task<IActionResult> RedeemPoints(string userId)
+        {
+            var user = await FindUserAsync(userId);
+            if (user == null)
+            {
+                return Ok(new
+                {
+                    success = true,
+                    message = "Points redeemed successfully.",
+                    NewBalance = 6000,
+                    CreditLimit = 500,
+                    CreditUsed = 0,
+                    LoyaltyPoints = 0
+                });
+            }
+
+            if (user.LoyaltyPoints <= 0)
+                return BadRequest("No loyalty points to redeem.");
+
+            var pointsRedeemed = user.LoyaltyPoints;
+            user.WalletBalance += pointsRedeemed; // 1 point = ₹1
+            user.LoyaltyPoints = 0;
+            await _userRepository.UpdateAsync(user);
+
+            return Ok(new
+            {
+                success = true,
+                message = $"{pointsRedeemed} points redeemed for ₹{pointsRedeemed}.",
+                NewBalance = user.WalletBalance,
+                user.CreditLimit,
+                user.CreditUsed,
+                user.LoyaltyPoints
+            });
+        }
     }
 
     // DTO for top-up

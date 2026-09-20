@@ -1,0 +1,5 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=YOUR_HOST;Port=4000;Database=MealMate_DB;User=YOUR_USER;Password=YOUR_PASSWORD;SslMode=Preferred;"
+  }
+}
