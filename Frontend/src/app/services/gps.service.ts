@@ -40,7 +40,7 @@ export class GpsService {
     window.addEventListener('offline', () => this.isOnline = false);
   }
 
-  public startTracking(userId: string) {
+  public startTracking(userId: string, startLat?: number, startLng?: number) {
     const cordova = (window as any).cordova;
     if (cordova && cordova.plugins && cordova.plugins.BackgroundLocation) {
       cordova.plugins.BackgroundLocation.start({
@@ -49,7 +49,7 @@ export class GpsService {
       });
     } else {
       console.warn('Cordova BackgroundLocation plugin not found, using simulation.');
-      this.simulateLocationUpdates();
+      this.simulateLocationUpdates(startLat, startLng);
     }
   }
 
@@ -206,9 +206,13 @@ export class GpsService {
     return R * c;
   }
 
-  private simulateLocationUpdates() {
-    let lat = 12.9716;
-    let lng = 77.5946;
+  private simulateLocationUpdates(startLat?: number, startLng?: number) {
+    // Fall back to a Delhi-area point (matching TrackingService's own default)
+    // only when the chef's real kitchen location isn't available — never an
+    // unrelated fixed city, which previously sent every simulated delivery
+    // agent to Bangalore regardless of where the order actually was.
+    let lat = startLat ?? 28.6139;
+    let lng = startLng ?? 77.2090;
     setInterval(() => {
       // Create some minor jitter and movement
       lat += (Math.random() - 0.5) * 0.0001; 

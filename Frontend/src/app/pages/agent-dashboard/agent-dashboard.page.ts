@@ -284,7 +284,7 @@ export class AgentDashboardPage implements OnInit {
     if (newStatus === 'OutForDelivery') {
       this.trackingService.startAgentTracking(); // keep old one for UI compat if needed
       this.gpsService.activeOrderId = orderId;
-      this.gpsService.startTracking(agentId || '');
+      this.gpsService.startTracking(agentId || '', this.kitchenLat, this.kitchenLng);
     } else if (newStatus === 'Delivered') {
       this.trackingService.stopAgentTracking();
       const lastLoc = this.gpsService.lastLocation || { latitude: 0, longitude: 0 };
