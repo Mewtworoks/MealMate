@@ -423,7 +423,6 @@ Meals this week: ${weekly.filter(d => d.mealName).map(d => `${d.dayName}: ${d.me
     `.trim();
 
     try {
-      const model = this.gemini['genAI'].getGenerativeModel({ model: 'gemini-2.5-flash' });
       const prompt = `You are Mia, MealMate's friendly AI nutritionist. Based on this user's weekly nutrition data:
 
 ${context}
@@ -434,9 +433,7 @@ Mention tomorrow's meal specifically if relevant.
 Never give generic advice — always reference their actual calorie/protein data.
 Do not use markdown formatting. Keep it conversational.`;
 
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      return response.text();
+      return await this.gemini.generateText(prompt);
     } catch (e) {
       console.error('Mia insight error:', e);
       // Fallback static insight

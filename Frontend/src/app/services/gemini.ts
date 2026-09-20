@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { environment } from '../../environments/environment';
 
 export interface ChatMessage {
@@ -11,19 +10,39 @@ export interface ChatMessage {
   providedIn: 'root',
 })
 export class Gemini {
-  private genAI: GoogleGenerativeAI;
-
-  // Multi-model strategy to prevent quota issues (Error 429)
+  // Groq's OpenAI-compatible chat completions API. Multiple candidates to
+  // fall back across if one is rate-limited (mirrors the previous
+  // multi-model Gemini strategy). Verified against this account's actual
+  // available models via GET https://api.groq.com/openai/v1/models —
+  // Groq has renamed/retired the llama-3.x and gemma2 IDs that used to
+  // be standard, so don't reuse those without re-checking that endpoint.
   private modelCandidates = [
-    'gemini-2.5-flash',
-    'gemini-1.5-flash-latest',
-    'gemini-1.5-flash-8b',
-    'gemini-1.5-flash-002',
-    'gemini-1.5-flash'
+    'openai/gpt-oss-120b',
+    'openai/gpt-oss-20b',
+    'qwen/qwen3.8-27b'
   ];
 
-  constructor() {
-    this.genAI = new GoogleGenerativeAI(environment.geminiApiKey);
+  private async chatCompletion(model: string, messages: { role: string; content: string }[], maxTokens = 1000): Promise<string> {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${environment.groqApiKey}`
+      },
+      body: JSON.stringify({
+        model,
+        messages,
+        max_tokens: maxTokens
+      })
+    });
+
+    if (!res.ok) {
+      const errBody = await res.text();
+      throw new Error(`${res.status}: ${errBody}`);
+    }
+
+    const data = await res.json();
+    return data.choices?.[0]?.message?.content ?? '';
   }
 
   async getChatResponse(userMessage: string, history: ChatMessage[], context: any): Promise<string> {
@@ -32,54 +51,21 @@ Context: User ${context.userName}, Wallet ₹${context.wallet?.balance}, Today's
 Available: ${(context.meals || []).map((m: any) => m.name).join(', ')}.
 Rules: Never recommend outside the list. Always mention prices.`.trim();
 
-    const prompt = `${systemPrompt}\n\nUser: ${userMessage}`;
-
-    // Clean and fix history alternation (Crucial to prevent 404/400 errors)
-    const filteredHistory: any[] = [];
-    let lastRole = '';
-
-    const historyItems = history.filter(m => m.role !== 'system');
-    for (const msg of historyItems) {
-      const currentRole = msg.role === 'model' ? 'model' : 'user';
-      // Only add if it alternates roles
-      if (currentRole !== lastRole) {
-        filteredHistory.push({
-          role: currentRole,
-          parts: [{ text: msg.content }]
-        });
-        lastRole = currentRole;
-      }
-    }
-
-    // Ensure it starts with user and ends with user (before the new message)
-    if (filteredHistory.length > 0 && filteredHistory[0].role === 'model') {
-      filteredHistory.shift();
-    }
-
-    // The previous message in history MUST be from the 'model' for the current user message to work
-    if (filteredHistory.length > 0 && filteredHistory[filteredHistory.length - 1].role === 'user') {
-      // If last was user, we remove it to keep balance or append a dummy model response
-      // For simplicity, we just keep the last 4 messages that alternate correctly
-      while (filteredHistory.length > 0 && filteredHistory[filteredHistory.length - 1].role === 'user') {
-        filteredHistory.pop();
-      }
-    }
+    const messages = [
+      { role: 'system', content: systemPrompt },
+      ...history
+        .filter(m => m.role !== 'system')
+        .map(m => ({ role: m.role === 'model' ? 'assistant' : 'user', content: m.content })),
+      { role: 'user', content: userMessage }
+    ];
 
     for (const modelName of this.modelCandidates) {
       try {
-        const model = this.genAI.getGenerativeModel({ model: modelName });
-        const chat = model.startChat({
-          history: filteredHistory,
-          generationConfig: { maxOutputTokens: 1000 }
-        });
-
-        const result = await chat.sendMessage(prompt);
-        const response = await result.response;
-        return response.text();
+        return await this.chatCompletion(modelName, messages);
       } catch (error: any) {
         const errTxt = error.message || '';
         console.warn(`Fallback: ${modelName} failed.`, errTxt);
-        if (errTxt.includes('404') || errTxt.includes('429') || errTxt.includes('quota') || errTxt.includes('not found')) {
+        if (errTxt.includes('404') || errTxt.includes('429') || errTxt.includes('quota') || errTxt.includes('rate_limit')) {
           continue;
         }
         throw error;
@@ -92,10 +78,8 @@ Rules: Never recommend outside the list. Always mention prices.`.trim();
   // Simplified Suggestions
   async getMealSuggestions(userPref: string, availableMeals: any[]): Promise<any[]> {
     try {
-      const model = this.genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
-      const prompt = `Return JSON array of 2 IDs from this list for "${userPref}": ${JSON.stringify(availableMeals.map(m => ({ id: m.id, name: m.name })))}`;
-      const result = await model.generateContent(prompt);
-      const resText = (await result.response).text();
+      const prompt = `Return JSON array of 2 IDs from this list for "${userPref}": ${JSON.stringify(availableMeals.map(m => ({ id: m.id, name: m.name })))}. Respond with ONLY the JSON array, no other text.`;
+      const resText = await this.chatCompletion(this.modelCandidates[0], [{ role: 'user', content: prompt }]);
       const ids = JSON.parse(resText.match(/\[.*\]/s)?.[0] || '[]');
       return availableMeals.filter(m => ids.includes(m.id)).slice(0, 2);
     } catch {
@@ -105,6 +89,24 @@ Rules: Never recommend outside the list. Always mention prices.`.trim();
 
   async getAiHealthInsight(selectedMeals: any[]): Promise<string> {
     return "Balanced choices lead to a healthier lifestyle!";
+  }
+
+  // Generic one-shot text generation, for callers that need a raw prompt
+  // answered rather than a full chat exchange (e.g. HealthService's Mia tips).
+  async generateText(prompt: string): Promise<string> {
+    for (const modelName of this.modelCandidates) {
+      try {
+        return await this.chatCompletion(modelName, [{ role: 'user', content: prompt }]);
+      } catch (error: any) {
+        const errTxt = error.message || '';
+        console.warn(`Fallback: ${modelName} failed.`, errTxt);
+        if (errTxt.includes('404') || errTxt.includes('429') || errTxt.includes('quota') || errTxt.includes('rate_limit')) {
+          continue;
+        }
+        throw error;
+      }
+    }
+    throw new Error('All Groq model candidates failed.');
   }
 
   async generateInsights(data: string): Promise<string[]> {
