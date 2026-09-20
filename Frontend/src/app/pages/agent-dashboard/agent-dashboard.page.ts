@@ -33,11 +33,18 @@ export class AgentDashboardPage implements OnInit {
   isLocationModalOpen = false;
   isOnline = true;
   chefName = '';
+
+  get userName(): string {
+    return this.auth.userName || 'MealMate User';
+  }
+  get userInitials(): string {
+    return this.auth.userInitials;
+  }
   greeting = '';
 
   // Reviews
   chefReviews: MealReview[] = [];
-  chefRating: string = '4.9';
+  chefRating: string = '0';
   totalReviewCount: number = 0;
 
   // Kitchen location management
@@ -96,14 +103,16 @@ export class AgentDashboardPage implements OnInit {
   }
 
   loadChefReviews() {
-    const agentId = this.auth.userId || '05603423-ff0f-442c-8b8a-b306536cdb7b';
+    const agentId = this.auth.userId;
+    if (!agentId) return;
+
     this.chefReviews = this.reviewService.getReviewsForAgent(agentId);
     this.totalReviewCount = this.chefReviews.length;
     if (this.chefReviews.length > 0) {
       const sum = this.chefReviews.reduce((acc, r) => acc + r.rating, 0);
       this.chefRating = (sum / this.chefReviews.length).toFixed(1);
     } else {
-      this.chefRating = '4.9';
+      this.chefRating = '0';
     }
   }
 

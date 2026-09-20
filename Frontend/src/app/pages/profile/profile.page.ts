@@ -4,6 +4,8 @@ import { ToastController, AlertController } from '@ionic/angular';
 import { AuthService } from '../../services/auth';
 import { ThemeService } from '../../services/theme.service';
 import { MealService } from '../../services/meal.service';
+import { WalletService } from '../../services/wallet.service';
+import { OrderService } from '../../services/order.service';
 
 @Component({
   selector: 'app-profile',
@@ -84,7 +86,9 @@ export class ProfilePage implements OnInit {
     private alertCtrl: AlertController,
     private auth: AuthService,
     public themeService: ThemeService,
-    private mealService: MealService
+    private mealService: MealService,
+    private walletService: WalletService,
+    private orderService: OrderService
   ) { }
 
   toggleOnlineStatus() {
@@ -134,14 +138,14 @@ export class ProfilePage implements OnInit {
         phone: '+91 98••• ••210',
         avatar: '👩‍🍳',
         rating: 4.8,
-        earnings: '₹12,450',
-        ordersCompleted: 156,
-        credits: 12450,
-        orders: 156,
-        lifetimeSpend: '₹1,45,800',
-        loyaltyPoints: 3420,
+        earnings: '₹0',
+        ordersCompleted: 0,
+        credits: 0,
+        orders: 0,
+        lifetimeSpend: '₹0',
+        loyaltyPoints: 0,
         loyaltyLevel: 'Gold Partner',
-        memberSince: 'Jan 2024'
+        memberSince: '—'
       };
       // Fetch dynamic chef profile from backend
       this.loadChefProfile();
@@ -151,14 +155,51 @@ export class ProfilePage implements OnInit {
         email: authEmail || 'abcd@gmail.com',
         phone: '+91 98••• ••210',
         avatar: '🙋‍♂️',
-        credits: 3180,
-        orders: 151,
-        lifetimeSpend: '₹28,450',
-        loyaltyPoints: 1132,
-        loyaltyLevel: 'Silver member',
-        memberSince: 'Aug 2024'
+        credits: 0,
+        orders: 0,
+        lifetimeSpend: '₹0',
+        loyaltyPoints: 0,
+        loyaltyLevel: 'Bronze',
+        memberSince: '—'
       };
     }
+
+    this.loadRealStats();
+  }
+
+  /** Wallet balance, real order count/spend and loyalty tier — replaces what used to be permanently hardcoded numbers. */
+  private async loadRealStats() {
+    const userId = this.auth.userId;
+    if (!userId) return;
+
+    await this.walletService.loadWallet(userId);
+    this.userProfile.credits = this.walletService.balance;
+    this.userProfile.loyaltyPoints = this.walletService.credits;
+    this.userProfile.loyaltyLevel = this.getLoyaltyLevelLabel(this.walletService.credits, this.userRole === 'agent');
+
+    await this.orderService.refreshUserOrders(userId);
+    const orders = this.orderService.getOrders();
+    const delivered = orders.filter(o => o.status === 'Delivered');
+    const totalSpend = delivered.reduce((sum, o) => sum + (o.total || 0), 0);
+    this.userProfile.orders = orders.length;
+    this.userProfile.lifetimeSpend = '₹' + totalSpend.toLocaleString('en-IN');
+
+    if (this.userRole === 'agent') {
+      this.userProfile.ordersCompleted = delivered.length;
+      this.userProfile.earnings = this.userProfile.lifetimeSpend;
+    }
+  }
+
+  private getLoyaltyLevelLabel(points: number, isAgent: boolean): string {
+    if (isAgent) {
+      if (points >= 3000) return 'Gold Partner';
+      if (points >= 1000) return 'Silver Partner';
+      return 'Bronze Partner';
+    }
+    if (points >= 5000) return 'Platinum member';
+    if (points >= 2000) return 'Gold member';
+    if (points >= 500) return 'Silver member';
+    return 'Bronze member';
   }
 
   async loadChefProfile() {
@@ -277,6 +318,7 @@ export class ProfilePage implements OnInit {
     this.userProfile.name = this.editData.name;
     this.userProfile.email = this.editData.email;
     this.userProfile.phone = this.editData.phone;
+    this.auth.updateProfile(this.editData.name, this.editData.email);
     this.isEditModalOpen = false;
 
     const toast = await this.toastCtrl.create({

@@ -94,7 +94,7 @@
           <div class="avatar">{{partner.name.charAt(0)}}</div>
           <div class="partner-info">
             <span class="name">{{partner.name}}</span>
-            <span class="rating"><ion-icon name="star"></ion-icon> {{partner.rating}}</span>
+            <span class="rating" *ngIf="partner.rating > 0"><ion-icon name="star"></ion-icon> {{partner.rating}}</span>
           </div>
         </div>
         <button class="call-btn">

@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { CustomMealPageRoutingModule } from './custom-meal-routing.module';
 
 import { CustomMealPage } from './custom-meal.page';
+import { SharedComponentsModule } from '../../components/shared-components.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    CustomMealPageRoutingModule
+    CustomMealPageRoutingModule,
+    SharedComponentsModule,
   ],
   declarations: [CustomMealPage]
 })

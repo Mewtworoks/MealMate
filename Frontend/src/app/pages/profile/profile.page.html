@@ -281,105 +281,15 @@
   <!-- ═══════════════════════════════════════════════════
        DESKTOP WEB VIEW (Screens >= 1001px)
        ═══════════════════════════════════════════════════ -->
-  <div class="web-app desktop-only">
+  <div class="web-app desktop-only" [class.sidebar-collapsed]="themeService.isSidebarCollapsed">
     <!-- LEFT SIDEBAR -->
-    <aside class="side">
-      <div class="side-top">
-        <div class="logo">
-          <span class="glyph">
-            <img src="assets/logo/chef_hat.png" alt="MealMate">
-          </span>
-          <b class="brand-name">MealMate</b>
-        </div>
-        <button class="sidebar-toggle-btn" (click)="themeService.toggleSidebar()"
-          [title]="themeService.isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
-          <ion-icon
-            [name]="themeService.isSidebarCollapsed ? 'chevron-forward-outline' : 'chevron-back-outline'"></ion-icon>
-        </button>
-      </div>
-      <!-- CHEF SIDEBAR NAV -->
-      <ng-container *ngIf="userRole === 'agent' || themeService.isAgent">
-        <div class="navlabel">Chef Menu</div>
-        <nav class="nav">
-          <button routerLink="/agent-home">
-            <ion-icon name="home-outline"></ion-icon><span class="nav-text">Dashboard</span>
-          </button>
-          <button routerLink="/manage-menu">
-            <ion-icon name="restaurant-outline"></ion-icon><span class="nav-text">Manage Menu</span>
-          </button>
-          <button routerLink="/agent-earnings">
-            <ion-icon name="wallet-outline"></ion-icon><span class="nav-text">Earnings</span>
-          </button>
-          <button class="on" routerLink="/profile">
-            <ion-icon name="person-outline"></ion-icon><span class="nav-text">Chef Profile</span>
-          </button>
-        </nav>
-        <div class="side-foot">
-          <button class="me" routerLink="/profile" title="View Profile">
-            <span class="ava">🧑‍🍳</span>
-            <span class="me-text" style="text-align:left">
-              <span class="n">{{ userProfile.name || 'Chef Kitchen' }}</span><br>
-              <span class="s">Partner Account</span>
-            </span>
-          </button>
-        </div>
-      </ng-container>
-
-      <!-- CUSTOMER SIDEBAR NAV -->
-      <ng-container *ngIf="userRole !== 'agent' && !themeService.isAgent">
-        <div class="navlabel">Menu</div>
-        <nav class="nav">
-          <button routerLink="/customer-home">
-            <ion-icon name="home-outline"></ion-icon><span class="nav-text">Home</span>
-          </button>
-          <button routerLink="/my-orders">
-            <ion-icon name="bag-outline"></ion-icon><span class="nav-text">Orders</span>
-          </button>
-          <button routerLink="/subscribe">
-            <ion-icon name="calendar-outline"></ion-icon><span class="nav-text">Meal Plans</span>
-          </button>
-          <button routerLink="/manage-rotation">
-            <ion-icon name="sync-outline"></ion-icon><span class="nav-text">Meal Rotation</span>
-          </button>
-          <button routerLink="/custom-meal">
-            <ion-icon name="restaurant-outline"></ion-icon><span class="nav-text">Personal Chef</span>
-          </button>
-          <button routerLink="/health">
-            <ion-icon name="heart-outline"></ion-icon><span class="nav-text">Health</span>
-          </button>
-          <button routerLink="/ai-concierge">
-            <ion-icon name="chatbubbles-outline"></ion-icon><span class="nav-text">MealMantra AI</span>
-          </button>
-          <button routerLink="/wallet">
-            <ion-icon name="shield-checkmark-outline"></ion-icon><span class="nav-text">Wallet</span>
-          </button>
-          <button class="on" routerLink="/profile">
-            <ion-icon name="person-outline"></ion-icon><span class="nav-text">Profile</span>
-          </button>
-        </nav>
-        <div class="side-foot">
-          <button class="me" routerLink="/profile" title="View Profile">
-            <span class="ava">{{ userInitials }}</span>
-            <span class="me-text" style="text-align:left">
-              <span class="n">{{ userProfile.name }}</span><br>
-              <span class="s">Premium member</span>
-            </span>
-          </button>
-        </div>
-      </ng-container>
-    </aside>
+    <app-sidebar [chefName]="userProfile.name" [userName]="userProfile.name" [userInitials]="userInitials"></app-sidebar>
 
     <!-- MAIN VIEW -->
     <div class="view-main">
-      <header class="top">
-        <div *ngIf="userRole === 'agent' || themeService.isAgent">
-          <h1>Kitchen Profile</h1>
-          <div class="sub">Your public listing and settings</div>
-        </div>
-        <div *ngIf="userRole !== 'agent' && !themeService.isAgent">
-          <h1>Your Profile</h1>
-          <div class="sub">Account, preferences and support</div>
-        </div>
+      <app-page-header
+        [title]="(userRole === 'agent' || themeService.isAgent) ? 'Kitchen Profile' : 'Your Profile'"
+        [subtitle]="(userRole === 'agent' || themeService.isAgent) ? 'Your public listing and settings' : 'Account, preferences and support'">
         <div class="top-r">
           <span *ngIf="userRole === 'agent' || themeService.isAgent" class="onlinechip" [class.offline]="!isOnline" (click)="toggleOnlineStatus()" style="cursor:pointer; display:inline-flex; align-items:center; gap:6px; background:#E8F7F0; color:#2E7D52; font-size:12px; font-weight:800; padding:6px 12px; border-radius:99px;">
             <i style="width:8px;height:8px;border-radius:50%;background:#2E7D52;display:inline-block"></i><span>{{ isOnline ? 'Accepting orders' : 'Offline' }}</span>
@@ -388,7 +298,7 @@
             <ion-icon name="share-social-outline"></ion-icon>
           </button>
         </div>
-      </header>
+      </app-page-header>
 
       <div class="body">
         <main class="main-column">

@@ -151,8 +151,7 @@ export class HealthService {
   // ═══════════════════════════════════════════════════
 
   autoLogFromSubscription(userId: string) {
-    const subs = this.subscriptionService.getUserSubscriptions(userId);
-    const activeSub = subs.find(s => s.status === 'Active' || s.status === 'Paused');
+    const activeSub = this.subscriptionService.getActiveOrPausedSubscription(userId);
     if (!activeSub) return;
 
     const startDate = new Date(activeSub.startDate);
@@ -264,8 +263,7 @@ export class HealthService {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const subs = this.subscriptionService.getUserSubscriptions(userId);
-    const activeSub = subs.find(s => s.status === 'Active' || s.status === 'Paused');
+    const activeSub = this.subscriptionService.getActiveOrPausedSubscription(userId);
 
     for (let d = 6; d >= 0; d--) {
       const date = new Date(today);
@@ -395,8 +393,7 @@ export class HealthService {
     const streak = this.calculateStreak(userId);
 
     // Get tomorrow's expected meal
-    const subs = this.subscriptionService.getUserSubscriptions(userId);
-    const activeSub = subs.find(s => s.status === 'Active');
+    const activeSub = this.subscriptionService.getActiveOrPausedSubscription(userId);
     let tomorrowMeal = 'not subscribed';
     if (activeSub) {
       const startDate = new Date(activeSub.startDate);

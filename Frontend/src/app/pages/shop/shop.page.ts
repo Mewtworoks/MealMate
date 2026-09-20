@@ -11,6 +11,7 @@ import { SubscriptionService, Subscription } from '../../services/subscription.s
 import { Gemini } from '../../services/gemini';
 import { PageLoaderService } from '../../services/page-loader.service';
 import { ThemeService } from '../../services/theme.service';
+import { SidebarPlanWidget } from '../../components/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-shop',
@@ -62,6 +63,16 @@ export class ShopPage implements OnInit {
   }
   userLocation = 'Fetching location...';
 
+  get sidebarPlanWidget(): SidebarPlanWidget | null {
+    if (!this.activeSubscription) return null;
+    return {
+      planName: this.planName,
+      percent: this.activePlanPercent,
+      currentDay: this.activeSubscription.currentDay,
+      totalDays: this.activeSubscription.totalDays
+    };
+  }
+
   getCategoryIcon(category: string): string {
     const icons: { [key: string]: string } = {
       'All': 'restaurant-outline',
@@ -80,9 +91,14 @@ export class ShopPage implements OnInit {
     return this.mealService.getMealCalories(meal);
   }
 
-  getMatchPercent(index: number): number {
-    const percents = [92, 86, 85, 83, 80];
-    return percents[index] || 80;
+  // Dynamic match score based on real meal properties, not card position
+  getMatchPercent(meal: Meal): number {
+    let score = 80;
+    if (meal.type === 'Veg') score += 4;
+    if (meal.protein && meal.protein > 15) score += 5;
+    if (meal.calories && meal.calories > 0 && meal.calories < 600) score += 4;
+    if (meal.spiceLevel) score += 3;
+    return Math.min(score, 98);
   }
 
   getPickMeals(): Meal[] {
@@ -179,8 +195,7 @@ export class ShopPage implements OnInit {
   }
 
   checkActiveSubscription(userId: string) {
-    const subs = this.subscriptionService.getUserSubscriptions(userId);
-    const activeSub = subs.find(s => s.status === 'Active');
+    const activeSub = this.subscriptionService.getActiveOrPausedSubscription(userId);
     if (activeSub) {
       this.activeSubscription = activeSub;
       const todayDate = new Date(); todayDate.setHours(0, 0, 0, 0);

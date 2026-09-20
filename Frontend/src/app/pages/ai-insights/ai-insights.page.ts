@@ -1,7 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonicModule, NavController } from '@ionic/angular';
+import { NavController } from '@ionic/angular';
 import { Gemini, ChatMessage } from '../../services/gemini';
 import { MealService } from '../../services/meal.service';
 import { AuthService } from '../../services/auth';
@@ -9,13 +7,13 @@ import { OrderService, Order } from '../../services/order.service';
 import { WalletService } from '../../services/wallet.service';
 import { SubscriptionService, Subscription } from '../../services/subscription.service';
 import { ThemeService } from '../../services/theme.service';
+import { SidebarPlanWidget } from '../../components/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-ai-insights',
   templateUrl: './ai-insights.page.html',
   styleUrls: ['./ai-insights.page.scss'],
-  standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule]
+  standalone: false
 })
 export class AiInsightsPage implements OnInit {
   @ViewChild('content') content: any;
@@ -33,6 +31,19 @@ export class AiInsightsPage implements OnInit {
     return this.auth.userInitials;
   }
 
+  get chefName(): string {
+    return this.auth.userName || 'Chef';
+  }
+
+  get sidebarPlanWidget(): SidebarPlanWidget | null {
+    return this.activeSubscription ? {
+      planName: this.planName,
+      percent: this.activePlanPercent,
+      currentDay: this.activeSubscription.currentDay,
+      totalDays: this.activeSubscription.totalDays
+    } : null;
+  }
+
   get planName(): string {
     return (this.activeSubscription && this.activeSubscription.planName) ? this.activeSubscription.planName : 'Healthy Mix Plan';
   }
@@ -47,13 +58,20 @@ export class AiInsightsPage implements OnInit {
   }
 
   get todaysMealName(): string {
-    return this.todaysMeal?.name || 'Lucknowi Galouti Kebab';
+    return this.todaysMeal?.name || '';
+  }
+
+  private get todaysMealFull(): any {
+    if (!this.todaysMeal) return null;
+    return this.mealService.getMeals().find(m => m.name.toLowerCase().includes(this.todaysMeal.name.toLowerCase().split(' ')[0]));
   }
 
   get todaysMealImage(): string {
-    if (!this.todaysMeal) return 'assets/onboarding/dal_makhani.png';
-    const found = this.mealService.getMeals().find(m => m.name.toLowerCase().includes(this.todaysMeal.name.toLowerCase().split(' ')[0]));
-    return found ? found.image : 'assets/onboarding/dal_makhani.png';
+    return this.todaysMealFull?.image || 'assets/onboarding/dal_makhani.png';
+  }
+
+  get todaysMealCalories(): number {
+    return this.todaysMealFull?.calories || 0;
   }
 
   clearChat() {
@@ -109,10 +127,9 @@ export class AiInsightsPage implements OnInit {
     this.creditUsed = this.walletService.creditUsed;
     this.creditLimit = this.walletService.creditLimit;
 
-    // Subscription — get first active one for current user
+    // Subscription — get the current active/paused one for this user, ignoring ones already completed
     const userId = this.auth.userId || '';
-    const subs = this.subscriptionService.getUserSubscriptions(userId);
-    this.activeSubscription = subs.find(s => s.status === 'Active') || null;
+    this.activeSubscription = this.subscriptionService.getActiveOrPausedSubscription(userId);
 
     // Derive preferences from order history
     this.preferences = this.derivePreferences(this.orderHistory);

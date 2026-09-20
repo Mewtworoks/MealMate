@@ -25,182 +25,15 @@
 
   &.sidebar-collapsed {
     grid-template-columns: 76px minmax(0, 1fr);
-
-    .brand-name, .nav-text, .navlabel, .side-foot .n, .side-foot .s, .plan-mini {
-      display: none !important;
-    }
-    .side {
-      padding: 24px 10px;
-      align-items: center;
-    }
-    .logo {
-      padding: 4px 0 20px;
-      justify-content: center;
-    }
-    .nav button {
-      justify-content: center;
-      padding: 12px;
-    }
-    .side-foot .me {
-      justify-content: center;
-      padding: 8px;
-    }
   }
 }
 
-.side {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  background: #fff;
-  border-right: 1px solid var(--line, #EDE6E1);
-  display: flex;
-  flex-direction: column;
-  padding: 24px 16px;
-  overflow-y: auto;
-  transition: padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-  .side-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 8px;
-  }
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  padding: 4px 10px;
-  .glyph {
-    width: 36px;
-    height: 36px;
-    border-radius: 11px;
-    background: linear-gradient(150deg, #FF8A47, #F26A21);
-    display: grid;
-    place-items: center;
-    box-shadow: 0 6px 16px rgba(242, 106, 33, .32);
-    img {
-      width: 22px;
-      height: 22px;
-      filter: brightness(0) invert(1);
-    }
-  }
-  b {
-    font-size: 18px;
-    font-weight: 800;
-    letter-spacing: -.02em;
-    color: var(--ink, #1E1815);
-  }
-}
-
-.sidebar-toggle-btn {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  border: 1px solid var(--line, #EDE6E1);
-  background: #fff;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  color: var(--ink-2, #5C524C);
-  transition: all 0.2s ease;
-  &:hover {
-    background: var(--orange-soft, #FFF1E8);
-    color: var(--orange, #F26A21);
-    border-color: var(--orange-line, #FFDCC6);
-  }
-}
-
-.navlabel {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--ink-3, #948A83);
-  padding: 12px 10px 8px;
-}
-
-.nav {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  button {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 12px;
-    border-radius: 11px;
-    color: var(--ink-2, #5C524C);
-    font-size: 14.5px;
-    font-weight: 600;
-    background: none;
-    border: 0;
-    cursor: pointer;
-    width: 100%;
-    text-align: left;
-    transition: all 0.2s ease;
-    ion-icon {
-      width: 19px;
-      height: 19px;
-    }
-    &:hover {
-      background: #F7F3F0;
-      color: var(--ink, #1E1815);
-    }
-    &.on {
-      background: var(--orange-soft, #FFF1E8);
-      color: var(--orange, #F26A21);
-      font-weight: 700;
-    }
-  }
-}
-
-.side-foot {
-  margin-top: auto;
-  padding-top: 16px;
-  border-top: 1px solid var(--line, #EDE6E1);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-
-  .me {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 10px;
-    border-radius: 12px;
-    background: none;
-    border: 0;
-    width: 100%;
-    cursor: pointer;
-    text-align: left;
-    &:hover {
-      background: #F7F3F0;
-    }
-  }
-
-  .ava {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: linear-gradient(150deg, #FFD3B5, #F9A870);
-    display: grid;
-    place-items: center;
-    font-weight: 800;
-    font-size: 14px;
-    color: #8A3B0B;
-    flex: none;
-  }
-  .me .n { font-size: 13.5px; font-weight: 700; line-height: 1.25; color: var(--ink, #1E1815); }
-  .me .s { font-size: 11.5px; color: var(--ink-3, #948A83); font-weight: 600; }
-}
+// Sidebar itself now lives in the shared <app-sidebar> component — see components/sidebar/.
 
 .view-main {
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  overflow: hidden;
   height: 100vh;
 
   .top {
@@ -286,10 +119,23 @@
 }
 
 /* 2-Column Responsive Layout */
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .desktop-body-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 20px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.main-column {
+  overflow-y: auto;
+  padding-bottom: 48px;
 }
 
 @media (min-width: 1001px) {
@@ -312,6 +158,14 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  overflow-y: auto;
+  padding-bottom: 48px;
+
+  /* Guard against flexbox's "overflow:auto/hidden defaults min-height to 0" rule,
+     which would let the browser squash any section instead of scrolling past it. */
+  > * {
+    flex-shrink: 0;
+  }
 }
 
 .delivcard {

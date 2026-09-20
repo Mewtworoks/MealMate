@@ -8,6 +8,7 @@ import { ThemeService } from '../../services/theme.service';
 import { Router } from '@angular/router';
 import { NavController, ToastController, AlertController, ModalController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
+import { SidebarPlanWidget } from '../../components/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-cart',
@@ -58,11 +59,23 @@ export class CartPage implements OnInit, OnDestroy {
     return this.auth.userInitials || 'MU';
   }
 
+  get chefName(): string {
+    return this.auth.userName || 'Chef';
+  }
+
+  get sidebarPlanWidget(): SidebarPlanWidget | null {
+    return this.activeSubscription ? {
+      planName: this.planName,
+      percent: this.activePlanPercent,
+      currentDay: this.activeSubscription.currentDay,
+      totalDays: this.activeSubscription.totalDays
+    } : null;
+  }
+
   get activeSubscription(): MealSubscription | null {
     const userId = this.auth.userId;
     if (!userId) return null;
-    const subs = this.subscriptionService.getUserSubscriptions(userId);
-    return subs.find(s => s.status === 'Active') || subs[0] || null;
+    return this.subscriptionService.getActiveOrPausedSubscription(userId);
   }
 
   get planName(): string {

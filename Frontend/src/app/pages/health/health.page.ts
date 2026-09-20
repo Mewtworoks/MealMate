@@ -51,6 +51,10 @@ export class HealthPage implements OnInit {
     return this.auth.userInitials;
   }
 
+  get chefName(): string {
+    return this.auth.userName || 'Chef';
+  }
+
   constructor(
     private navCtrl: NavController,
     private auth: AuthService,

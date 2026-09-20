@@ -5,6 +5,7 @@ import { SubscriptionService, Subscription, RotationMeal } from '../../services/
 import { AuthService } from '../../services/auth';
 import { PageLoaderService } from '../../services/page-loader.service';
 import { ThemeService } from '../../services/theme.service';
+import { SidebarPlanWidget } from '../../components/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-manage-rotation',
@@ -23,6 +24,19 @@ export class ManageRotationPage implements OnInit {
 
   get userInitials(): string {
     return this.auth.userInitials;
+  }
+
+  get chefName(): string {
+    return this.auth.userName || 'Chef';
+  }
+
+  get sidebarPlanWidget(): SidebarPlanWidget | null {
+    return this.activeSub ? {
+      planName: this.planName,
+      percent: this.activePlanPercent,
+      currentDay: this.activeSub.currentDay,
+      totalDays: this.activeSub.totalDays
+    } : null;
   }
 
   get planName(): string {
@@ -83,8 +97,7 @@ export class ManageRotationPage implements OnInit {
     const userId = this.auth.userId;
     if (!userId) return;
     await this.subscriptionService.fetchUserSubscriptions(userId);
-    const subs = this.subscriptionService.getUserSubscriptions(userId);
-    this.activeSub = subs.find(s => s.status === 'Active') || null;
+    this.activeSub = this.subscriptionService.getActiveOrPausedSubscription(userId);
     if (this.activeSub) {
       if (this.initialMealsCount === 0) {
         this.initialMealsCount = this.activeSub.rotationMeals.length;
@@ -381,8 +394,7 @@ export class ManageRotationPage implements OnInit {
   private reloadActiveSub() {
     const userId = this.auth.userId;
     if (!userId) return;
-    const subs = this.subscriptionService.getUserSubscriptions(userId);
-    this.activeSub = subs.find(s => s.status === 'Active') || null;
+    this.activeSub = this.subscriptionService.getActiveOrPausedSubscription(userId);
   }
 
   getMealImage(name: string): string {

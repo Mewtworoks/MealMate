@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Subscription as RxSubscription } from 'rxjs';
 import { OrderService, Order } from '../../services/order.service';
 import { Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
@@ -28,6 +29,9 @@ export class MyOrdersPage implements OnInit {
   viewingScheduleFor: string | null = null;
   scheduleView: any[] = [];
 
+  private subsSub?: RxSubscription;
+  private ordersSub?: RxSubscription;
+
   constructor(
     private orderService: OrderService,
     private mealService: MealService,
@@ -46,6 +50,10 @@ export class MyOrdersPage implements OnInit {
     return this.auth.userInitials;
   }
 
+  get chefName(): string {
+    return this.auth.userName || 'Chef';
+  }
+
   async ngOnInit() {
     this.loadOrdersData();
   }
@@ -55,25 +63,41 @@ export class MyOrdersPage implements OnInit {
     this.loadOrdersData();
   }
 
+  ionViewWillLeave() {
+    this.subsSub?.unsubscribe();
+    this.ordersSub?.unsubscribe();
+  }
+
   private async loadOrdersData() {
-    const userId = this.auth.userId;
-    if (userId) {
-      this.orderService.refreshUserOrders(userId);
-      await this.subscriptionService.fetchUserSubscriptions(userId);
+    // Only show the skeleton on first load — a repeat visit already has data to show instantly.
+    if (this.orders.length === 0 && this.subscriptions.length === 0) {
+      this.isLoading = true;
     }
 
-    this.subscriptionService.subscriptions$.subscribe(subs => {
+    const userId = this.auth.userId;
+    if (userId) {
+      await Promise.all([
+        this.orderService.refreshUserOrders(userId),
+        this.subscriptionService.fetchUserSubscriptions(userId)
+      ]);
+    }
+
+    this.subsSub?.unsubscribe();
+    this.subsSub = this.subscriptionService.subscriptions$.subscribe(subs => {
       if (userId) {
         this.subscriptions = subs.filter(s => s.customerId === userId);
       }
     });
 
-    this.orderService.orders$.subscribe(orders => {
+    this.ordersSub?.unsubscribe();
+    this.ordersSub = this.orderService.orders$.subscribe(orders => {
       this.orders = orders;
       if (orders.length > 0 && !this.selectedOrder) {
         this.selectedOrder = orders[0];
       }
     });
+
+    this.isLoading = false;
   }
 
   selectOrder(order: Order) {

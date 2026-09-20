@@ -47,6 +47,10 @@ export class ManageMenuPage implements OnInit {
   isDeleteModalOpen = false;
   mealToDelete: Meal | null = null;
 
+  get userName(): string { return this.auth.userName || 'MealMate User'; }
+  get userInitials(): string { return this.auth.userInitials; }
+  get chefName(): string { return this.auth.userName || 'Chef'; }
+
   constructor(
     public themeService: ThemeService,
     private mealService: MealService,

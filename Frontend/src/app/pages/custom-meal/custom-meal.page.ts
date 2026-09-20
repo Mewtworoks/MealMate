@@ -7,6 +7,7 @@ import { Gemini } from '../../services/gemini';
 import { AuthService } from '../../services/auth';
 import { ThemeService } from '../../services/theme.service';
 import { SubscriptionService, Subscription as MealSubscription } from '../../services/subscription.service';
+import { SidebarPlanWidget } from '../../components/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-custom-meal',
@@ -46,11 +47,23 @@ export class CustomMealPage implements OnInit {
     return this.auth.userInitials || 'MU';
   }
 
+  get chefName(): string {
+    return this.auth.userName || 'Chef';
+  }
+
+  get sidebarPlanWidget(): SidebarPlanWidget | null {
+    return this.activeSubscription ? {
+      planName: this.planName,
+      percent: this.activePlanPercent,
+      currentDay: this.activeSubscription.currentDay,
+      totalDays: this.activeSubscription.totalDays
+    } : null;
+  }
+
   get activeSubscription(): MealSubscription | null {
     const userId = this.auth.userId;
     if (!userId) return null;
-    const subs = this.subscriptionService.getUserSubscriptions(userId);
-    return subs.find(s => s.status === 'Active') || subs[0] || null;
+    return this.subscriptionService.getActiveOrPausedSubscription(userId);
   }
 
   get planName(): string {

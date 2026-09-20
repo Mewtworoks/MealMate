@@ -78,6 +78,7 @@ export class SubscribePage implements OnInit {
   weekDays: any[] = [];
   weekMealsCompleted = 0;
   upcomingDeliveries: any[] = [];
+  isPlanCompleted = false;
 
   constructor(
     private mealService: MealService,
@@ -245,7 +246,7 @@ export class SubscribePage implements OnInit {
 
     await this.subscriptionService.fetchUserSubscriptions(userId);
     const subs = this.subscriptionService.getUserSubscriptions(userId);
-    const active = subs.find(s => s.status === 'Active');
+    const active = subs.find(s => s.status === 'Active' || s.status === 'Paused');
     if (active) {
       this.activeSub = active;
       this.computeActivePlanData();
@@ -294,8 +295,25 @@ export class SubscribePage implements OnInit {
     this.goalProgress = Math.min(100, Math.max(0, Math.round((completedDaysCount / this.activeSub.totalDays) * 100)));
     this.daysLeft = Math.max(0, this.activeSub.totalDays - completedDaysCount);
 
+    // Plan is done once every paid-for day has been delivered — stop pretending it's still ongoing
+    this.isPlanCompleted = this.subscriptionService.isSubscriptionCompleted(this.activeSub);
+
     // Monthly wallet deducted (based on completed days so far)
     this.monthlyDeducted = Math.round(completedDaysCount * this.activeSub.dailyDeduction);
+
+    if (this.isPlanCompleted) {
+      this.todaysMeal = {
+        name: '',
+        details: '',
+        image: '',
+        statusText: 'Plan Completed',
+        statusClass: 'completed'
+      };
+      this.rotationDisplay = [];
+      this.nextDeductionLabel = 'Plan ended';
+      this.upcomingDeliveries = [];
+      return;
+    }
 
     // Today's meal from rotation
     const rotation = this.activeSub.rotationMeals;
@@ -441,17 +459,18 @@ export class SubscribePage implements OnInit {
   }
 
   buildUpcomingDeliveries() {
-    if (!this.activeSub || this.activeSub.rotationMeals.length === 0) return;
+    this.upcomingDeliveries = [];
+    if (!this.activeSub || this.activeSub.rotationMeals.length === 0 || this.isPlanCompleted) return;
 
     const rotation = this.activeSub.rotationMeals;
     const start = new Date(this.activeSub.startDate);
     const now = new Date();
     const elapsedDays = Math.floor((now.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
 
-    this.upcomingDeliveries = [];
-
     for (let d = 0; d < 3; d++) {
-      const futureDay = elapsedDays + d;
+      const futureDay = elapsedDays + d + 1; // +1: tomorrow onward
+      if (futureDay >= this.activeSub.totalDays) break; // don't schedule deliveries past the plan's paid-for days
+
       const mealIdx = futureDay % rotation.length;
       const meal = rotation[mealIdx];
       const deliveryDate = new Date(now);
@@ -556,6 +575,10 @@ export class SubscribePage implements OnInit {
 
   get userInitials(): string {
     return this.auth.userInitials;
+  }
+
+  get chefName(): string {
+    return this.auth.userName || 'Chef';
   }
 
   get planName(): string {

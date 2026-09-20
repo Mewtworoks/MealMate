@@ -11,7 +11,7 @@
         <h2 class="page-title">Earnings</h2>
       </div>
       <div class="header-actions">
-        <button class="period-filter-btn">
+        <button class="period-filter-btn" (click)="openPeriodPicker()">
           <span>{{ selectedPeriod }}</span>
           <ion-icon name="chevron-down-outline"></ion-icon>
         </button>
@@ -27,117 +27,29 @@
        ═══════════════════════════════════════════════════ -->
   <div class="web-app desktop-only" [class.sidebar-collapsed]="themeService.isSidebarCollapsed" *ngIf="!isLoading">
     <!-- LEFT SIDEBAR NAV -->
-    <aside class="side">
-      <div class="side-top">
-        <div class="logo">
-          <span class="glyph">
-            <img src="assets/logo/chef_hat.png" alt="MealMate">
-          </span>
-          <b class="brand-name">MealMate</b>
-        </div>
-        <button class="sidebar-toggle-btn" (click)="themeService.toggleSidebar()"
-          [title]="themeService.isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
-          <ion-icon [name]="themeService.isSidebarCollapsed ? 'chevron-forward-outline' : 'chevron-back-outline'"></ion-icon>
-        </button>
-      </div>
-
-      <!-- CHEF SIDEBAR NAV -->
-      <ng-container *ngIf="themeService.isAgent">
-        <div class="navlabel">Chef Menu</div>
-        <nav class="nav">
-          <button routerLink="/agent-home">
-            <ion-icon name="home-outline"></ion-icon><span class="nav-text">Dashboard</span>
-          </button>
-          <button routerLink="/manage-menu">
-            <ion-icon name="restaurant-outline"></ion-icon><span class="nav-text">Manage Menu</span>
-          </button>
-          <button class="on" routerLink="/agent-earnings">
-            <ion-icon name="wallet-outline"></ion-icon><span class="nav-text">Earnings</span>
-          </button>
-          <button routerLink="/profile">
-            <ion-icon name="person-outline"></ion-icon><span class="nav-text">Chef Profile</span>
-          </button>
-        </nav>
-        <div class="side-foot">
-          <button class="me" routerLink="/profile" title="View Profile">
-            <span class="ava">🧑‍🍳</span>
-            <span class="me-text" style="text-align:left">
-              <span class="n">{{chefName || 'Chef'}}</span><br>
-              <span class="s">Partner Kitchen</span>
-            </span>
-          </button>
-        </div>
-      </ng-container>
-
-      <!-- CUSTOMER SIDEBAR NAV -->
-      <ng-container *ngIf="!themeService.isAgent">
-        <div class="navlabel">Menu</div>
-        <nav class="nav">
-          <button routerLink="/customer-home">
-            <ion-icon name="home-outline"></ion-icon><span class="nav-text">Home</span>
-          </button>
-          <button routerLink="/my-orders">
-            <ion-icon name="bag-outline"></ion-icon><span class="nav-text">Orders</span>
-          </button>
-          <button routerLink="/subscribe">
-            <ion-icon name="calendar-outline"></ion-icon><span class="nav-text">Meal Plans</span>
-          </button>
-          <button routerLink="/manage-rotation">
-            <ion-icon name="sync-outline"></ion-icon><span class="nav-text">Meal Rotation</span>
-          </button>
-          <button routerLink="/custom-meal">
-            <ion-icon name="restaurant-outline"></ion-icon><span class="nav-text">Personal Chef</span>
-          </button>
-          <button routerLink="/health">
-            <ion-icon name="heart-outline"></ion-icon><span class="nav-text">Health</span>
-          </button>
-          <button routerLink="/ai-concierge">
-            <ion-icon name="chatbubbles-outline"></ion-icon><span class="nav-text">MealMantra AI</span>
-          </button>
-          <button routerLink="/wallet">
-            <ion-icon name="shield-checkmark-outline"></ion-icon><span class="nav-text">Wallet</span>
-          </button>
-          <button routerLink="/profile">
-            <ion-icon name="person-outline"></ion-icon><span class="nav-text">Profile</span>
-          </button>
-        </nav>
-        <div class="side-foot">
-          <button class="me" routerLink="/profile" title="View Profile">
-            <span class="ava">🙋‍♂️</span>
-            <span class="me-text" style="text-align:left">
-              <span class="n">MealMate User</span><br>
-              <span class="s">Premium Member</span>
-            </span>
-          </button>
-        </div>
-      </ng-container>
-    </aside>
+    <app-sidebar [chefName]="chefName" [userName]="userName" [userInitials]="userInitials"></app-sidebar>
 
     <!-- MAIN VIEW -->
     <div class="view-main">
-      <header class="top">
-        <div>
-          <h1>Earnings</h1>
-          <div class="sub">Here's your earnings summary</div>
-        </div>
+      <app-page-header title="Earnings" subtitle="Here's your earnings summary">
         <div class="top-r">
-          <button class="weekpick">
+          <button class="weekpick" (click)="openPeriodPicker()">
             <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="17" rx="3"/><path d="M8 2.5v4M16 2.5v4M3 10h18"/></svg>
             <span>{{ selectedPeriod }}</span>
           </button>
         </div>
-      </header>
+      </app-page-header>
 
       <div class="body">
         <div>
           <!-- Hero Section -->
           <section class="ehero">
             <div>
-              <div class="k">Total earned · this week</div>
+              <div class="k">Total earned · {{ selectedPeriod === 'This Month' ? 'this month' : 'this week' }}</div>
               <div class="big">₹{{ totalEarned | number:'1.0-0' }}</div>
               <span class="up">
-                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
-                ₹{{ earningsVsLastWeek }} more than last week
+                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" [style.transform]="earningsTrendIcon === 'arrow-down-outline' ? 'scaleY(-1)' : 'none'"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+                ₹{{ earningsVsLastWeek | number:'1.0-0' }} {{ earningsTrendLabel }}
               </span>
             </div>
             <div class="esplit">
@@ -336,11 +248,11 @@
           <!-- This week at a glance card -->
           <div class="rcard">
             <div class="rhead"><h3>This week at a glance</h3></div>
-            <div class="sumrow"><span>Best day</span><span style="font-weight:800;color:var(--ink)">Sun · ₹1,248</span></div>
-            <div class="sumrow"><span>Slowest day</span><span style="font-weight:800;color:var(--ink)">Mon · ₹620</span></div>
-            <div class="sumrow"><span>Avg per day</span><span style="font-weight:800;color:var(--ink)">₹926</span></div>
-            <div class="sumrow"><span>Deducted</span><span style="font-weight:800;color:#C0392B">−₹700</span></div>
-            <div class="sumrow tot"><span>Net this week</span><span style="font-weight:800; color:var(--green)">₹5,780</span></div>
+            <div class="sumrow"><span>Best day</span><span style="font-weight:800;color:var(--ink)">{{ bestDayLabel }}</span></div>
+            <div class="sumrow"><span>Slowest day</span><span style="font-weight:800;color:var(--ink)">{{ slowestDayLabel }}</span></div>
+            <div class="sumrow"><span>Avg per day</span><span style="font-weight:800;color:var(--ink)">₹{{ avgPerDay | number:'1.0-0' }}</span></div>
+            <div class="sumrow"><span>Deducted</span><span style="font-weight:800;color:#C0392B">−₹{{ totalAdvanceDeducted | number:'1.0-0' }}</span></div>
+            <div class="sumrow tot"><span>Net this week</span><span style="font-weight:800; color:var(--green)">₹{{ pendingPayout | number:'1.0-0' }}</span></div>
           </div>
 
           <!-- Mia's AI Insight card -->
@@ -382,9 +294,9 @@
         <div class="hero-card-bg-mesh"></div>
         <div class="hero-card-content">
           <div class="hero-left">
-            <span class="hero-label">Total Earned</span>
+            <span class="hero-label">Total Earned · {{ selectedPeriod === 'This Month' ? 'this month' : 'this week' }}</span>
             <h1 class="hero-amount">₹{{ totalEarned | number:'1.0-0' }}</h1>
-            <p class="hero-trend"><ion-icon name="arrow-up-outline"></ion-icon> ₹{{ earningsVsLastWeek }} more than last week</p>
+            <p class="hero-trend"><ion-icon [name]="earningsTrendIcon"></ion-icon> ₹{{ earningsVsLastWeek | number:'1.0-0' }} {{ earningsTrendLabel }}</p>
           </div>
           <div class="hero-right">
             <div class="hero-orders-block">

@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { AgentDashboardPageRoutingModule } from './agent-dashboard-routing.module';
 
 import { AgentDashboardPage } from './agent-dashboard.page';
+import { SharedComponentsModule } from '../../components/shared-components.module';
 
 @NgModule({
   imports: [
@@ -14,6 +15,7 @@ import { AgentDashboardPage } from './agent-dashboard.page';
     FormsModule,
     IonicModule,
     AgentDashboardPageRoutingModule,
+    SharedComponentsModule,
   ],
   declarations: [AgentDashboardPage]
 })

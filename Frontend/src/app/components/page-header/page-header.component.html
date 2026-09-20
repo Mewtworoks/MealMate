@@ -1,0 +1,10 @@
+<header class="top">
+  <button class="ph-back-btn" *ngIf="showBack" (click)="back.emit()" title="Back">
+    <ion-icon name="arrow-back-outline"></ion-icon>
+  </button>
+  <div class="ph-title-group">
+    <h1>{{ title }}</h1>
+    <div class="sub" *ngIf="subtitle">{{ subtitle }}</div>
+  </div>
+  <ng-content></ng-content>
+</header>

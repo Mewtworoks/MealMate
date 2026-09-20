@@ -12,6 +12,14 @@ export interface WalletInfo {
   monthlySettlementAmount: number;
 }
 
+export interface WalletTransaction {
+  type: 'in' | 'out';
+  title: string;
+  sub: string;
+  amount: number;
+  date: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -33,6 +41,17 @@ export class WalletService {
   public creditLimit$ = this.creditLimitSubject.asObservable();
   public creditUsed$ = this.creditUsedSubject.asObservable();
   public credits$ = this.creditsSubject.asObservable();
+
+  // --- Real wallet-affecting activity (top-ups, settlements) logged as it happens this session ---
+  private _transactions: WalletTransaction[] = [];
+  private transactionsSubject = new BehaviorSubject<WalletTransaction[]>([]);
+  public transactions$ = this.transactionsSubject.asObservable();
+
+  private logTransaction(type: 'in' | 'out', title: string, sub: string, amount: number) {
+    if (amount <= 0) return;
+    this._transactions.unshift({ type, title, sub, amount, date: Date.now() });
+    this.transactionsSubject.next([...this._transactions]);
+  }
 
   constructor(private http: HttpClient) {}
 
@@ -223,6 +242,7 @@ export class WalletService {
       if (res.success || res.Success) {
         this._balance = res.NewBalance ?? res.newBalance ?? this._balance + amount;
         this.emitAll();
+        this.logTransaction('in', 'Wallet top-up', 'Added to wallet', amount);
         return true;
       }
       return false;
@@ -241,9 +261,11 @@ export class WalletService {
         this.http.post(`${environment.apiUrl}/wallet/${userId}/settle`, {})
       );
       if (res.success || res.Success) {
+        const settledAmount = this._creditUsed - (res.CreditUsed ?? res.creditUsed ?? 0);
         this._balance = res.NewBalance ?? res.newBalance ?? this._balance;
         this._creditUsed = res.CreditUsed ?? res.creditUsed ?? 0;
         this.emitAll();
+        this.logTransaction('out', 'Credit settled', 'Monthly khata payment', settledAmount);
         return {
           success: true,
           message: res.message || res.Message || 'Credit settled successfully.'
@@ -255,6 +277,39 @@ export class WalletService {
       return {
         success: false,
         message: e?.error || 'No outstanding credit to settle.'
+      };
+    }
+  }
+
+  // ======================================================================
+  // Redeem all loyalty points into wallet balance (1 point = ₹1)
+  // ======================================================================
+  async redeemPoints(userId: string): Promise<{ success: boolean; message: string }> {
+    if (this._credits <= 0) {
+      return { success: false, message: 'You have no loyalty points to redeem.' };
+    }
+
+    try {
+      const res: any = await firstValueFrom(
+        this.http.post(`${environment.apiUrl}/wallet/${userId}/redeem-points`, {})
+      );
+      if (res.success || res.Success) {
+        const pointsRedeemed = this._credits;
+        this._balance = res.NewBalance ?? res.newBalance ?? this._balance + pointsRedeemed;
+        this._credits = res.LoyaltyPoints ?? res.loyaltyPoints ?? 0;
+        this.emitAll();
+        this.logTransaction('in', 'Points redeemed', `${pointsRedeemed} loyalty points → wallet`, pointsRedeemed);
+        return {
+          success: true,
+          message: res.message || res.Message || `${pointsRedeemed} points redeemed for ₹${pointsRedeemed}!`
+        };
+      }
+      return { success: false, message: 'Redemption failed.' };
+    } catch (e: any) {
+      console.error('Redeem points failed', e);
+      return {
+        success: false,
+        message: e?.error || 'Could not redeem points. Please try again.'
       };
     }
   }

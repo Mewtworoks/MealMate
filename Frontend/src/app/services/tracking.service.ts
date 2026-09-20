@@ -11,12 +11,33 @@ export interface Location {
   providedIn: 'root'
 })
 export class TrackingService {
-  // Mock destination (Customer Location) - Fixed for the demo
-  public readonly customerLocation: Location = {
-    lat: 28.6139, 
-    lng: 77.2090, 
+  // Customer's live device location, used as the delivery destination on the
+  // tracking map. Falls back to a fixed Delhi coordinate only when geolocation
+  // is unavailable or denied — never overwrites a real fix once one arrives.
+  private _customerLocation: Location = {
+    lat: 28.6139,
+    lng: 77.2090,
     timestamp: Date.now()
   };
+
+  get customerLocation(): Location {
+    return this._customerLocation;
+  }
+
+  constructor() {
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          this._customerLocation = {
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+            timestamp: Date.now()
+          };
+        },
+        () => { /* keep the fallback coordinate — permission denied or unavailable */ }
+      );
+    }
+  }
 
   // Agent location stream
   private agentLocation = new BehaviorSubject<Location>({
@@ -28,8 +49,6 @@ export class TrackingService {
   agentLocation$ = this.agentLocation.asObservable();
 
   private watchId: any;
-
-  constructor() {}
 
   updateAgentLocation(lat: number, lng: number) {
     this.agentLocation.next({

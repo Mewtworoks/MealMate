@@ -51,6 +51,10 @@ export class MealDetailPage implements OnInit {
     return this.auth.userInitials;
   }
 
+  get chefName(): string {
+    return this.auth.userName || 'Chef';
+  }
+
   shareMeal() {
     this.shareItem();
   }
@@ -125,8 +129,7 @@ export class MealDetailPage implements OnInit {
       const userId = this.auth.userId;
       if (userId) {
         await this.subscriptionService.fetchUserSubscriptions(userId);
-        const subs = this.subscriptionService.getUserSubscriptions(userId);
-        this.activeSubscription = subs.find(s => s.status === 'Active') || null;
+        this.activeSubscription = this.subscriptionService.getActiveOrPausedSubscription(userId);
       }
 
       await this.checkIfUserOrderedMeal(mealId);
@@ -149,7 +152,7 @@ export class MealDetailPage implements OnInit {
     }
 
     const subs = this.subscriptionService.getUserSubscriptions(userId);
-    const hasSub = subs && subs.some(s => s.status === 'Active');
+    const hasSub = subs && subs.some(s => s.status === 'Active' || s.status === 'Paused');
 
     const orderedInOrders = orders.some(o =>
       o.items && o.items.some((i: any) =>
@@ -291,12 +294,12 @@ export class MealDetailPage implements OnInit {
   }
 
   get mealRating(): string {
-    if (!this.meal) return '4.8';
+    if (!this.meal) return '0';
     return this.reviewService.getAverageRatingForMeal(this.meal.id).rating;
   }
 
   get reviewCount(): number {
-    if (!this.meal) return 42;
+    if (!this.meal) return 0;
     return this.reviewService.getAverageRatingForMeal(this.meal.id).count;
   }
 

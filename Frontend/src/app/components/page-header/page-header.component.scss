@@ -1,0 +1,67 @@
+:host {
+  --orange: #F26A21;
+  --ink: #1E1815;
+  --ink-2: #5C524C;
+  --ink-3: #948A83;
+  --line: #EDE6E1;
+  display: contents;
+}
+
+.top {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(250, 247, 245, .88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+  padding: 15px 32px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ph-title-group {
+  min-width: 0;
+
+  h1 {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -.02em;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sub {
+    font-size: 12.5px;
+    color: var(--ink-3);
+    font-weight: 500;
+  }
+}
+
+.ph-back-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex: none;
+  color: var(--ink-2);
+  transition: all 0.2s ease;
+
+  ion-icon {
+    width: 19px;
+    height: 19px;
+  }
+
+  &:hover {
+    background: #F7F3F0;
+    color: var(--ink);
+  }
+}

@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { AiInsightsPageRoutingModule } from './ai-insights-routing.module';
 
 import { AiInsightsPage } from './ai-insights.page';
+import { SharedComponentsModule } from '../../components/shared-components.module';
 
 @NgModule({
   imports: [
@@ -14,7 +15,8 @@ import { AiInsightsPage } from './ai-insights.page';
     FormsModule,
     IonicModule,
     AiInsightsPageRoutingModule,
-    AiInsightsPage
+    SharedComponentsModule
   ],
+  declarations: [AiInsightsPage]
 })
 export class AiInsightsPageModule {}

@@ -72,7 +72,7 @@ export class CartService {
     if (userId) {
       try {
         const remoteCart: any = await firstValueFrom(
-          this.http.get(`${environment.apiUrl}/Cart/${userId}`)
+          this.http.get(`${environment.phpApiUrl}/cart/${userId}`)
         );
         if (remoteCart && Array.isArray(remoteCart)) {
           if (remoteCart.length > 0) {
@@ -186,7 +186,7 @@ export class CartService {
     
     const userId = this.authService.userId;
     if (userId) {
-      this.http.delete(`${environment.apiUrl}/Cart/${userId}`).subscribe({
+      this.http.delete(`${environment.phpApiUrl}/cart/${userId}`).subscribe({
         error: () => console.log('Cart API clear failed, fallback used.')
       });
     }
@@ -208,7 +208,7 @@ export class CartService {
 
     try {
       await firstValueFrom(
-        this.http.post(`${environment.apiUrl}/Cart/${userId}/sync`, cartDto)
+        this.http.post(`${environment.phpApiUrl}/cart/${userId}/sync`, cartDto)
       );
     } catch (err) {
       // Backend not ready yet, fails gracefully

@@ -1,5 +1,3 @@
-<app-page-loader [isLoading]="isLoading"></app-page-loader>
-
 <!-- ═══════════════════════════════════════════════════
      MOBILE HEADER (Screens < 1001px)
      ═══════════════════════════════════════════════════ -->
@@ -45,7 +43,23 @@
   <!-- ═══════════════════════════════════════════════════
        MOBILE APP VIEW (Screens < 1001px)
        ═══════════════════════════════════════════════════ -->
-  <div class="mobile-layout mobile-only" *ngIf="!isLoading">
+  <div class="mobile-layout mobile-only">
+    <!-- Skeleton Loader -->
+    <div class="orders-list sk-pulse" *ngIf="isLoading">
+      <div class="order-card-v2 sk-card" *ngFor="let s of [1,2,3,4]">
+        <div class="oc2-left">
+          <div class="sk-block sk-img"></div>
+        </div>
+        <div class="oc2-right">
+          <div class="sk-block sk-line" style="width:70%;height:14px;"></div>
+          <div class="sk-block sk-line" style="width:45%;height:11px;margin-top:10px;"></div>
+          <div class="sk-block sk-line" style="width:55%;height:11px;margin-top:8px;"></div>
+          <div class="sk-block sk-line" style="width:38%;height:24px;margin-top:12px;border-radius:8px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <ng-container *ngIf="!isLoading">
     <!-- Active Orders -->
     <div *ngIf="activeTab === 'active'" class="orders-list">
       <div *ngIf="activeOrders.length === 0" class="empty-state">
@@ -201,104 +215,19 @@
         </div>
       </div>
     </div>
+    </ng-container>
   </div>
 
   <!-- ═══════════════════════════════════════════════════
        DESKTOP WEB VIEW (Screens >= 1001px)
        ═══════════════════════════════════════════════════ -->
-  <div class="web-app desktop-only" *ngIf="!isLoading">
+  <div class="web-app desktop-only" [class.sidebar-collapsed]="themeService.isSidebarCollapsed">
     <!-- SIDEBAR -->
-    <aside class="side">
-      <div class="side-top">
-        <div class="logo">
-          <span class="glyph">
-            <img src="assets/logo/chef_hat.png" alt="MealMate">
-          </span>
-          <b class="brand-name">MealMate</b>
-        </div>
-        <button class="sidebar-toggle-btn" (click)="themeService.toggleSidebar()"
-          [title]="themeService.isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
-          <ion-icon
-            [name]="themeService.isSidebarCollapsed ? 'chevron-forward-outline' : 'chevron-back-outline'"></ion-icon>
-        </button>
-      </div>
-      <!-- CHEF SIDEBAR NAV -->
-      <ng-container *ngIf="themeService.isAgent">
-        <div class="navlabel">Chef Menu</div>
-        <nav class="nav">
-          <button routerLink="/agent-home">
-            <ion-icon name="home-outline"></ion-icon><span class="nav-text">Dashboard</span>
-          </button>
-          <button routerLink="/manage-menu">
-            <ion-icon name="restaurant-outline"></ion-icon><span class="nav-text">Manage Menu</span>
-          </button>
-          <button routerLink="/agent-earnings">
-            <ion-icon name="wallet-outline"></ion-icon><span class="nav-text">Earnings</span>
-          </button>
-          <button routerLink="/profile">
-            <ion-icon name="person-outline"></ion-icon><span class="nav-text">Chef Profile</span>
-          </button>
-        </nav>
-        <div class="side-foot">
-          <button class="me" routerLink="/profile" title="View Profile">
-            <span class="ava">🧑‍🍳</span>
-            <span class="me-text" style="text-align:left">
-              <span class="n">Chef Kitchen</span><br>
-              <span class="s">Partner Account</span>
-            </span>
-          </button>
-        </div>
-      </ng-container>
-
-      <!-- CUSTOMER SIDEBAR NAV -->
-      <ng-container *ngIf="!themeService.isAgent">
-        <div class="navlabel">Menu</div>
-        <nav class="nav">
-          <button routerLink="/customer-home">
-            <ion-icon name="home-outline"></ion-icon><span class="nav-text">Home</span>
-          </button>
-          <button class="on" routerLink="/my-orders">
-            <ion-icon name="bag-outline"></ion-icon><span class="nav-text">Orders</span>
-          </button>
-          <button routerLink="/subscribe">
-            <ion-icon name="calendar-outline"></ion-icon><span class="nav-text">Meal Plans</span>
-          </button>
-          <button routerLink="/manage-rotation">
-            <ion-icon name="sync-outline"></ion-icon><span class="nav-text">Meal Rotation</span>
-          </button>
-          <button routerLink="/custom-meal">
-            <ion-icon name="restaurant-outline"></ion-icon><span class="nav-text">Personal Chef</span>
-          </button>
-          <button routerLink="/health">
-            <ion-icon name="heart-outline"></ion-icon><span class="nav-text">Health</span>
-          </button>
-          <button routerLink="/ai-concierge">
-            <ion-icon name="chatbubbles-outline"></ion-icon><span class="nav-text">MealMantra AI</span>
-          </button>
-          <button routerLink="/wallet">
-            <ion-icon name="shield-checkmark-outline"></ion-icon><span class="nav-text">Wallet</span>
-          </button>
-          <button routerLink="/profile">
-            <ion-icon name="person-outline"></ion-icon><span class="nav-text">Profile</span>
-          </button>
-        </nav>
-        <div class="side-foot">
-          <button class="me" routerLink="/profile" title="View Profile">
-            <span class="ava">{{userInitials}}</span>
-            <span class="me-text" style="text-align:left"><span class="n">{{userName}}</span><br><span class="s">Premium
-                member</span></span>
-          </button>
-        </div>
-      </ng-container>
-    </aside>
+    <app-sidebar [chefName]="chefName" [userName]="userName" [userInitials]="userInitials"></app-sidebar>
 
     <!-- MAIN VIEW -->
     <div class="view-main">
-      <header class="top">
-        <div>
-          <h1>My Orders</h1>
-          <div class="sub">Track active deliveries and view order history</div>
-        </div>
+      <app-page-header title="My Orders" subtitle="Track active deliveries and view order history">
         <div class="search">
           <ion-icon name="search-outline" class="search-icon"></ion-icon>
           <input type="text" placeholder="Search orders..." [(ngModel)]="searchQuery">
@@ -307,7 +236,7 @@
           <span class="dot"></span>
           <ion-icon name="notifications-outline"></ion-icon>
         </button>
-      </header>
+      </app-page-header>
 
       <div class="body">
         <div class="main-col">
@@ -360,6 +289,23 @@
             </button>
           </div>
 
+          <!-- Skeleton Loader -->
+          <div class="olist sk-pulse" *ngIf="isLoading">
+            <div class="order-item sk-card" *ngFor="let s of [1,2,3,4,5]">
+              <div class="sk-block sk-img sk-othumb"></div>
+              <div class="ocol">
+                <div class="sk-block sk-line" style="width:55%;height:14px;"></div>
+                <div class="sk-block sk-line" style="width:75%;height:11px;margin-top:10px;"></div>
+                <div class="sk-block sk-line" style="width:40%;height:11px;margin-top:8px;"></div>
+              </div>
+              <div class="oright">
+                <div class="sk-block sk-line" style="width:48px;height:16px;"></div>
+                <div class="sk-block sk-line" style="width:64px;height:26px;margin-top:8px;border-radius:8px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <ng-container *ngIf="!isLoading">
           <!-- Active Orders Tab -->
           <div *ngIf="activeTab === 'active'">
             <div class="filters">
@@ -468,11 +414,22 @@
               </div>
             </div>
           </div>
+          </ng-container>
         </div>
 
         <!-- Right Rail (Selected Order Details) -->
         <aside class="rail">
-          <div class="rcard" *ngIf="selectedOrder || activeOrders.length > 0">
+          <!-- Skeleton Loader -->
+          <div class="rcard sk-pulse" *ngIf="isLoading">
+            <div class="sk-block sk-line" style="width:50%;height:16px;"></div>
+            <div class="sk-block sk-line" style="width:70%;height:12px;margin-top:16px;"></div>
+            <div class="sk-block sk-line" style="width:100%;height:14px;margin-top:20px;"></div>
+            <div class="sk-block sk-line" style="width:100%;height:14px;margin-top:12px;"></div>
+            <div class="sk-block sk-line" style="width:100%;height:14px;margin-top:12px;"></div>
+            <div class="sk-block sk-line" style="width:100%;height:40px;margin-top:20px;border-radius:10px;"></div>
+          </div>
+
+          <div class="rcard" *ngIf="!isLoading && (selectedOrder || activeOrders.length > 0)">
             <div class="rhead">
               <h3>Order Detail</h3>
               <span class="badge" [ngClass]="(selectedOrder || activeOrders[0]).status.toLowerCase()">

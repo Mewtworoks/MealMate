@@ -212,6 +212,15 @@ export class AuthService {
     return email;
   }
 
+  updateProfile(fullName: string, email: string) {
+    if (fullName && fullName.trim()) {
+      localStorage.setItem('mealmate_username', fullName.trim());
+    }
+    if (email && email.trim()) {
+      localStorage.setItem('mealmate_useremail', email.trim());
+    }
+  }
+
   setSession(role: 'customer' | 'agent') {
     this._userRole = role;
     this._isAuthenticated = true;

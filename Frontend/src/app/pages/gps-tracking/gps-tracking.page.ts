@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NavController, ToastController } from '@ionic/angular';
 import { OrderService } from '../../services/order.service';
+import { MealService } from '../../services/meal.service';
 import { TrackingService, Location } from '../../services/tracking.service';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
@@ -23,9 +24,8 @@ export class GpsTrackingPage implements OnInit, OnDestroy, AfterViewInit {
   totalTripDistance = 2; // default value
 
   partner = {
-    name: 'Santosh Kumar',
-    rating: 4.8,
-    phone: '+91 98765 43210'
+    name: 'Delivery partner',
+    rating: 0
   };
 
   private map: L.Map | undefined;
@@ -38,6 +38,7 @@ private agentMarker: L.Marker | undefined;
     private navCtrl: NavController,
     private toastCtrl: ToastController,
     private orderService: OrderService,
+    private mealService: MealService,
     private trackingService: TrackingService
   ) { }
 
@@ -45,8 +46,17 @@ private agentMarker: L.Marker | undefined;
     this.route.queryParams.subscribe(params => {
       if (params['orderId']) {
         this.orderId = params['orderId'];
+        this.loadDeliveryPartner();
       }
     });
+  }
+
+  private loadDeliveryPartner() {
+    const order = this.orderService.getOrders().find(o => o.id === this.orderId);
+    const agent = order?.agentId ? this.mealService.getAgentById(order.agentId) : undefined;
+    if (agent) {
+      this.partner = { name: agent.name, rating: agent.rating };
+    }
   }
 
   ngAfterViewInit() {

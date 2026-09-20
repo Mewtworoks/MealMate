@@ -39,25 +39,14 @@
 /* ═══════════════════════════════════════════════════
    DESKTOP WEB VIEW STYLES
    ═══════════════════════════════════════════════════ */
-.web-app { display:grid; grid-template-columns:248px minmax(0,1fr); height:100vh; overflow:hidden; background:var(--bg); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+.web-app { display:grid; grid-template-columns:248px minmax(0,1fr); height:100vh; overflow:hidden; background:var(--bg); font-family:'Plus Jakarta Sans',system-ui,sans-serif; transition:grid-template-columns 0.3s cubic-bezier(0.4,0,0.2,1); }
+.web-app.sidebar-collapsed { grid-template-columns:76px minmax(0,1fr); }
 
-.side { position:sticky; top:0; height:100vh; background:#fff; border-right:1px solid var(--line); display:flex; flex-direction:column; padding:24px 16px; overflow-y:auto; }
-.logo { display:flex; align-items:center; gap:11px; padding:4px 10px 26px; }
-.logo .glyph { width:36px; height:36px; border-radius:11px; background:linear-gradient(150deg,#FF8A47,#F26A21); display:grid; place-items:center; box-shadow:0 6px 16px rgba(242,106,33,.32); }
-.logo .glyph img { width:22px; height:22px; filter:brightness(0) invert(1); }
-.logo b { font-size:18px; font-weight:800; letter-spacing:-.02em; color:var(--ink); }
-.navlabel { font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3); padding:0 10px 8px; }
-.nav { display:flex; flex-direction:column; gap:2px; }
-.nav button { display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:11px; color:var(--ink-2); font-size:14.5px; font-weight:600; background:none; border:0; cursor:pointer; width:100%; text-align:left; }
-.nav button ion-icon { width:19px; height:19px; }
-.nav button:hover { background:#F7F3F0; color:var(--ink); }
-.nav button.on { background:var(--orange-soft); color:var(--orange); }
+// Sidebar itself now lives in the shared <app-sidebar> component — see components/sidebar/.
 
-.view-main { display:flex; flex-direction:column; min-width:0; height:100vh; overflow-y:auto; }
+.view-main { display:flex; flex-direction:column; min-width:0; height:100vh; overflow:hidden; }
 
-.top { position:sticky; top:0; z-index:20; background:rgba(250,247,245,.88); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-bottom:1px solid var(--line); padding:15px 32px; display:flex; align-items:center; gap:16px; }
-.top h1 { font-size:20px; font-weight:800; margin:0; letter-spacing:-.02em; color:var(--ink); }
-.top .sub { font-size:12.5px; color:var(--ink-3); font-weight:500; }
+// Header shell (.top/h1/.sub) now lives in the shared <app-page-header> component — see components/page-header/.
 .top-r { margin-left:auto; display:flex; items-center:center; gap:9px; }
 
 .weekpick { display:inline-flex; align-items:center; gap:9px; height:40px; padding:0 16px; border-radius:12px; background:var(--green); color:#fff; font-size:13.5px; font-weight:800; border:0; cursor:pointer; box-shadow:0 6px 16px rgba(46,125,82,.28); }
@@ -66,8 +55,9 @@
 .iconbtn { width:40px; height:40px; border-radius:12px; background:#fff; border:1px solid var(--line); display:grid; place-items:center; cursor:pointer; }
 .iconbtn ion-icon { width:19px; height:19px; color:var(--ink-2); }
 
-.body { display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:28px; padding:26px 32px 48px; align-items:start; }
-.main-col { display:flex; flex-direction:column; min-width:0; }
+.body { display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:28px; padding:26px 32px 0; flex:1; min-height:0; overflow:hidden; }
+.main-col { display:flex; flex-direction:column; min-width:0; overflow-y:auto; padding-bottom:48px; }
+.main-col > * { flex-shrink:0; }
 
 .hstats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px; }
 .hstat { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px 18px; }
@@ -138,7 +128,8 @@
 .badge.wait { background:var(--amber-soft); color:var(--amber); }
 .badge.done { background:var(--green-soft); color:var(--green); }
 
-.rail { position:sticky; top:94px; display:flex; flex-direction:column; gap:16px; }
+.rail { display:flex; flex-direction:column; gap:16px; overflow-y:auto; padding-bottom:48px; }
+.rail > * { flex-shrink:0; }
 .rcard { background:var(--card); border:1px solid var(--line); border-radius:var(--r-lg); padding:18px; }
 .rhead { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; }
 .rhead h3 { margin:0; font-size:14.5px; font-weight:800; color:var(--ink); }

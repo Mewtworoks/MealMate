@@ -49,35 +49,14 @@
 }
 
 /* ════════════════ DESKTOP WEB VIEW STYLES ════════════════ */
-.web-app { display:grid; grid-template-columns:248px minmax(0,1fr); height:100vh; overflow:hidden; background:var(--bg); font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+.web-app { display:grid; grid-template-columns:248px minmax(0,1fr); height:100vh; overflow:hidden; background:var(--bg); font-family:'Plus Jakarta Sans',system-ui,sans-serif; transition:grid-template-columns 0.3s cubic-bezier(0.4,0,0.2,1); }
+.web-app.sidebar-collapsed { grid-template-columns:76px minmax(0,1fr); }
 
-.side { position:sticky; top:0; height:100vh; background:#fff; border-right:1px solid var(--line); display:flex; flex-direction:column; padding:24px 16px; overflow-y:auto; }
-.logo { display:flex; align-items:center; gap:11px; padding:4px 10px 26px; }
-.logo .glyph { width:36px; height:36px; border-radius:11px; background:linear-gradient(150deg,#FF8A47,#F26A21); display:grid; place-items:center; box-shadow:0 6px 16px rgba(242,106,33,.32); }
-.logo .glyph img { width:22px; height:22px; filter:brightness(0) invert(1); }
-.logo b { font-size:18px; font-weight:800; letter-spacing:-.02em; color:var(--ink); }
-.sidebar-toggle-btn { margin-left:auto; width:28px; height:28px; border-radius:8px; border:1px solid var(--line); background:#fff; display:grid; place-items:center; cursor:pointer; color:var(--ink-2); transition:all .2s ease; }
-.sidebar-toggle-btn:hover { background:var(--orange-soft); color:var(--orange); border-color:var(--orange-line); }
+// Sidebar itself now lives in the shared <app-sidebar> component — see components/sidebar/.
 
-.navlabel { font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3); padding:0 10px 8px; }
-.nav { display:flex; flex-direction:column; gap:2px; }
-.nav button { display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:11px; color:var(--ink-2); font-size:14.5px; font-weight:600; background:none; border:0; cursor:pointer; width:100%; text-align:left; transition:all 0.2s ease; }
-.nav button ion-icon { width:19px; height:19px; }
-.nav button:hover { background:#F7F3F0; color:var(--ink); }
-.nav button.on { background:var(--orange-soft); color:var(--orange); font-weight:700; }
+.view-main { display:flex; flex-direction:column; min-width:0; height:100vh; overflow:hidden; }
 
-.side-foot { margin-top:auto; padding-top:16px; border-top:1px solid var(--line); }
-.side-foot .me { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:12px; background:none; border:0; width:100%; cursor:pointer; text-align:left; }
-.side-foot .me:hover { background:#F7F3F0; }
-.side-foot .ava { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#FF8A47,#F26A21); color:#fff; font-weight:800; font-size:13px; display:grid; place-items:center; flex:none; }
-.side-foot .me-text .n { font-size:13.5px; font-weight:800; color:var(--ink); }
-.side-foot .me-text .s { font-size:11.5px; font-weight:600; color:var(--ink-3); }
-
-.view-main { display:flex; flex-direction:column; min-width:0; height:100vh; overflow-y:auto; }
-
-.top { position:sticky; top:0; z-index:100; background:rgba(250,247,245,.95); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-bottom:1px solid var(--line); padding:15px 32px; display:flex; align-items:center; gap:16px; }
-.top h1 { font-size:20px; font-weight:800; margin:0; letter-spacing:-.02em; color:var(--ink); }
-.top .sub { font-size:12.5px; color:var(--ink-3); font-weight:500; }
+// Header shell (.top/h1/.sub) now lives in the shared <app-page-header> component — see components/page-header/.
 .top-r { margin-left:auto; display:flex; align-items:center; gap:9px; }
 
 .iconbtn { width:40px; height:40px; border-radius:12px; background:#fff; border:1px solid var(--line); display:grid; place-items:center; cursor:pointer; position:relative; }
@@ -113,15 +92,17 @@
 .body {
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
   gap: 24px;
   max-width: 1240px;
   width: 100%;
   margin: 0 auto;
-  padding: 24px 32px 48px 32px;
+  padding: 24px 32px 0 32px;
   box-sizing: border-box;
   position: relative;
   z-index: 20;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 
   @media (max-width: 991px) {
     flex-direction: column;
@@ -138,6 +119,14 @@
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  overflow-y: auto;
+  padding-bottom: 48px;
+
+  /* Guard against flexbox's "overflow:auto/hidden defaults min-height to 0" rule,
+     which would let the browser squash any section instead of scrolling past it. */
+  > * {
+    flex-shrink: 0;
+  }
 }
 
 .blkhead {
@@ -948,6 +937,50 @@
       }
     }
   }
+
+  &.completed {
+    background: linear-gradient(125deg, #FFF3EA 0%, #FCE6D6 100%);
+    border-color: #F3D2B0;
+  }
+
+  .completed-badge {
+    background: #C9520F !important;
+  }
+}
+
+/* Plan Completed Banner */
+.plan-ended-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+  padding: 32px 22px;
+
+  ion-icon {
+    font-size: 42px;
+    color: #2E7D52;
+    margin-bottom: 6px;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: $mm-text-dark;
+  }
+
+  p {
+    margin: 0 0 10px;
+    font-size: 13.5px;
+    color: $mm-text-muted;
+    max-width: 360px;
+  }
+
+  .ac-btn {
+    width: auto;
+    padding: 10px 20px;
+  }
 }
 
 /* Card Wrapper */
@@ -1651,10 +1684,16 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
-  position: sticky;
-  top: 20px;
+  overflow-y: auto;
+  padding-bottom: 48px;
   box-sizing: border-box;
   z-index: 10;
+
+  /* Guard against flexbox's "overflow:auto/hidden defaults min-height to 0" rule,
+     which would let the browser squash any section instead of scrolling past it. */
+  > * {
+    flex-shrink: 0;
+  }
 
   @media (max-width: 991px) {
     width: 100%;

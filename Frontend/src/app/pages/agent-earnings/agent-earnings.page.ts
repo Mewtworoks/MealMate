@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { OrderService, Order } from '../../services/order.service';
 import { AuthService } from '../../services/auth';
-import { NavController, ToastController } from '@ionic/angular';
+import { ActionSheetController, NavController, ToastController } from '@ionic/angular';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -35,12 +35,26 @@ export class AgentEarningsPage implements OnInit {
   // Greeting
   greeting = 'Good Evening';
   chefName = 'Chef';
+  get userName(): string { return this.auth.userName || 'MealMate User'; }
+  get userInitials(): string { return this.auth.userInitials; }
 
   // Hero card
   totalEarned = 0;
   ordersCompleted = 0;
   avgPerOrder = 0;
-  earningsVsLastWeek = 0;
+  private lastWeekEarnings = 0;
+
+  get earningsVsLastWeek(): number {
+    return Math.abs(this.weekEarnings - this.lastWeekEarnings);
+  }
+
+  get earningsTrendLabel(): string {
+    return this.weekEarnings >= this.lastWeekEarnings ? 'more than last week' : 'less than last week';
+  }
+
+  get earningsTrendIcon(): string {
+    return this.weekEarnings >= this.lastWeekEarnings ? 'arrow-up-outline' : 'arrow-down-outline';
+  }
 
   // Quick stats
   todaysEarnings = 0;
@@ -91,6 +105,7 @@ export class AgentEarningsPage implements OnInit {
     private auth: AuthService,
     private navCtrl: NavController,
     private toastCtrl: ToastController,
+    private actionSheetCtrl: ActionSheetController,
     public themeService: ThemeService,
     private pageLoader: PageLoaderService
   ) {}
@@ -140,7 +155,7 @@ export class AgentEarningsPage implements OnInit {
       this.totalEarned = res.TotalEarned ?? res.totalEarned ?? 0;
       this.ordersCompleted = res.OrdersCompleted ?? res.ordersCompleted ?? 0;
       this.avgPerOrder = res.AvgPerOrder ?? res.avgPerOrder ?? 0;
-      this.earningsVsLastWeek = 620; // Hardcoded comparison for demo
+      this.lastWeekEarnings = res.LastWeekEarnings ?? res.lastWeekEarnings ?? (res.WeekEarnings ?? res.weekEarnings ?? 0);
 
       // Quick stats
       this.todaysEarnings = res.TodaysEarnings ?? res.todaysEarnings ?? 0;
@@ -158,10 +173,6 @@ export class AgentEarningsPage implements OnInit {
         isToday: d.IsToday ?? d.isToday ?? false
       }));
 
-      // If chart is all zeros, fill with mock data for demo
-      if (this.weeklyData.every(d => d.amount === 0)) {
-        this.fillMockChart();
-      }
       this.maxWeeklyEarning = Math.max(...this.weeklyData.map(d => d.amount), 1);
 
       // Advance deduction
@@ -174,8 +185,7 @@ export class AgentEarningsPage implements OnInit {
         this.advanceRemaining = adv.Remaining ?? adv.remaining ?? 0;
         this.totalAdvanceDeducted = adv.TotalDeducted ?? adv.totalDeducted ?? 0;
       } else {
-        this.hasAdvance = false;
-        this.setDefaultAdvance();
+        this.clearAdvance();
       }
 
       // Pending payout
@@ -183,13 +193,12 @@ export class AgentEarningsPage implements OnInit {
 
       // Recent orders
       const recent = res.RecentOrders ?? res.recentOrders ?? [];
-      const distances = ['1.2', '0.8', '2.1', '1.5', '3.0'];
-      this.recentOrders = recent.map((o: any, i: number) => ({
+      this.recentOrders = recent.map((o: any) => ({
         id: o.Id ?? o.id,
         mealName: o.MealName ?? o.mealName ?? 'Meal Order',
         mealImage: o.MealImage ?? o.mealImage ?? 'assets/onboarding/dal_chawal.png',
         customerName: o.CustomerName ?? o.customerName ?? 'Customer',
-        distance: `${(o.DistanceKm ?? o.distanceKm ?? distances[i % distances.length])} km`,
+        distance: (o.DistanceKm ?? o.distanceKm) ? `${o.DistanceKm ?? o.distanceKm} km` : '—',
         earnings: o.Earnings ?? o.earnings ?? 0,
         time: new Date(o.OrderDate ?? o.orderDate).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
       }));
@@ -222,9 +231,16 @@ export class AgentEarningsPage implements OnInit {
     weekStart.setHours(0, 0, 0, 0);
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
+    const lastWeekStart = new Date(weekStart);
+    lastWeekStart.setDate(lastWeekStart.getDate() - 7);
+
     const todayOrders = delivered.filter(o => new Date(o.date).toDateString() === todayStr);
     const weekOrders = delivered.filter(o => new Date(o.date) >= weekStart);
     const monthOrders = delivered.filter(o => new Date(o.date) >= monthStart);
+    const lastWeekOrders = delivered.filter(o => {
+      const d = new Date(o.date);
+      return d >= lastWeekStart && d < weekStart;
+    });
 
     this.todaysEarnings = todayOrders.reduce((s, o) => s + o.total, 0);
     this.todaysOrders = todayOrders.length;
@@ -232,26 +248,24 @@ export class AgentEarningsPage implements OnInit {
     this.weekOrders = weekOrders.length;
     this.monthEarnings = monthOrders.reduce((s, o) => s + o.total, 0);
     this.monthOrders = monthOrders.length;
+    this.lastWeekEarnings = lastWeekOrders.reduce((s, o) => s + o.total, 0);
 
     this.totalEarned = this.weekEarnings;
     this.ordersCompleted = this.weekOrders;
     this.avgPerOrder = this.ordersCompleted > 0 ? Math.round(this.totalEarned / this.ordersCompleted) : 0;
-    this.earningsVsLastWeek = 620;
 
     this.buildWeeklyChart(weekStart, delivered);
-    this.setDefaultAdvance();
+    this.clearAdvance();
 
     this.pendingPayout = this.weekEarnings - this.totalAdvanceDeducted;
     if (this.pendingPayout < 0) this.pendingPayout = 0;
 
-    const names = ['Rahul Sharma', 'Priya Mehta', 'Ankit Verma', 'Sanjay Singh', 'Deepak Gupta'];
-    const distances = ['1.2 km', '0.8 km', '2.1 km', '1.5 km', '3.0 km'];
-    this.recentOrders = delivered.slice(0, 5).map((o, i) => ({
+    this.recentOrders = delivered.slice(0, 5).map((o) => ({
       id: o.id,
       mealName: o.items[0]?.name || 'Meal Order',
       mealImage: o.items[0]?.image || 'assets/onboarding/dal_chawal.png',
-      customerName: names[i % names.length],
-      distance: distances[i % distances.length],
+      customerName: o.customerName || 'Guest',
+      distance: o.distanceKm ? `${o.distanceKm} km` : '—',
       earnings: o.total,
       time: new Date(o.date).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
     }));
@@ -283,27 +297,16 @@ export class AgentEarningsPage implements OnInit {
       });
     }
 
-    if (this.weeklyData.every(d => d.amount === 0)) {
-      this.fillMockChart();
-    }
     this.maxWeeklyEarning = Math.max(...this.weeklyData.map(d => d.amount), 1);
   }
 
-  fillMockChart() {
-    const mockAmounts = [620, 842, 712, 915, 1105, 1038, 1248];
-    this.weeklyData = this.weeklyData.map((d, i) => ({
-      ...d,
-      amount: mockAmounts[i]
-    }));
-  }
-
-  setDefaultAdvance() {
-    this.hasAdvance = true;
-    this.advanceTaken = 2000;
-    this.dailyDeduction = 100;
-    this.totalAdvanceDeducted = 1500;
-    this.advanceRemaining = 500;
-    this.deductionDaysLeft = 5;
+  clearAdvance() {
+    this.hasAdvance = false;
+    this.advanceTaken = 0;
+    this.dailyDeduction = 0;
+    this.totalAdvanceDeducted = 0;
+    this.advanceRemaining = 0;
+    this.deductionDaysLeft = 0;
   }
 
   // =========================================================================
@@ -313,6 +316,24 @@ export class AgentEarningsPage implements OnInit {
 
   getBarHeight(amount: number): number {
     return Math.max(8, (amount / this.maxWeeklyEarning) * 100);
+  }
+
+  get bestDayLabel(): string {
+    if (!this.weeklyData || this.weeklyData.length === 0) return '—';
+    const best = this.weeklyData.reduce((a, b) => (b.amount > a.amount ? b : a));
+    return best.amount > 0 ? `${best.day} · ₹${best.amount.toLocaleString('en-IN')}` : '—';
+  }
+
+  get slowestDayLabel(): string {
+    if (!this.weeklyData || this.weeklyData.length === 0) return '—';
+    const slowest = this.weeklyData.reduce((a, b) => (b.amount < a.amount ? b : a));
+    return `${slowest.day} · ₹${slowest.amount.toLocaleString('en-IN')}`;
+  }
+
+  get avgPerDay(): number {
+    if (!this.weeklyData || this.weeklyData.length === 0) return 0;
+    const total = this.weeklyData.reduce((s, d) => s + d.amount, 0);
+    return Math.round(total / this.weeklyData.length);
   }
 
   // =========================================================================
@@ -349,5 +370,32 @@ export class AgentEarningsPage implements OnInit {
 
   goBack() {
     this.navCtrl.back();
+  }
+
+  // =========================================================================
+  // Period filter — switches the hero card between week/month totals
+  // =========================================================================
+  async openPeriodPicker() {
+    const sheet = await this.actionSheetCtrl.create({
+      header: 'Select period',
+      buttons: [
+        { text: 'This Week', handler: () => this.setPeriod('This Week') },
+        { text: 'This Month', handler: () => this.setPeriod('This Month') },
+        { text: 'Cancel', role: 'cancel' }
+      ]
+    });
+    await sheet.present();
+  }
+
+  setPeriod(period: 'This Week' | 'This Month') {
+    this.selectedPeriod = period;
+    if (period === 'This Month') {
+      this.totalEarned = this.monthEarnings;
+      this.ordersCompleted = this.monthOrders;
+    } else {
+      this.totalEarned = this.weekEarnings;
+      this.ordersCompleted = this.weekOrders;
+    }
+    this.avgPerOrder = this.ordersCompleted > 0 ? Math.round(this.totalEarned / this.ordersCompleted) : 0;
   }
 }

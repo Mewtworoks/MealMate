@@ -78,7 +78,7 @@ export class MealService {
   }
 
   async refreshMeals(category?: string) {
-    let url = `${environment.apiUrl}/meals`;
+    let url = `${environment.phpApiUrl}/meals`;
     if (category) url += `?category=${category}`;
 
     try {
@@ -134,7 +134,7 @@ export class MealService {
       allergens: mealData.allergens || ''
     };
 
-    const res = await firstValueFrom(this.http.post(`${environment.apiUrl}/meals`, payload));
+    const res = await firstValueFrom(this.http.post(`${environment.phpApiUrl}/meals`, payload));
     this.refreshMeals();
     return res;
   }
@@ -199,7 +199,7 @@ export class MealService {
 
   async getMealsByAgent(agentId: string) {
     try {
-      const backendMeals: any[] = await firstValueFrom(this.http.get<any[]>(`${environment.apiUrl}/meals/agent/${agentId}`));
+      const backendMeals: any[] = await firstValueFrom(this.http.get<any[]>(`${environment.phpApiUrl}/meals/agent/${agentId}`));
       return backendMeals.map(m => ({
         id: m.id || m.Id,
         name: m.name || m.Name,
@@ -252,12 +252,12 @@ export class MealService {
       ingredients: meal.ingredients || '',
       allergens: meal.allergens || ''
     };
-    await firstValueFrom(this.http.put(`${environment.apiUrl}/meals/${meal.id}`, payload));
+    await firstValueFrom(this.http.put(`${environment.phpApiUrl}/meals/${meal.id}`, payload));
     this.refreshMeals();
   }
 
   async deleteMeal(id: string) {
-    await firstValueFrom(this.http.delete(`${environment.apiUrl}/meals/${id}`));
+    await firstValueFrom(this.http.delete(`${environment.phpApiUrl}/meals/${id}`));
     this.refreshMeals();
   }
 

@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { WalletService, WalletInfo } from '../../services/wallet.service';
+import { WalletService, WalletInfo, WalletTransaction } from '../../services/wallet.service';
+import { OrderService, Order } from '../../services/order.service';
 import { AuthService } from '../../services/auth';
 import { NavController, AlertController, ToastController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
@@ -20,6 +21,7 @@ export class WalletPage implements OnInit, OnDestroy {
   availableCredit = 0;
   isLoading = true;
   isSettling = false;
+  isRedeeming = false;
   greeting = 'Good morning';
   get userInitials(): string {
     return this.auth.userInitials;
@@ -31,7 +33,6 @@ export class WalletPage implements OnInit, OnDestroy {
   customTopUp: number | null = null;
   isTopUp = false;
   txnFilter: 'all' | 'in' | 'out' = 'all';
-  selectedPayIndex = 1;
 
   presetAmounts = [
     { value: 100, badge: 'Popular', badgeClass: 'o' },
@@ -42,25 +43,15 @@ export class WalletPage implements OnInit, OnDestroy {
     { value: 5000 }
   ];
 
-  paymentMethods = [
-    { name: 'HDFC Bank •••• 4821', sub: 'Visa Debit · Expires 09/28', bg: '#1A3E7A', text: 'VISA' },
-    { name: 'UPI · mealmate@okaxis', sub: 'Instant · No charges', bg: '#0B7D5A', text: 'UPI' },
-    { name: 'Add a new card', sub: 'Credit or debit', bg: '#948A83', text: '+' }
-  ];
+  transactions: (WalletTransaction & { bal: number })[] = [];
 
-  sampleTransactions = [
-    { type: 'out', title: 'Executive Deluxe Thali', sub: 'Order #MM30042 · Aug 6, 4:02 PM', amount: 240, bal: 3180 },
-    { type: 'in', title: 'Wallet top-up', sub: 'UPI · Aug 6, 9:14 AM', amount: 1000, bal: 3420 },
-    { type: 'out', title: 'Homestyle Rajma Chawal', sub: 'Order #MM30041 · Aug 6, 3:58 PM', amount: 470, bal: 2420 },
-    { type: 'in', title: 'Cashback · Silver tier', sub: '2% on Aug orders · Aug 5', amount: 48, bal: 2890 },
-    { type: 'out', title: 'Hyderabadi Veg Biryani', sub: 'Order #MM30038 · Aug 5, 1:12 PM', amount: 390, bal: 2842 },
-    { type: 'in', title: 'Referral bonus', sub: 'Rahul joined MealMate · Aug 4', amount: 200, bal: 3232 }
-  ];
-
+  private orders: Order[] = [];
+  private walletTxns: WalletTransaction[] = [];
   private subs: Subscription[] = [];
 
   constructor(
     public wallet: WalletService,
+    private orderService: OrderService,
     private auth: AuthService,
     private navCtrl: NavController,
     private alertCtrl: AlertController,
@@ -76,7 +67,9 @@ export class WalletPage implements OnInit, OnDestroy {
         this.creditUsed = cu;
         this.availableCredit = this.creditLimit - cu;
       }),
-      this.wallet.credits$.subscribe(c => this.loyaltyPoints = c)
+      this.wallet.credits$.subscribe(c => this.loyaltyPoints = c),
+      this.wallet.transactions$.subscribe(t => { this.walletTxns = t; this.rebuildTransactions(); }),
+      this.orderService.orders$.subscribe(o => { this.orders = o; this.rebuildTransactions(); })
     );
 
     this.greeting = this.auth.greeting;
@@ -86,8 +79,35 @@ export class WalletPage implements OnInit, OnDestroy {
     const userId = this.auth.userId;
     if (userId) {
       await this.wallet.loadWallet(userId);
+      await this.orderService.refreshUserOrders(userId);
     }
     this.isLoading = false;
+  }
+
+  // Builds the real transaction feed: actual order payments + real wallet top-ups/settlements,
+  // newest first, walking the current balance backwards to show a consistent running total.
+  private rebuildTransactions() {
+    const orderTxns: WalletTransaction[] = this.orders
+      .map((o): WalletTransaction | null => {
+        const walletPortion = o.total - (o.creditUsed || 0);
+        return walletPortion > 0 ? {
+          type: 'out',
+          title: o.items?.[0]?.name || o.items?.[0]?.mealName || 'Meal order',
+          sub: `Order ${o.displayId || o.id} · ${new Date(o.date).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })}`,
+          amount: walletPortion,
+          date: new Date(o.date).getTime()
+        } : null;
+      })
+      .filter((t): t is WalletTransaction => t !== null);
+
+    const merged = [...this.walletTxns, ...orderTxns].sort((a, b) => b.date - a.date);
+
+    let runningBal = this.walletBalance;
+    this.transactions = merged.map(t => {
+      const withBal = { ...t, bal: runningBal };
+      runningBal = t.type === 'in' ? runningBal - t.amount : runningBal + t.amount;
+      return withBal;
+    });
   }
 
   fetchLocation() {
@@ -176,13 +196,9 @@ export class WalletPage implements OnInit, OnDestroy {
     }
   }
 
-  selectPayMethod(index: number) {
-    this.selectedPayIndex = index;
-  }
-
   getFilteredTransactions() {
-    if (this.txnFilter === 'all') return this.sampleTransactions;
-    return this.sampleTransactions.filter(t => t.type === this.txnFilter);
+    if (this.txnFilter === 'all') return this.transactions;
+    return this.transactions.filter(t => t.type === this.txnFilter);
   }
 
   async processTopUp() {
@@ -242,6 +258,37 @@ export class WalletPage implements OnInit, OnDestroy {
       this.isSettling = true;
       const res = await this.wallet.settleCredit(userId);
       this.isSettling = false;
+
+      const toast = await this.toastCtrl.create({
+        message: res.message,
+        duration: 2500,
+        color: res.success ? 'success' : 'warning'
+      });
+      toast.present();
+    }
+  }
+
+  async redeemPoints() {
+    if (this.loyaltyPoints <= 0) return;
+
+    const userId = this.auth.userId;
+    if (!userId) return;
+
+    const alert = await this.alertCtrl.create({
+      header: 'Redeem Points',
+      message: `Redeem all ${this.loyaltyPoints.toLocaleString()} points for ₹${this.loyaltyPoints.toLocaleString()} wallet credit?`,
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        { text: 'Redeem', role: 'confirm', handler: () => { } }
+      ]
+    });
+    await alert.present();
+    const result = await alert.onDidDismiss();
+
+    if (result.role === 'confirm') {
+      this.isRedeeming = true;
+      const res = await this.wallet.redeemPoints(userId);
+      this.isRedeeming = false;
 
       const toast = await this.toastCtrl.create({
         message: res.message,

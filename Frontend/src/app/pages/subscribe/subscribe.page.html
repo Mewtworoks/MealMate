@@ -182,14 +182,14 @@
     <div class="body" *ngIf="activeSub">
       <div class="main-column">
         <!-- Active Plan Hero Card -->
-        <section class="planhero">
+        <section class="planhero" [class.completed]="isPlanCompleted">
           <div>
-            <span class="pactive">
+            <span class="pactive" [class.completed-badge]="isPlanCompleted">
               <svg viewBox="0 0 24 24" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"
                 style="width:11px;height:11px">
                 <path d="m5 12.5 4.5 4.5L19 7" />
               </svg>
-              Active plan
+              {{ isPlanCompleted ? 'Plan completed' : 'Active plan' }}
             </span>
             <h2>{{activeSub.months}} Month Plan</h2>
             <div class="pdates">
@@ -219,12 +219,12 @@
                 </div>
               </div>
             </div>
-            <span class="pleft">
+            <span class="pleft" [class.completed-badge]="isPlanCompleted">
               <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="9" />
                 <path d="M12 7v5.4l3.4 2" />
               </svg>
-              {{daysLeft}} days left
+              {{ isPlanCompleted ? 'Plan ended' : (daysLeft + ' days left') }}
             </span>
           </div>
           <div class="pring">
@@ -242,8 +242,19 @@
           </div>
         </section>
 
+        <!-- Plan Completed Banner (replaces the ongoing-plan cards below) -->
+        <section class="chartcard plan-ended-card" *ngIf="isPlanCompleted">
+          <ion-icon name="checkmark-done-circle-outline"></ion-icon>
+          <h2>You've completed this plan!</h2>
+          <p>All {{activeSub.totalDays}} meals were delivered. Start a new plan to keep your daily rotation going.</p>
+          <button class="ac-btn" (click)="changePlan()">
+            <ion-icon name="add-circle-outline"></ion-icon>
+            <span>Choose a new plan</span>
+          </button>
+        </section>
+
         <!-- Today's Meal Card -->
-        <section class="chartcard">
+        <section class="chartcard" *ngIf="!isPlanCompleted">
           <div class="blkhead">
             <h2>Today's Meal</h2>
             <span class="badge" [ngClass]="todaysMeal.statusClass">
@@ -275,7 +286,7 @@
         </section>
 
         <!-- Your Rotation Card -->
-        <div class="chartcard">
+        <div class="chartcard" *ngIf="!isPlanCompleted">
           <div class="blkhead">
             <h2>Your Rotation</h2>
             <span class="mini">Repeats every {{activeSub.rotationMeals.length}} days</span>
@@ -296,7 +307,7 @@
         <div class="chartcard">
           <div class="blkhead">
             <h2>Monthly Khata</h2>
-            <span class="badge delivered" style="background:#FFF1E8; color:#C9520F;">Auto-debit on</span>
+            <span class="badge delivered" style="background:#FFF1E8; color:#C9520F;">{{ isPlanCompleted ? 'Auto-debit ended' : 'Auto-debit on' }}</span>
           </div>
           <div class="khata">
             <div class="kcell">
@@ -372,7 +383,7 @@
         </div>
 
         <!-- Action Cards Grid -->
-        <div class="action-cards-grid">
+        <div class="action-cards-grid" *ngIf="!isPlanCompleted">
           <!-- Card 1: Need a break? -->
           <div class="action-card pause-card">
             <div class="ac-icon-badge">
@@ -406,105 +417,19 @@
   <!-- ════════════════ DESKTOP WEB VIEW (Screens >= 1001px) ════════════════ -->
   <div class="web-app desktop-only" [class.sidebar-collapsed]="themeService.isSidebarCollapsed">
     <!-- SIDEBAR -->
-    <aside class="side">
-      <div class="side-top">
-        <div class="logo">
-          <span class="glyph">
-            <img src="assets/logo/chef_hat.png" alt="MealMate">
-          </span>
-          <b class="brand-name">MealMate</b>
-        </div>
-        <button class="sidebar-toggle-btn" (click)="themeService.toggleSidebar()"
-          [title]="themeService.isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
-          <ion-icon
-            [name]="themeService.isSidebarCollapsed ? 'chevron-forward-outline' : 'chevron-back-outline'"></ion-icon>
-        </button>
-      </div>
-      <!-- CHEF SIDEBAR NAV -->
-      <ng-container *ngIf="themeService.isAgent">
-        <div class="navlabel">Chef Menu</div>
-        <nav class="nav">
-          <button routerLink="/agent-home">
-            <ion-icon name="home-outline"></ion-icon><span class="nav-text">Dashboard</span>
-          </button>
-          <button routerLink="/manage-menu">
-            <ion-icon name="restaurant-outline"></ion-icon><span class="nav-text">Manage Menu</span>
-          </button>
-          <button routerLink="/agent-earnings">
-            <ion-icon name="wallet-outline"></ion-icon><span class="nav-text">Earnings</span>
-          </button>
-          <button routerLink="/profile">
-            <ion-icon name="person-outline"></ion-icon><span class="nav-text">Chef Profile</span>
-          </button>
-        </nav>
-        <div class="side-foot">
-          <button class="me" routerLink="/profile" title="View Profile">
-            <span class="ava">🧑‍🍳</span>
-            <span class="me-text" style="text-align:left">
-              <span class="n">Chef Kitchen</span><br>
-              <span class="s">Partner Account</span>
-            </span>
-          </button>
-        </div>
-      </ng-container>
-
-      <!-- CUSTOMER SIDEBAR NAV -->
-      <ng-container *ngIf="!themeService.isAgent">
-        <div class="navlabel">Menu</div>
-        <nav class="nav">
-          <button routerLink="/customer-home">
-            <ion-icon name="home-outline"></ion-icon><span class="nav-text">Home</span>
-          </button>
-          <button routerLink="/my-orders">
-            <ion-icon name="bag-outline"></ion-icon><span class="nav-text">Orders</span>
-          </button>
-          <button class="on" routerLink="/subscribe">
-            <ion-icon name="calendar-outline"></ion-icon><span class="nav-text">Meal Plans</span>
-          </button>
-          <button routerLink="/manage-rotation">
-            <ion-icon name="sync-outline"></ion-icon><span class="nav-text">Meal Rotation</span>
-          </button>
-          <button routerLink="/custom-meal">
-            <ion-icon name="restaurant-outline"></ion-icon><span class="nav-text">Personal Chef</span>
-          </button>
-          <button routerLink="/health">
-            <ion-icon name="heart-outline"></ion-icon><span class="nav-text">Health</span>
-          </button>
-          <button routerLink="/ai-concierge">
-            <ion-icon name="chatbubbles-outline"></ion-icon><span class="nav-text">MealMantra AI</span>
-          </button>
-          <button routerLink="/wallet">
-            <ion-icon name="shield-checkmark-outline"></ion-icon><span class="nav-text">Wallet</span>
-          </button>
-          <button routerLink="/profile">
-            <ion-icon name="person-outline"></ion-icon><span class="nav-text">Profile</span>
-          </button>
-        </nav>
-        <div class="side-foot">
-          <button class="me" routerLink="/profile" title="View Profile">
-            <span class="ava">{{userInitials}}</span>
-            <span class="me-text" style="text-align:left"><span class="n">{{userName}}</span><br><span class="s">Premium member</span></span>
-          </button>
-        </div>
-      </ng-container>
-    </aside>
+    <app-sidebar [chefName]="chefName" [userName]="userName" [userInitials]="userInitials"></app-sidebar>
 
     <!-- MAIN VIEW -->
     <div class="view-main">
-      <header class="top">
-        <button class="iconbtn" (click)="goBack()" title="Back">
-          <ion-icon name="arrow-back-outline"></ion-icon>
-        </button>
-        <div>
-          <h1>{{ activeSub ? 'Your Meal Plan' : 'Meal Plan' }}</h1>
-          <div class="sub">{{ activeSub ? (activeSub.months + ' Month Plan · renews ' + (activeSub.endDate | date:'d MMM')) : 'Subscribe to daily home-cooked meals' }}</div>
-        </div>
+      <app-page-header [title]="activeSub ? 'Your Meal Plan' : 'Meal Plan'"
+        [subtitle]="activeSub ? (activeSub.months + ' Month Plan · renews ' + (activeSub.endDate | date:'d MMM')) : 'Subscribe to daily home-cooked meals'"
+        [showBack]="true" (back)="goBack()">
         <div class="top-r">
           <button class="iconbtn" *ngIf="activeSub" (click)="openPlanOptions()" title="Plan Options">
             <ion-icon name="ellipsis-vertical"></ion-icon>
           </button>
         </div>
-      </header>
+      </app-page-header>
 
       <!-- STATE 1: SELECTION VIEW (No active plan) -->
       <div class="body" *ngIf="!activeSub">
@@ -668,12 +593,12 @@
           <!-- Active Plan Hero Card -->
           <section class="planhero">
             <div>
-              <span class="pactive">
+              <span class="pactive" [class.completed-badge]="isPlanCompleted">
                 <svg viewBox="0 0 24 24" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"
                   style="width:11px;height:11px">
                   <path d="m5 12.5 4.5 4.5L19 7" />
                 </svg>
-                Active plan
+                {{ isPlanCompleted ? 'Plan completed' : 'Active plan' }}
               </span>
               <h2>{{activeSub.months}} Month Plan</h2>
               <div class="pdates">
@@ -703,12 +628,12 @@
                   </div>
                 </div>
               </div>
-              <span class="pleft">
+              <span class="pleft" [class.completed-badge]="isPlanCompleted">
                 <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="9" />
                   <path d="M12 7v5.4l3.4 2" />
                 </svg>
-                {{daysLeft}} days left
+                {{ isPlanCompleted ? 'Plan ended' : (daysLeft + ' days left') }}
               </span>
             </div>
             <div class="pring">
@@ -726,8 +651,19 @@
             </div>
           </section>
 
+          <!-- Plan Completed Banner (replaces the ongoing-plan cards below) -->
+          <section class="chartcard plan-ended-card" *ngIf="isPlanCompleted">
+            <ion-icon name="checkmark-done-circle-outline"></ion-icon>
+            <h2>You've completed this plan!</h2>
+            <p>All {{activeSub.totalDays}} meals were delivered. Start a new plan to keep your daily rotation going.</p>
+            <button class="ac-btn" (click)="changePlan()">
+              <ion-icon name="add-circle-outline"></ion-icon>
+              <span>Choose a new plan</span>
+            </button>
+          </section>
+
           <!-- Today's Meal Card -->
-          <section class="chartcard">
+          <section class="chartcard" *ngIf="!isPlanCompleted">
             <div class="blkhead">
               <h2>Today's Meal</h2>
               <span class="badge" [ngClass]="todaysMeal.statusClass">
@@ -759,7 +695,7 @@
           </section>
 
           <!-- Your Rotation Card -->
-          <div class="chartcard">
+          <div class="chartcard" *ngIf="!isPlanCompleted">
             <div class="blkhead">
               <h2>Your Rotation</h2>
               <span class="mini">Repeats every {{activeSub.rotationMeals.length}} days</span>
@@ -780,7 +716,7 @@
           <div class="chartcard">
             <div class="blkhead">
               <h2>Monthly Khata</h2>
-              <span class="badge delivered" style="background:#FFF1E8; color:#C9520F;">Auto-debit on</span>
+              <span class="badge delivered" style="background:#FFF1E8; color:#C9520F;">{{ isPlanCompleted ? 'Auto-debit ended' : 'Auto-debit on' }}</span>
             </div>
             <div class="khata">
               <div class="kcell">
@@ -856,7 +792,7 @@
           </div>
 
           <!-- Action Cards Grid -->
-          <div class="action-cards-grid">
+          <div class="action-cards-grid" *ngIf="!isPlanCompleted">
             <!-- Card 1: Need a break? -->
             <div class="action-card pause-card">
               <div class="ac-icon-badge">
@@ -888,10 +824,10 @@
         <!-- Right Rail -->
         <aside class="rail">
           <!-- Next Delivery Card -->
-          <div class="rcard">
+          <div class="rcard" *ngIf="!isPlanCompleted && upcomingDeliveries.length > 0">
             <div class="rhead">
               <h3>Next delivery</h3>
-              <span class="mini">{{upcomingDeliveries[0]?.dayLabel || 'Tomorrow'}}</span>
+              <span class="mini">{{upcomingDeliveries[0].dayLabel}}</span>
             </div>
             <div class="delivery">
               <span class="dtick">
@@ -901,9 +837,9 @@
                 </svg>
               </span>
               <div>
-                <div class="v">{{upcomingDeliveries[0]?.dateNum || '9'}} {{upcomingDeliveries[0]?.dateMonth || 'Aug'}} ·
-                  {{upcomingDeliveries[0]?.time || '1:00 PM'}}</div>
-                <div class="s">{{upcomingDeliveries[0]?.name || todaysMeal.name}}</div>
+                <div class="v">{{upcomingDeliveries[0].dateNum}} {{upcomingDeliveries[0].dateMonth}} ·
+                  {{upcomingDeliveries[0].time}}</div>
+                <div class="s">{{upcomingDeliveries[0].name}}</div>
               </div>
             </div>
             <button class="railbtn ghost" (click)="openPlanOptions()">

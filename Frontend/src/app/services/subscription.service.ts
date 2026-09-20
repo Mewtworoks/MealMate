@@ -60,14 +60,14 @@ export class SubscriptionService {
       customerId: b.CustomerId || b.customerId,
       startDate: b.StartDate || b.startDate,
       endDate: b.EndDate || b.endDate,
-      months: b.Months || b.months,
+      months: b.Months ?? b.months,
       status: b.Status || b.status,
-      totalDays: b.TotalDays || b.totalDays,
-      currentDay: b.CurrentDay || b.currentDay,
-      totalPaid: b.TotalPaid || b.totalPaid,
-      dailyDeduction: b.DailyDeduction || b.dailyDeduction,
+      totalDays: b.TotalDays ?? b.totalDays,
+      currentDay: b.CurrentDay ?? b.currentDay,
+      totalPaid: b.TotalPaid ?? b.totalPaid,
+      dailyDeduction: b.DailyDeduction ?? b.dailyDeduction,
       planName: b.PlanName || b.planName,
-      planTagline: `${b.TotalDays || b.totalDays} days • ₹${Math.round(b.DailyDeduction || b.dailyDeduction)}/day`,
+      planTagline: `${b.TotalDays ?? b.totalDays} days • ₹${Math.round(b.DailyDeduction ?? b.dailyDeduction)}/day`,
       rotationMeals: (b.RotationMeals || b.rotationMeals || []).map((m: any) => ({
         mealId: m.MealId || m.mealId,
         name: m.Name || m.name,
@@ -480,6 +480,47 @@ export class SubscriptionService {
     end.setDate(end.getDate() + days);
     sub.endDate = end.toISOString();
     sub.totalDays += days;
+  }
+
+  /**
+   * True once every paid-for day has actually been delivered — the backend never
+   * flips `status` away from 'Active' on its own, so this is the single source of
+   * truth every page must check before treating a subscription as still ongoing.
+   */
+  isSubscriptionCompleted(sub: Subscription): boolean {
+    if (!sub || sub.status === 'Paused') return false;
+
+    const start = new Date(sub.startDate);
+    const now = new Date();
+    const startLocal = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    const todayLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const daysDiff = Math.max(0, Math.floor((todayLocal.getTime() - startLocal.getTime()) / (1000 * 60 * 60 * 24)));
+
+    let completedDaysCount = 0;
+    for (let d = 0; d < daysDiff; d++) {
+      const check = new Date(startLocal);
+      check.setDate(startLocal.getDate() + d);
+      const dateStr = `${check.getFullYear()}-${String(check.getMonth() + 1).padStart(2, '0')}-${String(check.getDate()).padStart(2, '0')}`;
+      const isSkipped = sub.skippedDays?.includes(dateStr) || false;
+      const isPaused = sub.pausedDays?.includes(dateStr) || false;
+      if (!isSkipped && !isPaused) completedDaysCount++;
+    }
+
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const isTodaySkipped = sub.skippedDays?.includes(todayStr) || false;
+    const isTodayPaused = sub.pausedDays?.includes(todayStr) || false;
+    const isPastDeliveryTime = now.getHours() >= 13;
+    if (isPastDeliveryTime && !isTodaySkipped && !isTodayPaused) completedDaysCount++;
+
+    return completedDaysCount >= sub.totalDays;
+  }
+
+  /** Active or paused subscription for this customer, excluding ones that have already run their full course. */
+  getActiveOrPausedSubscription(customerId: string): Subscription | null {
+    const subs = this.getUserSubscriptions(customerId);
+    const candidate = subs.find(s => s.status === 'Active' || s.status === 'Paused');
+    if (!candidate || this.isSubscriptionCompleted(candidate)) return null;
+    return candidate;
   }
 }
 
