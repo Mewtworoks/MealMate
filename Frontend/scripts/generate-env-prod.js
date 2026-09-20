@@ -6,6 +6,19 @@
 const fs = require('fs');
 const path = require('path');
 
+// environment.ts is gitignored (it holds real local secrets), so a fresh
+// clone — like Netlify's build server — never has it. Angular's production
+// build config swaps its content for environment.prod.ts via fileReplacements,
+// but that mechanism still requires the source file to physically exist on
+// disk first, regardless of what's in it. Create it from the template if
+// it's missing so the build doesn't fail before it even starts.
+const environmentsDir = path.join(__dirname, '..', 'src', 'environments');
+const devEnvPath = path.join(environmentsDir, 'environment.ts');
+if (!fs.existsSync(devEnvPath)) {
+  fs.copyFileSync(path.join(environmentsDir, 'environment.template.ts'), devEnvPath);
+  console.log('environment.ts was missing (gitignored) — created it from environment.template.ts.');
+}
+
 // Only actually regenerate the file on Netlify's CI (which always sets
 // NETLIFY=true) or when a real secret is explicitly present. Local builds
 // leave the committed placeholder file untouched, so `git status` doesn't
